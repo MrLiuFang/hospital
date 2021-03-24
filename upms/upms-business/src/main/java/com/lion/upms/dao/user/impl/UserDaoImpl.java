@@ -27,7 +27,8 @@ public class UserDaoImpl implements UserDaoEx {
         Map<String, Object> searchParameter = new HashMap<String, Object>();
         sb.append(" select u from User u where 1=1 ");
         if (StringUtils.hasText(keyword)){
-            sb.append(" or u.name like :name");
+            sb.append(" and ( ");
+            sb.append(" u.name like :name");
             searchParameter.put("name","%"+keyword+"%");
 
             sb.append(" or u.username like :username");
@@ -50,7 +51,9 @@ public class UserDaoImpl implements UserDaoEx {
             sb.append(" or u.number = :number");
             searchParameter.put("number",Integer.valueOf(keyword));
         }
-
+        if (StringUtils.hasText(keyword)) {
+            sb.append(" ) ");
+        }
         Page page = baseDao.findNavigator(lionPage, sb.toString(), searchParameter);
         return page;
     }

@@ -2,6 +2,7 @@ package com.lion.manage.expose.department.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.department.DepartmentDao;
+import com.lion.manage.dao.department.DepartmentResponsibleUserDao;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.DepartmentResponsibleUser;
 import com.lion.manage.entity.department.vo.ResponsibleUserVo;
@@ -29,6 +30,9 @@ public class DepartmentResponsibleUserExposeServiceImpl extends BaseServiceImpl<
     @Autowired
     private DepartmentDao departmentDao;
 
+    @Autowired
+    private DepartmentResponsibleUserDao departmentResponsibleUserDao;
+
     @Override
     public void relationDepartment(Long userId, List<Long> departmentIds) {
         departmentResponsibleUserService.relationDepartment(userId,departmentIds);
@@ -47,5 +51,10 @@ public class DepartmentResponsibleUserExposeServiceImpl extends BaseServiceImpl<
             returnList.add(BeanToMapUtil.transBeanToMap(responsibleUserVo));
         });
         return returnList;
+    }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        departmentResponsibleUserDao.deleteByUserId(userId);
     }
 }

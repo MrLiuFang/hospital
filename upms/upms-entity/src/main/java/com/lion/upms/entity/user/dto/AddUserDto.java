@@ -23,8 +23,8 @@ public class AddUserDto extends User {
     @ApiModelProperty(notes = "是否创建账号")
     private Boolean isCreateAccount;
 
-    @ApiModelProperty(notes = "科室ID")
-    @NotNull(message = "科室不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @ApiModelProperty(notes = "所属科室ID")
+    @NotNull(message = "所属科室不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long departmentId;
 
     @ApiModelProperty(notes = "负责科室ID")

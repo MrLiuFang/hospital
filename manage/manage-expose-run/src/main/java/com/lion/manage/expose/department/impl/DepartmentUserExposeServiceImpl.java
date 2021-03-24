@@ -37,4 +37,9 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
     public Department findDepartment(Long userId) {
         return departmentDao.findByUserId(userId);
     }
+
+    @Override
+    public void deleteByUserId(Long userId) {
+        departmentUserDao.deleteByUserId(userId);
+    }
 }

@@ -28,6 +28,11 @@ public class RolerUserServiceImpl extends BaseServiceImpl<RoleUser> implements R
     }
 
     @Override
+    public void deleteByUserId(Long userId) {
+        roleUserDao.deleteByUserId(userId);
+    }
+
+    @Override
     public void relationRole(Long userId, Long roleId) {
         roleUserDao.deleteByUserId(userId);
         if (Objects.nonNull(roleId) && roleId>0) {

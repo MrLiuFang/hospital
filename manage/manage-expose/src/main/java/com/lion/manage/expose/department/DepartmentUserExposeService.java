@@ -24,4 +24,10 @@ public interface DepartmentUserExposeService extends BaseService<DepartmentUser>
      * @return
      */
     public Department findDepartment(Long userId);
+
+    /**
+     * 根据用户ID删除所在的科室
+     * @param userId
+     */
+    public void deleteByUserId(Long userId);
 }

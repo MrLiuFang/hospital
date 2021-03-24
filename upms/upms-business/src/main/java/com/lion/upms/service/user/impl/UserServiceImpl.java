@@ -16,6 +16,7 @@ import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.role.vo.DetailsRoleUserVo;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.AddUserDto;
+import com.lion.upms.entity.user.dto.UpdateUserDto;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
 import com.lion.upms.service.role.RoleService;
@@ -145,6 +146,22 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         }
         BeanUtils.copyProperties(user,detailsUserVo);
         return detailsUserVo;
+    }
+
+    @Override
+    public void update(UpdateUserDto updateUserDto) {
+        User user = new User();
+        BeanUtils.copyProperties(updateUserDto,user);
+        if (!updateUserDto.getIsCreateAccount()){
+            user.setUsername("");
+            user.setPassword("");
+        }
+        assertEmailExist(user.getEmail(),user.getId());
+        assertNumberExist(user.getNumber(),user.getId());
+        this.update(user);
+        rolerUserService.relationRole(user.getId(),updateUserDto.getRoleId());
+        departmentUserExposeService.relationDepartment(user.getId(),updateUserDto.getDepartmentId());
+        departmentResponsibleUserExposeService.relationDepartment(user.getId(),updateUserDto.getResponsibleDepartmentIds());
     }
 
     private List<ListUserVo> convertVo(List<User> list){

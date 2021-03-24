@@ -8,6 +8,7 @@ import com.lion.core.service.BaseService;
 import com.lion.upms.entity.role.vo.DetailsRoleUserVo;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.AddUserDto;
+import com.lion.upms.entity.user.dto.UpdateUserDto;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
 import org.springframework.validation.annotation.Validated;
@@ -57,4 +58,10 @@ public interface UserService extends BaseService<User> {
      * @return
      */
     public DetailsUserVo details(Long id);
+
+    /**
+     * 修改用户
+     * @param updateUserDto
+     */
+    public void update(UpdateUserDto updateUserDto);
 }

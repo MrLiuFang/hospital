@@ -2,23 +2,36 @@ package com.lion.upms.controller.user;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
+import cn.hutool.crypto.SecureUtil;
 import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.core.ResultData;
+import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.common.enums.ResultDataState;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
+import com.lion.exception.BusinessException;
+import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
+import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.AddUserDto;
+import com.lion.upms.entity.user.dto.ResetPasswordUserDto;
+import com.lion.upms.entity.user.dto.UpdateUserDto;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
+import com.lion.upms.service.role.RolerUserService;
 import com.lion.upms.service.user.UserService;
+import com.sun.xml.bind.v2.model.core.ID;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,6 +52,18 @@ public class UserController extends BaseControllerImpl implements BaseController
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private RolerUserService rolerUserService;
+
+    @DubboReference
+    private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
+
+    @DubboReference
+    private DepartmentUserExposeService departmentUserExposeService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增用户",notes = "新增用户")
@@ -62,4 +87,43 @@ public class UserController extends BaseControllerImpl implements BaseController
         resultData.setData(userService.details(id));
         return resultData;
     }
+
+    @PutMapping("/update")
+    @ApiOperation(value = "修改用户",notes = "修改用户")
+    public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateUserDto updateUserDto) {
+        ResultData resultData = ResultData.instance();
+        userService.update(updateUserDto);
+        return resultData;
+    }
+
+    @ApiOperation(value = "删除用户",notes = "删除用户")
+    @DeleteMapping("/delete")
+    public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
+        deleteDtoList.forEach(d->{
+            User user = this.userService.findById(d.getId());
+            if (Objects.nonNull(user) ) {
+                userService.deleteById(d.getId());
+                rolerUserService.deleteByUserId(d.getId());
+                departmentUserExposeService.deleteByUserId(d.getId());
+                departmentResponsibleUserExposeService.deleteByUserId(d.getId());
+            }
+        });
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @ApiOperation(value = "重置密码",notes = "重置密码")
+    @PutMapping("/resetPassword")
+    public IResultData resetPassword(@RequestBody @Validated ResetPasswordUserDto resetPasswordUserDto){
+        User user = userService.findById(resetPasswordUserDto.getId());
+        if (Objects.nonNull(user)){
+            if (!StringUtils.hasText(user.getUsername())){
+                BusinessException.throwException("该员工没有开通账号，不能重置密码");
+            }
+            user.setPassword(passwordEncoder.encode(SecureUtil.md5(user.getEmail())));
+        }
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
 }

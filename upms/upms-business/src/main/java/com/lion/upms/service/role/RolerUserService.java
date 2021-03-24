@@ -21,6 +21,12 @@ public interface RolerUserService extends BaseService<RoleUser> {
     public void deleteByRoleId(Long roleId);
 
     /**
+     * 根据用户id删除角色与用户的关联
+     * @param userId
+     */
+    public void deleteByUserId(Long userId);
+
+    /**
      * 用户关联角色
      * @param userId
      * @param roleId

@@ -51,7 +51,7 @@ public class DetailsUserVo extends User {
     @ApiModel
     public static class ResponsibleUserVo{
         @ApiModelProperty(value = "负责人姓名")
-        private String userName;
+        private String name;
         @ApiModelProperty(value = "负责人头像")
         private String headPortraitUrl;
     }

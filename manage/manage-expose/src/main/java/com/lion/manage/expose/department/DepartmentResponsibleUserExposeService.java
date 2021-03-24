@@ -36,4 +36,10 @@ public interface DepartmentResponsibleUserExposeService extends BaseService<Depa
      * @return
      */
     public List<Map<String,Object>> responsibleUser(Long departmentId);
+
+    /**
+     * 根据用户ID删除所有负责的科室
+     * @param userId
+     */
+    public void deleteByUserId(Long userId);
 }
