@@ -13,12 +13,24 @@
 
 	<properties>
 		<lion-common-expose>1.0.0-SNAPSHOT</lion-common-expose>
+		<manage-entity.version>1.0.0-SNAPSHOT</manage-entity.version>
+		<manage-expose.version>1.0.0-SNAPSHOT</manage-expose.version>
 	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>com.lion</groupId>
 			<artifactId>upms-entity</artifactId>
 			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.lion</groupId>
+			<artifactId>manage-entity</artifactId>
+			<version>${manage-entity.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.lion</groupId>
+			<artifactId>manage-expose</artifactId>
+			<version>${manage-expose.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.lion</groupId>

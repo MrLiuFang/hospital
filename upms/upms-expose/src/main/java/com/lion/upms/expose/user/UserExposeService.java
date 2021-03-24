@@ -1,15 +1,14 @@
 package com.lion.upms.expose.user;
 
-import com.lion.core.service.BaseExposeService;
+import com.lion.core.service.BaseService;
 import com.lion.upms.entity.user.User;
-import org.springframework.validation.annotation.Validated;
 
 /**
  * @description: 用户远程RPC暴露接口
  * @author: Mr.Liu
  * @create: 2020-01-19 10:50
  */
-public interface UserExposeService extends BaseExposeService<User> {
+public interface UserExposeService extends BaseService<User> {
 
     /**
      * 创建user
@@ -24,4 +23,5 @@ public interface UserExposeService extends BaseExposeService<User> {
      * @return
      */
     public User findUser(String username);
+
 }

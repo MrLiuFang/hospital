@@ -23,4 +23,10 @@ public interface RoleUserDao extends BaseDao<RoleUser> {
      */
     public void deleteByRoleId(Long roleId);
 
+    /**
+     * 根据用户ID删除角色关联
+     * @param userId
+     */
+    public void deleteByUserId(Long userId);
+
 }

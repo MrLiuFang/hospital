@@ -47,4 +47,8 @@ public class Role extends BaseEntity {
     @ApiModelProperty(value = "权限")
     @Column(name = "resources",length = 2000)
     private String resources;
+
+    @ApiModelProperty(value = "是否默认角色（0：否，1：是）默认角色不能删除")
+    @Column(name = "is_default" ,nullable = false)
+    private Boolean isDefault =false;
 }

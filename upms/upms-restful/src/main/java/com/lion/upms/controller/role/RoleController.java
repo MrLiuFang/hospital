@@ -63,10 +63,10 @@ public class RoleController extends BaseControllerImpl implements BaseController
         return ResultData.instance();
     }
 
-    @GetMapping("/page")
+    @GetMapping("/list")
     @ApiOperation(value = "角色列表",notes = "角色列表")
-    public IPageResultData<List<PageRoleVo>> page(@ApiParam(name = "角色名称") String name, LionPage lionPage){
-        return (IPageResultData) roleService.page(name,lionPage);
+    public IPageResultData<List<PageRoleVo>> list(@ApiParam(name = "角色名称") String name, LionPage lionPage){
+        return (IPageResultData) roleService.list(name,lionPage);
     }
 
     @GetMapping("/details")
@@ -107,7 +107,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
         deleteDtoList.forEach(d->{
             Role role = this.roleService.findById(d.getId());
-            if (Objects.nonNull(role) ) {
+            if (Objects.nonNull(role) && !role.getIsDefault()) {
                 roleService.deleteById(d.getId());
                 roleUserService.deleteByRoleId(d.getId());
             }

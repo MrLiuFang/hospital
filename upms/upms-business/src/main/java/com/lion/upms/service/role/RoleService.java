@@ -19,7 +19,7 @@ public interface RoleService extends BaseService<Role> {
      * @param lionPage
      * @return
      */
-    Page<PageRoleVo> page(String name, LionPage lionPage);
+    Page<PageRoleVo> list(String name, LionPage lionPage);
 
     /**
      * 判断角色名称是否存在
@@ -27,4 +27,6 @@ public interface RoleService extends BaseService<Role> {
      * @param id
      */
     void assertNameExist(String name,Long id);
+
+
 }

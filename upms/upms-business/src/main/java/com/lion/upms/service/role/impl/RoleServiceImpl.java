@@ -11,6 +11,7 @@ import com.lion.upms.dao.role.RoleDao;
 import com.lion.upms.dao.role.RoleUserDao;
 import com.lion.upms.dao.user.UserDao;
 import com.lion.upms.entity.role.Role;
+import com.lion.upms.entity.role.RoleUser;
 import com.lion.upms.entity.role.vo.PageRoleVo;
 import com.lion.upms.service.role.RoleService;
 import org.springframework.beans.BeanUtils;
@@ -40,7 +41,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
     private RoleUserDao roleUserDao;
 
     @Override
-    public Page<PageRoleVo> page(String name, LionPage lionPage) {
+    public Page<PageRoleVo> list(String name, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);

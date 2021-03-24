@@ -20,4 +20,10 @@ public interface RolerUserService extends BaseService<RoleUser> {
      */
     public void deleteByRoleId(Long roleId);
 
+    /**
+     * 用户关联角色
+     * @param userId
+     * @param roleId
+     */
+    void relationRole(Long userId,Long roleId);
 }

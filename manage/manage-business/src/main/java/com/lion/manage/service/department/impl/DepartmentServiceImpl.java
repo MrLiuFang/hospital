@@ -1,18 +1,36 @@
 package com.lion.manage.service.department.impl;
 
+import com.lion.common.expose.file.FileExposeService;
+import com.lion.constant.SearchConstant;
+import com.lion.core.LionPage;
+import com.lion.core.common.dto.DeleteDto;
+import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.department.DepartmentDao;
+import com.lion.manage.dao.department.DepartmentResponsibleUserDao;
 import com.lion.manage.dao.department.DepartmentUserDao;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.department.DepartmentResponsibleUser;
 import com.lion.manage.entity.department.DepartmentUser;
 import com.lion.manage.entity.department.dto.AddDepartmentDto;
+import com.lion.manage.entity.department.dto.UpdateDepartmentDto;
+import com.lion.manage.entity.department.vo.DepartmentDetailsVo;
+import com.lion.manage.entity.department.vo.ResponsibleUserVo;
+import com.lion.manage.entity.department.vo.TreeDepartmentVo;
+import com.lion.manage.service.department.DepartmentResponsibleUserService;
 import com.lion.manage.service.department.DepartmentService;
+import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.BeanToMapUtil;
+import com.sun.org.apache.regexp.internal.RE;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Mr.Liu
@@ -28,21 +46,32 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
     @Autowired
     private DepartmentUserDao departmentUserDao;
 
+    @Autowired
+    private DepartmentResponsibleUserDao departmentResponsibleUserDao;
+
+    @Autowired
+    private DepartmentResponsibleUserService departmentResponsibleUserService;
+
     @Override
     public Department add(AddDepartmentDto addDepartmentDto) {
         Department department = new Department();
         BeanUtils.copyProperties(addDepartmentDto,department);
         assertNameExist(department.getName(),null);
         department = this.save(department);
-        Department finalDepartment = department;
-        addDepartmentDto.getResponsible().forEach(id->{
-            DepartmentUser departmentUser = new DepartmentUser();
-            departmentUser.setDepartmentId(finalDepartment.getId());
-            departmentUser.setUserId(id);
-            departmentUser.setIsResponsible(true);
-            departmentUserDao.save(departmentUser);
-        });
+        departmentResponsibleUserService.save(addDepartmentDto.getResponsible(),department.getId());
         return department;
+    }
+
+
+    @Override
+    public List<TreeDepartmentVo> treeList(String name) {
+        List<Department> list= new ArrayList<>();
+        if (StringUtils.hasText(name)){
+            list = departmentDao.findByNameLike(name);
+        }else {
+            list = departmentDao.findByParentId(0L);
+        }
+        return convertVo(list);
     }
 
     @Override
@@ -54,6 +83,58 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
         if (Objects.nonNull(id) && Objects.nonNull(department) && !department.getId().equals(id)){
             BusinessException.throwException("该科室名称已存在");
         }
+    }
+
+    @Override
+    public DepartmentDetailsVo details(Long id) {
+        Department department = this.findById(id);
+        DepartmentDetailsVo departmentDetailsVo = new DepartmentDetailsVo();
+        BeanUtils.copyProperties(department,departmentDetailsVo);
+        departmentDetailsVo.setResponsibleUser(departmentResponsibleUserService.responsibleUser(department.getId()));
+        return departmentDetailsVo;
+    }
+
+    @Override
+    public void update(UpdateDepartmentDto updateDepartmentDto) {
+        Department department = new Department();
+        BeanUtils.copyProperties(updateDepartmentDto,department);
+        assertNameExist(department.getName(),department.getId());
+        this.update(department);
+        this.departmentResponsibleUserDao.deleteByDepartmentId(department.getId());
+        departmentResponsibleUserService.save(updateDepartmentDto.getResponsible(),department.getId());
+    }
+
+    @Override
+    public void delete(List<DeleteDto> deleteDtoList) {
+        deleteDtoList.forEach(d->{
+            Department department = this.findById(d.getId());
+            if (Objects.nonNull(department) && !Objects.equals(department.getParentId(),0L) ) {
+                deleteById(d.getId());
+                departmentUserDao.deleteByDepartmentId(d.getId());
+                departmentResponsibleUserDao.deleteByDepartmentId(d.getId());
+                List<Department> list = departmentDao.findByParentId(d.getId());
+                List<DeleteDto> tmp = new ArrayList<DeleteDto>();
+                list.forEach(de ->{
+                    DeleteDto deleteDto = new DeleteDto();
+                    deleteDto.setId(de.getId());
+                    tmp.add(deleteDto);
+                });
+                delete(tmp);
+            }
+        });
+    }
+
+
+    private List<TreeDepartmentVo> convertVo(List<Department> list){
+        List<TreeDepartmentVo> returnList = new ArrayList<TreeDepartmentVo>();
+        list.forEach(department -> {
+            TreeDepartmentVo treeDepartmentVo = new TreeDepartmentVo();
+            BeanUtils.copyProperties(department,treeDepartmentVo);
+            treeDepartmentVo.setChildren(convertVo(departmentDao.findByParentId(department.getId())));
+            treeDepartmentVo.setResponsibleUser(departmentResponsibleUserService.responsibleUser(department.getId()));
+            returnList.add(treeDepartmentVo);
+        });
+        return returnList;
     }
 
 

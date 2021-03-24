@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Mr.Liu
@@ -24,5 +25,16 @@ public class RolerUserServiceImpl extends BaseServiceImpl<RoleUser> implements R
     @Override
     public void deleteByRoleId(Long roleId) {
         roleUserDao.deleteByRoleId(roleId);
+    }
+
+    @Override
+    public void relationRole(Long userId, Long roleId) {
+        roleUserDao.deleteByUserId(userId);
+        if (Objects.nonNull(roleId) && roleId>0) {
+            RoleUser roleUser = new RoleUser();
+            roleUser.setRoleId(roleId);
+            roleUser.setUserId(userId);
+            roleUserDao.save(roleUser);
+        }
     }
 }
