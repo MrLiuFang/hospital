@@ -106,6 +106,7 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
     @ApiOperation(value = "删除科室",notes = "删除科室")
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
+        //todo 未做是否关联区域判断，已关联区域不能删除
         departmentService.delete(deleteDtoList);
         ResultData resultData = ResultData.instance();
         return resultData;

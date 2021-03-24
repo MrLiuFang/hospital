@@ -1,30 +1,18 @@
 package com.lion.manage.service.department.impl;
 
-import com.lion.common.expose.file.FileExposeService;
-import com.lion.constant.SearchConstant;
-import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
-import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.department.DepartmentDao;
 import com.lion.manage.dao.department.DepartmentResponsibleUserDao;
 import com.lion.manage.dao.department.DepartmentUserDao;
 import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.department.DepartmentResponsibleUser;
-import com.lion.manage.entity.department.DepartmentUser;
 import com.lion.manage.entity.department.dto.AddDepartmentDto;
 import com.lion.manage.entity.department.dto.UpdateDepartmentDto;
 import com.lion.manage.entity.department.vo.DepartmentDetailsVo;
-import com.lion.manage.entity.department.vo.ResponsibleUserVo;
 import com.lion.manage.entity.department.vo.TreeDepartmentVo;
 import com.lion.manage.service.department.DepartmentResponsibleUserService;
 import com.lion.manage.service.department.DepartmentService;
-import com.lion.upms.entity.user.User;
-import com.lion.upms.expose.user.UserExposeService;
-import com.lion.utils.BeanToMapUtil;
-import com.sun.org.apache.regexp.internal.RE;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,7 +57,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
         if (StringUtils.hasText(name)){
             list = departmentDao.findByNameLike(name);
         }else {
-            list = departmentDao.findByParentId(0L);
+            list = departmentDao.findByParentIdOrderByCreateDateTimeAsc(0L);
         }
         return convertVo(list);
     }
@@ -112,7 +100,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
                 deleteById(d.getId());
                 departmentUserDao.deleteByDepartmentId(d.getId());
                 departmentResponsibleUserDao.deleteByDepartmentId(d.getId());
-                List<Department> list = departmentDao.findByParentId(d.getId());
+                List<Department> list = departmentDao.findByParentIdOrderByCreateDateTimeAsc(d.getId());
                 List<DeleteDto> tmp = new ArrayList<DeleteDto>();
                 list.forEach(de ->{
                     DeleteDto deleteDto = new DeleteDto();
@@ -130,7 +118,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
         list.forEach(department -> {
             TreeDepartmentVo treeDepartmentVo = new TreeDepartmentVo();
             BeanUtils.copyProperties(department,treeDepartmentVo);
-            treeDepartmentVo.setChildren(convertVo(departmentDao.findByParentId(department.getId())));
+            treeDepartmentVo.setChildren(convertVo(departmentDao.findByParentIdOrderByCreateDateTimeAsc(department.getId())));
             treeDepartmentVo.setResponsibleUser(departmentResponsibleUserService.responsibleUser(department.getId()));
             returnList.add(treeDepartmentVo);
         });

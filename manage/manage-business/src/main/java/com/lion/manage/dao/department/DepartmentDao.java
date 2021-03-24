@@ -25,7 +25,7 @@ public interface DepartmentDao extends BaseDao<Department> {
      * @param parentId
      * @return
      */
-    public List<Department> findByParentId(Long parentId);
+    public List<Department> findByParentIdOrderByCreateDateTimeAsc(Long parentId);
 
     /**
      * 根据科室名称查询科室

@@ -79,7 +79,10 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         list.forEach(user -> {
             DetailsRoleUserVo detailsRoleUserVo = new DetailsRoleUserVo();
             BeanUtils.copyProperties(user,detailsRoleUserVo);
-            detailsRoleUserVo.setDepartmentName("未实现");
+            Department department = departmentUserExposeService.findDepartment(user.getId());
+            if (Objects.nonNull(department)) {
+                detailsRoleUserVo.setDepartmentName(department.getName());
+            }
             detailsRoleUserVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
             returnList.add(detailsRoleUserVo);
         });
@@ -177,6 +180,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             if (Objects.nonNull(role)){
                 userVo.setRoleName(role.getName());
             }
+            userVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
             returnList.add(userVo);
         });
         return returnList;

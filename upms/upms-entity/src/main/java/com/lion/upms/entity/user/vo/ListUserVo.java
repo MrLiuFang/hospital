@@ -19,4 +19,7 @@ public class ListUserVo extends User {
 
     @ApiModelProperty(value = "角色名称")
     private String roleName;
+
+    @ApiModelProperty(value = "头像")
+    private String headPortraitUrl;
 }
