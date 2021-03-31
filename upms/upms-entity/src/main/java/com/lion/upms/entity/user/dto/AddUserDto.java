@@ -20,16 +20,16 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"id","username","password","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class AddUserDto extends User {
 
-    @ApiModelProperty(notes = "是否创建账号")
+    @ApiModelProperty(value = "是否创建账号")
     private Boolean isCreateAccount;
 
-    @ApiModelProperty(notes = "所属科室ID")
+    @ApiModelProperty(value = "所属科室ID")
     @NotNull(message = "所属科室不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long departmentId;
 
-    @ApiModelProperty(notes = "负责科室ID")
+    @ApiModelProperty(value = "负责科室ID")
     private List<Long> responsibleDepartmentIds;
 
-    @ApiModelProperty(notes = "角色ID")
+    @ApiModelProperty(value = "角色ID")
     private Long roleId;
 }

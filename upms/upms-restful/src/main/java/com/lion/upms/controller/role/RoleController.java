@@ -54,7 +54,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
     private RolerUserService roleUserService;
 
     @PostMapping("/add")
-    @ApiOperation(value = "新增角色",notes = "新增角色")
+    @ApiOperation(value = "新增角色")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class}) AddRoleDto addRoleDto){
         Role role = new Role();
         BeanUtil.copyProperties(addRoleDto,role, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
@@ -64,13 +64,13 @@ public class RoleController extends BaseControllerImpl implements BaseController
     }
 
     @GetMapping("/list")
-    @ApiOperation(value = "角色列表",notes = "角色列表")
+    @ApiOperation(value = "角色列表")
     public IPageResultData<List<PageRoleVo>> list(@ApiParam(name = "角色名称") String name, LionPage lionPage){
         return (IPageResultData) roleService.list(name,lionPage);
     }
 
     @GetMapping("/details")
-    @ApiOperation(value = "角色详情",notes = "角色详情")
+    @ApiOperation(value = "角色详情")
     public IResultData<DetailsRoleVo> details(@NotNull(message = "id不能为空") Long id){
         Role role = roleService.findById(id);
         ResultData resultData = ResultData.instance();
@@ -82,7 +82,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
     }
 
     @GetMapping("/editDetails")
-    @ApiOperation(value = "编辑角色基础信息获取详情",notes = "编辑角色基础信息获取详情")
+    @ApiOperation(value = "编辑角色基础信息获取详情")
     public IResultData<EditDetailsRoleVo> editDetails(@NotNull(message = "id不能为空") Long id){
         Role role = roleService.findById(id);
         ResultData resultData = ResultData.instance();
@@ -93,7 +93,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
     }
 
     @GetMapping("/update")
-    @ApiOperation(value = "修改角色",notes = "修改角色")
+    @ApiOperation(value = "修改角色")
     public IResultData update(@RequestBody @Validated UpdateRoleDto updateRoleDto){
         Role role = new Role();
         BeanUtils.copyProperties(updateRoleDto,role);
@@ -102,7 +102,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
         return ResultData.instance();
     }
 
-    @ApiOperation(value = "删除角色",notes = "删除角色")
+    @ApiOperation(value = "删除角色")
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
         deleteDtoList.forEach(d->{

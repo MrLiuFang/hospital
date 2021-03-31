@@ -2,9 +2,11 @@ package com.lion.upms.service.user.impl;
 
 import cn.hutool.crypto.SecureUtil;
 import com.lion.common.expose.file.FileExposeService;
+import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
+import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
@@ -16,6 +18,7 @@ import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.role.vo.DetailsRoleUserVo;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.AddUserDto;
+import com.lion.upms.entity.user.dto.ListUserDto;
 import com.lion.upms.entity.user.dto.UpdateUserDto;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
@@ -29,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -106,8 +110,25 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
-    public IPageResultData<List<ListUserVo>> list(String keyword, LionPage lionPage) {
-        Page<User> page = userDao.list(keyword,lionPage);
+    public IPageResultData<List<ListUserVo>> list(ListUserDto listUserDto, LionPage lionPage) {
+        JpqlParameter jpqlParameter = new JpqlParameter();
+        if (Objects.nonNull(listUserDto.getDepartmentId())){
+            List<Long> userList = departmentUserExposeService.findAllUser(listUserDto.getDepartmentId());
+            if (Objects.nonNull(userList) && userList.size()>0){
+                jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",userList);
+            }
+        }
+        if (StringUtils.hasText(listUserDto.getName())){
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",listUserDto.getName());
+        }
+        if (Objects.nonNull(listUserDto.getNumber())){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_number",listUserDto.getNumber());
+        }
+        if (Objects.nonNull(listUserDto.getUserType())){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_userType",listUserDto.getUserType());
+        }
+        lionPage.setJpqlParameter(jpqlParameter);
+        Page<User> page = this.findNavigator(lionPage);
         PageResultData pageResultData = new PageResultData(convertVo(page.getContent()),page.getPageable(),page.getTotalElements());
         return pageResultData;
     }

@@ -1,0 +1,54 @@
+package com.lion.device.service.device.impl;
+
+import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.dao.device.DeviceGroupDeviceDao;
+import com.lion.device.service.device.DeviceGroupDeviceService;
+import com.lion.device.entity.device.DeviceGroupDevice;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * @author Mr.Liu
+ * @Description:
+ * @date 2021/3/31下午1:49
+ */
+@Service
+public class DeviceGroupDeviceServiceImpl extends BaseServiceImpl<DeviceGroupDevice> implements DeviceGroupDeviceService {
+
+    @Autowired
+    private DeviceGroupDeviceDao deviceGroupDeviceDao;
+
+    @Override
+    public int deleteByDeviceId(Long deviceId) {
+        return deviceGroupDeviceDao.deleteByDeviceId(deviceId);
+    }
+
+    @Override
+    public int deleteByDeviceGroupId(Long deviceGroupId) {
+        return deviceGroupDeviceDao.deleteByDeviceGroupId(deviceGroupId);
+    }
+
+    @Override
+    public int add(Long deviceGroupId, List<Long> deviceIds) {
+        if (Objects.nonNull(deviceGroupId)){
+            deviceGroupDeviceDao.deleteByDeviceGroupId(deviceGroupId);
+        }
+        List<DeviceGroupDevice> list = new ArrayList<DeviceGroupDevice>();
+        if (Objects.nonNull(deviceIds) && deviceIds.size()>0) {
+            deviceIds.forEach(id -> {
+                DeviceGroupDevice deviceGroupDevice = new DeviceGroupDevice();
+                deviceGroupDevice.setDeviceGroupId(deviceGroupId);
+                deviceGroupDevice.setDeviceId(id);
+                list.add(deviceGroupDevice);
+            });
+            if (list.size() > 0) {
+                return deviceGroupDeviceDao.saveAll(list).size();
+            }
+        }
+        return 0;
+    }
+}

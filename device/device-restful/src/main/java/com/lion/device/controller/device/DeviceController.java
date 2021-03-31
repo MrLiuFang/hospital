@@ -1,0 +1,165 @@
+package com.lion.device.controller.device;
+
+import com.lion.constant.SearchConstant;
+import com.lion.core.IPageResultData;
+import com.lion.core.IResultData;
+import com.lion.core.LionPage;
+import com.lion.core.ResultData;
+import com.lion.core.common.dto.DeleteDto;
+import com.lion.core.controller.BaseController;
+import com.lion.core.controller.impl.BaseControllerImpl;
+import com.lion.core.persistence.JpqlParameter;
+import com.lion.core.persistence.Validator;
+import com.lion.device.entity.device.DeviceGroup;
+import com.lion.device.entity.device.dto.AddDeviceGroupDto;
+import com.lion.device.entity.device.dto.UpdateDeviceGroupDto;
+import com.lion.device.entity.device.vo.DetailsDeviceGroupVo;
+import com.lion.device.entity.device.vo.ListDeviceGroupVo;
+import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
+import com.lion.device.service.device.DeviceGroupDeviceService;
+import com.lion.device.service.device.DeviceGroupService;
+import com.lion.device.service.device.DeviceService;
+import com.lion.device.entity.device.Device;
+import com.lion.device.entity.device.dto.AddDeviceDto;
+import com.lion.device.entity.device.dto.UpdateDeviceDto;
+import com.sun.org.apache.regexp.internal.RE;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.Objects;
+
+/**
+ * @author Mr.Liu
+ * @Description:
+ * @date 2021/3/31下午1:50
+ */
+@RestController
+@RequestMapping("/device/")
+@Validated
+@Api(tags = {"设备管理"})
+public class DeviceController extends BaseControllerImpl implements BaseController {
+
+    @Autowired
+    private DeviceService deviceService;
+
+    @Autowired
+    private DeviceGroupDeviceService deviceGroupDeviceService;
+
+    @Autowired
+    private DeviceGroupService deviceGroupService;
+
+    @PostMapping("/add")
+    @ApiOperation(value = "新增设备")
+    public IResultData add(@RequestBody @Validated({Validator.Insert.class})AddDeviceDto addDeviceDto){
+        Device device = new Device();
+        BeanUtils.copyProperties(addDeviceDto,device);
+        this.deviceService.save(device);
+        return ResultData.instance();
+    }
+
+    @PutMapping("/update")
+    @ApiOperation(value = "修改设备")
+    public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateDeviceDto updateDeviceDto){
+        Device device = new Device();
+        BeanUtils.copyProperties(updateDeviceDto,device);
+        this.deviceService.update(device);
+        return ResultData.instance();
+    }
+
+    @GetMapping("/list")
+    @ApiOperation(value = "设备列表")
+    public IPageResultData<List<Device>> list(@ApiParam(value = "设备名称") String name, @ApiParam(value = "设备编号") String code, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备分类")  DeviceType deviceType, LionPage lionPage){
+        JpqlParameter jpqlParameter = new JpqlParameter();
+        if (StringUtils.hasText(name)){
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
+        }
+        if (StringUtils.hasText(code)){
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
+        }
+        if (Objects.nonNull(deviceClassify)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_deviceClassify",deviceClassify);
+        }
+        if (Objects.nonNull(deviceType)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_deviceType",deviceType);
+        }
+        lionPage.setJpqlParameter(jpqlParameter);
+        return (IPageResultData<List<Device>>) deviceService.findNavigator(lionPage);
+    }
+
+    @GetMapping("/details")
+    @ApiOperation(value = "设备详情")
+    public IResultData<Device> details(@ApiParam(value = "设备id") @NotNull(message = "id不能为空") Long id){
+        ResultData resultData = ResultData.instance();
+        resultData.setData(deviceService.findById(id));
+        return resultData;
+    }
+
+    @ApiOperation(value = "删除设备")
+    @DeleteMapping("/delete")
+    public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
+        deleteDtoList.forEach(d->{
+            Device device = this.deviceService.findById(d.getId());
+            if (Objects.nonNull(device) ) {
+                deviceService.deleteById(d.getId());
+                deviceGroupDeviceService.deleteByDeviceId(d.getId());
+            }
+        });
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @PostMapping("/group/add")
+    @ApiOperation(value = "新增设备组")
+    public IResultData groupAdd(@RequestBody @Validated({Validator.Insert.class})AddDeviceGroupDto addDeviceGroupDto){
+        ResultData resultData = ResultData.instance();
+        deviceGroupService.add(addDeviceGroupDto);
+        return resultData;
+    }
+
+    @PutMapping("/group/update")
+    @ApiOperation(value = "修改设备组")
+    public IResultData groupUpdate(@RequestBody @Validated({Validator.Update.class})UpdateDeviceGroupDto updateDeviceGroupDto){
+        ResultData resultData = ResultData.instance();
+        deviceGroupService.update(updateDeviceGroupDto);
+        return resultData;
+    }
+
+    @GetMapping("/group/list")
+    @ApiOperation(value = "设备组列表")
+    public IPageResultData<List<ListDeviceGroupVo>> groupList(@ApiParam(value = "设备组名称") String name,@ApiParam(value = "设备组编号") String code,LionPage lionPage ){
+        return deviceGroupService.list(name, code, lionPage);
+    }
+
+    @GetMapping("/group/details")
+    @ApiOperation(value = "设备组详情")
+    public IResultData<DetailsDeviceGroupVo> groupDetails(@ApiParam(value = "设备组id") @NotNull(message = "id不能为空")Long id) {
+        ResultData resultData = ResultData.instance();
+        resultData.setData(deviceGroupService.details(id));
+        return resultData;
+    }
+
+    @ApiOperation(value = "删除设备组")
+    @DeleteMapping("/group/delete")
+    public IResultData groupDelete(@RequestBody List<DeleteDto> deleteDtoList){
+        deleteDtoList.forEach(d->{
+            DeviceGroup deviceGroup = this.deviceGroupService.findById(d.getId());
+            if (Objects.nonNull(deviceGroup) ) {
+                deviceGroupService.deleteById(d.getId());
+                deviceGroupDeviceService.deleteByDeviceGroupId(d.getId());
+            }
+        });
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+
+}

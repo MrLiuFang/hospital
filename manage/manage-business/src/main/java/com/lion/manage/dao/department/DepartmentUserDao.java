@@ -5,6 +5,8 @@ import com.lion.manage.entity.department.DepartmentUser;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -27,4 +29,11 @@ public interface DepartmentUserDao extends BaseDao<DepartmentUser> {
      */
     @Transactional(propagation= Propagation.REQUIRES_NEW)
     public int deleteByUserId(Long userId);
+
+    /**
+     * 查询科室关联的所有员工
+     * @param departmentId
+     * @return
+     */
+    public List<DepartmentUser> findByDepartmentId(Long departmentId);
 }

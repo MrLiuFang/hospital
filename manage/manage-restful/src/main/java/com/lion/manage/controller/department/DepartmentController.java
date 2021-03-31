@@ -53,14 +53,14 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
     private DepartmentResponsibleUserService departmentResponsibleUserService;
 
     @PostMapping("/add")
-    @ApiOperation(value = "新增科室",notes = "新增科室")
+    @ApiOperation(value = "新增科室")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class}) AddDepartmentDto addDepartmentDto){
         departmentService.add(addDepartmentDto);
         return ResultData.instance();
     }
 
     @GetMapping("/treeList")
-    @ApiOperation(value = "科室树形列表",notes = "科室树形列表")
+    @ApiOperation(value = "科室树形列表")
     public IResultData<List<TreeDepartmentVo>> treeList(@ApiParam(value = "科室名称") String name){
         ResultData resultData = ResultData.instance();
         resultData.setData(departmentService.treeList(name));
@@ -68,7 +68,7 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
     }
 
     @GetMapping("/list")
-    @ApiOperation(value = "科室列表",notes = "科室列表")
+    @ApiOperation(value = "科室列表")
     public IPageResultData<List<ListDepartmentVo>> list(@ApiParam(value = "科室名称") String name, LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
@@ -89,7 +89,7 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
     }
 
     @GetMapping("/details")
-    @ApiOperation(value = "科室详情",notes = "科室详情")
+    @ApiOperation(value = "科室详情")
     public IResultData<DepartmentDetailsVo> details(@NotNull(message = "id不能为空") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(this.departmentService.details(id));
@@ -97,13 +97,13 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
     }
 
     @PutMapping("/update")
-    @ApiOperation(value = "修改科室",notes = "修改科室")
+    @ApiOperation(value = "修改科室")
     public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateDepartmentDto updateDepartmentDto){
         departmentService.update(updateDepartmentDto);
         return ResultData.instance();
     }
 
-    @ApiOperation(value = "删除科室",notes = "删除科室")
+    @ApiOperation(value = "删除科室")
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
         //todo 未做是否关联区域判断，已关联区域不能删除

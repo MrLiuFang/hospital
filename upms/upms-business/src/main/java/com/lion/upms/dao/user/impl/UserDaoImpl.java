@@ -21,40 +21,4 @@ public class UserDaoImpl implements UserDaoEx {
 
     @Autowired
     private BaseDao<User> baseDao;
-
-    public Page<User> list(String keyword, LionPage lionPage){
-        StringBuilder sb = new StringBuilder();
-        Map<String, Object> searchParameter = new HashMap<String, Object>();
-        sb.append(" select u from User u where 1=1 ");
-        if (StringUtils.hasText(keyword)){
-            sb.append(" and ( ");
-            sb.append(" u.name like :name");
-            searchParameter.put("name","%"+keyword+"%");
-
-            sb.append(" or u.username like :username");
-            searchParameter.put("username","%"+keyword+"%");
-
-            sb.append(" or u.email like :email");
-            searchParameter.put("email","%"+keyword+"%");
-
-            sb.append(" or u.tagCode like :tagCode");
-            searchParameter.put("tagCode","%"+keyword+"%");
-
-            sb.append(" or u.address like :address");
-            searchParameter.put("address","%"+keyword+"%");
-
-            sb.append(" or u.address like :address");
-            searchParameter.put("address","%"+keyword+"%");
-        }
-
-        if (NumberUtil.isInteger(keyword)){
-            sb.append(" or u.number = :number");
-            searchParameter.put("number",Integer.valueOf(keyword));
-        }
-        if (StringUtils.hasText(keyword)) {
-            sb.append(" ) ");
-        }
-        Page page = baseDao.findNavigator(lionPage, sb.toString(), searchParameter);
-        return page;
-    }
 }

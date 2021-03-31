@@ -1,34 +1,28 @@
 package com.lion.upms.controller.user;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.crypto.SecureUtil;
 import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.core.ResultData;
 import com.lion.core.common.dto.DeleteDto;
-import com.lion.core.common.enums.ResultDataState;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
 import com.lion.exception.BusinessException;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
-import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.user.User;
-import com.lion.upms.entity.user.dto.AddUserDto;
-import com.lion.upms.entity.user.dto.ResetPasswordUserDto;
-import com.lion.upms.entity.user.dto.UpdateUserDto;
+import com.lion.upms.entity.user.dto.*;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
 import com.lion.upms.service.role.RolerUserService;
 import com.lion.upms.service.user.UserService;
-import com.sun.xml.bind.v2.model.core.ID;
+import com.lion.utils.CurrentUserUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
@@ -66,7 +60,7 @@ public class UserController extends BaseControllerImpl implements BaseController
     private PasswordEncoder passwordEncoder;
 
     @PostMapping("/add")
-    @ApiOperation(value = "新增用户",notes = "新增用户")
+    @ApiOperation(value = "新增用户")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class}) AddUserDto addUserDto){
         userService.add(addUserDto);
         ResultData resultData = ResultData.instance();
@@ -74,14 +68,14 @@ public class UserController extends BaseControllerImpl implements BaseController
     }
 
     @GetMapping("/list")
-    @ApiOperation(value = "用户列表",notes = "用户列表")
-    public IPageResultData<List<ListUserVo>> list(@ApiParam(value = "搜索关键词") String keyword, LionPage lionPage){
-        return userService.list(keyword, lionPage);
+    @ApiOperation(value = "用户列表")
+    public IPageResultData<List<ListUserVo>> list(ListUserDto listUserDto, LionPage lionPage){
+        return userService.list(listUserDto, lionPage);
     }
 
 
     @GetMapping("/details")
-    @ApiOperation(value = "用户详情",notes = "用户详情")
+    @ApiOperation(value = "用户详情")
     public IResultData<DetailsUserVo> details(@NotNull(message = "id不能为空") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(userService.details(id));
@@ -89,14 +83,14 @@ public class UserController extends BaseControllerImpl implements BaseController
     }
 
     @PutMapping("/update")
-    @ApiOperation(value = "修改用户",notes = "修改用户")
+    @ApiOperation(value = "修改用户")
     public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateUserDto updateUserDto) {
         ResultData resultData = ResultData.instance();
         userService.update(updateUserDto);
         return resultData;
     }
 
-    @ApiOperation(value = "删除用户",notes = "删除用户")
+    @ApiOperation(value = "删除用户")
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
         deleteDtoList.forEach(d->{
@@ -112,7 +106,7 @@ public class UserController extends BaseControllerImpl implements BaseController
         return resultData;
     }
 
-    @ApiOperation(value = "重置密码",notes = "重置密码")
+    @ApiOperation(value = "重置密码(用户编辑页面)")
     @PutMapping("/resetPassword")
     public IResultData resetPassword(@RequestBody @Validated ResetPasswordUserDto resetPasswordUserDto){
         User user = userService.findById(resetPasswordUserDto.getId());
@@ -122,6 +116,22 @@ public class UserController extends BaseControllerImpl implements BaseController
             }
             user.setPassword(passwordEncoder.encode(SecureUtil.md5(user.getEmail())));
         }
+        userService.update(user);
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @ApiOperation(value = "修改当前登陆用户信息")
+    @PutMapping("/updateCurrentUser")
+    public IResultData updateCurrentUser(UpdateCurrentUserDto updateCurrentUserDto){
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        User user = new User();
+        BeanUtils.copyProperties(updateCurrentUserDto,user);
+        user.setId(userId);
+        if (StringUtils.hasText(user.getPassword())){
+            user.setPassword(passwordEncoder.encode(SecureUtil.md5(user.getPassword())));
+        }
+        userService.update(user);
         ResultData resultData = ResultData.instance();
         return resultData;
     }

@@ -4,6 +4,8 @@ import com.lion.core.service.BaseService;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.DepartmentUser;
 
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -30,4 +32,11 @@ public interface DepartmentUserExposeService extends BaseService<DepartmentUser>
      * @param userId
      */
     public void deleteByUserId(Long userId);
+
+    /**
+     * 查询科室所有关联的员工
+     * @param departmentId
+     * @return
+     */
+    public List<Long> findAllUser(Long departmentId);
 }

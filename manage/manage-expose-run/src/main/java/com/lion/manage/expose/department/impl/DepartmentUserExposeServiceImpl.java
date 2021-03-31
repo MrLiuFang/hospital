@@ -11,6 +11,9 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -41,5 +44,15 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
     @Override
     public void deleteByUserId(Long userId) {
         departmentUserDao.deleteByUserId(userId);
+    }
+
+    @Override
+    public List<Long> findAllUser(Long departmentId) {
+        List<DepartmentUser> list = departmentUserDao.findByDepartmentId(departmentId);
+        List<Long> returnList = new ArrayList<Long>();
+        list.forEach(departmentUser -> {
+            returnList.add(departmentUser.getUserId());
+        });
+        return returnList;
     }
 }

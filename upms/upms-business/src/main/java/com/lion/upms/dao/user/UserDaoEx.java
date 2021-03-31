@@ -11,11 +11,4 @@ import org.springframework.data.domain.Page;
  */
 public interface UserDaoEx {
 
-    /**
-     * 类表
-     * @param keyword
-     * @param lionPage
-     * @return
-     */
-    public Page<User> list(String keyword, LionPage lionPage);
 }

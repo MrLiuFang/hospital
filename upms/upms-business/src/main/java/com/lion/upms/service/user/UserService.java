@@ -8,6 +8,7 @@ import com.lion.core.service.BaseService;
 import com.lion.upms.entity.role.vo.DetailsRoleUserVo;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.AddUserDto;
+import com.lion.upms.entity.user.dto.ListUserDto;
 import com.lion.upms.entity.user.dto.UpdateUserDto;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
@@ -46,11 +47,12 @@ public interface UserService extends BaseService<User> {
 
     /**
      * 列表
-     * @param keyword
+     *
+     * @param listUserDto
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListUserVo>> list(String keyword, LionPage lionPage);
+    public IPageResultData<List<ListUserVo>> list(ListUserDto listUserDto, LionPage lionPage);
 
     /**
      * 用户详情
