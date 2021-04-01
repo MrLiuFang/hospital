@@ -20,30 +20,30 @@ import javax.validation.constraints.NotNull;
 /**
  * @author Mr.Liu
  * @Description:
- * @date 2021/3/31上午10:30
+ * @date 2021/4/1上午9:50
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "t_ward" )
+@Table(name = "t_ward_room",indexes = {@Index(columnList = "code"),@Index(columnList = "ward_id")})
 @DynamicUpdate
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "病房基本信息")
-public class Ward extends BaseEntity {
+@ApiModel(description = "病房(房间)")
+public class WardRoom extends BaseEntity {
 
-    @ApiModelProperty(value = "病房名称")
-    @Column(name = "name",unique = true)
-    @NotBlank(message = "病房名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private String name;
+    @ApiModelProperty(value = "病房id")
+    @Column(name = "ward_id",nullable = false)
+    @NotNull(message = "病房(基本信息)不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private Long wardId;
 
-    @ApiModelProperty(value = "科室")
-    @Column(name = "department_id",nullable = false)
-    @NotNull(message = "科室不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    public Long departmentId;
+    @ApiModelProperty(value = "房间编号")
+    @Column(name = "code")
+    @NotBlank(message = "房间编号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private String code;
 
-    @ApiModelProperty(value = "备注")
-    @Column(name = "remarks")
-    private String remarks;
-
+    @ApiModelProperty(value = "区域id")
+    @Column(name = "region_id",nullable = false)
+    @NotNull(message = "区域不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private Long regionId;
 }

@@ -39,7 +39,7 @@ import java.util.Objects;
  * @date 2021/3/22下午9:24
  */
 @RestController
-@RequestMapping("/role/")
+@RequestMapping("/role")
 @Validated
 @Api(tags = {"角色管理"})
 public class RoleController extends BaseControllerImpl implements BaseController {

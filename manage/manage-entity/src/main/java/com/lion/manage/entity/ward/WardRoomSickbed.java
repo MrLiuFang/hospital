@@ -1,4 +1,4 @@
-package com.lion.manage.entity.build;
+package com.lion.manage.entity.ward;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
@@ -15,28 +15,30 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Mr.Liu
  * @Description:
- * @date 2021/3/31上午9:58
+ * @date 2021/4/1上午9:51
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "t_build" )
+@Table(name = "t_ward_room_sickbed",indexes = {@Index(columnList = "ward_room_id")})
 @DynamicUpdate
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "建筑")
-public class Build extends BaseEntity {
+@ApiModel(description = "病房(房间-病床)")
+public class WardRoomSickbed extends BaseEntity {
 
-    @ApiModelProperty(value = "建筑名称")
-    @Column(name = "name",unique = true)
-    @NotBlank(message = "建筑名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private String name;
+    @ApiModelProperty(value = "病房id")
+    @Column(name = "ward_room_id",nullable = false)
+    @NotNull(message = "病房(基本信息)不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private Long wardRoomId;
 
-    @ApiModelProperty(value = "备注")
-    @Column(name = "remarks")
-    private String remarks;
+    @ApiModelProperty(value = "床位")
+    @Column(name = "bed_code")
+    @NotBlank(message = "床位不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private String bedCode;
 }

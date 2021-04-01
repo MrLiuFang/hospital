@@ -43,7 +43,7 @@ import java.util.Objects;
  * @date 2021/3/31下午1:50
  */
 @RestController
-@RequestMapping("/device/")
+@RequestMapping("/device")
 @Validated
 @Api(tags = {"设备管理"})
 public class DeviceController extends BaseControllerImpl implements BaseController {

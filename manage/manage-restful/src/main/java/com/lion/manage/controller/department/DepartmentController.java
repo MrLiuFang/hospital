@@ -41,7 +41,7 @@ import java.util.Objects;
  * @date 2021/3/23下午2:33
  */
 @RestController
-@RequestMapping("/department/")
+@RequestMapping("/department")
 @Validated
 @Api(tags = {"科室管理"})
 public class DepartmentController extends BaseControllerImpl implements BaseController {

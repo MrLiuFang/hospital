@@ -39,7 +39,7 @@ import java.util.Objects;
  * @date 2021/3/22下午9:22
  */
 @RestController
-@RequestMapping("/user/")
+@RequestMapping("/user")
 @Validated
 @Api(tags = {"用户管理"})
 public class UserController extends BaseControllerImpl implements BaseController {

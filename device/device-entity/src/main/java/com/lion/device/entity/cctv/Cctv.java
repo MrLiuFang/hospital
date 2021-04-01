@@ -1,0 +1,67 @@
+package com.lion.device.entity.cctv;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lion.core.persistence.Validator;
+import com.lion.core.persistence.entity.BaseEntity;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Index;
+import javax.persistence.Table;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
+/**
+ * @author Mr.Liu
+ * @Description:
+ * @date 2021/4/1上午10:12
+ */
+@EqualsAndHashCode(callSuper = true)
+@Entity
+@Table(name = "t_cctv",indexes = {@Index(columnList = "name"),@Index(columnList = "model")})
+@DynamicUpdate
+@DynamicInsert
+@Data
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
+@ApiModel(description = "cctv")
+public class Cctv extends BaseEntity {
+
+    @ApiModelProperty(value = "cctv名称")
+    @Column(name = "name")
+    @NotBlank(message = "cctv名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private String name;
+
+    @ApiModelProperty(value = "cctv型号")
+    @Column(name = "model")
+    @NotBlank(message = "cctv型号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private String model;
+
+    @ApiModelProperty(value = "cctv编号")
+    @Column(name = "code",unique = true)
+    @NotNull(message = "cctv编号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private String code;
+
+    @ApiModelProperty(value = "图片")
+    @Column(name = "img")
+    private Long img;
+
+    @ApiModelProperty(value = "ip地址")
+    @Column(name = "ip")
+    @NotBlank(message = "ip地址不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private String ip;
+
+    @ApiModelProperty(value = "ip地址端口")
+    @Column(name = "port")
+    @NotNull(message = "ip地址端口不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private Integer port;
+
+    @ApiModelProperty(value = "安放位置（关联区域自动更新该值）")
+    @Column(name = "position")
+    private String position;
+}
