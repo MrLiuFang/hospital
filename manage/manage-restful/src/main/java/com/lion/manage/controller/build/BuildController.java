@@ -21,6 +21,7 @@ import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.vo.ListDepartmentVo;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
+import com.lion.manage.service.region.RegionService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -51,6 +52,9 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
 
     @Autowired
     private BuildFloorService buildFloorService;
+
+    @Autowired
+    private RegionService regionService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增建筑")
@@ -131,7 +135,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/floor/list")
     @ApiOperation(value = "建筑楼层列表")
-    public IPageResultData<List<ListBuildVo>> floorList(@ApiParam(value = "楼层名称") String name,@ApiParam(value = "建筑ID") Long buildId, LionPage lionPage){
+    public IPageResultData<List<ListBuildFloorVo>> floorList(@ApiParam(value = "楼层名称") String name,@ApiParam(value = "建筑ID") Long buildId, LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
@@ -151,6 +155,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
             if (Objects.nonNull(build)) {
                 buildFloorVo.setBuildName(build.getName());
             }
+            buildFloorVo.setRegions(regionService.findByBuildFloorId(buildFloor.getId()));
             listBuildFloorVos.add(buildFloorVo);
         });
         return new PageResultData(listBuildFloorVos, page.getPageable(), page.getTotalElements());

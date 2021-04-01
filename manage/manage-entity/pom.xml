@@ -31,5 +31,10 @@
 			<artifactId>springfox-boot-starter</artifactId>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.lion</groupId>
+			<artifactId>device-entity</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
     </dependencies>
 </project>

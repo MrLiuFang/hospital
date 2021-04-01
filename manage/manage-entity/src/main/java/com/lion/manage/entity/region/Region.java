@@ -55,7 +55,7 @@ public class Region extends BaseEntity {
     @Column(name = "remarks")
     private String remarks;
 
-    @ApiModelProperty(value = "区域坐标")
+    @ApiModelProperty(value = "区域坐标组")
     @Column(name = "coordinates",length = 5000)
     @NotBlank(message = "区域坐标不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String coordinates;

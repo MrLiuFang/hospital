@@ -3,6 +3,8 @@ package com.lion.manage.dao.region;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.region.RegionCctv;
 
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -16,4 +18,12 @@ public interface RegionCctvDao extends BaseDao<RegionCctv> {
      * @return
      */
     public int deleteByRegionId(Long regionId);
+
+    /**
+     * 根据区域查询所有关联的cctv
+     * @param regionId
+     * @return
+     */
+    public List<RegionCctv> findByRegionId(Long regionId);
+
 }

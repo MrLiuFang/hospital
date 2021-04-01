@@ -2,10 +2,15 @@ package com.lion.manage.service.region.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.region.RegionExposeObjectDao;
+import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.region.RegionExposeObject;
 import com.lion.manage.service.region.RegionExposeObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Mr.Liu
@@ -17,4 +22,28 @@ public class RegionExposeObjectServiceImpl extends BaseServiceImpl<RegionExposeO
 
     @Autowired
     private RegionExposeObjectDao regionExposeObjectDao;
+
+    @Override
+    public void save(Long regionId, List<ExposeObject> list) {
+        if (Objects.nonNull(regionId)){
+            regionExposeObjectDao.deleteByRegionId(regionId);
+        }else {
+            return;
+        }
+        List<RegionExposeObject> regionExposeObjects = new ArrayList<>();
+        list.forEach(exposeObject -> {
+            RegionExposeObject regionExposeObject = new RegionExposeObject();
+            regionExposeObject.setRegionId(regionId);
+            regionExposeObject.setExposeObject(exposeObject);
+            regionExposeObjects.add(regionExposeObject);
+        });
+        if (regionExposeObjects.size()>0){
+            saveAll(regionExposeObjects);
+        }
+    }
+
+    @Override
+    public List<RegionExposeObject> find(Long regionId) {
+        return regionExposeObjectDao.findByRegionId(regionId);
+    }
 }

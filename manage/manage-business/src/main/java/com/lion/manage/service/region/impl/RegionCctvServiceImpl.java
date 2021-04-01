@@ -7,6 +7,10 @@ import com.lion.manage.service.region.RegionCctvService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -17,4 +21,28 @@ public class RegionCctvServiceImpl extends BaseServiceImpl<RegionCctv> implement
 
     @Autowired
     private RegionCctvDao regionCctvDao;
+
+    @Override
+    public void save(Long regionId, List<Long> cctvIds) {
+        if (Objects.nonNull(regionId)){
+            regionCctvDao.deleteByRegionId(regionId);
+        }else {
+            return;
+        }
+        List<RegionCctv> list = new ArrayList<RegionCctv>();
+        cctvIds.forEach(id->{
+            RegionCctv regionCctv = new RegionCctv();
+            regionCctv.setCctvId(id);
+            regionCctv.setRegionId(regionId);
+            list.add(regionCctv);
+        });
+        if (list.size()>0){
+            saveAll(list);
+        }
+    }
+
+    @Override
+    public List<RegionCctv> find(Long regionId) {
+        return regionCctvDao.findByRegionId(regionId);
+    }
 }

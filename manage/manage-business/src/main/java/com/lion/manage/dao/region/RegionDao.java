@@ -39,4 +39,11 @@ public interface RegionDao extends BaseDao<Region> {
      * @return
      */
     public List<Region> findByBuildFloorId(Long buildFloorId);
+
+    /**
+     * 根据名称查询
+     * @param name
+     * @return
+     */
+    public Region findFirstByName(String name);
 }

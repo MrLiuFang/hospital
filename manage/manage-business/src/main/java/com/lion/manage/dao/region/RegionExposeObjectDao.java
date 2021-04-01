@@ -1,7 +1,10 @@
 package com.lion.manage.dao.region;
 
 import com.lion.core.persistence.curd.BaseDao;
+import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionExposeObject;
+
+import java.util.List;
 
 /**
  * @author Mr.Liu
@@ -15,4 +18,11 @@ public interface RegionExposeObjectDao extends BaseDao<RegionExposeObject> {
      * @return
      */
     public int deleteByRegionId(Long regionId);
+
+    /**
+     * 根据区域查询
+     * @param regionId
+     * @return
+     */
+    public List<RegionExposeObject> findByRegionId(Long regionId);
 }

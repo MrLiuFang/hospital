@@ -126,6 +126,7 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
                 ListDeviceGroupVo listDeviceGroupVo = new ListDeviceGroupVo();
                 BeanUtils.copyProperties(deviceGroup,listDeviceGroupVo);
                 listDeviceGroupVo.setDeviceQuantity(deviceGroupDeviceDao.findByDeviceGroupId(deviceGroup.getId()).size());
+                listDeviceGroupVo.setDevices(deviceDao.findByDeviceGroupId(deviceGroup.getId()));
                 returnList.add(listDeviceGroupVo);
             });
         }
