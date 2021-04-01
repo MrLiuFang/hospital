@@ -9,4 +9,10 @@ import com.lion.manage.entity.ward.Ward;
  * @date 2021/4/1上午11:12
  */
 public interface WardService extends BaseService<Ward> {
+    /**
+     * 根据科室删除
+     * @param departmentId
+     * @return
+     */
+    public int deleteByDepartmentId(Long departmentId);
 }

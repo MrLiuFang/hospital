@@ -61,7 +61,15 @@ public class Cctv extends BaseEntity {
     @NotNull(message = "ip地址端口不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer port;
 
-    @ApiModelProperty(value = "安放位置（关联区域自动更新该值）")
-    @Column(name = "position")
-    private String position;
+    @ApiModelProperty(value = "建筑id（关联区域自动更新该值）")
+    @Column(name = "build_id")
+    private Long buildId;
+
+    @ApiModelProperty(value = "楼层id（关联区域自动更新该值）")
+    @Column(name = "build_floor_id")
+    private Long buildFloorId;
+
+    @ApiModelProperty(value = "区域Id（关联区域自动更新该值）")
+    @Column(name = "region_id")
+    private Long regionId;
 }

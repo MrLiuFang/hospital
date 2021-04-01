@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class DepartmentDetailsVo extends Department {
+public class DetailsDepartmentVo extends Department {
 
     @ApiModelProperty(value = "负责人")
     private List<ResponsibleUserVo> responsibleUser;

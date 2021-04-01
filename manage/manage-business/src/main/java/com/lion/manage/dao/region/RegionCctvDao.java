@@ -9,4 +9,11 @@ import com.lion.manage.entity.region.RegionCctv;
  * @date 2021/4/1上午10:57
  */
 public interface RegionCctvDao extends BaseDao<RegionCctv> {
+
+    /**
+     * 根据区域删除
+     * @param regionId
+     * @return
+     */
+    public int deleteByRegionId(Long regionId);
 }

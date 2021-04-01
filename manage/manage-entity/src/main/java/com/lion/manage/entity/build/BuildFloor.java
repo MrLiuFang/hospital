@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Mr.Liu
@@ -32,7 +33,7 @@ import javax.validation.constraints.NotBlank;
 public class BuildFloor extends BaseEntity {
 
     @ApiModelProperty(value = "建筑id")
-    @NotBlank(message = "建筑名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "建筑名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "build_id",nullable = false)
     private Long buildId;
 

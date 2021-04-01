@@ -7,6 +7,8 @@ import com.lion.manage.service.region.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -17,4 +19,9 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
 
     @Autowired
     private RegionDao regionDao;
+
+    @Override
+    public List<Region> find(Long departmentId) {
+        return regionDao.findByDepartmentId(departmentId);
+    }
 }

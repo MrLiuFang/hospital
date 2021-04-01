@@ -64,4 +64,14 @@ public class Region extends BaseEntity {
     @Column(name = "device_group_id")
 //    @NotNull(message = "设备组不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long deviceGroupId;
+
+    @ApiModelProperty(value = "建筑id")
+    @Column(name = "build_id",nullable = false)
+    @NotNull(message = "建筑不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private Long buildId;
+
+    @ApiModelProperty(value = "建筑楼层id")
+    @Column(name = "build_floor_id",nullable = false)
+    @NotNull(message = "建筑楼层不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private Long buildFloorId;
 }

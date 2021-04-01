@@ -6,13 +6,17 @@ import com.lion.exception.BusinessException;
 import com.lion.manage.dao.department.DepartmentDao;
 import com.lion.manage.dao.department.DepartmentResponsibleUserDao;
 import com.lion.manage.dao.department.DepartmentUserDao;
+import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.dto.AddDepartmentDto;
 import com.lion.manage.entity.department.dto.UpdateDepartmentDto;
-import com.lion.manage.entity.department.vo.DepartmentDetailsVo;
+import com.lion.manage.entity.department.vo.DetailsDepartmentVo;
 import com.lion.manage.entity.department.vo.TreeDepartmentVo;
+import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.service.department.DepartmentResponsibleUserService;
 import com.lion.manage.service.department.DepartmentService;
+import com.lion.manage.service.region.RegionService;
+import com.lion.manage.service.ward.WardService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,6 +43,12 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
 
     @Autowired
     private DepartmentResponsibleUserService departmentResponsibleUserService;
+
+    @Autowired
+    private RegionService regionService;
+
+    @Autowired
+    private WardService wardService;
 
     @Override
     public Department add(AddDepartmentDto addDepartmentDto) {
@@ -74,12 +84,12 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
     }
 
     @Override
-    public DepartmentDetailsVo details(Long id) {
+    public DetailsDepartmentVo details(Long id) {
         Department department = this.findById(id);
-        DepartmentDetailsVo departmentDetailsVo = new DepartmentDetailsVo();
-        BeanUtils.copyProperties(department,departmentDetailsVo);
-        departmentDetailsVo.setResponsibleUser(departmentResponsibleUserService.responsibleUser(department.getId()));
-        return departmentDetailsVo;
+        DetailsDepartmentVo detailsDepartmentVo = new DetailsDepartmentVo();
+        BeanUtils.copyProperties(department, detailsDepartmentVo);
+        detailsDepartmentVo.setResponsibleUser(departmentResponsibleUserService.responsibleUser(department.getId()));
+        return detailsDepartmentVo;
     }
 
     @Override
@@ -100,6 +110,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
                 deleteById(d.getId());
                 departmentUserDao.deleteByDepartmentId(d.getId());
                 departmentResponsibleUserDao.deleteByDepartmentId(d.getId());
+                wardService.deleteByDepartmentId(d.getId());
                 List<Department> list = departmentDao.findByParentIdOrderByCreateDateTimeAsc(d.getId());
                 List<DeleteDto> tmp = new ArrayList<DeleteDto>();
                 list.forEach(de ->{

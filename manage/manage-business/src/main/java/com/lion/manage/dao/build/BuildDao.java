@@ -9,4 +9,11 @@ import com.lion.manage.entity.build.Build;
  * @date 2021/4/1上午10:52
  */
 public interface BuildDao extends BaseDao<Build> {
+
+    /**
+     * 根据名称查询
+     * @param name
+     * @return
+     */
+    public Build findFirstByName(String name);
 }

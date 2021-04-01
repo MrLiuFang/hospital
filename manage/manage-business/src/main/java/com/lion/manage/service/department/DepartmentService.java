@@ -1,21 +1,14 @@
 package com.lion.manage.service.department;
 
-import com.lion.core.IResultData;
 import com.lion.core.common.dto.DeleteDto;
-import com.lion.core.persistence.Validator;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.dto.AddDepartmentDto;
 import com.lion.manage.entity.department.dto.UpdateDepartmentDto;
-import com.lion.manage.entity.department.vo.DepartmentDetailsVo;
-import com.lion.manage.entity.department.vo.ResponsibleUserVo;
+import com.lion.manage.entity.department.vo.DetailsDepartmentVo;
 import com.lion.manage.entity.department.vo.TreeDepartmentVo;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.PrimitiveIterator;
 
 /**
  * @author Mr.Liu
@@ -50,7 +43,7 @@ public interface DepartmentService extends BaseService<Department> {
      * @param id
      * @return
      */
-    public DepartmentDetailsVo details(Long id);
+    public DetailsDepartmentVo details(Long id);
 
     /**
      * 修改科室

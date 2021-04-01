@@ -9,4 +9,11 @@ import com.lion.manage.entity.ward.WardRoomSickbed;
  * @date 2021/4/1上午10:59
  */
 public interface WardRoomSickbedDao extends BaseDao<WardRoomSickbed> {
+
+    /**
+     * 根据病房房间删除
+     * @param wardRoomId
+     * @return
+     */
+    public int deleteByWardRoomId(Long wardRoomId);
 }

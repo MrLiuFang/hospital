@@ -14,6 +14,7 @@ import com.lion.device.entity.device.DeviceGroup;
 import com.lion.device.entity.device.dto.AddDeviceGroupDto;
 import com.lion.device.entity.device.dto.UpdateDeviceGroupDto;
 import com.lion.device.entity.device.vo.DetailsDeviceGroupVo;
+import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.device.vo.ListDeviceGroupVo;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
@@ -23,10 +24,15 @@ import com.lion.device.service.device.DeviceService;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.dto.AddDeviceDto;
 import com.lion.device.entity.device.dto.UpdateDeviceDto;
+import com.lion.manage.entity.build.Build;
+import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.expose.build.BuildExposeService;
+import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.sun.org.apache.regexp.internal.RE;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -34,6 +40,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -56,6 +63,12 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @Autowired
     private DeviceGroupService deviceGroupService;
+
+    @DubboReference
+    private BuildExposeService buildExposeService;
+
+    @DubboReference
+    private BuildFloorExposeService buildFloorExposeService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增设备")
@@ -97,9 +110,25 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/details")
     @ApiOperation(value = "设备详情")
-    public IResultData<Device> details(@ApiParam(value = "设备id") @NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsDeviceVo> details(@ApiParam(value = "设备id") @NotNull(message = "id不能为空") Long id){
         ResultData resultData = ResultData.instance();
-        resultData.setData(deviceService.findById(id));
+        Device device = deviceService.findById(id);
+        DetailsDeviceVo detailsDeviceVo = new DetailsDeviceVo();
+        BeanUtils.copyProperties(device,detailsDeviceVo);
+        if (Objects.nonNull(device.getBuildId())){
+            Build build = buildExposeService.findById(device.getBuildId());
+            if (Objects.nonNull(build)){
+                detailsDeviceVo.setBuildName(build.getName());
+            }
+        }
+        if (Objects.nonNull(device.getBuildFloorId())){
+            BuildFloor buildFloor = buildFloorExposeService.findById(device.getBuildFloorId());
+            if (Objects.nonNull(buildFloor)){
+                detailsDeviceVo.setBuildFloorName(buildFloor.getName());
+                detailsDeviceVo.setMapUrl(buildFloor.getMapUrl());
+            }
+        }
+        resultData.setData(detailsDeviceVo);
         return resultData;
     }
 

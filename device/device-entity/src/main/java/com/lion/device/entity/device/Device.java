@@ -18,6 +18,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -80,4 +81,20 @@ public class Device extends BaseEntity {
     @ApiModelProperty(value = "图片id")
     @Column(name = "img")
     private Long img;
+
+    @ApiModelProperty(value = "建筑id(安装位置)")
+    @Column(name = "build_id")
+    private Long buildId;
+
+    @ApiModelProperty(value = "楼层id(安装位置)")
+    @Column(name = "build_floor_id")
+    private Long buildFloorId;
+
+    @ApiModelProperty(value = "地图X坐标(安装位置)")
+    @Column(name = "x")
+    private String x;
+
+    @ApiModelProperty(value = "地图Y坐标(安装位置)")
+    @Column(name = "y")
+    private String y;
 }
