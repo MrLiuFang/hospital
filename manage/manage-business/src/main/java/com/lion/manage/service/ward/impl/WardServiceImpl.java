@@ -3,9 +3,11 @@ package com.lion.manage.service.ward.impl;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
+import com.lion.manage.dao.department.DepartmentDao;
 import com.lion.manage.dao.ward.WardDao;
 import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
+import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.Ward;
 import com.lion.manage.entity.ward.WardRoom;
@@ -14,6 +16,8 @@ import com.lion.manage.entity.ward.dto.AddWardDto;
 import com.lion.manage.entity.ward.dto.AddWardRoomDto;
 import com.lion.manage.entity.ward.dto.UpdateWardDto;
 import com.lion.manage.entity.ward.dto.UpdateWardRoomDto;
+import com.lion.manage.service.department.DepartmentService;
+import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
 import com.lion.manage.service.ward.WardService;
@@ -21,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +57,12 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     @Autowired
     private WardRoomSickbedService wardRoomSickbedService;
 
+    @Autowired
+    private DepartmentService departmentService;
+
+    @Autowired
+    private RegionService regionService;
+
     @Override
     public int deleteByDepartmentId(Long departmentId) {
         List<Ward> list = wardDao.findByDepartmentId(departmentId);
@@ -65,6 +76,7 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     public void add(AddWardDto addWardDto) {
         Ward ward = new Ward();
         BeanUtils.copyProperties(addWardDto,ward);
+        assertDepartmentExist(addWardDto.getDepartmentId());
         assertRepeat(addWardDto,null);
         ward = save(ward);
         wardRoomService.save(addWardDto.getWardRoom(),ward.getId());
@@ -74,6 +86,7 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     public void update(UpdateWardDto updateWardDto) {
         Ward ward = new Ward();
         BeanUtils.copyProperties(updateWardDto,ward);
+        assertDepartmentExist(updateWardDto.getDepartmentId());
         assertRepeat(updateWardDto,ward.getId());
         ward = save(ward);
         wardRoomService.save(updateWardDto.getWardRoom(),ward.getId());
@@ -95,15 +108,21 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
         assertNameExist(wardDto.getName(),id);
         if (wardDto instanceof AddWardDto){
             assertRepeat(((AddWardDto)wardDto).getWardRoom());
+            assertRegionExist(((AddWardDto)wardDto).getWardRoom());
         }else if (wardDto instanceof UpdateWardDto){
             assertRepeat(((UpdateWardDto)wardDto).getWardRoom());
+            assertRegionExist(((UpdateWardDto)wardDto).getWardRoom());
         }
+
     }
 
 
     private void assertRepeat(List<? extends WardRoom> list){
         Map<String,String> wardRoomCodeHash = new ConcurrentHashMap<String,String>();
         list.forEach(wardRoom->{
+            if (!StringUtils.hasText(wardRoom.getCode())){
+                BusinessException.throwException("房间编号不能为空");
+            }
             if (wardRoomCodeHash.containsKey(wardRoom.getCode())){
                 BusinessException.throwException("该病房存在重复的房间编号("+wardRoom.getCode()+")");
             }
@@ -119,13 +138,31 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     private void assertRepeat(List<? extends WardRoomSickbed> list,String code){
         Map<String,String> wardRoomSickbedCodeHash = new ConcurrentHashMap<String,String>();
         list.forEach(wardRoomSickbed->{
+            if (!StringUtils.hasText(wardRoomSickbed.getBedCode())){
+                BusinessException.throwException("床位不能为空");
+            }
             if (wardRoomSickbedCodeHash.containsKey(wardRoomSickbed.getBedCode())){
                 BusinessException.throwException(code+"-房间存在重复的床位("+wardRoomSickbed.getBedCode()+")");
             }
             wardRoomSickbedCodeHash.put(wardRoomSickbed.getBedCode(),"");
         });
     }
-
+    private void assertDepartmentExist(Long id) {
+        Department department = this.departmentService.findById(id);
+        if (Objects.isNull(department) ){
+            BusinessException.throwException("该科室不存在");
+        }
+    }
+    private void assertRegionExist(List<? extends WardRoom> wardRoomDto) {
+        wardRoomDto.forEach(wardRoom -> {
+            if (Objects.isNull(wardRoom.getRegionId())){
+                BusinessException.throwException(wardRoom.getCode()+"房间编码请选择区域");
+            }
+            if ( Objects.isNull(regionService.findById(wardRoom.getRegionId()))){
+                BusinessException.throwException(wardRoom.getCode()+"房间编码选择区域的区域不存在");
+            }
+        });
+    }
     private void assertNameExist(String name, Long id) {
         Ward ward = wardDao.findFirstByName(name);
         if (Objects.isNull(id) && Objects.nonNull(ward) ){

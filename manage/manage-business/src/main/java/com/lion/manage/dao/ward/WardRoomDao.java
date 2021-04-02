@@ -2,6 +2,8 @@ package com.lion.manage.dao.ward;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.ward.WardRoom;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -24,6 +26,7 @@ public interface WardRoomDao extends BaseDao<WardRoom> {
      * @param wardId
      * @return
      */
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public int deleteByWardId(Long wardId);
 
     /**
