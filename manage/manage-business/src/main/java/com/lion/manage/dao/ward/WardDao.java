@@ -25,4 +25,11 @@ public interface WardDao extends BaseDao<Ward> {
      * @return
      */
     public List<Ward> findByDepartmentId(Long departmentId);
+
+    /**
+     * 根据名称查询
+     * @param name
+     * @return
+     */
+    public Ward findFirstByName(String name);
 }

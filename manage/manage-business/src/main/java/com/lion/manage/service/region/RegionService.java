@@ -39,7 +39,7 @@ public interface RegionService extends BaseService<Region> {
      * 新增区域
      * @param updateRegionDto
      */
-    public void add(UpdateRegionDto updateRegionDto);
+    public void update(UpdateRegionDto updateRegionDto);
 
     /**
      * 删除

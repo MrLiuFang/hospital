@@ -3,6 +3,8 @@ package com.lion.manage.dao.ward;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -16,4 +18,11 @@ public interface WardRoomSickbedDao extends BaseDao<WardRoomSickbed> {
      * @return
      */
     public int deleteByWardRoomId(Long wardRoomId);
+
+    /**
+     * 根据病房房间查询
+     * @param wardRoomId
+     * @return
+     */
+    public List<WardRoomSickbed> findByWardRoomId(Long wardRoomId);
 }

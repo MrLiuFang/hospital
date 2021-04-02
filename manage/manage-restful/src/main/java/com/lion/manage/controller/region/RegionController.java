@@ -118,7 +118,7 @@ public class RegionController extends BaseControllerImpl implements BaseControll
     @PutMapping("/update")
     @ApiOperation(value = "修改区域")
     public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateRegionDto updateRegionDto){
-        regionService.add(updateRegionDto);
+        regionService.update(updateRegionDto);
         return ResultData.instance();
     }
 

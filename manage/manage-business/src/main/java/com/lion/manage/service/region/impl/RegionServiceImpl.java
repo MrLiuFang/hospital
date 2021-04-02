@@ -2,10 +2,12 @@ package com.lion.manage.service.region.impl;
 
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.region.RegionCctvDao;
 import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.dao.region.RegionExposeObjectDao;
+import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
@@ -13,16 +15,19 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.region.dto.AddRegionDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
+import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionCctvService;
 import com.lion.manage.service.region.RegionExposeObjectService;
 import com.lion.manage.service.region.RegionService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -58,6 +63,12 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @Autowired
     private DepartmentService departmentService;
 
+    @Autowired
+    private WardRoomDao wardRoomDao;
+
+    @DubboReference
+    private CctvExposeService cctvExposeService;
+
     @Override
     public List<Region> find(Long departmentId) {
         return regionDao.findByDepartmentId(departmentId);
@@ -85,7 +96,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     }
 
     @Override
-    public void add(UpdateRegionDto updateRegionDto) {
+    public void update(UpdateRegionDto updateRegionDto) {
         Region region = new Region();
         BeanUtils.copyProperties(updateRegionDto,region);
         assertBuildExist(region.getBuildId());
@@ -104,8 +115,18 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(deleteDto -> {
             deleteById(deleteDto.getId());
+            List<RegionCctv> listreRegionCctvs = regionCctvDao.findByRegionId(deleteDto.getId());
+            List<Long> oldCctvIds = new ArrayList<>();
+            listreRegionCctvs.forEach(regionCctv -> {
+                oldCctvIds.add(regionCctv.getCctvId());
+            });
+            Region region = findById(deleteDto.getId());
+            if (Objects.nonNull(region)){
+                cctvExposeService.relationPosition(oldCctvIds,new ArrayList<Long>(),region.getBuildId(),region.getBuildFloorId(),deleteDto.getId());
+            }
             regionCctvDao.deleteByRegionId(deleteDto.getId());
             regionExposeObjectDao.deleteByRegionId(deleteDto.getId());
+            wardRoomDao.deleteByWardId(deleteDto.getId());
         });
     }
 

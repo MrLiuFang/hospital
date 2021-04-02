@@ -34,7 +34,7 @@ public class WardRoom extends BaseEntity {
 
     @ApiModelProperty(value = "病房id")
     @Column(name = "ward_id",nullable = false)
-    @NotNull(message = "病房(基本信息)不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "病房(基本信息)不能为空")
     private Long wardId;
 
     @ApiModelProperty(value = "房间编号")

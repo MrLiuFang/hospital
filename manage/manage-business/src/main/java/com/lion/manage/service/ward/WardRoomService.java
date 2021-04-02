@@ -2,6 +2,9 @@ package com.lion.manage.service.ward;
 
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.ward.WardRoom;
+import com.lion.manage.entity.ward.dto.AddWardRoomDto;
+
+import java.util.List;
 
 /**
  * @author Mr.Liu
@@ -16,4 +19,18 @@ public interface WardRoomService extends BaseService<WardRoom> {
      * @return
      */
     public int deleteByWardId(Long wardId);
+
+    /**
+     * 保存病房房间
+     * @param wardRoomDto
+     * @param wardId
+     */
+    public void save(List<? extends WardRoom> wardRoomDto, Long wardId);
+
+    /**
+     * 根据病查询
+     * @param wardId
+     * @return
+     */
+    public List<WardRoom> find(Long wardId);
 }

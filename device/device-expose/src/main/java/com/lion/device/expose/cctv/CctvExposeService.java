@@ -18,4 +18,14 @@ public interface CctvExposeService extends BaseService<Cctv> {
      * @return
      */
     public List<Cctv> find(List<Long> ids);
+
+    /**
+     * 关联cctv所在的位置
+     * @param oldCctvIds 用于清除已经关联位置(清空buildId,buildFloorId,regionId)
+     * @param newCctvIds
+     * @param buildId
+     * @param buildFloorId
+     * @param regionId
+     */
+    public void relationPosition(List<Long> oldCctvIds,List<Long> newCctvIds,Long buildId,Long buildFloorId,Long regionId);
 }

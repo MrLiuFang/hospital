@@ -4,8 +4,11 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.service.ward.WardRoomSickbedService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * @author Mr.Liu
@@ -17,4 +20,19 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
 
     @Autowired
     private WardRoomSickbedDao wardRoomSickbedDao;
+
+    @Override
+    public void save(List<? extends WardRoomSickbed> addWardRoomSickbedDto, Long wardRoomId) {
+        addWardRoomSickbedDto.forEach(dto->{
+            WardRoomSickbed wardRoomSickbed = new WardRoomSickbed();
+            BeanUtils.copyProperties(dto,wardRoomSickbed);
+            wardRoomSickbed.setWardRoomId(wardRoomId);
+            save(wardRoomSickbed);
+        });
+    }
+
+    @Override
+    public List<WardRoomSickbed> find(Long wardRoomId) {
+        return wardRoomSickbedDao.findByWardRoomId(wardRoomId);
+    }
 }
