@@ -29,6 +29,9 @@ public class DetailsUserVo extends User {
     @ApiModelProperty(value = "所在科室id")
     private Long departmentId;
 
+    @ApiModelProperty(value = "头像url")
+    private String headPortraitUrl;
+
     @ApiModelProperty(value = "负责的科室")
     private List<ResponsibleDepartmentVo> responsibleDepartment;
 

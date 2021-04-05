@@ -1,6 +1,7 @@
 package com.lion.upms.controller.user;
 
 import cn.hutool.crypto.SecureUtil;
+import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
 import com.lion.core.LionPage;
@@ -10,12 +11,17 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
 import com.lion.exception.BusinessException;
+import com.lion.manage.entity.department.Department;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.*;
+import com.lion.upms.entity.user.vo.CurrentUserDetailsVo;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
+import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RolerUserService;
 import com.lion.upms.service.user.UserService;
 import com.lion.utils.CurrentUserUtil;
@@ -50,6 +56,15 @@ public class UserController extends BaseControllerImpl implements BaseController
     @Autowired
     private RolerUserService rolerUserService;
 
+    @Autowired
+    private RoleService roleService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
+    @DubboReference
+    private FileExposeService fileExposeService;
+
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
 
@@ -75,7 +90,7 @@ public class UserController extends BaseControllerImpl implements BaseController
 
 
     @GetMapping("/details")
-    @ApiOperation(value = "用户详情")
+    @ApiOperation(value = "用户详情(编辑时获取)")
     public IResultData<DetailsUserVo> details(@NotNull(message = "id不能为空") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(userService.details(id));
@@ -133,6 +148,32 @@ public class UserController extends BaseControllerImpl implements BaseController
         }
         userService.update(user);
         ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @ApiOperation(value = "获取当前登陆用户信息")
+    @GetMapping("/currentUserDetails")
+    public IResultData<CurrentUserDetailsVo> currentUserDetails(){
+        ResultData resultData = ResultData.instance();
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        User user = userService.findById(userId);
+        if (Objects.nonNull(user)){
+            CurrentUserDetailsVo currentUserDetailsVo = new CurrentUserDetailsVo();
+            BeanUtils.copyProperties(user,currentUserDetailsVo);
+            Role role = roleService.findByUserId(user.getId());
+            if (Objects.nonNull(role)){
+                currentUserDetailsVo.setRoleName(role.getName());
+                currentUserDetailsVo.setRoleId(role.getId());
+                currentUserDetailsVo.setResources(role.getResources());
+            }
+            currentUserDetailsVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+            Department department = departmentUserExposeService.findDepartment(user.getId());
+            if (Objects.nonNull(department)){
+                currentUserDetailsVo.setDepartmentName(department.getName());
+                currentUserDetailsVo.setDepartmentId(department.getId());
+            }
+            resultData.setData(currentUserDetailsVo);
+        }
         return resultData;
     }
 

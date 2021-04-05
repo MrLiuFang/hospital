@@ -142,6 +142,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             detailsUserVo.setRoleName(role.getName());
             detailsUserVo.setRoleId(role.getId());
         }
+        detailsUserVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
         Department department = departmentUserExposeService.findDepartment(user.getId());
         if (Objects.nonNull(department)){
             detailsUserVo.setDepartmentName(department.getName());

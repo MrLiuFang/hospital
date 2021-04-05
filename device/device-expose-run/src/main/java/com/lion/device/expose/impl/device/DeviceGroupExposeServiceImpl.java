@@ -12,6 +12,6 @@ import org.apache.dubbo.config.annotation.DubboService;
  * @Description:
  * @date 2021/4/1下午9:27
  */
-@DubboService(interfaceClass = DeviceExposeService.class )
+@DubboService(interfaceClass = DeviceGroupExposeService.class )
 public class DeviceGroupExposeServiceImpl extends BaseServiceImpl<DeviceGroup> implements DeviceGroupExposeService {
 }

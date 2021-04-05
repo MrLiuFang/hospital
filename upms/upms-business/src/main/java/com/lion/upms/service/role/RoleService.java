@@ -28,5 +28,12 @@ public interface RoleService extends BaseService<Role> {
      */
     void assertNameExist(String name,Long id);
 
+    /**
+     * 根据用户获取角色
+     * @param userId
+     * @return
+     */
+    public Role findByUserId(Long userId);
+
 
 }

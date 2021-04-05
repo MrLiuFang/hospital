@@ -64,6 +64,11 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
         }
     }
 
+    @Override
+    public Role findByUserId(Long userId) {
+        return roleDao.findByUserId(userId);
+    }
+
     private List<PageRoleVo> convertVo(List<Role> list){
         List<PageRoleVo> returnList = new ArrayList<PageRoleVo>();
         list.forEach(role -> {
