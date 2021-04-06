@@ -3,6 +3,7 @@ package com.lion.manage.service.assets.impl;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.assets.AssetsBorrowDao;
 import com.lion.manage.dao.assets.AssetsDao;
@@ -24,6 +25,7 @@ import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
 import com.sun.corba.se.spi.ior.ObjectKey;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.checkerframework.checker.guieffect.qual.UI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,7 +72,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         BeanUtils.copyProperties(addAssetsDto,assets);
         assertNameExist(assets.getName(),null);
         assertCodeExist(assets.getCode(),null);
-        assertTagCodeExist(assets.getTagCode(),null);
+        assertTagCodeExist(assets.getTagCode());
         assertDepartmentExist(assets.getDepartmentId());
         assertBuildExist(assets.getBuildId());
         assertBuildFloorExist(assets.getBuildFloorId());
@@ -84,7 +86,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         BeanUtils.copyProperties(updateAssetsDto,assets);
         assertNameExist(assets.getName(),assets.getId());
         assertCodeExist(assets.getCode(),assets.getId());
-        assertTagCodeExist(assets.getTagCode(),assets.getId());
+        assertTagCodeExist(assets.getTagCode());
         assertDepartmentExist(assets.getDepartmentId());
         assertBuildExist(assets.getBuildId());
         assertBuildFloorExist(assets.getBuildFloorId());
@@ -178,13 +180,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         }
     }
 
-    private void assertTagCodeExist(String tagCode, Long id) {
-        Assets assets = assetsDao.findFirstByTagCode(tagCode);
-        if (Objects.isNull(id) && Objects.nonNull(assets) ){
-            BusinessException.throwException("该标签编码已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(assets) && !assets.getId().equals(id)){
-            BusinessException.throwException("该标签编码已存在");
-        }
+    private void assertTagCodeExist(String tagCode) {
+        //todo 验证标签是否存在
     }
 }
