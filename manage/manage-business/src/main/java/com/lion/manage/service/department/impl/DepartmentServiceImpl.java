@@ -20,6 +20,7 @@ import com.lion.manage.service.ward.WardService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
@@ -51,6 +52,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
     private WardService wardService;
 
     @Override
+    @Transactional
     public Department add(AddDepartmentDto addDepartmentDto) {
         Department department = new Department();
         BeanUtils.copyProperties(addDepartmentDto,department);
@@ -93,6 +95,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
     }
 
     @Override
+    @Transactional
     public void update(UpdateDepartmentDto updateDepartmentDto) {
         Department department = new Department();
         BeanUtils.copyProperties(updateDepartmentDto,department);
@@ -103,6 +106,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
     }
 
     @Override
+    @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(d->{
             Department department = this.findById(d.getId());

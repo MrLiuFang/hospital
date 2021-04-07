@@ -25,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
@@ -64,6 +65,7 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     private RegionService regionService;
 
     @Override
+    @Transactional
     public int deleteByDepartmentId(Long departmentId) {
         List<Ward> list = wardDao.findByDepartmentId(departmentId);
         list.forEach(ward -> {
@@ -73,6 +75,7 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     }
 
     @Override
+    @Transactional
     public void add(AddWardDto addWardDto) {
         Ward ward = new Ward();
         BeanUtils.copyProperties(addWardDto,ward);
@@ -83,6 +86,7 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     }
 
     @Override
+    @Transactional
     public void update(UpdateWardDto updateWardDto) {
         Ward ward = new Ward();
         BeanUtils.copyProperties(updateWardDto,ward);
@@ -93,6 +97,7 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     }
 
     @Override
+    @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(deleteDto -> {
             List<WardRoom> list = wardRoomDao.findByWardId(deleteDto.getId());

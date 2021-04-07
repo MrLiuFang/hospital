@@ -13,6 +13,7 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.service.build.BuildFloorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -66,6 +67,7 @@ public class BuildFloorServiceImpl extends BaseServiceImpl<BuildFloor> implement
     }
 
     @Override
+    @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(deleteDto -> {
             deleteById(deleteDto.getId());

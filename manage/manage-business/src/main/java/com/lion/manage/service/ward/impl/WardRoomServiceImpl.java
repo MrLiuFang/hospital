@@ -42,6 +42,7 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
     private RegionService regionService;
 
     @Override
+    @Transactional
     public int deleteByWardId(Long wardId) {
         List<WardRoom> list = wardRoomDao.findByWardId(wardId);
         list.forEach(wardRoom -> {
@@ -51,6 +52,7 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
     }
 
     @Override
+    @Transactional
     public void save(List<? extends WardRoom> wardRoomDto, Long wardId) {
         if (Objects.isNull(wardId)){
             return;

@@ -14,6 +14,7 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.service.build.BuildService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -42,6 +43,7 @@ public class BuildServiceImpl extends BaseServiceImpl<Build> implements BuildSer
     private RegionExposeObjectDao regionExposeObjectDao;
 
     @Override
+    @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(deleteDto -> {
             this.deleteById(deleteDto.getId());

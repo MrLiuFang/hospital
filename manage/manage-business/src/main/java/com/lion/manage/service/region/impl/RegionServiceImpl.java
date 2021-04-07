@@ -26,6 +26,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,6 +81,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     }
 
     @Override
+    @Transactional
     public void add(AddRegionDto addRegionDto) {
         Region region = new Region();
         BeanUtils.copyProperties(addRegionDto,region);
@@ -96,6 +98,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     }
 
     @Override
+    @Transactional
     public void update(UpdateRegionDto updateRegionDto) {
         Region region = new Region();
         BeanUtils.copyProperties(updateRegionDto,region);
@@ -112,6 +115,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     }
 
     @Override
+    @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(deleteDto -> {
             deleteById(deleteDto.getId());

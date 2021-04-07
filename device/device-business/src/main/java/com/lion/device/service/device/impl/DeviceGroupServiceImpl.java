@@ -25,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.query.JpaParameters;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
 
 
     @Override
+    @Transactional
     public void add(AddDeviceGroupDto addDeviceGroupDto) {
         DeviceGroup deviceGroup = new DeviceGroup();
         BeanUtils.copyProperties(addDeviceGroupDto, deviceGroup);
@@ -63,6 +65,7 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
     }
 
     @Override
+    @Transactional
     public void update(UpdateDeviceGroupDto updateDeviceGroupDto) {
         DeviceGroup deviceGroup = new DeviceGroup();
         BeanUtils.copyProperties(updateDeviceGroupDto, deviceGroup);

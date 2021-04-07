@@ -7,6 +7,7 @@ import com.lion.manage.entity.region.RegionExposeObject;
 import com.lion.manage.service.region.RegionExposeObjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,7 @@ public class RegionExposeObjectServiceImpl extends BaseServiceImpl<RegionExposeO
     private RegionExposeObjectDao regionExposeObjectDao;
 
     @Override
+    @Transactional
     public void save(Long regionId, List<ExposeObject> list) {
         if (Objects.nonNull(regionId)){
             regionExposeObjectDao.deleteByRegionId(regionId);

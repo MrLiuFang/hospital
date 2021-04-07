@@ -70,11 +70,6 @@ public class Assets extends BaseEntity {
     @NotNull(message = "所属科室不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long departmentId;
 
-    @ApiModelProperty(value = "标签编码")
-    @Column(name = "tag_code",unique = true)
-    @NotBlank(message = "标签编码不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private String tagCode;
-
     @ApiModelProperty(value = "使用状态")
     @Column(name = "use_state")
     @Convert(converter = AssetsUseState.AssetsUseStateConverter.class)

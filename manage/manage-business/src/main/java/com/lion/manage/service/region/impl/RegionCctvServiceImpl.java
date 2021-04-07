@@ -11,6 +11,7 @@ import com.lion.manage.service.region.RegionService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,7 @@ public class RegionCctvServiceImpl extends BaseServiceImpl<RegionCctv> implement
     private CctvExposeService cctvExposeService;
 
     @Override
+    @Transactional
     public void save(Long regionId, List<Long> cctvIds) {
         List<RegionCctv> listreRegionCctvs = regionCctvDao.findByRegionId(regionId);
         List<Long> oldCctvIds = new ArrayList<>();
