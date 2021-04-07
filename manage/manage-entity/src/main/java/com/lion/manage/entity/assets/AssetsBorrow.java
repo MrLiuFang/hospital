@@ -14,6 +14,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -27,7 +28,7 @@ import java.time.LocalDateTime;
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "t_assets_borrow" )
+@Table(name = "t_assets_borrow",indexes = {@Index(columnList = "assets_id")} )
 @DynamicUpdate
 @DynamicInsert
 @Data

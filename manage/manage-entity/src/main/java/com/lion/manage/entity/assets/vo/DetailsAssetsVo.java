@@ -4,6 +4,7 @@ import com.lion.manage.entity.assets.Assets;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import sun.rmi.runtime.Log;
 
 /**
  * @author Mr.Liu
@@ -28,4 +29,10 @@ public class DetailsAssetsVo extends Assets {
 
     @ApiModelProperty(value = "科室名称")
     private String departmentName;
+
+    @ApiModelProperty(value = "标签编码")
+    private String tagCode;
+
+    @ApiModelProperty(value = "标签Id")
+    private Long tagId;
 }

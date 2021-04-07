@@ -1,10 +1,14 @@
 package com.lion.upms.service.role;
 
 import com.lion.core.LionPage;
+import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.role.vo.PageRoleVo;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 /**
  * @author Mr.Liu
@@ -34,6 +38,12 @@ public interface RoleService extends BaseService<Role> {
      * @return
      */
     public Role findByUserId(Long userId);
+
+    /**
+     * 删除角色
+     * @param deleteDtoList
+     */
+    public void delete( List<DeleteDto> deleteDtoList);
 
 
 }

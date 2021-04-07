@@ -22,7 +22,7 @@ import com.lion.upms.entity.user.vo.CurrentUserDetailsVo;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
 import com.lion.upms.service.role.RoleService;
-import com.lion.upms.service.role.RolerUserService;
+import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
 import com.lion.utils.CurrentUserUtil;
 import io.swagger.annotations.Api;
@@ -54,7 +54,7 @@ public class UserController extends BaseControllerImpl implements BaseController
     private UserService userService;
 
     @Autowired
-    private RolerUserService rolerUserService;
+    private RoleUserService roleUserService;
 
     @Autowired
     private RoleService roleService;
@@ -108,15 +108,7 @@ public class UserController extends BaseControllerImpl implements BaseController
     @ApiOperation(value = "删除用户")
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
-        deleteDtoList.forEach(d->{
-            User user = this.userService.findById(d.getId());
-            if (Objects.nonNull(user) ) {
-                userService.deleteById(d.getId());
-                rolerUserService.deleteByUserId(d.getId());
-                departmentUserExposeService.deleteByUserId(d.getId());
-                departmentResponsibleUserExposeService.deleteByUserId(d.getId());
-            }
-        });
+        userService.delete(deleteDtoList);
         ResultData resultData = ResultData.instance();
         return resultData;
     }

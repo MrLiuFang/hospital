@@ -3,6 +3,7 @@ package com.lion.upms.service.user;
 import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
 import com.lion.core.LionPage;
+import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.Validator;
 import com.lion.core.service.BaseService;
 import com.lion.upms.entity.role.vo.DetailsRoleUserVo;
@@ -66,4 +67,10 @@ public interface UserService extends BaseService<User> {
      * @param updateUserDto
      */
     public void update(UpdateUserDto updateUserDto);
+
+    /**
+     * 删除用户
+     * @param deleteDtoList
+     */
+    public void delete(List<DeleteDto> deleteDtoList);
 }

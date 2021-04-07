@@ -85,7 +85,7 @@ public class User extends BaseEntity {
     @Column(name = "user_type")
     @Convert(converter = UserType.UserTypeConverter.class)
     @NotNull(message = "请输入员工类型", groups = {Validator.Insert.class, Validator.Update.class})
-    private UserType userType = UserType.DOCTOR;
+    private UserType userType;
 
     @ApiModelProperty(value = "员工编号")
     @Column(name = "number")

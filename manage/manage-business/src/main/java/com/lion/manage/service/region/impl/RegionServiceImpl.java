@@ -22,6 +22,7 @@ import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionCctvService;
 import com.lion.manage.service.region.RegionExposeObjectService;
 import com.lion.manage.service.region.RegionService;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,6 +82,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     }
 
     @Override
+//    @GlobalTransactional
     @Transactional
     public void add(AddRegionDto addRegionDto) {
         Region region = new Region();
@@ -98,6 +100,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     }
 
     @Override
+//    @GlobalTransactional
     @Transactional
     public void update(UpdateRegionDto updateRegionDto) {
         Region region = new Region();
@@ -115,6 +118,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     }
 
     @Override
+//    @GlobalTransactional
     @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(deleteDto -> {

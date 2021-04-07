@@ -12,7 +12,7 @@ import java.util.List;
  * @Description:
  * @date 2021/3/22下午9:14
  */
-public interface RolerUserService extends BaseService<RoleUser> {
+public interface RoleUserService extends BaseService<RoleUser> {
 
     /**
      * 根据角色id删除角色与用户的关联

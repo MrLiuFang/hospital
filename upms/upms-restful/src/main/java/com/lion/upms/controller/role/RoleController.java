@@ -2,12 +2,10 @@ package com.lion.upms.controller.role;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
-import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
-import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.role.dto.AddRoleDto;
@@ -15,23 +13,17 @@ import com.lion.upms.entity.role.dto.UpdateRoleDto;
 import com.lion.upms.entity.role.vo.DetailsRoleVo;
 import com.lion.upms.entity.role.vo.EditDetailsRoleVo;
 import com.lion.upms.entity.role.vo.PageRoleVo;
-import com.lion.upms.entity.user.User;
 import com.lion.upms.service.role.RoleService;
-import com.lion.upms.service.role.RolerUserService;
+import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
 import io.swagger.annotations.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * @author Mr.Liu
@@ -51,7 +43,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
     private UserService userService;
 
     @Autowired
-    private RolerUserService roleUserService;
+    private RoleUserService roleUserService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增角色")
@@ -105,13 +97,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
     @ApiOperation(value = "删除角色")
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
-        deleteDtoList.forEach(d->{
-            Role role = this.roleService.findById(d.getId());
-            if (Objects.nonNull(role) && !role.getIsDefault()) {
-                roleService.deleteById(d.getId());
-                roleUserService.deleteByRoleId(d.getId());
-            }
-        });
+
         ResultData resultData = ResultData.instance();
         return resultData;
     }

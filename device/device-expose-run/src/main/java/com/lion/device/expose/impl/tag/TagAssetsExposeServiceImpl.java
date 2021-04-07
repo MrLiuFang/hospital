@@ -1,0 +1,94 @@
+package com.lion.device.expose.impl.tag;
+
+import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.dao.tag.TagAssetsDao;
+import com.lion.device.dao.tag.TagDao;
+import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagUseState;
+import com.lion.device.entity.tag.Tag;
+import com.lion.device.entity.tag.TagAssets;
+import com.lion.device.entity.tag.TagPostdocs;
+import com.lion.device.entity.tag.TagUser;
+import com.lion.device.expose.tag.TagAssetsExposeService;
+import com.lion.device.service.tag.TagAssetsService;
+import com.lion.device.service.tag.TagService;
+import com.lion.exception.BusinessException;
+import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+/**
+ * @author Mr.Liu
+ * @Description:
+ * @date 2021/4/7下午9:25
+ */
+@DubboService(interfaceClass = TagAssetsExposeService.class)
+public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> implements TagAssetsExposeService {
+
+    @Autowired
+    private TagService tagService;
+
+    @Autowired
+    private TagAssetsService tagAssetsService;
+
+    @Autowired
+    private TagAssetsDao tagAssetsDao;
+
+    @Override
+    public Boolean relation(Long assetsId, Long tagId) {
+        Tag tag = tagService.findById(tagId);
+        if (Objects.isNull(tag)){
+            BusinessException.throwException("该标签不存在");
+        }
+        if (!Objects.equals(tag.getPurpose(), TagPurpose.ASSETS)){
+            BusinessException.throwException("该标签不能与资产关联");
+        }
+        TagAssets tagAssets = tagAssetsDao.findFirstByAssetsIdAndUnbindingTimeIsNull(assetsId);
+        if (Objects.nonNull(tagAssets)){
+            if (!Objects.equals( tagAssets.getTagId(),tagId)){
+                if (Objects.equals(tag.getUseState(), TagUseState.USEING)){
+                    BusinessException.throwException("该标签正在使用中");
+                }
+            }else {
+                return true;
+            }
+        }else {
+            if (Objects.equals(tag.getUseState(), TagUseState.USEING)){
+                BusinessException.throwException("该标签正在使用中");
+            }
+        }
+        TagAssets newTagAssets = new TagAssets();
+        newTagAssets.setAssetsId(assetsId);
+        newTagAssets.setTagId(tagId);
+        newTagAssets.setBindingTime(LocalDateTime.now());
+        tagAssetsService.save(newTagAssets);
+
+        tag.setUseState(TagUseState.USEING);
+        tagService.update(tag);
+        return true;
+    }
+
+    @Override
+    public Boolean unrelation(Long assetsId) {
+        TagAssets tagAssets = tagAssetsDao.findFirstByAssetsIdAndUnbindingTimeIsNull(assetsId);
+        if (Objects.nonNull(tagAssets)){
+            tagAssets.setUnbindingTime(LocalDateTime.now());
+            tagAssetsService.update(tagAssets);
+            Tag tag = tagService.findById(tagAssets.getTagId());
+            if (Objects.nonNull(tag)){
+                tag.setUseState(TagUseState.NOT_USED);
+                tagService.update(tag);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public Boolean deleteByAssetsId(Long assetsId) {
+        unrelation(assetsId);
+        tagAssetsDao.deleteByAssetsId(assetsId);
+        return null;
+    }
+}

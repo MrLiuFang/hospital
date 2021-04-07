@@ -1,13 +1,16 @@
 package com.lion.device.service.device.impl;
 
+import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceDao;
+import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.service.device.DeviceService;
 import com.lion.device.entity.device.Device;
 import com.lion.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -20,6 +23,9 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 
     @Autowired
     private DeviceDao deviceDao;
+
+    @Autowired
+    private DeviceGroupDeviceService deviceGroupDeviceService;
 
     @Override
     public void update(Device entity) {
@@ -65,4 +71,14 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     }
 
 
+    @Override
+    public void delete(List<DeleteDto> deleteDtoList) {
+        deleteDtoList.forEach(d->{
+            Device device = this.findById(d.getId());
+            if (Objects.nonNull(device) ) {
+                deleteById(d.getId());
+                deviceGroupDeviceService.deleteByDeviceId(d.getId());
+            }
+        });
+    }
 }

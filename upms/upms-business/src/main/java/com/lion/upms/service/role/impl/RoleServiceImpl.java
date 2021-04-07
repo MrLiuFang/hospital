@@ -1,25 +1,24 @@
 package com.lion.upms.service.role.impl;
 
 import com.lion.constant.SearchConstant;
-import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
-import com.lion.core.service.BaseService;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.upms.dao.role.RoleDao;
 import com.lion.upms.dao.role.RoleUserDao;
-import com.lion.upms.dao.user.UserDao;
 import com.lion.upms.entity.role.Role;
-import com.lion.upms.entity.role.RoleUser;
 import com.lion.upms.entity.role.vo.PageRoleVo;
 import com.lion.upms.service.role.RoleService;
+import com.lion.upms.service.role.RoleUserService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -39,6 +38,9 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
 
     @Autowired
     private RoleUserDao roleUserDao;
+
+    @Autowired
+    private RoleUserService roleUserService;
 
     @Override
     public Page<PageRoleVo> list(String name, LionPage lionPage) {
@@ -67,6 +69,18 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
     @Override
     public Role findByUserId(Long userId) {
         return roleDao.findByUserId(userId);
+    }
+
+    @Override
+    @Transactional
+    public void delete(List<DeleteDto> deleteDtoList) {
+        deleteDtoList.forEach(d->{
+            Role role = this.findById(d.getId());
+            if (Objects.nonNull(role) && !role.getIsDefault()) {
+                deleteById(d.getId());
+                roleUserService.deleteByRoleId(d.getId());
+            }
+        });
     }
 
     private List<PageRoleVo> convertVo(List<Role> list){

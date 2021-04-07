@@ -6,6 +6,7 @@ import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
+import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
@@ -23,7 +24,7 @@ import com.lion.upms.entity.user.dto.UpdateUserDto;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
 import com.lion.upms.service.role.RoleService;
-import com.lion.upms.service.role.RolerUserService;
+import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
 import com.lion.utils.MapToBeanUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -63,7 +65,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     private RoleDao roleDao;
 
     @Autowired
-    private RolerUserService rolerUserService;
+    private RoleUserService roleUserService;
 
     @DubboReference
     private DepartmentUserExposeService departmentUserExposeService;
@@ -104,7 +106,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         assertEmailExist(user.getEmail(),null);
         assertNumberExist(user.getNumber(),null);
         user = this.save(user);
-        rolerUserService.relationRole(user.getId(),addUserDto.getRoleId());
+        roleUserService.relationRole(user.getId(),addUserDto.getRoleId());
         departmentUserExposeService.relationDepartment(user.getId(),addUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),addUserDto.getResponsibleDepartmentIds());
     }
@@ -184,9 +186,23 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         assertEmailExist(user.getEmail(),user.getId());
         assertNumberExist(user.getNumber(),user.getId());
         this.update(user);
-        rolerUserService.relationRole(user.getId(),updateUserDto.getRoleId());
+        roleUserService.relationRole(user.getId(),updateUserDto.getRoleId());
         departmentUserExposeService.relationDepartment(user.getId(),updateUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),updateUserDto.getResponsibleDepartmentIds());
+    }
+
+    @Override
+    @Transactional
+    public void delete(List<DeleteDto> deleteDtoList) {
+        deleteDtoList.forEach(d->{
+            User user = this.findById(d.getId());
+            if (Objects.nonNull(user) ) {
+                deleteById(d.getId());
+                roleUserService.deleteByUserId(d.getId());
+                departmentUserExposeService.deleteByUserId(d.getId());
+                departmentResponsibleUserExposeService.deleteByUserId(d.getId());
+            }
+        });
     }
 
     private List<ListUserVo> convertVo(List<User> list){

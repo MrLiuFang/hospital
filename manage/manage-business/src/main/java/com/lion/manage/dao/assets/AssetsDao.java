@@ -25,10 +25,4 @@ public interface AssetsDao extends BaseDao<Assets> {
      */
     public Assets findFirstByCode(String code);
 
-    /**
-     * 根据标签编码查询资产
-     * @param tagCode
-     * @return
-     */
-    public Assets findFirstByTagCode(String tagCode);
 }
