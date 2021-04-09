@@ -33,6 +33,11 @@
 		</dependency>
 		<dependency>
 			<groupId>com.lion</groupId>
+			<artifactId>upms-entity</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.lion</groupId>
 			<artifactId>device-entity</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
