@@ -97,7 +97,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
     @ApiOperation(value = "删除角色")
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
-
+        roleService.delete(deleteDtoList);
         ResultData resultData = ResultData.instance();
         return resultData;
     }
