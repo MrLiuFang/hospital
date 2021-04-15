@@ -84,7 +84,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
         return resultData;
     }
 
-    @GetMapping("/update")
+    @PutMapping("/update")
     @ApiOperation(value = "修改角色")
     public IResultData update(@RequestBody @Validated UpdateRoleDto updateRoleDto){
         Role role = new Role();

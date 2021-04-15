@@ -17,6 +17,7 @@
 		<module>upms</module>
 		<module>manage</module>
 		<module>device</module>
+		<module>event</module>
     </modules>
 
 	<dependencyManagement>
