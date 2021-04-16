@@ -13,6 +13,9 @@ import lombok.Data;
 @ApiModel
 public class ResponsibleUserVo {
 
+    @ApiModelProperty(value = "负责人id")
+    private Long id;
+
     @ApiModelProperty(value = "负责人姓名")
     private String name;
 

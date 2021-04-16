@@ -18,4 +18,7 @@ public class DetailsDepartmentVo extends Department {
 
     @ApiModelProperty(value = "负责人")
     private List<ResponsibleUserVo> responsibleUser;
+
+    @ApiModelProperty(value = "负责人ID（原始值）")
+    private List<Long> responsible;
 }

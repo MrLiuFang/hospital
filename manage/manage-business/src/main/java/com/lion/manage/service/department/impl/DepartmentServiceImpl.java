@@ -8,6 +8,7 @@ import com.lion.manage.dao.department.DepartmentResponsibleUserDao;
 import com.lion.manage.dao.department.DepartmentUserDao;
 import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.department.DepartmentResponsibleUser;
 import com.lion.manage.entity.department.dto.AddDepartmentDto;
 import com.lion.manage.entity.department.dto.UpdateDepartmentDto;
 import com.lion.manage.entity.department.vo.DetailsDepartmentVo;
@@ -91,6 +92,12 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
         DetailsDepartmentVo detailsDepartmentVo = new DetailsDepartmentVo();
         BeanUtils.copyProperties(department, detailsDepartmentVo);
         detailsDepartmentVo.setResponsibleUser(departmentResponsibleUserService.responsibleUser(department.getId()));
+        List<DepartmentResponsibleUser> list = departmentResponsibleUserDao.findByDepartmentId(department.getId());
+        List<Long> responsible = new ArrayList<>();
+        list.forEach(departmentResponsibleUser -> {
+            responsible.add(departmentResponsibleUser.getUserId());
+        });
+        detailsDepartmentVo.setResponsible(responsible);
         return detailsDepartmentVo;
     }
 
