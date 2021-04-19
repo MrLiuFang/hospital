@@ -85,9 +85,11 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         assertNameExist(assets.getName(),null);
         assertCodeExist(assets.getCode(),null);
         assertDepartmentExist(assets.getDepartmentId());
+        assertRegionExist(assets.getRegionId());
+        Region region = regionService.findById(assets.getRegionId());
+        assets = setBuildAndFloor(assets);
         assertBuildExist(assets.getBuildId());
         assertBuildFloorExist(assets.getBuildFloorId());
-        assertRegionExist(assets.getRegionId());
         assets = this.save(assets);
         tagAssetsExposeService.relation(assets.getId(),addAssetsDto.getTagId());
     }
@@ -101,9 +103,11 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         assertNameExist(assets.getName(),assets.getId());
         assertCodeExist(assets.getCode(),assets.getId());
         assertDepartmentExist(assets.getDepartmentId());
+        assertRegionExist(assets.getRegionId());
+        Region region = regionService.findById(assets.getRegionId());
+        assets = setBuildAndFloor(assets);
         assertBuildExist(assets.getBuildId());
         assertBuildFloorExist(assets.getBuildFloorId());
-        assertRegionExist(assets.getRegionId());
         this.update(assets);
     }
 
@@ -198,5 +202,12 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         if (Objects.nonNull(id) && Objects.nonNull(assets) && !assets.getId().equals(id)){
             BusinessException.throwException("该资产编码已存在");
         }
+    }
+
+    private Assets setBuildAndFloor(Assets assets){
+        Region region = regionService.findById(assets.getRegionId());
+        assets.setBuildId(region.getBuildId());
+        assets.setBuildFloorId(region.getBuildFloorId());
+        return assets;
     }
 }

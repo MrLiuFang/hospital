@@ -4,6 +4,7 @@ import com.lion.upms.entity.user.User;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.springframework.util.StringUtils;
 
 import javax.print.DocFlavor;
 import java.util.List;
@@ -34,6 +35,13 @@ public class DetailsUserVo extends User {
 
     @ApiModelProperty(value = "负责的科室")
     private List<ResponsibleDepartmentVo> responsibleDepartment;
+
+    @ApiModelProperty(value = "是否创建账号")
+    private Boolean isCreateAccount;
+
+    public Boolean getCreateAccount() {
+        return StringUtils.hasText(this.getUsername());
+    }
 
     @Data
     @ApiModel

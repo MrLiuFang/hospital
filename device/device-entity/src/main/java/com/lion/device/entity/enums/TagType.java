@@ -47,13 +47,18 @@ public enum TagType implements IEnum {
         return desc;
     }
 
+//    @Override
+//    public Map<String, Object> jsonValue() {
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("key", key);
+//        map.put("desc", desc);
+//        map.put("name", getName());
+//        return map;
+//    }
+
     @Override
-    public Map<String, Object> jsonValue() {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("key", key);
-        map.put("desc", desc);
-        map.put("name", getName());
-        return map;
+    public Object jsonValue() {
+        return getName();
     }
 
     @JsonCreator

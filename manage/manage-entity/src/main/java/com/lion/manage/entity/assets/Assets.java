@@ -54,12 +54,12 @@ public class Assets extends BaseEntity {
 
     @ApiModelProperty(value = "所属建筑")
     @Column(name = "build_id")
-    @NotNull(message = "所属建筑不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotNull(message = "所属建筑不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long buildId;
 
     @ApiModelProperty(value = "所属建筑楼层")
     @Column(name = "build_floor_id")
-    @NotNull(message = "所属建筑楼层不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotNull(message = "所属建筑楼层不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long buildFloorId;
 
     @ApiModelProperty(value = "所属科室")
@@ -70,8 +70,8 @@ public class Assets extends BaseEntity {
     @ApiModelProperty(value = "使用状态")
     @Column(name = "use_state")
     @Convert(converter = AssetsUseState.AssetsUseStateConverter.class)
-    @NotNull(message = "使用状态不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private AssetsUseState useState;
+//    @NotNull(message = "使用状态不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private AssetsUseState useState = AssetsUseState.NOT_USED;
 
     @ApiModelProperty(value = "是否需要使用登记")
     @Column(name = "use_registration")

@@ -15,4 +15,5 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"username","password","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class UpdateUserDto extends AddUserDto {
 
+
 }

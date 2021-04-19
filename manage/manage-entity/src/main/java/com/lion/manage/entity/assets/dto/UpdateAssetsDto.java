@@ -1,5 +1,6 @@
 package com.lion.manage.entity.assets.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.manage.entity.assets.Assets;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,6 +15,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 @ApiModel
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"buildId","buildFloorId","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class UpdateAssetsDto extends Assets {
 
     @ApiModelProperty(value = "标签Id")
