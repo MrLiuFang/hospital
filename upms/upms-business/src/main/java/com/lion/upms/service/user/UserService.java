@@ -6,6 +6,7 @@ import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.Validator;
 import com.lion.core.service.BaseService;
+import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.role.vo.DetailsRoleUserVo;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.AddUserDto;
@@ -49,11 +50,16 @@ public interface UserService extends BaseService<User> {
     /**
      * 列表
      *
-     * @param listUserDto
+     *
+     * @param departmentId
+     * @param userType
+     * @param number
+     * @param name
+     * @param roleId
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListUserVo>> list(ListUserDto listUserDto, LionPage lionPage);
+    public IPageResultData<List<ListUserVo>> list( Long departmentId,  UserType userType,  Integer number,   String name, Long roleId, LionPage lionPage);
 
     /**
      * 用户详情

@@ -2,8 +2,11 @@ package com.lion.upms.dao.role;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.upms.entity.role.RoleUser;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 /**
  * @author Mr.Liu
@@ -31,5 +34,12 @@ public interface RoleUserDao extends BaseDao<RoleUser> {
      */
     @Transactional(propagation= Propagation.REQUIRES_NEW)
     public void deleteByUserId(Long userId);
+
+    /**
+     * 根据角色查询
+     * @param roleId
+     * @return
+     */
+    public List<RoleUser> findByRoleId(Long roleId);
 
 }

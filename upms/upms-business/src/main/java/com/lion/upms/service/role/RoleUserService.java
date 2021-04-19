@@ -32,4 +32,11 @@ public interface RoleUserService extends BaseService<RoleUser> {
      * @param roleId
      */
     void relationRole(Long userId,Long roleId);
+
+    /**
+     * 根据角色查询
+     * @param roleId
+     * @return
+     */
+    public List<RoleUser> find(Long roleId);
 }

@@ -15,6 +15,7 @@ import com.lion.manage.entity.department.Department;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.*;
@@ -27,6 +28,7 @@ import com.lion.upms.service.user.UserService;
 import com.lion.utils.CurrentUserUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,8 +86,8 @@ public class UserController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/list")
     @ApiOperation(value = "用户列表")
-    public IPageResultData<List<ListUserVo>> list(ListUserDto listUserDto, LionPage lionPage){
-        return userService.list(listUserDto, lionPage);
+    public IPageResultData<List<ListUserVo>> list(@ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户") UserType userType,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId, LionPage lionPage){
+        return userService.list(departmentId, userType, number, name, roleId, lionPage);
     }
 
 

@@ -15,11 +15,12 @@ import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.upms.dao.role.RoleDao;
 import com.lion.upms.dao.user.UserDao;
+import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.role.Role;
+import com.lion.upms.entity.role.RoleUser;
 import com.lion.upms.entity.role.vo.DetailsRoleUserVo;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.AddUserDto;
-import com.lion.upms.entity.user.dto.ListUserDto;
 import com.lion.upms.entity.user.dto.UpdateUserDto;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
@@ -112,22 +113,34 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
-    public IPageResultData<List<ListUserVo>> list(ListUserDto listUserDto, LionPage lionPage) {
+    public IPageResultData<List<ListUserVo>> list(Long departmentId, UserType userType, Integer number, String name, Long roleId, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
-        if (Objects.nonNull(listUserDto.getDepartmentId())){
-            List<Long> userList = departmentUserExposeService.findAllUser(listUserDto.getDepartmentId());
-            if (Objects.nonNull(userList) && userList.size()>0){
-                jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",userList);
+        if (Objects.nonNull(departmentId)){
+            List<Long> userList = departmentUserExposeService.findAllUser(departmentId);
+            if (Objects.nonNull(userList) && userList.size()<=0){
+                userList.add(Long.MAX_VALUE);
             }
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",userList);
         }
-        if (StringUtils.hasText(listUserDto.getName())){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",listUserDto.getName());
+        if (StringUtils.hasText(name)){
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }
-        if (Objects.nonNull(listUserDto.getNumber())){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_number",listUserDto.getNumber());
+        if (Objects.nonNull(number)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_number",number);
         }
-        if (Objects.nonNull(listUserDto.getUserType())){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_userType",listUserDto.getUserType());
+        if (Objects.nonNull(userType)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_userType",userType);
+        }
+        if (Objects.nonNull(roleId)){
+            List<RoleUser> list = roleUserService.find(roleId);
+            List<Long> userList = new ArrayList<>();
+            list.forEach(roleUser -> {
+                userList.add(roleUser.getUserId());
+            });
+            if (userList.size()<=0){
+                userList.add(Long.MAX_VALUE);
+            }
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",userList);
         }
         lionPage.setJpqlParameter(jpqlParameter);
         Page<User> page = this.findNavigator(lionPage);

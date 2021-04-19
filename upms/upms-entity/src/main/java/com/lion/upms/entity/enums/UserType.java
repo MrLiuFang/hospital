@@ -16,7 +16,12 @@ import java.util.Objects;
  */
 public enum UserType implements IEnum {
 
-    DOCTOR(0, "医生"), NURSE(1, "护士");
+    DOCTOR(0, "医生"),
+    NURSE(1, "护士"),
+    SECURITY_STAFF(1, "保安"),
+    CLEANER(1, "保卫"),
+    OTHER(1, "其它"),
+    ;
 
     private final int key;
 
@@ -42,13 +47,18 @@ public enum UserType implements IEnum {
         return desc;
     }
 
+//    @Override
+//    public Map<String, Object> jsonValue() {
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("key", key);
+//        map.put("desc", desc);
+//        map.put("name", getName());
+//        return map;
+//    }
+
     @Override
-    public Map<String, Object> jsonValue() {
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("key", key);
-        map.put("desc", desc);
-        map.put("name", getName());
-        return map;
+    public Object jsonValue() {
+        return getName();
     }
 
     @JsonCreator

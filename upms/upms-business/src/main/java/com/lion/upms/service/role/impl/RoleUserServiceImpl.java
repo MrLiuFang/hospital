@@ -7,6 +7,7 @@ import com.lion.upms.service.role.RoleUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -39,5 +40,10 @@ public class RoleUserServiceImpl extends BaseServiceImpl<RoleUser> implements Ro
             roleUser.setUserId(userId);
             roleUserDao.save(roleUser);
         }
+    }
+
+    @Override
+    public List<RoleUser> find(Long roleId) {
+        return roleUserDao.findByRoleId(roleId);
     }
 }
