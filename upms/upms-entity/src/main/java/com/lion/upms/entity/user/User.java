@@ -76,7 +76,6 @@ public class User extends BaseEntity {
 
     @ApiModelProperty(value = "出生日期")
     @Column(name = "birthday")
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
     @Past(message = "出生日期不能大于/等于当前日期", groups = {Validator.Insert.class, Validator.Update.class})
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;

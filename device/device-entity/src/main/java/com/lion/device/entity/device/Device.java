@@ -64,7 +64,7 @@ public class Device extends BaseEntity {
     @ApiModelProperty(value = "购买日期(yyyy-MM-dd)")
     @Column(name = "purchase_pate",nullable = true)
     @NotNull(message = "购买日期不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+
     @Past(message = "购买日期不能大于/等于当前日期", groups = {Validator.Insert.class, Validator.Update.class})
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate purchaseDate;

@@ -44,7 +44,6 @@ public class AssetsBorrow extends BaseEntity {
     @ApiModelProperty(value = "借用时间(yyyy-MM-dd HH:mm:ss)")
     @Column(name = "borrow_time",updatable = false)
     @NotNull(message = "借用时间不能为空", groups = {Validator.Insert.class})
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     @Past(message = "借用时间不能大于/等于当前时间", groups = {Validator.Insert.class})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime borrowTime;

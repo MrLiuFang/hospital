@@ -1,65 +1,57 @@
-package com.lion.event.entity;
+package com.lion.event.dto;
 
 import com.alibaba.fastjson.annotation.JSONField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.codehaus.jackson.map.annotate.JsonFilter;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * @Author Mr.Liu
- * @Description //TODO
- * @Date 2021/4/23 上午9:45
- **/
+ * @author Mr.Liu
+ * @Description:
+ * @date 2021/4/14上午9:45
+ */
 @Data
-@Document
-public class Event implements Serializable {
-
-    @Id
-    private String _id;
-
-    //用户id
-    private Long ui;
+public class EventDto {
 
     //Star 的 MacID
-    private String si;
+    private String starId;
     //Monitor 的 ID
     //可能為空
-    private String mi;
+    private String monitorId;
     //Monitor 的電量
     //0=正常
     //1=少於 90 天
     //2=少於 30 天
-    private Integer mb;
+    private Integer monitorBattery;
 
     //Tag 的 ID
-    private String ti;
+    private String tagId;
 
     // Tag 的電量
     //0=正常
     //1=少於 90 天
     //2=少於 30 天
-    private Integer tb;
+    private Integer tagBattery;
 
     //Tag 按下按鈕
     //Value=1-4
-    private Integer bi;
+    private Integer buttonId;
 
     //溫度
-    private BigDecimal t;
+    private BigDecimal temperature;
 
     //濕度
-    private BigDecimal h;
+    private BigDecimal humidity;
 
     //警告
-    private String w;
+    private String warning;
 
     //時間
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime dt;
+    private LocalDateTime time;
+
 }

@@ -38,3 +38,6 @@ spring:
           - data-id: lion-zookeeper-common.${spring.cloud.nacos.config.file-extension}
             refresh: true
             group: GLOBAL_GROUP
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
