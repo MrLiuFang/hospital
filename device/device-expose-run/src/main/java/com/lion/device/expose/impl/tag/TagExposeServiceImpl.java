@@ -22,4 +22,9 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     public Tag find(Long assetsId) {
         return tagDao.findByAssetsId(assetsId);
     }
+
+    @Override
+    public Tag find(String tagCode) {
+        return tagDao.findFirstByTagCode(tagCode);
+    }
 }

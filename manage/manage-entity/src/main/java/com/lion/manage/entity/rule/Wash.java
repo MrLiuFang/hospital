@@ -61,6 +61,10 @@ public class Wash extends BaseEntity {
     @NotNull(message = "超时提醒不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer overtimeRemind;
 
+    @ApiModelProperty(value = "进入之前X分钟需要洗手")
+    @Column(name = "before_entering_time")
+    private Integer beforeEnteringTime;
+
     @ApiModelProperty(value = "是否适用所有员工")
     @Column(name = "is_all_user")
     private Boolean isAllUser;

@@ -2,6 +2,9 @@ package com.lion.manage.dao.rule;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.rule.Wash;
+import org.springframework.data.jpa.repository.Query;
+
+import java.util.List;
 
 /**
  * @author Mr.Liu
@@ -16,4 +19,21 @@ public interface WashDao extends BaseDao<Wash> {
      * @return
      */
     public Wash findFirstByName(String name);
+
+    /**
+     * 根据区域和用户查询洗手规则
+     * @param regionId
+     * @param userId
+     * @return
+     */
+    @Query( " select distinct w from Wash w join WashUser wu on w.id = wu.washId join WashRegion wr on w.id = wr.washId where wu.userId = :userId and wr.regionId = :regionId " )
+    public Wash find(Long regionId, Long userId);
+
+    /**
+     * 根据区域查询洗手规则
+     * @param regionId
+     * @return
+     */
+    @Query( " select distinct w from Wash w join WashRegion wr on w.id = wr.washId where wr.regionId = :regionId " )
+    public List<Wash> find(Long regionId);
 }

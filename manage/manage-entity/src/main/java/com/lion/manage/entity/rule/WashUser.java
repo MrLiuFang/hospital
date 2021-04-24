@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
  * @date 2021/4/9下午4:22
  */
 @Entity
-@Table(name = "t_wash_user",indexes = {@Index(columnList ="wash_id" )})
+@Table(name = "t_wash_user",indexes = {@Index(columnList ="wash_id" ),@Index(columnList ="user_id" )})
 @DynamicUpdate
 @DynamicInsert
 @Data

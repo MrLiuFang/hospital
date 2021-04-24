@@ -1,6 +1,7 @@
 package com.lion.upms.service.user.impl;
 
 import cn.hutool.crypto.SecureUtil;
+import com.lion.common.ResdisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -8,7 +9,11 @@ import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
+import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.entity.tag.Tag;
+import com.lion.device.expose.tag.TagExposeService;
+import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
@@ -28,10 +33,12 @@ import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
 import com.lion.utils.MapToBeanUtil;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -74,6 +81,15 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
 
+    @Autowired
+    private RedisTemplate<String, BaseEntity> redisTemplate;
+
+    @DubboReference
+    private TagExposeService tagExposeService;
+
+    @DubboReference
+    private TagUserExposeService tagUserExposeService;
+
     @Override
     public User findUser(String username) {
         return userDao.findFirstByUsername(username);
@@ -97,6 +113,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
+    @Transactional
+//    @GlobalTransactional
     public void add(AddUserDto addUserDto) {
         User user = new User();
         BeanUtils.copyProperties(addUserDto,user);
@@ -106,10 +124,13 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         }
         assertEmailExist(user.getEmail(),null);
         assertNumberExist(user.getNumber(),null);
+        assertTagCode(user.getTagCode());
         user = this.save(user);
         roleUserService.relationRole(user.getId(),addUserDto.getRoleId());
         departmentUserExposeService.relationDepartment(user.getId(),addUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),addUserDto.getResponsibleDepartmentIds());
+        redisTemplate.opsForValue().set(ResdisConstants.USER+user.getId(),user);
+        tagUserExposeService.binding(user.getId(),user.getTagCode());
     }
 
     @Override
@@ -189,6 +210,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
+    @Transactional
+//    @GlobalTransactional
     public void update(UpdateUserDto updateUserDto) {
         User user = new User();
         BeanUtils.copyProperties(updateUserDto,user);
@@ -198,10 +221,13 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         }
         assertEmailExist(user.getEmail(),user.getId());
         assertNumberExist(user.getNumber(),user.getId());
+        assertTagCode(user.getTagCode());
         this.update(user);
         roleUserService.relationRole(user.getId(),updateUserDto.getRoleId());
         departmentUserExposeService.relationDepartment(user.getId(),updateUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),updateUserDto.getResponsibleDepartmentIds());
+        redisTemplate.opsForValue().set(ResdisConstants.USER+user.getId(),user);
+        tagUserExposeService.binding(user.getId(),user.getTagCode());
     }
 
     @Override
@@ -214,6 +240,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
                 roleUserService.deleteByUserId(d.getId());
                 departmentUserExposeService.deleteByUserId(d.getId());
                 departmentResponsibleUserExposeService.deleteByUserId(d.getId());
+                redisTemplate.delete(ResdisConstants.USER+d.getId());
+                tagUserExposeService.unbinding(user.getId());
             }
         });
     }
@@ -244,6 +272,13 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         }
         if (Objects.nonNull(id) && Objects.nonNull(user) && !user.getId().equals(id)){
             BusinessException.throwException("该邮箱已存在");
+        }
+    }
+
+    private void assertTagCode(String tagCode){
+        Tag tag = tagExposeService.find(tagCode);
+        if (Objects.nonNull(tag)){
+            BusinessException.throwException("标签不存在");
         }
     }
 

@@ -1,5 +1,6 @@
 package com.lion.device.service.tag.impl;
 
+import com.lion.common.ResdisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.core.service.impl.BaseServiceImpl;
@@ -8,6 +9,7 @@ import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagAssets;
+import com.lion.device.entity.tag.TagUser;
 import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
 import com.lion.device.service.tag.TagService;
@@ -17,6 +19,7 @@ import com.lion.manage.expose.department.DepartmentExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -48,6 +51,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     @DubboReference
     private DepartmentExposeService departmentExposeService;
 
+    @Autowired
+    private RedisTemplate<String,Tag> redisTemplate;
+
     @Override
     public void add(AddTagDto addTagDto) {
         Tag tag = new Tag();
@@ -56,7 +62,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         assertDeviceCodeExist(tag.getDeviceCode(),null);
         assertDeviceNameExist(tag.getDeviceName(),null);
         assertTagCodeExist(tag.getTagCode(),null);
-        save(tag);
+        tag = save(tag);
+        redisTemplate.opsForValue().set(ResdisConstants.TAG+tag.getId(),tag);
+        redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+tag.getTagCode(),tag);
     }
 
     @Override
@@ -68,16 +76,23 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         assertDeviceNameExist(tag.getDeviceName(),tag.getId());
         assertTagCodeExist(tag.getTagCode(),tag.getId());
         update(tag);
+        redisTemplate.opsForValue().set(ResdisConstants.TAG+tag.getId(),tag);
+        redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+tag.getTagCode(),tag);
     }
 
     @Override
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(deleteDto -> {
+            List<TagUser> list = tagUserDao.findByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             this.deleteById(deleteDto.getId());
             tagAssetsDao.deleteByTagId(deleteDto.getId());
             tagPatientDao.deleteByTagId(deleteDto.getId());
             tagPostdocsDao.deleteByTagId(deleteDto.getId());
             tagUserDao.deleteByTagId(deleteDto.getId());
+            list.forEach(tagUser -> {
+                redisTemplate.delete(ResdisConstants.USER_TAG+tagUser.getUserId());
+                redisTemplate.delete(ResdisConstants.TAG_USER+tagUser.getTagId());
+            });
         });
     }
 

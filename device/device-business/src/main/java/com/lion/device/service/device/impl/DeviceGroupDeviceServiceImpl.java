@@ -1,9 +1,13 @@
 package com.lion.device.service.device.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.dao.device.DeviceGroupDeviceDao;
+import com.lion.device.entity.device.Device;
 import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.entity.device.DeviceGroupDevice;
+import com.lion.device.service.device.DeviceService;
+import com.lion.exception.BusinessException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +25,9 @@ public class DeviceGroupDeviceServiceImpl extends BaseServiceImpl<DeviceGroupDev
 
     @Autowired
     private DeviceGroupDeviceDao deviceGroupDeviceDao;
+
+    @Autowired
+    private DeviceService deviceService;
 
     @Override
     public int deleteByDeviceId(Long deviceId) {
@@ -40,10 +47,16 @@ public class DeviceGroupDeviceServiceImpl extends BaseServiceImpl<DeviceGroupDev
         List<DeviceGroupDevice> list = new ArrayList<DeviceGroupDevice>();
         if (Objects.nonNull(deviceIds) && deviceIds.size()>0) {
             deviceIds.forEach(id -> {
+                DeviceGroupDevice tmp = deviceGroupDeviceDao.findFirstByDeviceId(id);
+                if (Objects.nonNull(tmp) && !Objects.equals(tmp.getDeviceGroupId(),deviceGroupId)){
+                    Device device = deviceService.findById(id);
+                    BusinessException.throwException(device.getName()+"已在其它设备组");
+                }
                 DeviceGroupDevice deviceGroupDevice = new DeviceGroupDevice();
                 deviceGroupDevice.setDeviceGroupId(deviceGroupId);
                 deviceGroupDevice.setDeviceId(id);
                 list.add(deviceGroupDevice);
+
             });
             if (list.size() > 0) {
                 return deviceGroupDeviceDao.saveAll(list).size();

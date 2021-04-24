@@ -24,4 +24,9 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     public List<Device> findByDeviceGruopId(Long deviceGroupId) {
         return deviceDao.findByDeviceGroupId(deviceGroupId);
     }
+
+    @Override
+    public Device find(String code) {
+        return deviceDao.findFirstByCode(code);
+    }
 }

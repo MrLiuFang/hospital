@@ -41,6 +41,16 @@
 			<artifactId>lion-common-expose</artifactId>
 			<version>${lion-common-expose}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.lion</groupId>
+			<artifactId>common</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+        <dependency>
+            <groupId>com.lion</groupId>
+            <artifactId>device-expose</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 </project>

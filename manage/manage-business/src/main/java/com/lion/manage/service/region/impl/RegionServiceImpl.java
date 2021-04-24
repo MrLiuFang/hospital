@@ -1,8 +1,12 @@
 package com.lion.manage.service.region.impl;
 
+import com.lion.common.ResdisConstants;
 import com.lion.core.common.dto.DeleteDto;
+import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.expose.cctv.CctvExposeService;
+import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.region.RegionCctvDao;
 import com.lion.manage.dao.region.RegionDao;
@@ -11,6 +15,7 @@ import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.region.dto.AddRegionDto;
@@ -26,10 +31,13 @@ import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -71,6 +79,12 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @DubboReference
     private CctvExposeService cctvExposeService;
 
+    @Autowired
+    private RedisTemplate<String, Object> redisTemplate;
+
+    @DubboReference
+    private DeviceGroupDeviceExposeService deviceGroupDeviceExposeService;
+
     @Override
     public List<Region> find(Long departmentId) {
         return regionDao.findByDepartmentId(departmentId);
@@ -97,12 +111,20 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         region = save(region);
         regionCctvService.save(region.getId(),addRegionDto.getCctvIds());
         regionExposeObjectService.save(region.getId(),addRegionDto.getExposeObjects());
+        persistenceRedis(region,addRegionDto.getExposeObjects(), region.getDeviceGroupId(),null);
     }
 
     @Override
 //    @GlobalTransactional
     @Transactional
     public void update(UpdateRegionDto updateRegionDto) {
+        Region oldRegion = findById(updateRegionDto.getId());
+        Long oldDevideGroupId = null;
+        if (Objects.nonNull(oldRegion)){
+            oldDevideGroupId = oldRegion.getDeviceGroupId();
+        }else {
+            BusinessException.throwException("更新的数据不存在");
+        }
         Region region = new Region();
         BeanUtils.copyProperties(updateRegionDto,region);
         assertBuildExist(region.getBuildId());
@@ -115,6 +137,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         update(region);
         regionCctvService.save(region.getId(),updateRegionDto.getCctvIds());
         regionExposeObjectService.save(region.getId(),updateRegionDto.getExposeObjects());
+        persistenceRedis(region,updateRegionDto.getExposeObjects(), region.getDeviceGroupId(),oldDevideGroupId);
     }
 
     @Override
@@ -135,6 +158,8 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
             regionCctvDao.deleteByRegionId(deleteDto.getId());
             regionExposeObjectDao.deleteByRegionId(deleteDto.getId());
             wardRoomDao.deleteByWardId(deleteDto.getId());
+
+            persistenceRedis(region, Collections.EMPTY_LIST, null,region.getDeviceGroupId());
         });
     }
 
@@ -169,6 +194,27 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         }
         if (!Objects.equals(buildFloor.getBuildId(),buildId)) {
             BusinessException.throwException("该建筑不存在此楼层");
+        }
+    }
+
+    private void persistenceRedis(Region region, List<ExposeObject> exposeObjects,Long devideGroupId, Long oldDevideGroupId){
+        if (Objects.nonNull(oldDevideGroupId)){
+            List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(oldDevideGroupId);
+            list.forEach(deviceGroupDevice -> {
+                redisTemplate.delete(ResdisConstants.DEVICE_REGION+deviceGroupDevice.getDeviceId());
+            });
+        }
+        if (Objects.nonNull(devideGroupId)) {
+            List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(devideGroupId);
+            list.forEach(deviceGroupDevice -> {
+                redisTemplate.opsForValue().set(ResdisConstants.DEVICE_REGION + deviceGroupDevice.getDeviceId(), region);
+            });
+        }
+        redisTemplate.delete(ResdisConstants.REGION_EXPOSE_OBJECT+region.getId());
+        if (Objects.nonNull(exposeObjects) && exposeObjects.size()>0){
+            exposeObjects.forEach(exposeObject -> {
+                redisTemplate.opsForList().leftPush(ResdisConstants.REGION_EXPOSE_OBJECT+region.getId(),exposeObject);
+            });
         }
     }
 }

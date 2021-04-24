@@ -44,11 +44,11 @@ public class TagUser extends BaseEntity {
 
     @ApiModelProperty(value = "绑定时间")
     @NotNull(message = "绑定时间不能为空", groups = {Validator.Insert.class})
-    @Column(name = "binding_time")
-    private LocalDateTime bindingTime;
+    @Column(name = "binding_time",updatable = false,nullable = false)
+    private LocalDateTime bindingTime = LocalDateTime.now();
 
     @ApiModelProperty(value = "解绑时间")
     @NotNull(message = "时间不能为空", groups = { Validator.Update.class})
-    @Column(name = "unbinding_time")
+    @Column(name = "unbinding_time",insertable = false)
     private LocalDateTime unbindingTime;
 }

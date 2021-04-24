@@ -1,0 +1,90 @@
+mongo.exe -port 27018
+
+rs.initiate({
+    _id:'repl1',  
+    members:[
+        {_id:0, host:'172.16.30.130:27018'}
+    ]
+})
+rs.status() 
+
+
+mongo.exe -port 27019
+
+rs.initiate({
+    _id:'repl2',  
+    members:[
+        {_id:0, host:'172.16.30.130:27019'}
+    ]
+})
+rs.status() 
+
+mongo.exe -port 27020
+
+rs.initiate({
+    _id:'repl3',  
+    members:[
+        {_id:0, host:'172.16.30.130:27020'}
+    ]
+})
+rs.status()
+
+________________________________________________________________________
+mongo.exe  -port 28018
+rs.initiate({
+    _id:'configReplSet',  
+    members:[
+        {_id:0, host:'172.16.30.130:28018'},
+        {_id:1, host:'172.16.30.130:28028'},
+        {_id:2, host:'172.16.30.130:28038'}
+    ]
+})
+rs.status() 
+
+________________________________________________________________________
+mongo.exe -port 28007 
+
+use admin
+
+db.runCommand({
+    addShard: "repl1/172.16.30.130:27018", 
+    name: "shard1"
+})
+
+
+db.runCommand({
+    addShard: "repl2/172.16.30.130:27019", 
+    name: "shard2"
+})
+
+db.runCommand({
+    addShard: "repl3/172.16.30.130:27020", 
+    name: "shard3"
+})
+
+db.runCommand({
+    listshards:1
+})
+
+sh.status()
+
+db.runCommand({ enablesharding : "hospital"});
+
+db.runCommand({ 
+    shardcollection : "hospital.event", 
+    key : {_id: 'hashed'}
+})
+
+use hospital;
+
+db.event.createIndex( { "ui":1 }, { sparse: true } )
+db.event.createIndex( { "si":1 }, { sparse: true } )
+db.event.createIndex( { "mi":1 }, { sparse: true } )
+db.event.createIndex( { "ti":1 }, { sparse: true } )
+db.event.createIndex( { "dt":1 }, { sparse: true } )
+
+db.event.stats();
+
+
+use admin;
+db.shutdownServer();

@@ -25,4 +25,11 @@ public interface WashRegionDao extends BaseDao<WashRegion> {
      * @return
      */
     public List<WashRegion> findByWashId(Long washId);
+
+    /**
+     * 根据区域查询关联关系
+     * @param regionId
+     * @return
+     */
+    public WashRegion findFirstByRegionId(Long regionId);
 }

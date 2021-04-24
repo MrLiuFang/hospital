@@ -1,5 +1,6 @@
 package com.lion.manage.service.rule.impl;
 
+import com.lion.common.ResdisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
@@ -37,10 +38,12 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -85,6 +88,9 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     @Autowired
     private DepartmentUserService departmentUserService;
 
+    @Autowired
+    private RedisTemplate<String,Wash> redisTemplate;
+
     @Override
     @Transactional
     public void add(AddWashDto addWashDto) {
@@ -99,6 +105,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             washUserService.add(addWashDto.getUserId(),wash.getId());
         }
         washDeviceService.add(addWashDto.getDeviceType(),wash.getId());
+        persistence2Redis(addWashDto.getRegionId(),addWashDto.getUserId(),wash);
     }
 
     @Override
@@ -115,6 +122,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             washUserService.add(updateWashDto.getUserId(),wash.getId());
         }
         washDeviceService.add(updateWashDto.getDeviceType(),wash.getId());
+        persistence2Redis(updateWashDto.getRegionId(),updateWashDto.getUserId(),wash);
     }
 
     @Override
@@ -188,6 +196,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             washDeviceService.delete(deleteDto.getId());
             washRegionService.delete(deleteDto.getId());
             washUserService.delete(deleteDto.getId());
+            persistence2Redis(Collections.EMPTY_LIST,Collections.EMPTY_LIST,this.findById(deleteDto.getId()));
         });
     }
 
@@ -199,5 +208,39 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         if (Objects.nonNull(id) && Objects.nonNull(wash) && !wash.getId().equals(id)){
             BusinessException.throwException("该名称已存在");
         }
+    }
+
+    private void persistence2Redis(List<Long> regionId,List<Long> userId,Wash wash){
+
+        if (Objects.equals(wash.getType(),WashRuleType.LOOP)) {
+
+            return;
+        }
+
+        List<WashRegion> washRegionList = washRegionService.find(wash.getId());
+        washRegionList.forEach(washRegion -> {
+            List<Wash> list = redisTemplate.opsForList().range(ResdisConstants.REGION_WASH+washRegion.getRegionId(),0,-1);
+            Wash wash1 = findById(washRegion.getWashId());
+            list.remove(wash1);
+            redisTemplate.opsForList().leftPushAll(ResdisConstants.REGION_WASH+washRegion.getRegionId(),list);
+        });
+
+        List<WashUser> washUserList = washUserService.find(wash.getId());
+        washUserList.forEach(washUser -> {
+            regionId.forEach(ri->{
+                redisTemplate.delete(ResdisConstants.REGION_USER_WASH+ri+washUser.getUserId());
+            });
+        });
+
+        redisTemplate.opsForValue().set(ResdisConstants.WASH+wash.getId(),wash);
+        regionId.forEach(ri->{
+            redisTemplate.opsForList().leftPush(ResdisConstants.REGION_WASH+ri,wash);
+        });
+
+        userId.forEach(ui->{
+            regionId.forEach(ri-> {
+                redisTemplate.opsForValue().set(ResdisConstants.REGION_USER_WASH +ri +ui, wash);
+            });
+        });
     }
 }

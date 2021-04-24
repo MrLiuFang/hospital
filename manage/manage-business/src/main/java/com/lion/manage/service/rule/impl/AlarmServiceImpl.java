@@ -1,5 +1,6 @@
 package com.lion.manage.service.rule.impl;
 
+import com.lion.common.ResdisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -26,6 +27,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -50,12 +52,16 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     @DubboReference
     private FileExposeService fileExposeService;
 
+    @Autowired
+    private RedisTemplate<String,Alarm> redisTemplate;
+
     @Override
     public void add(AddAlarmDto addAlarmDto) {
         Alarm alarm = new Alarm();
         BeanUtils.copyProperties(addAlarmDto,alarm);
         assertContentExist(alarm.getContent(),alarm.getClassify(),null);
-        save(alarm);
+        alarm = save(alarm);
+        redisTemplate.opsForValue().set(ResdisConstants.ALARM+alarm.getId(),alarm);
     }
 
     @Override
@@ -64,6 +70,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         BeanUtils.copyProperties(updateAlarmDto,alarm);
         assertContentExist(alarm.getContent(),alarm.getClassify(),alarm.getId());
         update(alarm);
+        redisTemplate.opsForValue().set(ResdisConstants.ALARM+alarm.getId(),alarm);
     }
 
     @Override
@@ -108,6 +115,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     public void delete(List<DeleteDto> deleteDtos) {
         deleteDtos.forEach(deleteDto -> {
             deleteById(deleteDto.getId());
+            redisTemplate.delete(ResdisConstants.ALARM+deleteDto.getId());
         });
     }
 

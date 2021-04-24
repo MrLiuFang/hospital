@@ -22,6 +22,7 @@ public interface UserExposeService extends BaseService<User> {
      * @param username
      * @return
      */
-    public User findUser(String username);
+    public User find(String username);
+
 
 }

@@ -16,7 +16,7 @@ import java.util.Objects;
  */
 public enum WashRuleType implements IEnum {
     REGION(0, "区域洗手规则"),
-    TIMING(1, "定时洗手规则");
+    LOOP(1, "定时洗手规则");
     private final int key;
 
     private final String desc;

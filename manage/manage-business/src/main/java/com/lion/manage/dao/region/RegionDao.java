@@ -46,4 +46,11 @@ public interface RegionDao extends BaseDao<Region> {
      * @return
      */
     public Region findFirstByName(String name);
+
+    /**
+     * 根据设备组id查询区域
+     * @param deviceGroupId
+     * @return
+     */
+    public Region findFirstByDeviceGroupId(Long deviceGroupId);
 }

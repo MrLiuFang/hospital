@@ -21,4 +21,11 @@ public interface DeviceExposeService extends BaseService<Device> {
      */
     public List<Device> findByDeviceGruopId(Long deviceGroupId);
 
+    /**
+     * 根据编码查询设备
+     * @param code
+     * @return
+     */
+    public Device find(String code);
+
 }

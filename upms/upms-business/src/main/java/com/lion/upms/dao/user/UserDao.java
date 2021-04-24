@@ -46,4 +46,6 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
      */
     @Query(" select u from User u join RoleUser ru on u.id = ru.userId where ru.roleId = :roleId ")
     public List<User> findUserByRoleId(Long roleId);
+
+
 }

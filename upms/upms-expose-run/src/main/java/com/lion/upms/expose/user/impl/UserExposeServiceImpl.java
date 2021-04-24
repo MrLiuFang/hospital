@@ -1,6 +1,7 @@
 package com.lion.upms.expose.user.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.upms.dao.user.UserDao;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.upms.service.user.UserService;
@@ -18,13 +19,16 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private UserDao userDao;
+
     @Override
     public User createUser(User user) {
         return userService.save(user);
     }
 
     @Override
-    public User findUser(String username) {
-        return userService.findUser(username);
+    public User find(String username) {
+        return userDao.findFirstByUsername(username);
     }
 }
