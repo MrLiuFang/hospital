@@ -85,9 +85,9 @@ public class Tag extends BaseEntity {
     @Column(name = "min_humidity")
     private BigDecimal minHumidity;
 
-    @ApiModelProperty(value = "电量")
-    @Column(name = "electricity")
-    private Integer electricity;
+    @ApiModelProperty(value = "电量(0=正常,1=少於90 天,2=少於30天)")
+    @Column(name = "battery")
+    private Integer battery;
 
     @ApiModelProperty(value = "使用状态")
     @Column(name = "use_state")

@@ -1,6 +1,7 @@
 package com.lion.manage.dao.rule;
 
 import com.lion.core.persistence.curd.BaseDao;
+import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.rule.Wash;
 import org.springframework.data.jpa.repository.Query;
 
@@ -36,4 +37,13 @@ public interface WashDao extends BaseDao<Wash> {
      */
     @Query( " select distinct w from Wash w join WashRegion wr on w.id = wr.washId where wr.regionId = :regionId " )
     public List<Wash> find(Long regionId);
+
+    /**
+     * 查询用户所有的定时洗手规则
+     * @param userId
+     * @param type
+     * @return
+     */
+    @Query( " select distinct w from Wash w join WashUser wu on w.id = wu.washId where wu.userId = :userId and w.type = :type  " )
+    public List<Wash> findLoopWash(Long userId, WashRuleType type);
 }

@@ -105,7 +105,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             washUserService.add(addWashDto.getUserId(),wash.getId());
         }
         washDeviceService.add(addWashDto.getDeviceType(),wash.getId());
-        persistence2Redis(addWashDto.getRegionId(),addWashDto.getUserId(),wash);
+        persistence2Redis(addWashDto.getRegionId(),addWashDto.getUserId(),wash,false);
     }
 
     @Override
@@ -122,7 +122,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             washUserService.add(updateWashDto.getUserId(),wash.getId());
         }
         washDeviceService.add(updateWashDto.getDeviceType(),wash.getId());
-        persistence2Redis(updateWashDto.getRegionId(),updateWashDto.getUserId(),wash);
+        persistence2Redis(updateWashDto.getRegionId(),updateWashDto.getUserId(),wash,false);
     }
 
     @Override
@@ -196,7 +196,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             washDeviceService.delete(deleteDto.getId());
             washRegionService.delete(deleteDto.getId());
             washUserService.delete(deleteDto.getId());
-            persistence2Redis(Collections.EMPTY_LIST,Collections.EMPTY_LIST,this.findById(deleteDto.getId()));
+            persistence2Redis(Collections.EMPTY_LIST,Collections.EMPTY_LIST,this.findById(deleteDto.getId()),true);
         });
     }
 
@@ -210,10 +210,34 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         }
     }
 
-    private void persistence2Redis(List<Long> regionId,List<Long> userId,Wash wash){
-
+    private void persistence2Redis(List<Long> regionId,List<Long> userId,Wash wash,Boolean isDelete){
         if (Objects.equals(wash.getType(),WashRuleType.LOOP)) {
+            if (wash.getIsAllUser()){
+                List<Wash> list = redisTemplate.opsForList().range(ResdisConstants.ALL_USER_LOOP_WASH,0,-1);
+                if (Objects.isNull(list)){
+                    list = new ArrayList<Wash>();
+                }
+                list.remove(wash);
+                redisTemplate.delete(ResdisConstants.ALL_USER_LOOP_WASH);
+                redisTemplate.opsForList().leftPushAll(ResdisConstants.ALL_USER_LOOP_WASH,list);
+                if (Objects.equals(false,isDelete)){
+                    redisTemplate.opsForList().leftPush(ResdisConstants.ALL_USER_LOOP_WASH,wash);
+                }
+                return;
+            }
 
+            List<WashUser> washUserList = washUserService.find(wash.getId());
+            washUserList.forEach(washUser -> {
+                List<Wash> list = redisTemplate.opsForList().range(ResdisConstants.USER_LOOP_WASH+washUser.getUserId(),0,-1);
+                list.remove(wash);
+                redisTemplate.delete(ResdisConstants.USER_LOOP_WASH+washUser.getUserId());
+                redisTemplate.opsForList().leftPushAll(ResdisConstants.USER_LOOP_WASH+washUser.getUserId(),list);
+            });
+            if (Objects.nonNull(userId) && userId.size()>0) {
+                userId.forEach(ui -> {
+                    redisTemplate.opsForList().leftPush(ResdisConstants.USER_LOOP_WASH + ui, wash);
+                });
+            }
             return;
         }
 
@@ -222,6 +246,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             List<Wash> list = redisTemplate.opsForList().range(ResdisConstants.REGION_WASH+washRegion.getRegionId(),0,-1);
             Wash wash1 = findById(washRegion.getWashId());
             list.remove(wash1);
+            redisTemplate.delete(ResdisConstants.REGION_WASH+washRegion.getRegionId());
             redisTemplate.opsForList().leftPushAll(ResdisConstants.REGION_WASH+washRegion.getRegionId(),list);
         });
 

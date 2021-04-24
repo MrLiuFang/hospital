@@ -22,8 +22,15 @@ public interface WashExposeService extends BaseService<Wash> {
 
     /**
      * 根据区域查询洗手规则
-     * @param region
+     * @param regionId
      * @return
      */
     public List<Wash> find(Long regionId);
+
+    /**
+     * 查询用户所有的定时洗手规则
+     * @param userId
+     * @return
+     */
+    public List<Wash> findLoopWash(Long userId);
 }

@@ -24,5 +24,12 @@ public interface TagExposeService extends BaseService<Tag> {
      */
     public Tag find(String tagCode);
 
+    /**
+     * 更新电量
+     * @param tagId
+     * @param battery
+     */
+    public void updateBattery(Long tagId, Integer battery);
+
 
 }

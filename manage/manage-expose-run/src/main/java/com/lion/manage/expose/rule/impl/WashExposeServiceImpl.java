@@ -2,6 +2,7 @@ package com.lion.manage.expose.rule.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.rule.WashDao;
+import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.expose.rule.WashExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -28,5 +29,10 @@ public class WashExposeServiceImpl extends BaseServiceImpl<Wash> implements Wash
     @Override
     public List<Wash> find(Long regionId) {
         return washDao.find(regionId);
+    }
+
+    @Override
+    public List<Wash> findLoopWash(Long userId) {
+        return washDao.findLoopWash(userId, WashRuleType.LOOP);
     }
 }

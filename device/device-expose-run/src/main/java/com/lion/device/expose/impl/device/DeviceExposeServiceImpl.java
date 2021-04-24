@@ -1,13 +1,17 @@
 package com.lion.device.expose.impl.device;
 
+import com.lion.common.ResdisConstants;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.entity.device.Device;
 import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.device.service.device.DeviceService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Mr.Liu
@@ -20,6 +24,12 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     @Autowired
     private DeviceDao deviceDao;
 
+    @Autowired
+    private DeviceService deviceService;
+
+    @Autowired
+    private RedisTemplate<String,Device> redisTemplate;
+
     @Override
     public List<Device> findByDeviceGruopId(Long deviceGroupId) {
         return deviceDao.findByDeviceGroupId(deviceGroupId);
@@ -28,5 +38,16 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     @Override
     public Device find(String code) {
         return deviceDao.findFirstByCode(code);
+    }
+
+    @Override
+    public void updateBattery(Long deviceId, Integer battery) {
+        Device device = deviceService.findById(deviceId);
+        if (Objects.nonNull(device)) {
+            device.setBattery(battery);
+            update(device);
+            redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+device.getCode(),device);
+            redisTemplate.opsForValue().set(ResdisConstants.DEVICE+device.getId(),device);
+        }
     }
 }

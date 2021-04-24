@@ -74,9 +74,9 @@ public class Device extends BaseEntity {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate warrantyPeriodDate;
 
-    @ApiModelProperty(value = "电量")
-    @Column(name = "electricity")
-    private Integer electricity;
+    @ApiModelProperty(value = "电量(0=正常,1=少於90 天,2=少於30天)")
+    @Column(name = "battery")
+    private Integer battery;
 
     @ApiModelProperty(value = "图片id")
     @Column(name = "img")

@@ -13,6 +13,7 @@ import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.event.dto.EventDto;
+import com.lion.event.dto.UserCurrentRegionDto;
 import com.lion.event.dto.UserLastWashDto;
 import com.lion.event.entity.Event;
 import com.lion.event.service.EventService;
@@ -109,6 +110,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             Device star = null;
             Tag tag = null;
             User user = null;
+
             if (Objects.nonNull(eventDto.getMonitorId())) {
                 monitor = getDevice(eventDto.getMonitorId());
             }
@@ -120,6 +122,16 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             }
             if (Objects.nonNull(user)){
                 userEevent(eventDto,monitor,star,tag,user);
+                // TODO: 2021/4/24 将用户放入定时器处理队列
+            }
+
+            // 更新设备的电量
+            updateDeviceBattery(monitor,eventDto.getMonitorBattery());
+            updateTagBattery(tag,eventDto.getTagBattery());
+
+            // TODO: 2021/4/24 处理该事件的tag绑定在患者/资产……的警告
+            if (Objects.isNull(user)) {
+
             }
         }catch (Exception exception){
 
@@ -137,77 +149,84 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
     private void userEevent(EventDto eventDto, Device monitor, Device star, Tag tag, User user){
         Region monitorRegion = null;
         Region starRegion = null;
-        List<Wash> regionWash = Collections.EMPTY_LIST;
-        List<Wash> LoopWash = Collections.EMPTY_LIST;
-        Alarm alarm = null;
-        monitorRegion = getRegion(monitor.getId());
-        starRegion = getRegion(star.getId());
-        if (Objects.isNull(monitorRegion)){
-            return;
+        if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getId())) {
+            monitorRegion = getRegion(monitor.getId());
         }
-
-        userEevent(user,monitor,eventDto);
-
-        regionWash = getWash(monitorRegion.getId());
-        if (regionWash.size()>0){
-            Region finalMonitorRegion = monitorRegion;
-            regionWash.forEach(wash -> {
-                if (wash.getIsAllUser()) {
-                    userEevent(user,wash,monitor);
-                }else {
-                    Wash userWash = getWash(finalMonitorRegion.getId(), user.getId());
-                    if (Objects.isNull(userWash)){
-                        return;
-                    }
-                    userEevent(user,wash,monitor);
-                }
-            });
+        if (Objects.nonNull(star) && Objects.nonNull(star.getId())) {
+            starRegion = getRegion(star.getId());
         }
+        userEevent(user,monitor,star,eventDto);
+        saveUserCurrentRegion(user,monitorRegion,starRegion,eventDto);
     }
 
-    /**
-     * 处理是不是洗手事件
-     * @param user
-     * @param device
-     * @param eventDto
-     */
-    private void userEevent(User user,Device device,EventDto eventDto){
-        DeviceClassify deviceClassify = device.getDeviceClassify();
-        DeviceType deviceType = device.getDeviceType();
-        if (Objects.equals(deviceClassify,DeviceClassify.MONITOR)){
-            if (Objects.equals(deviceType,DeviceType.ALCOHOL) || Objects.equals(deviceType,DeviceType.DISINFECTANT_GEL)
-                    || Objects.equals(deviceType,DeviceType.LIQUID_SOAP) || Objects.equals(deviceType,DeviceType.WASHING_FOAM)
-                    || Objects.equals(deviceType,DeviceType.WATER) ) {
-                UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(ResdisConstants.USER_LAST_WASH+user.getId());
-                if (Objects.isNull(userLastWashDto)) {
-                    userLastWashDto = new UserLastWashDto();
-                }else {
-                    UserLastWashDto previous = new UserLastWashDto();
-                    BeanUtils.copyProperties(userLastWashDto,previous);
-                    previous.setPrevious(null);
-                    userLastWashDto.setPrevious(previous);
-                }
-                userLastWashDto.setUserId(user.getId());
-                userLastWashDto.setDevice(device);
-                userLastWashDto.setDateTime(eventDto.getTime());
-                redisTemplate.opsForValue().set(ResdisConstants.USER_LAST_WASH+user.getId(),userLastWashDto);
-
-                // TODO: 2021/4/24 解除警报
-            }else {
-                UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(ResdisConstants.USER_LAST_WASH+user.getId());
-                if (Objects.nonNull(userLastWashDto)){
-                    Duration duration = Duration.between(LocalDateTime.now(),userLastWashDto.getDateTime());
-                    userLastWashDto.setTime(Long.valueOf(duration.toMillis()).intValue()/1000);
-                    redisTemplate.opsForValue().set(ResdisConstants.USER_LAST_WASH+user.getId(),userLastWashDto);
-                }
+    private void updateDeviceBattery(Device device,Integer battery){
+        if (Objects.nonNull(device)){
+            if (!Objects.equals(device.getBattery(),battery)){
+                deviceExposeService.updateBattery(device.getId(),battery);
             }
         }
     }
-    
-    
-    private void userEevent(User user,Wash wash,Device device){
-        UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(ResdisConstants.USER_LAST_WASH+user.getId());
 
+    private void updateTagBattery(Tag tag,Integer battery){
+        if (Objects.nonNull(tag)){
+            if (!Objects.equals(tag.getBattery(),battery)){
+                tagExposeService.updateBattery(tag.getId(),battery);
+            }
+        }
+    }
+
+    private void saveUserCurrentRegion(User user,Region monitorRegion,Region starRegion,EventDto eventDto){
+        Region region = Objects.isNull(monitorRegion)?starRegion:monitorRegion;
+        UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(ResdisConstants.USER_CURRENT_REGION+user.getId());
+        if (Objects.isNull(userCurrentRegionDto)){
+            userCurrentRegionDto  = new UserCurrentRegionDto();
+            userCurrentRegionDto.setUserId(user.getId());
+            userCurrentRegionDto.setRegion(region);
+            userCurrentRegionDto.setFirstEntryTime(eventDto.getTime());
+        }else {
+            if (!Objects.equals(region,userCurrentRegionDto.getRegion())) {
+                userCurrentRegionDto.setRegion(region);
+                userCurrentRegionDto.setFirstEntryTime(eventDto.getTime());
+            }
+        }
+        redisTemplate.opsForValue().set(ResdisConstants.USER_CURRENT_REGION+user.getId(),userCurrentRegionDto);
+    }
+
+    /**
+     * @param user
+     * @param monitor
+     * @param star
+     * @param eventDto
+     */
+    private void userEevent(User user,Device monitor, Device star,EventDto eventDto){
+        Device device = Objects.isNull(monitor)?star:monitor;
+        DeviceClassify deviceClassify = device.getDeviceClassify();
+        DeviceType deviceType = device.getDeviceType();
+        if (Objects.equals(deviceType,DeviceType.ALCOHOL) || Objects.equals(deviceType,DeviceType.DISINFECTANT_GEL)
+                || Objects.equals(deviceType,DeviceType.LIQUID_SOAP) || Objects.equals(deviceType,DeviceType.WASHING_FOAM)
+                || Objects.equals(deviceType,DeviceType.WATER) ) {
+            UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(ResdisConstants.USER_LAST_WASH+user.getId());
+            if (Objects.isNull(userLastWashDto)) {
+                userLastWashDto = new UserLastWashDto();
+            }else {
+                UserLastWashDto previous = new UserLastWashDto();
+                BeanUtils.copyProperties(userLastWashDto,previous);
+                previous.setPrevious(null);
+                userLastWashDto.setPrevious(previous);
+            }
+            userLastWashDto.setUserId(user.getId());
+            userLastWashDto.setMonitor(monitor);
+            userLastWashDto.setStar(star);
+            userLastWashDto.setDateTime(eventDto.getTime());
+            redisTemplate.opsForValue().set(ResdisConstants.USER_LAST_WASH+user.getId(),userLastWashDto);
+        }else {
+            UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(ResdisConstants.USER_LAST_WASH+user.getId());
+            if (Objects.nonNull(userLastWashDto)){
+                Duration duration = Duration.between(LocalDateTime.now(),userLastWashDto.getDateTime());
+                userLastWashDto.setTime(Long.valueOf(duration.toMillis()).intValue()/1000);
+                redisTemplate.opsForValue().set(ResdisConstants.USER_LAST_WASH+user.getId(),userLastWashDto);
+            }
+        }
     }
 
     private Region getRegion(Long deviceId){
@@ -252,6 +271,17 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+code,tag);
         }
         return tag;
+    }
+
+    private List<Wash> getLoopWash(Long userId){
+        List<Wash> list = (List<Wash>) redisTemplate.opsForList().range(ResdisConstants.USER_LOOP_WASH+userId,0,-1);
+        if (Objects.isNull(list) || list.size() <=0 ){
+            list = washExposeService.findLoopWash(userId);
+            if (Objects.nonNull(list) && list.size()>0) {
+                redisTemplate.opsForList().leftPushAll(ResdisConstants.USER_LOOP_WASH + userId, list);
+            }
+        }
+        return list;
     }
 
     private List<Wash> getWash(Long regionId){

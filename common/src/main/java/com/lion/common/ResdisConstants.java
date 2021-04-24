@@ -30,6 +30,16 @@ public class ResdisConstants {
     public static String REGION_USER_WASH = "region_user_wash_";
 
     /**
+     * 用户定时洗手规则(key:userId,value:List<wash>)
+     */
+    public static String USER_LOOP_WASH = "user_loop_wash_";
+
+    /**
+     * 所有用户定时洗手规则(key:,value:List<wash>)
+     */
+    public static String ALL_USER_LOOP_WASH = "all_user_loop_wash_";
+
+    /**
      * 警报规则(key:alarmId,value:alarm)
      */
     public static String ALARM = "alarm_";
@@ -78,4 +88,9 @@ public class ResdisConstants {
      * 用户最后的洗手(key:userId,value:lastUserWashDto)
      */
     public static String USER_LAST_WASH = "user_last_wash_";
+
+    /**
+     * 当前用户所在的区域(key:userId,value:region)
+     */
+    public static String USER_CURRENT_REGION = "user_current_region_";
 }

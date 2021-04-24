@@ -28,4 +28,11 @@ public interface DeviceExposeService extends BaseService<Device> {
      */
     public Device find(String code);
 
+    /**
+     *
+     * @param deviceId
+     * @param battery
+     */
+    public void updateBattery(Long deviceId, Integer battery);
+
 }
