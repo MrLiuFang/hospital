@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -28,7 +29,7 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     private TagService tagService;
 
     @Autowired
-    private RedisTemplate<String,Tag> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @Override
     public Tag find(Long assetsId) {
@@ -46,8 +47,8 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
         if (Objects.nonNull(tag)) {
             tag.setBattery(battery);
             update(tag);
-            redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+tag.getTagCode(),tag);
-            redisTemplate.opsForValue().set(ResdisConstants.TAG+tag.getId(),tag);
+            redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+tag.getTagCode(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(ResdisConstants.TAG+tag.getId(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         }
     }
 }

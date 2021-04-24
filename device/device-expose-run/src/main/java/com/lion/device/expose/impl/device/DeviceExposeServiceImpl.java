@@ -12,6 +12,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -28,7 +29,7 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     private DeviceService deviceService;
 
     @Autowired
-    private RedisTemplate<String,Device> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @Override
     public List<Device> findByDeviceGruopId(Long deviceGroupId) {
@@ -46,8 +47,8 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
         if (Objects.nonNull(device)) {
             device.setBattery(battery);
             update(device);
-            redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+device.getCode(),device);
-            redisTemplate.opsForValue().set(ResdisConstants.DEVICE+device.getId(),device);
+            redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+device.getCode(),device,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(ResdisConstants.DEVICE+device.getId(),device,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         }
     }
 }

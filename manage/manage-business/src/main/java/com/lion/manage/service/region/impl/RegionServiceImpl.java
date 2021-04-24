@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -80,7 +81,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     private CctvExposeService cctvExposeService;
 
     @Autowired
-    private RedisTemplate<String, Object> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @DubboReference
     private DeviceGroupDeviceExposeService deviceGroupDeviceExposeService;
@@ -207,13 +208,14 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         if (Objects.nonNull(devideGroupId)) {
             List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(devideGroupId);
             list.forEach(deviceGroupDevice -> {
-                redisTemplate.opsForValue().set(ResdisConstants.DEVICE_REGION + deviceGroupDevice.getDeviceId(), region);
+                redisTemplate.opsForValue().set(ResdisConstants.DEVICE_REGION + deviceGroupDevice.getDeviceId(), region,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });
         }
         redisTemplate.delete(ResdisConstants.REGION_EXPOSE_OBJECT+region.getId());
         if (Objects.nonNull(exposeObjects) && exposeObjects.size()>0){
             exposeObjects.forEach(exposeObject -> {
                 redisTemplate.opsForList().leftPush(ResdisConstants.REGION_EXPOSE_OBJECT+region.getId(),exposeObject);
+                redisTemplate.expire(ResdisConstants.REGION_EXPOSE_OBJECT+region.getId(),ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
             });
         }
     }

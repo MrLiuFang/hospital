@@ -48,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -82,7 +83,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
 
     @Autowired
-    private RedisTemplate<String, BaseEntity> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @DubboReference
     private TagExposeService tagExposeService;
@@ -129,7 +130,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         roleUserService.relationRole(user.getId(),addUserDto.getRoleId());
         departmentUserExposeService.relationDepartment(user.getId(),addUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),addUserDto.getResponsibleDepartmentIds());
-        redisTemplate.opsForValue().set(ResdisConstants.USER+user.getId(),user);
+        redisTemplate.opsForValue().set(ResdisConstants.USER+user.getId(),user,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         tagUserExposeService.binding(user.getId(),user.getTagCode());
     }
 
@@ -226,7 +227,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         roleUserService.relationRole(user.getId(),updateUserDto.getRoleId());
         departmentUserExposeService.relationDepartment(user.getId(),updateUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),updateUserDto.getResponsibleDepartmentIds());
-        redisTemplate.opsForValue().set(ResdisConstants.USER+user.getId(),user);
+        redisTemplate.opsForValue().set(ResdisConstants.USER+user.getId(),user,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         tagUserExposeService.binding(user.getId(),user.getTagCode());
     }
 
@@ -277,7 +278,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     private void assertTagCode(String tagCode){
         Tag tag = tagExposeService.find(tagCode);
-        if (Objects.nonNull(tag)){
+        if (Objects.isNull(tag)){
             BusinessException.throwException("标签不存在");
         }
     }

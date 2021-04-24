@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -52,7 +53,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     private DepartmentExposeService departmentExposeService;
 
     @Autowired
-    private RedisTemplate<String,Tag> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @Override
     public void add(AddTagDto addTagDto) {
@@ -63,8 +64,8 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         assertDeviceNameExist(tag.getDeviceName(),null);
         assertTagCodeExist(tag.getTagCode(),null);
         tag = save(tag);
-        redisTemplate.opsForValue().set(ResdisConstants.TAG+tag.getId(),tag);
-        redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+tag.getTagCode(),tag);
+        redisTemplate.opsForValue().set(ResdisConstants.TAG+tag.getId(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+tag.getTagCode(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -76,8 +77,8 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         assertDeviceNameExist(tag.getDeviceName(),tag.getId());
         assertTagCodeExist(tag.getTagCode(),tag.getId());
         update(tag);
-        redisTemplate.opsForValue().set(ResdisConstants.TAG+tag.getId(),tag);
-        redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+tag.getTagCode(),tag);
+        redisTemplate.opsForValue().set(ResdisConstants.TAG+tag.getId(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+tag.getTagCode(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override

@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -89,7 +90,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     private DepartmentUserService departmentUserService;
 
     @Autowired
-    private RedisTemplate<String,Wash> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @Override
     @Transactional
@@ -220,8 +221,10 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
                 list.remove(wash);
                 redisTemplate.delete(ResdisConstants.ALL_USER_LOOP_WASH);
                 redisTemplate.opsForList().leftPushAll(ResdisConstants.ALL_USER_LOOP_WASH,list);
+                redisTemplate.expire(ResdisConstants.ALL_USER_LOOP_WASH,ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
                 if (Objects.equals(false,isDelete)){
                     redisTemplate.opsForList().leftPush(ResdisConstants.ALL_USER_LOOP_WASH,wash);
+                    redisTemplate.expire(ResdisConstants.ALL_USER_LOOP_WASH,ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
                 }
                 return;
             }
@@ -232,10 +235,12 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
                 list.remove(wash);
                 redisTemplate.delete(ResdisConstants.USER_LOOP_WASH+washUser.getUserId());
                 redisTemplate.opsForList().leftPushAll(ResdisConstants.USER_LOOP_WASH+washUser.getUserId(),list);
+                redisTemplate.expire(ResdisConstants.USER_LOOP_WASH+washUser.getUserId(),ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
             });
             if (Objects.nonNull(userId) && userId.size()>0) {
                 userId.forEach(ui -> {
                     redisTemplate.opsForList().leftPush(ResdisConstants.USER_LOOP_WASH + ui, wash);
+                    redisTemplate.expire(ResdisConstants.USER_LOOP_WASH + ui,ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
                 });
             }
             return;
@@ -248,6 +253,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             list.remove(wash1);
             redisTemplate.delete(ResdisConstants.REGION_WASH+washRegion.getRegionId());
             redisTemplate.opsForList().leftPushAll(ResdisConstants.REGION_WASH+washRegion.getRegionId(),list);
+            redisTemplate.expire(ResdisConstants.REGION_WASH+washRegion.getRegionId(),ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
         });
 
         List<WashUser> washUserList = washUserService.find(wash.getId());
@@ -257,14 +263,15 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             });
         });
 
-        redisTemplate.opsForValue().set(ResdisConstants.WASH+wash.getId(),wash);
+        redisTemplate.opsForValue().set(ResdisConstants.WASH+wash.getId(),wash,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         regionId.forEach(ri->{
             redisTemplate.opsForList().leftPush(ResdisConstants.REGION_WASH+ri,wash);
+            redisTemplate.expire(ResdisConstants.REGION_WASH+ri,ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
         });
 
         userId.forEach(ui->{
             regionId.forEach(ri-> {
-                redisTemplate.opsForValue().set(ResdisConstants.REGION_USER_WASH +ri +ui, wash);
+                redisTemplate.opsForValue().set(ResdisConstants.REGION_USER_WASH +ri +ui, wash,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });
         });
     }

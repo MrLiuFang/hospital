@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -53,7 +54,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     private FileExposeService fileExposeService;
 
     @Autowired
-    private RedisTemplate<String,Alarm> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @Override
     public void add(AddAlarmDto addAlarmDto) {
@@ -61,7 +62,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         BeanUtils.copyProperties(addAlarmDto,alarm);
         assertContentExist(alarm.getContent(),alarm.getClassify(),null);
         alarm = save(alarm);
-        redisTemplate.opsForValue().set(ResdisConstants.ALARM+alarm.getId(),alarm);
+        redisTemplate.opsForValue().set(ResdisConstants.ALARM+alarm.getId(),alarm,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -70,7 +71,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         BeanUtils.copyProperties(updateAlarmDto,alarm);
         assertContentExist(alarm.getContent(),alarm.getClassify(),alarm.getId());
         update(alarm);
-        redisTemplate.opsForValue().set(ResdisConstants.ALARM+alarm.getId(),alarm);
+        redisTemplate.opsForValue().set(ResdisConstants.ALARM+alarm.getId(),alarm,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override

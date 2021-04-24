@@ -21,6 +21,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -31,7 +32,7 @@ import java.util.Objects;
 public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implements TagUserExposeService {
 
     @Autowired
-    private RedisTemplate<String, BaseEntity> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @DubboReference
     private UserExposeService userExposeService;
@@ -61,8 +62,8 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         newTagUser.setUserId(userId);
         save(newTagUser);
         User user = userExposeService.findById(userId);
-        redisTemplate.opsForValue().set(ResdisConstants.TAG_USER+tag.getId(),user);
-        redisTemplate.opsForValue().set(ResdisConstants.USER_TAG+user.getId(),tag);
+        redisTemplate.opsForValue().set(ResdisConstants.TAG_USER+tag.getId(),user,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(ResdisConstants.USER_TAG+user.getId(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override

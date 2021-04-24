@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -30,7 +31,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     private DeviceGroupDeviceService deviceGroupDeviceService;
 
     @Autowired
-    private RedisTemplate<String,Device> redisTemplate;
+    private RedisTemplate redisTemplate;
 
     @Override
     public void update(Device entity) {
@@ -38,8 +39,8 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         assertNameExist(entity.getName(),entity.getId());
         assertCodeExist(entity.getCode(),entity.getId());
         super.update(entity);
-        redisTemplate.opsForValue().set(ResdisConstants.DEVICE+entity.getId(),entity);
-        redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+entity.getCode(),entity);
+        redisTemplate.opsForValue().set(ResdisConstants.DEVICE+entity.getId(),entity,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+entity.getCode(),entity,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -48,8 +49,8 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         assertNameExist(entity.getName(),null);
         assertCodeExist(entity.getCode(),null);
         entity = save(entity);
-        redisTemplate.opsForValue().set(ResdisConstants.DEVICE+entity.getId(),entity);
-        redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+entity.getCode(),entity);
+        redisTemplate.opsForValue().set(ResdisConstants.DEVICE+entity.getId(),entity,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+entity.getCode(),entity,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         return entity;
     }
 

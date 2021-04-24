@@ -93,4 +93,10 @@ public class ResdisConstants {
      * 当前用户所在的区域(key:userId,value:region)
      */
     public static String USER_CURRENT_REGION = "user_current_region_";
+
+
+    /**
+     * 缓存过期时间
+     */
+    public static Integer EXPIRE_TIME = 364;
 }

@@ -40,6 +40,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -189,7 +190,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
                 userCurrentRegionDto.setFirstEntryTime(eventDto.getTime());
             }
         }
-        redisTemplate.opsForValue().set(ResdisConstants.USER_CURRENT_REGION+user.getId(),userCurrentRegionDto);
+        redisTemplate.opsForValue().set(ResdisConstants.USER_CURRENT_REGION+user.getId(),userCurrentRegionDto,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     /**
@@ -218,13 +219,13 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             userLastWashDto.setMonitor(monitor);
             userLastWashDto.setStar(star);
             userLastWashDto.setDateTime(eventDto.getTime());
-            redisTemplate.opsForValue().set(ResdisConstants.USER_LAST_WASH+user.getId(),userLastWashDto);
+            redisTemplate.opsForValue().set(ResdisConstants.USER_LAST_WASH+user.getId(),userLastWashDto,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         }else {
             UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(ResdisConstants.USER_LAST_WASH+user.getId());
             if (Objects.nonNull(userLastWashDto)){
                 Duration duration = Duration.between(LocalDateTime.now(),userLastWashDto.getDateTime());
                 userLastWashDto.setTime(Long.valueOf(duration.toMillis()).intValue()/1000);
-                redisTemplate.opsForValue().set(ResdisConstants.USER_LAST_WASH+user.getId(),userLastWashDto);
+                redisTemplate.opsForValue().set(ResdisConstants.USER_LAST_WASH+user.getId(),userLastWashDto,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             }
         }
     }
@@ -236,7 +237,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             if (Objects.nonNull(deviceGroupDevice)){
                 region = regionExposeService.find(deviceGroupDevice.getId());
                 if (Objects.nonNull(region)){
-                    redisTemplate.opsForValue().set(ResdisConstants.DEVICE_REGION+deviceId,region);
+                    redisTemplate.opsForValue().set(ResdisConstants.DEVICE_REGION+deviceId,region,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }
             }
         }
@@ -249,7 +250,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             TagUser tagUser = tagUserExposeService.find(tagId);
             if (Objects.nonNull(tagUser)){
                 user = userExposeService.findById(tagUser.getUserId());
-                redisTemplate.opsForValue().set(ResdisConstants.TAG_USER+tagId,user);
+                redisTemplate.opsForValue().set(ResdisConstants.TAG_USER+tagId,user,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             }
         }
         return user;
@@ -259,7 +260,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
         Device device = (Device) redisTemplate.opsForValue().get(ResdisConstants.DEVICE_CODE+code);
         if (Objects.isNull(device)){
             device = deviceExposeService.find(code);
-            redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+code,device);
+            redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+code,device,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         }
         return device;
     }
@@ -268,7 +269,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
         Tag tag = (Tag) redisTemplate.opsForValue().get(ResdisConstants.TAG_CODE+code);
         if (Objects.isNull(tag)){
             tag = tagExposeService.find(code);
-            redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+code,tag);
+            redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+code,tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         }
         return tag;
     }
@@ -279,6 +280,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             list = washExposeService.findLoopWash(userId);
             if (Objects.nonNull(list) && list.size()>0) {
                 redisTemplate.opsForList().leftPushAll(ResdisConstants.USER_LOOP_WASH + userId, list);
+                redisTemplate.expire(ResdisConstants.USER_LOOP_WASH + userId,ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
             }
         }
         return list;
@@ -290,6 +292,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             list = washExposeService.find(regionId);
             if (Objects.nonNull(list) && list.size()>0) {
                 redisTemplate.opsForList().leftPushAll(ResdisConstants.REGION_WASH + regionId, list);
+                redisTemplate.expire(ResdisConstants.REGION_WASH + regionId,ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
             }
         }
         return list;
@@ -300,7 +303,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
         if (Objects.isNull(wash)){
             wash = washExposeService.find(regionId,userId);
             if (Objects.nonNull(wash)) {
-                redisTemplate.opsForValue().set(ResdisConstants.REGION_USER_WASH+regionId+userId,wash);
+                redisTemplate.opsForValue().set(ResdisConstants.REGION_USER_WASH+regionId+userId,wash,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             }
         }
         return wash;
