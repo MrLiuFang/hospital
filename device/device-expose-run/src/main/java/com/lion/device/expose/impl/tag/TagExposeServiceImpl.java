@@ -1,9 +1,8 @@
 package com.lion.device.expose.impl.tag;
 
-import com.lion.common.ResdisConstants;
+import com.lion.common.RedisConstants;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagDao;
-import com.lion.device.entity.device.Device;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.service.tag.TagService;
@@ -47,8 +46,8 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
         if (Objects.nonNull(tag)) {
             tag.setBattery(battery);
             update(tag);
-            redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+tag.getTagCode(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-            redisTemplate.opsForValue().set(ResdisConstants.TAG+tag.getId(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         }
     }
 }

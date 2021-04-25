@@ -1,18 +1,14 @@
 package com.lion.manage.service.rule.impl;
 
-import com.lion.common.ResdisConstants;
+import com.lion.common.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.rule.WashDao;
-import com.lion.manage.dao.rule.WashDeviceDao;
-import com.lion.manage.dao.rule.WashRegionDao;
-import com.lion.manage.dao.rule.WashUserDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.department.DepartmentUser;
 import com.lion.manage.entity.enums.WashDeviceType;
 import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.region.Region;
@@ -37,7 +33,6 @@ import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -193,11 +188,11 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     @Transactional
     public void delete(List<DeleteDto> deleteDtos) {
         deleteDtos.forEach(deleteDto -> {
+            persistence2Redis(Collections.EMPTY_LIST,Collections.EMPTY_LIST,this.findById(deleteDto.getId()),true);
             this.deleteById(deleteDto.getId());
             washDeviceService.delete(deleteDto.getId());
             washRegionService.delete(deleteDto.getId());
             washUserService.delete(deleteDto.getId());
-            persistence2Redis(Collections.EMPTY_LIST,Collections.EMPTY_LIST,this.findById(deleteDto.getId()),true);
         });
     }
 
@@ -214,33 +209,40 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     private void persistence2Redis(List<Long> regionId,List<Long> userId,Wash wash,Boolean isDelete){
         if (Objects.equals(wash.getType(),WashRuleType.LOOP)) {
             if (wash.getIsAllUser()){
-                List<Wash> list = redisTemplate.opsForList().range(ResdisConstants.ALL_USER_LOOP_WASH,0,-1);
+                List<Long> list = redisTemplate.opsForList().range(RedisConstants.ALL_USER_LOOP_WASH,0,-1);
                 if (Objects.isNull(list)){
-                    list = new ArrayList<Wash>();
+                    list = new ArrayList<Long>();
                 }
-                list.remove(wash);
-                redisTemplate.delete(ResdisConstants.ALL_USER_LOOP_WASH);
-                redisTemplate.opsForList().leftPushAll(ResdisConstants.ALL_USER_LOOP_WASH,list);
-                redisTemplate.expire(ResdisConstants.ALL_USER_LOOP_WASH,ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                list.remove(wash.getId());
+                redisTemplate.delete(RedisConstants.ALL_USER_LOOP_WASH);
+                if (Objects.nonNull(list) && list.size()>0) {
+                    redisTemplate.opsForList().leftPushAll(RedisConstants.ALL_USER_LOOP_WASH, list);
+                    redisTemplate.expire(RedisConstants.ALL_USER_LOOP_WASH, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                }
                 if (Objects.equals(false,isDelete)){
-                    redisTemplate.opsForList().leftPush(ResdisConstants.ALL_USER_LOOP_WASH,wash);
-                    redisTemplate.expire(ResdisConstants.ALL_USER_LOOP_WASH,ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                    redisTemplate.opsForList().leftPush(RedisConstants.ALL_USER_LOOP_WASH,wash.getId());
+                    redisTemplate.expire(RedisConstants.ALL_USER_LOOP_WASH, RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
                 }
                 return;
             }
 
             List<WashUser> washUserList = washUserService.find(wash.getId());
             washUserList.forEach(washUser -> {
-                List<Wash> list = redisTemplate.opsForList().range(ResdisConstants.USER_LOOP_WASH+washUser.getUserId(),0,-1);
-                list.remove(wash);
-                redisTemplate.delete(ResdisConstants.USER_LOOP_WASH+washUser.getUserId());
-                redisTemplate.opsForList().leftPushAll(ResdisConstants.USER_LOOP_WASH+washUser.getUserId(),list);
-                redisTemplate.expire(ResdisConstants.USER_LOOP_WASH+washUser.getUserId(),ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                List<Long> list = redisTemplate.opsForList().range(RedisConstants.USER_LOOP_WASH+washUser.getUserId(),0,-1);
+                if (Objects.isNull(list)){
+                    list = new ArrayList<Long>();
+                }
+                list.remove(wash.getId());
+                redisTemplate.delete(RedisConstants.USER_LOOP_WASH+washUser.getUserId());
+                if (Objects.nonNull(list) && list.size()>0) {
+                    redisTemplate.opsForList().leftPushAll(RedisConstants.USER_LOOP_WASH + washUser.getUserId(), list);
+                    redisTemplate.expire(RedisConstants.USER_LOOP_WASH + washUser.getUserId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                }
             });
             if (Objects.nonNull(userId) && userId.size()>0) {
                 userId.forEach(ui -> {
-                    redisTemplate.opsForList().leftPush(ResdisConstants.USER_LOOP_WASH + ui, wash);
-                    redisTemplate.expire(ResdisConstants.USER_LOOP_WASH + ui,ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                    redisTemplate.opsForList().leftPush(RedisConstants.USER_LOOP_WASH + ui, wash.getId());
+                    redisTemplate.expire(RedisConstants.USER_LOOP_WASH + ui, RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
                 });
             }
             return;
@@ -248,30 +250,34 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
 
         List<WashRegion> washRegionList = washRegionService.find(wash.getId());
         washRegionList.forEach(washRegion -> {
-            List<Wash> list = redisTemplate.opsForList().range(ResdisConstants.REGION_WASH+washRegion.getRegionId(),0,-1);
-            Wash wash1 = findById(washRegion.getWashId());
-            list.remove(wash1);
-            redisTemplate.delete(ResdisConstants.REGION_WASH+washRegion.getRegionId());
-            redisTemplate.opsForList().leftPushAll(ResdisConstants.REGION_WASH+washRegion.getRegionId(),list);
-            redisTemplate.expire(ResdisConstants.REGION_WASH+washRegion.getRegionId(),ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            List<Long> list = redisTemplate.opsForList().range(RedisConstants.REGION_WASH+washRegion.getRegionId(),0,-1);
+            if (Objects.isNull(list)){
+                list = new ArrayList<Long>();
+            }
+            list.remove(washRegion.getWashId());
+            redisTemplate.delete(RedisConstants.REGION_WASH+washRegion.getRegionId());
+            if (Objects.nonNull(list) && list.size()>0) {
+                redisTemplate.opsForList().leftPushAll(RedisConstants.REGION_WASH + washRegion.getRegionId(), list);
+                redisTemplate.expire(RedisConstants.REGION_WASH + washRegion.getRegionId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            }
         });
 
         List<WashUser> washUserList = washUserService.find(wash.getId());
         washUserList.forEach(washUser -> {
             regionId.forEach(ri->{
-                redisTemplate.delete(ResdisConstants.REGION_USER_WASH+ri+washUser.getUserId());
+                redisTemplate.delete(RedisConstants.REGION_USER_WASH+ri+washUser.getUserId());
             });
         });
 
-        redisTemplate.opsForValue().set(ResdisConstants.WASH+wash.getId(),wash,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         regionId.forEach(ri->{
-            redisTemplate.opsForList().leftPush(ResdisConstants.REGION_WASH+ri,wash);
-            redisTemplate.expire(ResdisConstants.REGION_WASH+ri,ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            redisTemplate.opsForList().leftPush(RedisConstants.REGION_WASH+ri,wash.getId());
+            redisTemplate.expire(RedisConstants.REGION_WASH+ri, RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
         });
 
         userId.forEach(ui->{
             regionId.forEach(ri-> {
-                redisTemplate.opsForValue().set(ResdisConstants.REGION_USER_WASH +ri +ui, wash,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.REGION_USER_WASH +ri +ui, wash.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });
         });
     }

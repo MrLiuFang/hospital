@@ -7,7 +7,7 @@ import javax.print.attribute.standard.PrinterURI;
  * @Description //TODO
  * @Date 2021/4/23 下午4:35
  **/
-public class ResdisConstants {
+public class RedisConstants {
 
     /**
      * 用户(key:userId,value:user)
@@ -20,22 +20,22 @@ public class ResdisConstants {
     public static String WASH = "wash_";
 
     /**
-     * 区域洗手规则(key:regionId,value:List<wash>)
+     * 区域洗手规则(key:regionId,value:List<washId>)
      */
     public static String REGION_WASH = "region_wash_";
 
     /**
-     * 区域用户洗手规则(key:regionId+userId,value:wash)
+     * 区域用户洗手规则(key:regionId+userId,value:washId)
      */
     public static String REGION_USER_WASH = "region_user_wash_";
 
     /**
-     * 用户定时洗手规则(key:userId,value:List<wash>)
+     * 用户定时洗手规则(key:userId,value:List<washId>)
      */
     public static String USER_LOOP_WASH = "user_loop_wash_";
 
     /**
-     * 所有用户定时洗手规则(key:,value:List<wash>)
+     * 所有用户定时洗手规则(key:,value:List<washId>)
      */
     public static String ALL_USER_LOOP_WASH = "all_user_loop_wash_";
 
@@ -45,14 +45,19 @@ public class ResdisConstants {
     public static String ALARM = "alarm_";
 
     /**
-     * 设备归属哪个区域(key:deviceId,value:region)
+     * 设备归属哪个区域(key:deviceId,value:regionId)
      */
     public static String DEVICE_REGION = "device_region_";
 
     /**
-     * 区域公开对象(key:regionId,value:List<region>)
+     * 区域公开对象(key:regionId,value:List<ExposeObject>)
      */
     public static String REGION_EXPOSE_OBJECT = "region_expose_object_";
+
+    /**
+     * 区域(key:regionId,value:region)
+     */
+    public static String REGION = "region_";
 
     /**
      * 设备(key:deviceId,value:device)
@@ -75,12 +80,12 @@ public class ResdisConstants {
     public static String TAG_CODE = "tag_code_";
 
     /**
-     * 用户与的标签关联(key:userId,value:tag)
+     * 用户与的标签关联(key:userId,value:tagId)
      */
     public static String USER_TAG = "user_tag_";
 
     /**
-     * 用户与的标签关联(key:tagId,value:user)
+     * 用户与的标签关联(key:tagId,value:userId)
      */
     public static String TAG_USER = "tag_user_";
 

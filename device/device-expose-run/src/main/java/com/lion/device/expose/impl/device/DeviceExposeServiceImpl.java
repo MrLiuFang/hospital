@@ -1,6 +1,6 @@
 package com.lion.device.expose.impl.device;
 
-import com.lion.common.ResdisConstants;
+import com.lion.common.RedisConstants;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.entity.device.Device;
@@ -47,8 +47,8 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
         if (Objects.nonNull(device)) {
             device.setBattery(battery);
             update(device);
-            redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+device.getCode(),device,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-            redisTemplate.opsForValue().set(ResdisConstants.DEVICE+device.getId(),device,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+device.getCode(),device, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.DEVICE+device.getId(),device, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         }
     }
 }

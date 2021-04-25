@@ -2,6 +2,7 @@ package com.lion.manage.dao.region;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.region.Region;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -53,4 +54,11 @@ public interface RegionDao extends BaseDao<Region> {
      * @return
      */
     public Region findFirstByDeviceGroupId(Long deviceGroupId);
+
+    /**
+     * 删除区域关联的设备组（将deviceGroupId字段置为null）
+     * @param deviceGroupId
+     */
+    @Query(" update Region set deviceGroupId = null where deviceGroupId = :deviceGroupId ")
+    public void deleteDeviceGroup(Long deviceGroupId);
 }

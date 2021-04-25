@@ -1,8 +1,7 @@
 package com.lion.manage.service.region.impl;
 
-import com.lion.common.ResdisConstants;
+import com.lion.common.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
-import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.expose.cctv.CctvExposeService;
@@ -20,21 +19,18 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.region.dto.AddRegionDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
-import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionCctvService;
 import com.lion.manage.service.region.RegionExposeObjectService;
 import com.lion.manage.service.region.RegionService;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sun.rmi.runtime.Log;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -202,20 +198,20 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         if (Objects.nonNull(oldDevideGroupId)){
             List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(oldDevideGroupId);
             list.forEach(deviceGroupDevice -> {
-                redisTemplate.delete(ResdisConstants.DEVICE_REGION+deviceGroupDevice.getDeviceId());
+                redisTemplate.delete(RedisConstants.DEVICE_REGION+deviceGroupDevice.getDeviceId());
             });
         }
         if (Objects.nonNull(devideGroupId)) {
             List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(devideGroupId);
             list.forEach(deviceGroupDevice -> {
-                redisTemplate.opsForValue().set(ResdisConstants.DEVICE_REGION + deviceGroupDevice.getDeviceId(), region,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION + deviceGroupDevice.getDeviceId(), region.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });
         }
-        redisTemplate.delete(ResdisConstants.REGION_EXPOSE_OBJECT+region.getId());
+        redisTemplate.delete(RedisConstants.REGION_EXPOSE_OBJECT+region.getId());
         if (Objects.nonNull(exposeObjects) && exposeObjects.size()>0){
             exposeObjects.forEach(exposeObject -> {
-                redisTemplate.opsForList().leftPush(ResdisConstants.REGION_EXPOSE_OBJECT+region.getId(),exposeObject);
-                redisTemplate.expire(ResdisConstants.REGION_EXPOSE_OBJECT+region.getId(),ResdisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForList().leftPush(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(),exposeObject);
+                redisTemplate.expire(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(), RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
             });
         }
     }

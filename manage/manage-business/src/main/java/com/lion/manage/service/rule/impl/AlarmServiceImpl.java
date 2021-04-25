@@ -1,6 +1,6 @@
 package com.lion.manage.service.rule.impl;
 
-import com.lion.common.ResdisConstants;
+import com.lion.common.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -9,13 +9,11 @@ import com.lion.core.PageResultData;
 import com.lion.core.ResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
-import com.lion.core.service.BaseService;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.rule.AlarmDao;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.rule.Alarm;
-import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.dto.AddAlarmDto;
 import com.lion.manage.entity.rule.dto.UpdateAlarmDto;
 import com.lion.manage.entity.rule.vo.DetailsAlarmVo;
@@ -62,7 +60,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         BeanUtils.copyProperties(addAlarmDto,alarm);
         assertContentExist(alarm.getContent(),alarm.getClassify(),null);
         alarm = save(alarm);
-        redisTemplate.opsForValue().set(ResdisConstants.ALARM+alarm.getId(),alarm,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -71,7 +69,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         BeanUtils.copyProperties(updateAlarmDto,alarm);
         assertContentExist(alarm.getContent(),alarm.getClassify(),alarm.getId());
         update(alarm);
-        redisTemplate.opsForValue().set(ResdisConstants.ALARM+alarm.getId(),alarm,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -116,7 +114,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     public void delete(List<DeleteDto> deleteDtos) {
         deleteDtos.forEach(deleteDto -> {
             deleteById(deleteDto.getId());
-            redisTemplate.delete(ResdisConstants.ALARM+deleteDto.getId());
+            redisTemplate.delete(RedisConstants.ALARM+deleteDto.getId());
         });
     }
 

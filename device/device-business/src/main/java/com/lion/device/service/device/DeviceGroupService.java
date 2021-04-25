@@ -2,12 +2,14 @@ package com.lion.device.service.device;
 
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.device.DeviceGroup;
 import com.lion.device.entity.device.dto.AddDeviceGroupDto;
 import com.lion.device.entity.device.dto.UpdateDeviceGroupDto;
 import com.lion.device.entity.device.vo.DetailsDeviceGroupVo;
 import com.lion.device.entity.device.vo.ListDeviceGroupVo;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -45,4 +47,10 @@ public interface DeviceGroupService extends BaseService<DeviceGroup> {
      * @return
      */
     public DetailsDeviceGroupVo details(Long id);
+
+    /**
+     * 删除设备组
+     * @param deleteDtoList
+     */
+    public void delete(List<DeleteDto> deleteDtoList);
 }

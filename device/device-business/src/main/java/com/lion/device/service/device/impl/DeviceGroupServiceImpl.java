@@ -1,15 +1,16 @@
 package com.lion.device.service.device.impl;
 
+import com.lion.common.RedisConstants;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
+import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.dao.device.DeviceGroupDao;
 import com.lion.device.dao.device.DeviceGroupDeviceDao;
-import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.entity.device.dto.AddDeviceGroupDto;
 import com.lion.device.entity.device.dto.UpdateDeviceGroupDto;
@@ -19,18 +20,23 @@ import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.service.device.DeviceGroupService;
 import com.lion.device.entity.device.DeviceGroup;
 import com.lion.exception.BusinessException;
-import org.checkerframework.checker.units.qual.A;
+import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.region.impl.RegionExposeService;
+import io.seata.spring.annotation.GlobalTransactional;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.jpa.repository.query.JpaParameters;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -52,6 +58,12 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
     @Autowired
     private DeviceDao deviceDao;
 
+    @DubboReference
+    private RegionExposeService regionExposeService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
 
     @Override
     @Transactional
@@ -62,6 +74,7 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
         assertCodeExist(deviceGroup.getCode(),null);
         deviceGroup = save(deviceGroup);
         deviceGroupDeviceService.add(deviceGroup.getId(),addDeviceGroupDto.getDeviceIds());
+        persistenceRedis(addDeviceGroupDto.getDeviceIds(),Collections.EMPTY_LIST,deviceGroup.getId(),false);
     }
 
     @Override
@@ -71,8 +84,14 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
         BeanUtils.copyProperties(updateDeviceGroupDto, deviceGroup);
         assertNameExist(deviceGroup.getName(),deviceGroup.getId());
         assertCodeExist(deviceGroup.getCode(),deviceGroup.getId());
+        List<DeviceGroupDevice> list = deviceGroupDeviceDao.findByDeviceGroupId(deviceGroup.getId());
+        List<Long> oldDeviceIds = new ArrayList<Long>();
+        list.forEach(deviceGroupDevice -> {
+            oldDeviceIds.add(deviceGroupDevice.getDeviceId());
+        });
         update(deviceGroup);
         deviceGroupDeviceService.add(deviceGroup.getId(),updateDeviceGroupDto.getDeviceIds());
+        persistenceRedis(updateDeviceGroupDto.getDeviceIds(),oldDeviceIds,deviceGroup.getId(),false);
     }
 
     @Override
@@ -100,6 +119,45 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
             return detailsDeviceGroupVo;
         }
         return null;
+    }
+
+    @Override
+    @Transactional
+//    @GlobalTransactional
+    public void delete(List<DeleteDto> deleteDtoList) {
+        deleteDtoList.forEach(d->{
+            deleteById(d.getId());
+            List<DeviceGroupDevice> list = deviceGroupDeviceDao.findByDeviceGroupId(d.getId());
+            List<Long> oldDeviceIds = new ArrayList<Long>();
+            list.forEach(deviceGroupDevice -> {
+                oldDeviceIds.add(deviceGroupDevice.getDeviceId());
+            });
+            deviceGroupDeviceService.deleteByDeviceGroupId(d.getId());
+            regionExposeService.deleteDeviceGroup(d.getId());
+            persistenceRedis(Collections.emptyList(),oldDeviceIds,d.getId(),true);
+        });
+    }
+
+    private void persistenceRedis(List<Long> newDeviceIds,List<Long> oldDeviceIds, Long deviceGroupId,Boolean isDelete){
+        Region region = regionExposeService.find(deviceGroupId);
+        if (Objects.isNull(region)){
+            oldDeviceIds.forEach(id->{
+                redisTemplate.delete(RedisConstants.DEVICE_REGION+id);
+            });
+            return;
+        }
+        if (Objects.nonNull(oldDeviceIds) && oldDeviceIds.size()>0){
+            oldDeviceIds.forEach(id->{
+                redisTemplate.delete(RedisConstants.DEVICE_REGION+id);
+            });
+        }
+        if (Objects.equals(false,isDelete)){
+            if (Objects.nonNull(newDeviceIds) && newDeviceIds.size()>0){
+                newDeviceIds.forEach(id->{
+                    redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION+id,region.getId(),RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                });
+            }
+        }
     }
 
     private void assertNameExist(String name, Long id) {

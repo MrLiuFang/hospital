@@ -1,14 +1,10 @@
 package com.lion.device.service.tag.impl;
 
-import com.lion.common.ResdisConstants;
+import com.lion.common.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
-import com.lion.core.service.BaseService;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.*;
-import com.lion.device.entity.device.Device;
-import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
-import com.lion.device.entity.tag.TagAssets;
 import com.lion.device.entity.tag.TagUser;
 import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
@@ -64,8 +60,8 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         assertDeviceNameExist(tag.getDeviceName(),null);
         assertTagCodeExist(tag.getTagCode(),null);
         tag = save(tag);
-        redisTemplate.opsForValue().set(ResdisConstants.TAG+tag.getId(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+tag.getTagCode(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -77,8 +73,8 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         assertDeviceNameExist(tag.getDeviceName(),tag.getId());
         assertTagCodeExist(tag.getTagCode(),tag.getId());
         update(tag);
-        redisTemplate.opsForValue().set(ResdisConstants.TAG+tag.getId(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(ResdisConstants.TAG_CODE+tag.getTagCode(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -91,8 +87,8 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             tagPostdocsDao.deleteByTagId(deleteDto.getId());
             tagUserDao.deleteByTagId(deleteDto.getId());
             list.forEach(tagUser -> {
-                redisTemplate.delete(ResdisConstants.USER_TAG+tagUser.getUserId());
-                redisTemplate.delete(ResdisConstants.TAG_USER+tagUser.getTagId());
+                redisTemplate.delete(RedisConstants.USER_TAG+tagUser.getUserId());
+                redisTemplate.delete(RedisConstants.TAG_USER+tagUser.getTagId());
             });
         });
     }

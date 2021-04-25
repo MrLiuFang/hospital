@@ -19,9 +19,9 @@ public class UserCurrentRegionDto {
     private Long userId;
 
     /**
-     * 当前所在的区域
+     * 当前所在的区域Id
      */
-    private Region region;
+    private Long regionId;
 
     /**
      * 第一次进入时间

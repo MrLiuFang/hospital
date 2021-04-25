@@ -1,14 +1,12 @@
 package com.lion.device.expose.impl.tag;
 
-import com.lion.common.ResdisConstants;
-import com.lion.core.persistence.entity.BaseEntity;
+import com.lion.common.RedisConstants;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagDao;
 import com.lion.device.dao.tag.TagUserDao;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagUser;
 import com.lion.device.expose.tag.TagUserExposeService;
-import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
@@ -19,7 +17,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -62,8 +59,8 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         newTagUser.setUserId(userId);
         save(newTagUser);
         User user = userExposeService.findById(userId);
-        redisTemplate.opsForValue().set(ResdisConstants.TAG_USER+tag.getId(),user,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(ResdisConstants.USER_TAG+user.getId(),tag,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_USER+tag.getId(),user.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.USER_TAG+user.getId(),tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -72,8 +69,8 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         if (Objects.nonNull(tagUser)) {
             tagUser.setUnbindingTime(LocalDateTime.now());
             update(tagUser);
-            redisTemplate.delete(ResdisConstants.TAG_USER + tagUser.getTagId());
-            redisTemplate.delete(ResdisConstants.USER_TAG + tagUser.getUserId());
+            redisTemplate.delete(RedisConstants.TAG_USER + tagUser.getTagId());
+            redisTemplate.delete(RedisConstants.USER_TAG + tagUser.getUserId());
         }
     }
 

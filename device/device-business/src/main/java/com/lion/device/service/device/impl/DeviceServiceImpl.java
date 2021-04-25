@@ -1,6 +1,6 @@
 package com.lion.device.service.device.impl;
 
-import com.lion.common.ResdisConstants;
+import com.lion.common.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceDao;
@@ -39,8 +39,8 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         assertNameExist(entity.getName(),entity.getId());
         assertCodeExist(entity.getCode(),entity.getId());
         super.update(entity);
-        redisTemplate.opsForValue().set(ResdisConstants.DEVICE+entity.getId(),entity,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+entity.getCode(),entity,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.DEVICE+entity.getId(),entity, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+entity.getCode(),entity, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -49,8 +49,8 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         assertNameExist(entity.getName(),null);
         assertCodeExist(entity.getCode(),null);
         entity = save(entity);
-        redisTemplate.opsForValue().set(ResdisConstants.DEVICE+entity.getId(),entity,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(ResdisConstants.DEVICE_CODE+entity.getCode(),entity,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.DEVICE+entity.getId(),entity, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+entity.getCode(),entity, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         return entity;
     }
 
@@ -89,9 +89,9 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
             if (Objects.nonNull(device) ) {
                 deleteById(d.getId());
                 deviceGroupDeviceService.deleteByDeviceId(d.getId());
-                redisTemplate.delete(ResdisConstants.DEVICE+device.getId());
-                redisTemplate.delete(ResdisConstants.DEVICE_CODE+device.getCode());
-                redisTemplate.delete(ResdisConstants.DEVICE_REGION+device.getId());
+                redisTemplate.delete(RedisConstants.DEVICE+device.getId());
+                redisTemplate.delete(RedisConstants.DEVICE_CODE+device.getCode());
+                redisTemplate.delete(RedisConstants.DEVICE_REGION+device.getId());
             }
         });
     }

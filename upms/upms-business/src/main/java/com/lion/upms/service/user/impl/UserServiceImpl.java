@@ -1,7 +1,7 @@
 package com.lion.upms.service.user.impl;
 
 import cn.hutool.crypto.SecureUtil;
-import com.lion.common.ResdisConstants;
+import com.lion.common.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -9,7 +9,6 @@ import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
-import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
@@ -33,7 +32,6 @@ import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
 import com.lion.utils.MapToBeanUtil;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,7 +128,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         roleUserService.relationRole(user.getId(),addUserDto.getRoleId());
         departmentUserExposeService.relationDepartment(user.getId(),addUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),addUserDto.getResponsibleDepartmentIds());
-        redisTemplate.opsForValue().set(ResdisConstants.USER+user.getId(),user,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         tagUserExposeService.binding(user.getId(),user.getTagCode());
     }
 
@@ -227,7 +225,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         roleUserService.relationRole(user.getId(),updateUserDto.getRoleId());
         departmentUserExposeService.relationDepartment(user.getId(),updateUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),updateUserDto.getResponsibleDepartmentIds());
-        redisTemplate.opsForValue().set(ResdisConstants.USER+user.getId(),user,ResdisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         tagUserExposeService.binding(user.getId(),user.getTagCode());
     }
 
@@ -241,7 +239,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
                 roleUserService.deleteByUserId(d.getId());
                 departmentUserExposeService.deleteByUserId(d.getId());
                 departmentResponsibleUserExposeService.deleteByUserId(d.getId());
-                redisTemplate.delete(ResdisConstants.USER+d.getId());
+                redisTemplate.delete(RedisConstants.USER+d.getId());
                 tagUserExposeService.unbinding(user.getId());
             }
         });

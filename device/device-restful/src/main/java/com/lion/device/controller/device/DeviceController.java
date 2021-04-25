@@ -173,13 +173,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
     @ApiOperation(value = "删除设备组")
     @DeleteMapping("/group/delete")
     public IResultData groupDelete(@RequestBody List<DeleteDto> deleteDtoList){
-        deleteDtoList.forEach(d->{
-            DeviceGroup deviceGroup = this.deviceGroupService.findById(d.getId());
-            if (Objects.nonNull(deviceGroup) ) {
-                deviceGroupService.deleteById(d.getId());
-                deviceGroupDeviceService.deleteByDeviceGroupId(d.getId());
-            }
-        });
+        deviceGroupService.delete(deleteDtoList);
         ResultData resultData = ResultData.instance();
         return resultData;
     }

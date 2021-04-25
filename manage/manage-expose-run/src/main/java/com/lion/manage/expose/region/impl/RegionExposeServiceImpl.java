@@ -5,6 +5,7 @@ import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.entity.region.Region;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @Author Mr.Liu
@@ -20,5 +21,11 @@ public class RegionExposeServiceImpl extends BaseServiceImpl<Region> implements 
     @Override
     public Region find(Long deviceGroupId) {
         return regionDao.findFirstByDeviceGroupId(deviceGroupId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteDeviceGroup(Long deviceGroupId) {
+        regionDao.deleteDeviceGroup(deviceGroupId);
     }
 }
