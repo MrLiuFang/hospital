@@ -22,12 +22,12 @@ public class UserLastWashDto {
     /**
      * 设备
      */
-    Device monitor;
+    private Long monitorId;
 
     /**
      * 设备
      */
-    Device star;
+    private Long starId;
 
     /**
      * 最后洗手发生时间
