@@ -6,6 +6,7 @@ import lombok.Data;
 import org.codehaus.jackson.map.annotate.JsonFilter;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -15,8 +16,8 @@ import java.time.LocalDateTime;
  * @date 2021/4/14上午9:45
  */
 @Data
-public class EventDto {
-
+public class EventDto implements Serializable {
+    private static final long serialVersionUID = -90000050L;
     //Star 的 MacID
     private String starId;
     //Monitor 的 ID

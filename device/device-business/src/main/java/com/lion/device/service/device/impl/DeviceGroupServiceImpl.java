@@ -22,7 +22,6 @@ import com.lion.device.entity.device.DeviceGroup;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.region.impl.RegionExposeService;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;

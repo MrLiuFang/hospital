@@ -4,15 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.RedisConstants;
 import com.lion.device.entity.device.Device;
-import com.lion.device.entity.device.DeviceGroupDevice;
-import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.tag.Tag;
-import com.lion.device.entity.tag.TagUser;
 import com.lion.device.expose.device.DeviceExposeService;
-import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
-import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.event.constant.TopicConstants;
 import com.lion.event.dto.EventDto;
 import com.lion.event.dto.RegionWashDelayDto;
@@ -23,31 +18,21 @@ import com.lion.event.service.EventService;
 import com.lion.event.utils.RedisUtil;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Wash;
-import com.lion.manage.entity.rule.WashRegion;
-import com.lion.manage.expose.region.impl.RegionExposeService;
-import com.lion.manage.expose.rule.WashExposeService;
 import com.lion.upms.entity.user.User;
-import com.lion.upms.expose.user.UserExposeService;
-import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.omg.CORBA.OBJ_ADAPTER;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
-import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -83,11 +68,9 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private RedisUtil redisUtil;
 
-    @SneakyThrows
     @Override
     public void onMessage(MessageExt messageExt) {
         try {
-//            log.info(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             byte[] body = messageExt.getBody();
             String msg = new String(body);
             EventDto eventDto = jacksonObjectMapper.readValue(msg, EventDto.class);
@@ -133,7 +116,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
 
             }
         }catch (Exception exception){
-
+            exception.printStackTrace();
         }
     }
 
@@ -258,7 +241,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
         }else {
             UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
             if (Objects.nonNull(userLastWashDto)){
-                Duration duration = Duration.between(LocalDateTime.now(),userLastWashDto.getDateTime());
+                Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
                 userLastWashDto.setTime(Long.valueOf(duration.toMillis()).intValue()/1000);
                 redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+user.getId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             }

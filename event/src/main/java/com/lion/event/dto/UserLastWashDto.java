@@ -3,6 +3,7 @@ package com.lion.event.dto;
 import com.lion.device.entity.device.Device;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -11,9 +12,8 @@ import java.time.LocalDateTime;
  * @Date 2021/4/24 下午4:41
  **/
 @Data
-public class UserLastWashDto {
-
-
+public class UserLastWashDto implements Serializable {
+    private static final long serialVersionUID = -90000050L;
     /**
      * 用户ID
      */

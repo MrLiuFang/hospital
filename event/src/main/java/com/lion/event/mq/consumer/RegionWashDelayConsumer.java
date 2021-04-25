@@ -50,57 +50,59 @@ public class RegionWashDelayConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
 
-    @SneakyThrows
     @Override
     public void onMessage(MessageExt messageExt) {
-        byte[] body = messageExt.getBody();
-        String msg = new String(body);
-        RegionWashDelayDto regionWashDelayDto = jacksonObjectMapper.readValue(msg, RegionWashDelayDto.class);
-        if (Objects.nonNull(regionWashDelayDto)) {
-            UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION+regionWashDelayDto.getUserId());
-            if (Objects.nonNull(userCurrentRegionDto)){
-                if (!Objects.equals(userCurrentRegionDto.getRegionId(),regionWashDelayDto.getRegionId())){
-                    return;
-                }else {
-                    if (Objects.nonNull(regionWashDelayDto.getDelayDateTime())){
-                        Duration duration = Duration.between(regionWashDelayDto.getDelayDateTime(),LocalDateTime.now());
-                        long millis = duration.toMillis();
-                        if (millis<=1000) {
-                            RegionWashDto regionWashDto = new RegionWashDto();
-                            regionWashDto.setRegionId(userCurrentRegionDto.getRegionId());
-                            regionWashDto.setUserId(userCurrentRegionDto.getUserId());
-                            rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDto)).build());
-                        }else {
-                            Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
-                            if (delayLevel > -1) {
-                                rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 1000, delayLevel);
-                            }
-                        }
-                        return;
-                    }
+        try {
 
-                    List<Wash> washList = redisUtil.getWash(userCurrentRegionDto.getRegionId());
-                    washList.forEach(wash -> {
-                        if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getBeforeEnteringTime())) {
-                            RegionWashDto regionWashDto = new RegionWashDto();
-                            regionWashDto.setRegionId(userCurrentRegionDto.getRegionId());
-                            regionWashDto.setUserId(userCurrentRegionDto.getUserId());
-                            try {
+            byte[] body = messageExt.getBody();
+            String msg = new String(body);
+            RegionWashDelayDto regionWashDelayDto = jacksonObjectMapper.readValue(msg, RegionWashDelayDto.class);
+            if (Objects.nonNull(regionWashDelayDto)) {
+                UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + regionWashDelayDto.getUserId());
+                if (Objects.nonNull(userCurrentRegionDto)) {
+                    if (!Objects.equals(userCurrentRegionDto.getRegionId(), regionWashDelayDto.getRegionId())) {
+                        return;
+                    } else {
+                        if (Objects.nonNull(regionWashDelayDto.getDelayDateTime())) {
+                            Duration duration = Duration.between(LocalDateTime.now(),regionWashDelayDto.getDelayDateTime());
+                            long millis = duration.toMillis();
+                            if (millis <= 1000) {
+                                RegionWashDto regionWashDto = new RegionWashDto();
+                                regionWashDto.setRegionId(userCurrentRegionDto.getRegionId());
+                                regionWashDto.setUserId(userCurrentRegionDto.getUserId());
                                 rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDto)).build());
-                            } catch (JsonProcessingException e) {
-                                e.printStackTrace();
-                            }
-                        }else if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getOvertimeRemind())) {
-                            regionWashDelayDto.setDelayDateTime(LocalDateTime.now().plusMinutes(wash.getOvertimeRemind()));
-                            try {
+                            } else {
                                 Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
                                 if (delayLevel > -1) {
-                                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 2000, delayLevel);
+                                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 1000, delayLevel);
                                 }
-                            } catch (JsonProcessingException e) {
-                                e.printStackTrace();
                             }
+                            return;
                         }
+
+                        List<Wash> washList = redisUtil.getWash(userCurrentRegionDto.getRegionId());
+                        washList.forEach(wash -> {
+                            if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getBeforeEnteringTime())) {
+                                RegionWashDto regionWashDto = new RegionWashDto();
+                                regionWashDto.setRegionId(userCurrentRegionDto.getRegionId());
+                                regionWashDto.setUserId(userCurrentRegionDto.getUserId());
+                                try {
+                                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDto)).build());
+                                } catch (JsonProcessingException e) {
+                                    e.printStackTrace();
+                                }
+                            } else if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getOvertimeRemind())) {
+                                LocalDateTime delayDateTime = LocalDateTime.now().plusMinutes(wash.getOvertimeRemind());
+                                regionWashDelayDto.setDelayDateTime(delayDateTime);
+                                try {
+                                    Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
+                                    if (delayLevel > -1) {
+                                        rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 2000, delayLevel);
+                                    }
+                                } catch (JsonProcessingException e) {
+                                    e.printStackTrace();
+                                }
+                            }
 //                        else if (Objects.equals(wash.getType(), WashRuleType.LOOP)){
 //                            regionWashDelayDto.setDelayDateTime(LocalDateTime.now().plusMinutes(wash.getInterval()));
 //                            try {
@@ -112,9 +114,12 @@ public class RegionWashDelayConsumer implements RocketMQListener<MessageExt> {
 //                                e.printStackTrace();
 //                            }
 //                        }
-                    });
+                        });
+                    }
                 }
             }
+        }catch (Exception exception){
+            exception.printStackTrace();
         }
     }
 }

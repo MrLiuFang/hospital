@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -76,7 +77,8 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
 
     @Override
     public TagUser find(Long tagId) {
-        return tagUserDao.findFirstByUserIdAndUnbindingTimeIsNull(tagId);
+        List<TagUser> list = tagUserDao.findByTagIdAndUnbindingTimeIsNull(tagId);
+        return list.size()>0?list.get(0):null;
     }
 
 

@@ -3,6 +3,7 @@ package com.lion.event.dto;
 import com.lion.manage.entity.region.Region;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +16,8 @@ import java.util.Objects;
  * @Date 2021/4/24 下午8:31
  **/
 @Data
-public class UserCurrentRegionDto {
-
+public class UserCurrentRegionDto implements Serializable {
+    private static final long serialVersionUID = -90000050L;
     /**
      * 上次事件所在区域
      */
@@ -50,8 +51,8 @@ public class UserCurrentRegionDto {
     }
 
     @Data
-    public static class WashRecord{
-
+    public static class WashRecord implements Serializable{
+        private static final long serialVersionUID = -90000050L;
         /**
          * 洗手时间
          */

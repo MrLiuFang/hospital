@@ -13,32 +13,39 @@ import java.time.LocalDateTime;
 public class MessageDelayUtil {
 
     public static Integer getDelayLevel(LocalDateTime dateTime){
-        Duration duration = Duration.between(dateTime,LocalDateTime.now());
-        long millis = duration.toMinutes();
+        Duration duration = Duration.between(LocalDateTime.now(),dateTime);
+        long millis = duration.toMillis();
+        if (millis<1000*60){
+           return DelayLevelConstants.oneMinute;
+        }
+        Integer minutes = Long.valueOf(millis).intValue()/(1000*60);
+        if ((Long.valueOf(millis).intValue()%(1000*60))>0){
+            minutes = minutes+1;
+        }
         Integer delayLevel;
-        switch (Long.valueOf(millis).intValue()){
-            case DelayLevelConstants.oneMinute :
+        switch (minutes){
+            case 1 :
                 delayLevel=DelayLevelConstants.oneMinute;
                 break;
-            case DelayLevelConstants.twoMinute :
+            case 2 :
                 delayLevel=DelayLevelConstants.twoMinute;
                 break;
-            case DelayLevelConstants.threeMinute :
+            case 3 :
                 delayLevel=DelayLevelConstants.threeMinute;
                 break;
-            case DelayLevelConstants.fourMinute :
+            case 4 :
                 delayLevel=DelayLevelConstants.fourMinute;
                 break;
-            case DelayLevelConstants.fiveMinute :
+            case 5 :
                 delayLevel=DelayLevelConstants.fiveMinute;
                 break;
-            case DelayLevelConstants.sixMinute :
+            case 6 :
                 delayLevel=DelayLevelConstants.sixMinute;
                 break;
-            case DelayLevelConstants.sevenMinute :
+            case 7 :
                 delayLevel=DelayLevelConstants.sevenMinute;
                 break;
-            case DelayLevelConstants.eightMinute :
+            case 8 :
                 delayLevel=DelayLevelConstants.eightMinute;
                 break;
             default:
