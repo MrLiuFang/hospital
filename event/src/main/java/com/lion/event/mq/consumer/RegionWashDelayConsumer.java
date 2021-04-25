@@ -100,17 +100,18 @@ public class RegionWashDelayConsumer implements RocketMQListener<MessageExt> {
                             } catch (JsonProcessingException e) {
                                 e.printStackTrace();
                             }
-                        }else if (Objects.equals(wash.getType(), WashRuleType.LOOP)){
-                            regionWashDelayDto.setDelayDateTime(LocalDateTime.now().plusMinutes(wash.getInterval()));
-                            try {
-                                Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
-                                if (delayLevel > -1) {
-                                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 2000, delayLevel);
-                                }
-                            } catch (JsonProcessingException e) {
-                                e.printStackTrace();
-                            }
                         }
+//                        else if (Objects.equals(wash.getType(), WashRuleType.LOOP)){
+//                            regionWashDelayDto.setDelayDateTime(LocalDateTime.now().plusMinutes(wash.getInterval()));
+//                            try {
+//                                Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
+//                                if (delayLevel > -1) {
+//                                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 2000, delayLevel);
+//                                }
+//                            } catch (JsonProcessingException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
                     });
                 }
             }

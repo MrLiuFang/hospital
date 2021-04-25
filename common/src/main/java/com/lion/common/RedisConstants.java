@@ -20,6 +20,11 @@ public class RedisConstants {
     public static final String WASH = "wash_";
 
     /**
+     * 洗手规则设备类型(key:washId,value:list<WashDeviceType>)
+     */
+    public static final String WASH_DEVICE_TYPE = "wash_device_type_";
+
+    /**
      * 区域洗手规则(key:regionId,value:List<washId>)
      */
     public static final String REGION_WASH = "region_wash_";

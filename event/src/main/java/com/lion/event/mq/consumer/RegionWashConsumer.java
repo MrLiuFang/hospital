@@ -3,10 +3,14 @@ package com.lion.event.mq.consumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.RedisConstants;
+import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.event.constant.TopicConstants;
 import com.lion.event.dto.*;
 import com.lion.event.utils.MessageDelayUtil;
 import com.lion.event.utils.RedisUtil;
+import com.lion.event.utils.WashRuleUtil;
+import com.lion.manage.entity.enums.WashDeviceType;
 import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.rule.Wash;
 import lombok.SneakyThrows;
@@ -48,6 +52,9 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
 
+    @Autowired
+    private WashRuleUtil washRuleUtil;
+
     @SneakyThrows
     @Override
     public void onMessage(MessageExt messageExt) {
@@ -65,6 +72,7 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                             Duration duration = Duration.between(userLastWashDto.getDateTime(), LocalDateTime.now());
                             if (duration.toMinutes() > wash.getBeforeEnteringTime()){
                                 log.info("推送告警:BeforeEnteringTime");
+                                return;
                                 // TODO: 2021/4/25 推送告警
                             }
                         }else if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getOvertimeRemind())){
@@ -72,45 +80,55 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 userCurrentRegionDto.getFirstEntryTime().isAfter(userCurrentRegionDto.getFirstEntryTime()) )){
                                // TODO: 2021/4/25  推送告警
                                 log.info("推送告警:OvertimeRemind");
-                            }
-                        }else if (Objects.equals(wash.getType(), WashRuleType.LOOP)){
-                            UserLastWashDto previous = userLastWashDto.getPrevious();
-                            if (wash.getDuration()>userLastWashDto.getTime()){
-                                // TODO: 2021/4/25 推送洗手时间不够告警
-                                log.info("推送洗手时间不够告警");
-                            }
-                            Duration duration = Duration.between(LocalDateTime.now(), userLastWashDto.getDateTime());
-                            if (duration.toMinutes()>wash.getInterval()){
-                                // TODO: 2021/4/25 推送洗手间隔警告
-                                log.info("推送洗手间隔警告:1");
-                            }else {
-                                if (Objects.nonNull(previous)) {
-                                    Duration duration1 = Duration.between(previous.getDateTime(), userLastWashDto.getDateTime());
-                                    if (duration1.toMinutes() > wash.getInterval()) {
-                                        // TODO: 2021/4/25 推送洗手间隔警告
-                                        log.info("推送洗手间隔警告:2");
-                                    }
-                                }
-                            }
-
-                            if (userLastWashDto.getDateTime().plusMinutes(wash.getInterval()).isAfter(LocalDateTime.now())){
-                                try {
-                                    RegionWashDelayDto regionWashDelayDto = new RegionWashDelayDto();
-                                    regionWashDelayDto.setUserId(userCurrentRegionDto.getUserId());
-                                    regionWashDelayDto.setRegionId(userCurrentRegionDto.getRegionId());
-                                    regionWashDelayDto.setDelayDateTime(userLastWashDto.getDateTime().plusMinutes(wash.getInterval()));
-                                    Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
-                                    if (delayLevel > -1) {
-                                        rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 1000, delayLevel);
-                                    }
-                                } catch (JsonProcessingException e) {
-                                    e.printStackTrace();
-                                }
+                                return;
                             }
                         }
+                        Boolean b = washRuleUtil.judgeDevideType(userLastWashDto.getMonitorId(),wash);
+                        if (Objects.equals(false,b)){
+                            // TODO: 2021/4/25  推送告警
+                            log.info("推送告警没有按规则洗手设备类型来洗手");
+                            return;
+                        }
+//                        else if (Objects.equals(wash.getType(), WashRuleType.LOOP)){
+//                            UserLastWashDto previous = userLastWashDto.getPrevious();
+//                            if (wash.getDuration()>userLastWashDto.getTime()){
+//                                // TODO: 2021/4/25 推送洗手时间不够告警
+//                                log.info("推送洗手时间不够告警");
+//                            }
+//                            Duration duration = Duration.between(LocalDateTime.now(), userLastWashDto.getDateTime());
+//                            if (duration.toMinutes()>wash.getInterval()){
+//                                // TODO: 2021/4/25 推送洗手间隔警告
+//                                log.info("推送洗手间隔警告:1");
+//                            }else {
+//                                if (Objects.nonNull(previous)) {
+//                                    Duration duration1 = Duration.between(previous.getDateTime(), userLastWashDto.getDateTime());
+//                                    if (duration1.toMinutes() > wash.getInterval()) {
+//                                        // TODO: 2021/4/25 推送洗手间隔警告
+//                                        log.info("推送洗手间隔警告:2");
+//                                    }
+//                                }
+//                            }
+//
+//                            if (userLastWashDto.getDateTime().plusMinutes(wash.getInterval()).isAfter(LocalDateTime.now())){
+//                                try {
+//                                    RegionWashDelayDto regionWashDelayDto = new RegionWashDelayDto();
+//                                    regionWashDelayDto.setUserId(userCurrentRegionDto.getUserId());
+//                                    regionWashDelayDto.setRegionId(userCurrentRegionDto.getRegionId());
+//                                    regionWashDelayDto.setDelayDateTime(userLastWashDto.getDateTime().plusMinutes(wash.getInterval()));
+//                                    Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
+//                                    if (delayLevel > -1) {
+//                                        rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 1000, delayLevel);
+//                                    }
+//                                } catch (JsonProcessingException e) {
+//                                    e.printStackTrace();
+//                                }
+//                            }
+//                        }
                     });
                 }
             }
         }
     }
+
+
 }
