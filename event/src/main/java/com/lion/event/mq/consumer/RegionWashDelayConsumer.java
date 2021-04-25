@@ -5,10 +5,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.RedisConstants;
 import com.lion.event.constant.TopicConstants;
 import com.lion.event.dto.RegionWashDelayDto;
+import com.lion.event.dto.RegionWashDto;
 import com.lion.event.dto.UserCurrentRegionDto;
 import com.lion.event.dto.UserLastWashDto;
 import com.lion.event.utils.MessageDelayUtil;
 import com.lion.event.utils.RedisUtil;
+import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.rule.Wash;
 import lombok.SneakyThrows;
 import lombok.extern.java.Log;
@@ -64,21 +66,47 @@ public class RegionWashDelayConsumer implements RocketMQListener<MessageExt> {
                         Duration duration = Duration.between(regionWashDelayDto.getDelayDateTime(),LocalDateTime.now());
                         long millis = duration.toMillis();
                         if (millis<=1000) {
-                            rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(userCurrentRegionDto.getUserId()).build());
+                            RegionWashDto regionWashDto = new RegionWashDto();
+                            regionWashDto.setRegionId(userCurrentRegionDto.getRegionId());
+                            regionWashDto.setUserId(userCurrentRegionDto.getUserId());
+                            rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDto)).build());
                         }else {
-                            rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 1000, MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime()));
+                            Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
+                            if (delayLevel > -1) {
+                                rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 1000, delayLevel);
+                            }
                         }
                         return;
                     }
 
                     List<Wash> washList = redisUtil.getWash(userCurrentRegionDto.getRegionId());
                     washList.forEach(wash -> {
-                        if (Objects.nonNull(wash.getBeforeEnteringTime())) {
-                            rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(userCurrentRegionDto.getUserId()).build());
-                        }else if (Objects.nonNull(wash.getOvertimeRemind())) {
+                        if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getBeforeEnteringTime())) {
+                            RegionWashDto regionWashDto = new RegionWashDto();
+                            regionWashDto.setRegionId(userCurrentRegionDto.getRegionId());
+                            regionWashDto.setUserId(userCurrentRegionDto.getUserId());
+                            try {
+                                rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDto)).build());
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
+                            }
+                        }else if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getOvertimeRemind())) {
                             regionWashDelayDto.setDelayDateTime(LocalDateTime.now().plusMinutes(wash.getOvertimeRemind()));
                             try {
-                                rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(),1000, MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime()));
+                                Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
+                                if (delayLevel > -1) {
+                                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 2000, delayLevel);
+                                }
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
+                            }
+                        }else if (Objects.equals(wash.getType(), WashRuleType.LOOP)){
+                            regionWashDelayDto.setDelayDateTime(LocalDateTime.now().plusMinutes(wash.getInterval()));
+                            try {
+                                Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
+                                if (delayLevel > -1) {
+                                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 2000, delayLevel);
+                                }
                             } catch (JsonProcessingException e) {
                                 e.printStackTrace();
                             }
@@ -88,6 +116,4 @@ public class RegionWashDelayConsumer implements RocketMQListener<MessageExt> {
             }
         }
     }
-
-
 }

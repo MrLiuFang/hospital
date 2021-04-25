@@ -42,7 +42,7 @@ public class MessageDelayUtil {
                 delayLevel=DelayLevelConstants.eightMinute;
                 break;
             default:
-                delayLevel=DelayLevelConstants.eightMinute;
+                delayLevel=-1;
         }
         return delayLevel;
     }

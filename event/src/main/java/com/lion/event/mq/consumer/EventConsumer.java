@@ -109,7 +109,6 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             }
             if (Objects.nonNull(user)){
                 userEevent(eventDto,monitor,star,tag,user);
-                // TODO: 2021/4/24 将用户放入定时器处理队列
             }
 
             Event event = new Event();
@@ -130,7 +129,6 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             updateDeviceBattery(monitor,eventDto.getMonitorBattery());
             updateTagBattery(tag,eventDto.getTagBattery());
 
-            // TODO: 2021/4/24 处理该事件的tag绑定在患者/资产……的警告
             if (Objects.isNull(user)) {
 
             }
