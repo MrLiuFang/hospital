@@ -47,6 +47,9 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
             unbinding(userId);
         }
         Tag tag = tagDao.findFirstByTagCode(tagCode);
+        if (Objects.isNull(tag)){
+            return;
+        }
         TagUser tagUser = tagUserDao.findFirstByUserIdAndUnbindingTimeIsNull(userId);
         if (Objects.nonNull(tagUser)){
             if (!Objects.equals( tagUser.getUserId(),userId)){
@@ -59,9 +62,8 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         newTagUser.setTagId(tag.getId());
         newTagUser.setUserId(userId);
         save(newTagUser);
-        User user = userExposeService.findById(userId);
-        redisTemplate.opsForValue().set(RedisConstants.TAG_USER+tag.getId(),user.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.USER_TAG+user.getId(),tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_USER+tag.getId(),userId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.USER_TAG+userId,tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override

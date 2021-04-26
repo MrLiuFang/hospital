@@ -39,6 +39,10 @@ public class DetailsUserVo extends User {
     @ApiModelProperty(value = "是否创建账号")
     private Boolean isCreateAccount;
 
+    public Boolean getIsCreateAccount() {
+        return StringUtils.hasText(this.getUsername());
+    }
+
     public Boolean getCreateAccount() {
         return StringUtils.hasText(this.getUsername());
     }

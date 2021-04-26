@@ -117,7 +117,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     public void add(AddUserDto addUserDto) {
         User user = new User();
         BeanUtils.copyProperties(addUserDto,user);
-        if (addUserDto.getIsCreateAccount()){
+        if (Objects.nonNull(addUserDto.getIsCreateAccount()) && addUserDto.getIsCreateAccount()){
             user.setUsername(user.getEmail());
             user.setPassword(passwordEncoder.encode(SecureUtil.md5(user.getEmail())));
         }
@@ -128,8 +128,10 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         roleUserService.relationRole(user.getId(),addUserDto.getRoleId());
         departmentUserExposeService.relationDepartment(user.getId(),addUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),addUserDto.getResponsibleDepartmentIds());
+        if (StringUtils.hasText(user.getTagCode())) {
+            tagUserExposeService.binding(user.getId(), user.getTagCode());
+        }
         redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        tagUserExposeService.binding(user.getId(),user.getTagCode());
     }
 
     @Override
@@ -214,7 +216,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     public void update(UpdateUserDto updateUserDto) {
         User user = new User();
         BeanUtils.copyProperties(updateUserDto,user);
-        if (!updateUserDto.getIsCreateAccount()){
+        if ((Objects.nonNull(updateUserDto.getIsCreateAccount()) && !updateUserDto.getIsCreateAccount()) || Objects.isNull(updateUserDto.getIsCreateAccount())){
             user.setUsername("");
             user.setPassword("");
         }
@@ -225,8 +227,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         roleUserService.relationRole(user.getId(),updateUserDto.getRoleId());
         departmentUserExposeService.relationDepartment(user.getId(),updateUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),updateUserDto.getResponsibleDepartmentIds());
-        redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         tagUserExposeService.binding(user.getId(),user.getTagCode());
+        redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -275,9 +277,11 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     private void assertTagCode(String tagCode){
-        Tag tag = tagExposeService.find(tagCode);
-        if (Objects.isNull(tag)){
-            BusinessException.throwException("标签不存在");
+        if (StringUtils.hasText(tagCode)) {
+            Tag tag = tagExposeService.find(tagCode);
+            if (Objects.isNull(tag)) {
+                BusinessException.throwException("标签不存在");
+            }
         }
     }
 
