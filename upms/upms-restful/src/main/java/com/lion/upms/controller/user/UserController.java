@@ -135,11 +135,15 @@ public class UserController extends BaseControllerImpl implements BaseController
     @PutMapping("/updateCurrentUser")
     public IResultData updateCurrentUser(UpdateCurrentUserDto updateCurrentUserDto){
         Long userId = CurrentUserUtil.getCurrentUserId();
-        User user = new User();
-        BeanUtils.copyProperties(updateCurrentUserDto,user);
-        user.setId(userId);
-        if (StringUtils.hasText(user.getPassword())){
-            user.setPassword(passwordEncoder.encode(SecureUtil.md5(user.getPassword())));
+        User user = userService.findById(userId);
+        user.setName(updateCurrentUserDto.getName());
+        user.setHeadPortrait(updateCurrentUserDto.getHeadPortrait());
+        if (StringUtils.hasText(updateCurrentUserDto.getNewPassword())){
+            if (passwordEncoder.matches(updateCurrentUserDto.getOldPassword(),user.getPassword())) {
+                user.setPassword(passwordEncoder.encode(SecureUtil.md5(user.getPassword())));
+            }else {
+                BusinessException.throwException("旧密码错误");
+            }
         }
         userService.update(user);
         ResultData resultData = ResultData.instance();

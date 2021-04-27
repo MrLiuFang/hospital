@@ -95,7 +95,7 @@ public class RegionWashDelayConsumer implements RocketMQListener<MessageExt> {
                                 regionWashDto.setRegionId(userCurrentRegionDto.getRegionId());
                                 regionWashDto.setUserId(userCurrentRegionDto.getUserId());
                                 try {
-                                    log.info("推送洗手检测命令（");
+                                    log.info("推送洗手检测命令");
                                     rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDto)).build());
                                 } catch (JsonProcessingException e) {
                                     e.printStackTrace();

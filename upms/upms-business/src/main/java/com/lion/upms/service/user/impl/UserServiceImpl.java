@@ -216,7 +216,17 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     public void update(UpdateUserDto updateUserDto) {
         User user = new User();
         BeanUtils.copyProperties(updateUserDto,user);
-        if ((Objects.nonNull(updateUserDto.getIsCreateAccount()) && !updateUserDto.getIsCreateAccount()) || Objects.isNull(updateUserDto.getIsCreateAccount())){
+        if (Objects.equals(true,updateUserDto.getIsCreateAccount())){
+            User tmp = findById(user.getId());
+            if (!StringUtils.hasText(tmp.getPassword())) {
+                if (!StringUtils.hasText(tmp.getEmail()) && !StringUtils.hasText(user.getEmail())) {
+                    BusinessException.throwException("该用户没有email无法创建账号");
+                }else {
+                    user.setUsername(StringUtils.hasText(user.getEmail())?user.getEmail():tmp.getEmail());
+                    user.setPassword(passwordEncoder.encode(SecureUtil.md5(StringUtils.hasText(user.getEmail())?user.getEmail():tmp.getEmail())));
+                }
+            }
+        }else {
             user.setUsername("");
             user.setPassword("");
         }

@@ -50,6 +50,11 @@ public class RedisConstants {
     public static final String ALARM = "alarm_";
 
     /**
+     * 警报分类规则(key:alarmClassify,value:alarmId)
+     */
+    public static final String ALARM_CLASSIFY = "alarm_classify_";
+
+    /**
      * 设备归属哪个区域(key:deviceId,value:regionId)
      */
     public static final String DEVICE_REGION = "device_region_";

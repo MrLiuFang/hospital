@@ -58,18 +58,28 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     public void add(AddAlarmDto addAlarmDto) {
         Alarm alarm = new Alarm();
         BeanUtils.copyProperties(addAlarmDto,alarm);
-        assertContentExist(alarm.getContent(),alarm.getClassify(),null);
+        if (Objects.equals(alarm.getClassify(),AlarmClassify.PATIENT)){
+            if (Objects.isNull(alarm.getLevel())) {
+                BusinessException.throwException("级别不能为空");
+            }
+        }
+        assertAlarmClassifytExist(alarm.getClassify(),alarm.getLevel(),null);
         alarm = save(alarm);
-        redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        persistenceRedis(alarm,false);
     }
 
     @Override
     public void update(UpdateAlarmDto updateAlarmDto) {
         Alarm alarm = new Alarm();
         BeanUtils.copyProperties(updateAlarmDto,alarm);
-        assertContentExist(alarm.getContent(),alarm.getClassify(),alarm.getId());
+        if (Objects.equals(alarm.getClassify(),AlarmClassify.PATIENT)){
+            if (Objects.isNull(alarm.getLevel())) {
+                BusinessException.throwException("级别不能为空");
+            }
+        }
+        assertAlarmClassifytExist(alarm.getClassify(),alarm.getLevel(),alarm.getId());
         update(alarm);
-        redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        persistenceRedis(alarm,false);
     }
 
     @Override
@@ -113,9 +123,28 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     @Override
     public void delete(List<DeleteDto> deleteDtos) {
         deleteDtos.forEach(deleteDto -> {
+            Alarm alarm = findById(deleteDto.getId());
             deleteById(deleteDto.getId());
-            redisTemplate.delete(RedisConstants.ALARM+deleteDto.getId());
+            persistenceRedis(alarm,true);
         });
+    }
+
+    private void persistenceRedis(Alarm alarm,Boolean delete){
+        if (Objects.equals(true,delete)){
+            redisTemplate.delete(RedisConstants.ALARM+alarm.getId());
+            if (Objects.isNull(alarm.getLevel())){
+                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY+alarm.getClassify().toString(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            }else {
+                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY+alarm.getClassify().toString()+alarm.getLevel(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            }
+        }else {
+            redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            if (Objects.isNull(alarm.getLevel())){
+                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY+alarm.getClassify().toString(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            }else {
+                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY+alarm.getClassify().toString()+alarm.getLevel(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            }
+        }
     }
 
     private List<DetailsAlarmVo.ManagerVo> convertManagerVo(String manger){
@@ -135,6 +164,21 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
             return list;
         }
         return null;
+    }
+
+    private void assertAlarmClassifytExist(AlarmClassify classify, Integer level, Long id) {
+        Alarm alarm = null;
+        if (Objects.equals(classify,AlarmClassify.PATIENT)){
+            alarm = alarmDao.findFirstByClassifyAndLevel(classify,level);
+        }else {
+            alarm = alarmDao.findFirstByClassify(classify);
+        }
+        if (Objects.isNull(id) && Objects.nonNull(alarm) ){
+            BusinessException.throwException("该警报分类已存在，重复的分类警告会导致警告冲突");
+        }
+        if (Objects.nonNull(id) && Objects.nonNull(alarm) && !alarm.getId().equals(id)){
+            BusinessException.throwException("该警报分类已存在，重复的分类警告会导致警告冲突");
+        }
     }
 
     private void assertContentExist(String content, AlarmClassify classify, Long id) {

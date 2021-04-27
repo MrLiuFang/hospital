@@ -31,4 +31,26 @@ public class TopicConstants {
      * 区域洗手规则处理消费组
      */
     public static final String REGION_WASH_CONSUMER_GROUP = "region_wash";
+
+    /**
+     * 警告处理消息延迟推送
+     */
+    public static final String ALARM_DELAY = "alarm_delay";
+
+    /**
+     * 警告处理消息延迟推送消费组
+     */
+    public static final String ALARM_DELAY_CONSUMER_GROUP = "alarm_delay_group";
+
+    /**
+     * 警告处理
+     */
+    public static final String ALARM = "alarm";
+
+    /**
+     * 警告处理消费组
+     */
+    public static final String ALARM_CONSUMER_GROUP = "alarm_group";
+
+
 }

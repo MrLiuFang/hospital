@@ -15,7 +15,7 @@ public class MessageDelayUtil {
     public static Integer getDelayLevel(LocalDateTime dateTime){
         Duration duration = Duration.between(LocalDateTime.now(),dateTime);
         long millis = duration.toMillis();
-        if (millis<1000*60){
+        if (millis<1000*60 && millis>0){
            return DelayLevelConstants.oneMinute;
         }
         Integer minutes = Long.valueOf(millis).intValue()/(1000*60);

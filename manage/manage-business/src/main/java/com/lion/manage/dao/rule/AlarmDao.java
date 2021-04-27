@@ -18,4 +18,18 @@ public interface AlarmDao extends BaseDao<Alarm> {
      * @return
      */
     public Alarm findFirstByContentAndClassify(String content, AlarmClassify classify);
+
+    /**
+     * 根据警报分类查询
+     * @param classify
+     * @return
+     */
+    public Alarm findFirstByClassify(AlarmClassify classify);
+
+    /**
+     * 根据警报分类和级别查询
+     * @param classify
+     * @return
+     */
+    public Alarm findFirstByClassifyAndLevel(AlarmClassify classify,Integer level);
 }
