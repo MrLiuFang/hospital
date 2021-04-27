@@ -78,9 +78,9 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                             //进入X区域之前X分钟洗手检测
                             if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getBeforeEnteringTime()) && wash.getBeforeEnteringTime() >0){
                                 //没有最后的洗手记录
-                                log.info("推送延迟警告命令");
                                 if (Objects.isNull(userLastWashDto)) {
                                     try {
+                                        log.info("推送延迟警告命令");
                                         rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     } catch (JsonProcessingException e) {
                                         e.printStackTrace();
