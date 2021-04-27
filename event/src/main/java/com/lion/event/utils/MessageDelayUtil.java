@@ -23,6 +23,9 @@ public class MessageDelayUtil {
             minutes = minutes+1;
         }
         Integer delayLevel;
+        if (minutes>8){
+            return DelayLevelConstants.eightMinute;
+        }
         switch (minutes){
             case 1 :
                 delayLevel=DelayLevelConstants.oneMinute;

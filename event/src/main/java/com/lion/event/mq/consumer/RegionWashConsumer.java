@@ -32,7 +32,7 @@ import java.util.Objects;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description //洗手监控
  * @Date 2021/4/25 下午3:53
  **/
 @Component
@@ -64,31 +64,47 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
             if (Objects.nonNull(regionWashDto) && Objects.nonNull(regionWashDto.getUserId())) {
                 UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + regionWashDto.getUserId());
                 if (Objects.nonNull(userCurrentRegionDto)) {
+                    //判断用户是否从X区域离开 如果离开就不进行洗手检测
                     if (Objects.nonNull(userCurrentRegionDto.getRegionId()) && Objects.equals(userCurrentRegionDto.getRegionId(),regionWashDto.getRegionId())) {
                         List<Wash> washList = redisUtil.getWash(regionWashDto.getRegionId());
                         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashDto.getUserId());
                         washList.forEach(wash -> {
-                            if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getBeforeEnteringTime())){
+                            //进入X区域之前X分钟洗手检测
+                            if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getBeforeEnteringTime()) && wash.getBeforeEnteringTime() >0){
+                                if (Objects.isNull(userLastWashDto)) {
+                                    log.info("推送告警:BeforeEnteringTime");
+                                    return;
+                                }
+                                Boolean b = washRuleUtil.judgeDevideType(userLastWashDto.getMonitorId(),wash);
+                                if (Objects.equals(false,b)){
+                                    // TODO: 2021/4/25  推送告警
+                                    log.info("推送告警没有按规则洗手设备类型来洗手");
+                                    return;
+                                }
                                 Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
                                 if (duration.toMinutes() > wash.getBeforeEnteringTime()){
                                     log.info("推送告警:BeforeEnteringTime");
                                     return;
-                                    // TODO: 2021/4/25 推送告警
                                 }
-                            }else if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getOvertimeRemind())){
-                                if(!( userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusMinutes(wash.getOvertimeRemind())) &&
+                            }else if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getAfterEnteringTime()) && wash.getAfterEnteringTime() >0){
+                                //进入X区域之后X分钟洗手检测
+                                if (Objects.isNull(userLastWashDto)) {
+                                    log.info("推送告警:OvertimeRemind");
+                                    return;
+                                }
+                                Boolean b = washRuleUtil.judgeDevideType(userLastWashDto.getMonitorId(),wash);
+                                if (Objects.equals(false,b)){
+                                    // TODO: 2021/4/25  推送告警
+                                    log.info("推送告警没有按规则洗手设备类型来洗手");
+                                    return;
+                                }
+                                if(Objects.nonNull(userCurrentRegionDto.getFirstEntryTime()) && !( userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusMinutes(wash.getAfterEnteringTime())) &&
                                     userCurrentRegionDto.getFirstEntryTime().isAfter(userCurrentRegionDto.getFirstEntryTime()) )){
-                                   // TODO: 2021/4/25  推送告警
                                     log.info("推送告警:OvertimeRemind");
                                     return;
                                 }
                             }
-                            Boolean b = washRuleUtil.judgeDevideType(userLastWashDto.getMonitorId(),wash);
-                            if (Objects.equals(false,b)){
-                                // TODO: 2021/4/25  推送告警
-                                log.info("推送告警没有按规则洗手设备类型来洗手");
-                                return;
-                            }
+
     //                        else if (Objects.equals(wash.getType(), WashRuleType.LOOP)){
     //                            UserLastWashDto previous = userLastWashDto.getPrevious();
     //                            if (wash.getDuration()>userLastWashDto.getTime()){

@@ -39,6 +39,11 @@ public class UserCurrentRegionDto implements Serializable {
     private LocalDateTime firstEntryTime;
 
     /**
+     * 当前区域事件次数
+     */
+    private Integer currentRegionEvent = 0;
+
+    /**
      * 当前所在区域的洗手记录
      */
     private List<WashRecord> washRecordList;

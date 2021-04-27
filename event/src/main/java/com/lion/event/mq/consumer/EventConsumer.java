@@ -90,8 +90,8 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             if (Objects.nonNull(tag)){
                 user = redisUtil.getUser(tag.getId());
             }
-            if (Objects.nonNull(user)){
-                userEevent(eventDto,monitor,star,tag,user);
+            if (Objects.nonNull(user)){ //如果根据标签查出用户，进行洗手事件处理
+                userWashEevent(eventDto,monitor,star,tag,user);
             }
 
             Event event = new Event();
@@ -121,14 +121,14 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
     }
 
     /**
-     * 用户事件处理
+     * 用户洗手事件处理
      * @param eventDto
      * @param monitor
      * @param star
      * @param tag
      * @param user
      */
-    private void userEevent(EventDto eventDto, Device monitor, Device star, Tag tag, User user){
+    private void userWashEevent(EventDto eventDto, Device monitor, Device star, Tag tag, User user){
         Region monitorRegion = null;
         Region starRegion = null;
         if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getId())) {
@@ -137,15 +137,19 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
         if (Objects.nonNull(star) && Objects.nonNull(star.getId())) {
             starRegion = redisUtil.getRegion(star.getId());
         }
-        userEevent(user,monitor,star,eventDto);
+        //记录当前用户所在区域
         UserCurrentRegionDto userCurrentRegionDto = saveUserCurrentRegion(user,monitorRegion,starRegion,eventDto);
-        if (Objects.isNull(userCurrentRegionDto.getPreviousRegionId()) || !Objects.equals(userCurrentRegionDto.getRegionId(),userCurrentRegionDto.getPreviousRegionId())) {
+        userWashEevent(user,monitor,star,eventDto,userCurrentRegionDto);
+
+        //判断是否从X区域进入X区域，如果是就进行新的洗手事件监控
+        if (userCurrentRegionDto.getCurrentRegionEvent()==1 && !Objects.equals(userCurrentRegionDto.getRegionId(),userCurrentRegionDto.getPreviousRegionId())) {
             List<Wash> list = redisUtil.getWash(userCurrentRegionDto.getRegionId());
             RegionWashDelayDto regionWashDelayDto = new RegionWashDelayDto();
             regionWashDelayDto.setUserId(user.getId());
             regionWashDelayDto.setRegionId(userCurrentRegionDto.getRegionId());
             if (Objects.nonNull(list) && list.size() > 0) {
                 list.forEach(wash -> {
+                    //如果是全部用户
                     if (wash.getIsAllUser()) {
                         try {
                             rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build());
@@ -188,25 +192,16 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION+user.getId());
         if (Objects.isNull(userCurrentRegionDto)){
             userCurrentRegionDto  = new UserCurrentRegionDto();
-            userCurrentRegionDto.setUserId(user.getId());
-            userCurrentRegionDto.setRegionId(region.getId());
             userCurrentRegionDto.setFirstEntryTime(eventDto.getTime());
-        }else {
-            if (!Objects.equals(region.getId(),userCurrentRegionDto.getRegionId())) {
-                userCurrentRegionDto.setPreviousRegionId(userCurrentRegionDto.getRegionId());
-                userCurrentRegionDto.setRegionId(region.getId());
-                userCurrentRegionDto.setFirstEntryTime(eventDto.getTime());
-                userCurrentRegionDto.setWashRecord(null);
-            }else {
-                UserCurrentRegionDto.WashRecord washRecord = new UserCurrentRegionDto.WashRecord();
-                UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
-                if (Objects.nonNull(userLastWashDto)){
-                    washRecord.setDateTime(userLastWashDto.getDateTime());
-                    washRecord.setDeviceId(Objects.isNull(userLastWashDto.getMonitorId())?userLastWashDto.getStarId():userLastWashDto.getMonitorId());
-                    userCurrentRegionDto.setWashRecord(washRecord);
-                }
-            }
+        }else  if (!Objects.equals(region.getId(),userCurrentRegionDto.getRegionId())) {//判断是否从X区域进入X区域
+            userCurrentRegionDto.setFirstEntryTime(eventDto.getTime());
+            userCurrentRegionDto.setPreviousRegionId(userCurrentRegionDto.getRegionId());
+            userCurrentRegionDto.setWashRecord(null);
+            userCurrentRegionDto.setCurrentRegionEvent(0);
         }
+        userCurrentRegionDto.setCurrentRegionEvent(userCurrentRegionDto.getCurrentRegionEvent()+1);
+        userCurrentRegionDto.setUserId(user.getId());
+        userCurrentRegionDto.setRegionId(region.getId());
         redisTemplate.opsForValue().set(RedisConstants.USER_CURRENT_REGION+user.getId(),userCurrentRegionDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         return userCurrentRegionDto;
     }
@@ -217,13 +212,15 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
      * @param star
      * @param eventDto
      */
-    private void userEevent(User user,Device monitor, Device star,EventDto eventDto){
+    private void userWashEevent(User user,Device monitor, Device star,EventDto eventDto,UserCurrentRegionDto userCurrentRegionDto){
         Device device = Objects.isNull(monitor)?star:monitor;
 //        DeviceClassify deviceClassify = device.getDeviceClassify();
         DeviceType deviceType = device.getDeviceType();
+        //判断是否是洗手设备发出的事件
         if (Objects.equals(deviceType,DeviceType.ALCOHOL) || Objects.equals(deviceType,DeviceType.DISINFECTANT_GEL)
                 || Objects.equals(deviceType,DeviceType.LIQUID_SOAP) || Objects.equals(deviceType,DeviceType.WASHING_FOAM)
                 || Objects.equals(deviceType,DeviceType.WATER) ) {
+            //记录最后一次洗手事件
             UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
             if (Objects.isNull(userLastWashDto)) {
                 userLastWashDto = new UserLastWashDto();
@@ -238,7 +235,16 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             userLastWashDto.setStarId(star.getId());
             userLastWashDto.setDateTime(eventDto.getTime());
             redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+user.getId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+
+            //记录用户当前区域的洗手记录
+            if (Objects.nonNull(userCurrentRegionDto) ){
+                UserCurrentRegionDto.WashRecord washRecord = new UserCurrentRegionDto.WashRecord();
+                washRecord.setDateTime(userLastWashDto.getDateTime());
+                washRecord.setDeviceId(Objects.isNull(userLastWashDto.getMonitorId())?userLastWashDto.getStarId():userLastWashDto.getMonitorId());
+                userCurrentRegionDto.setWashRecord(washRecord);
+            }
         }else {
+            //记录洗手时长
             UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
             if (Objects.nonNull(userLastWashDto)){
                 Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());

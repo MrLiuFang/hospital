@@ -93,6 +93,21 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         Wash wash = new Wash();
         BeanUtils.copyProperties(addWashDto,wash);
         assertNameExist(wash.getName(),null);
+        if (Objects.nonNull(wash.getAfterEnteringTime()) && Objects.nonNull(wash.getBeforeEnteringTime())) {
+            BusinessException.throwException("检测洗手时间（进入之前/进入之后）只能二选一");
+        }
+        if (Objects.isNull(wash.getAfterEnteringTime()) && Objects.isNull(wash.getBeforeEnteringTime())) {
+            BusinessException.throwException("检测洗手时间（进入之前/进入之后）必须选一个");
+        }
+        if (Objects.nonNull(wash.getAfterEnteringTime())) {
+            if (wash.getAfterEnteringTime()<=0){
+                BusinessException.throwException("检测时间必须大于0分钟");
+            }
+        }else if (Objects.nonNull(wash.getBeforeEnteringTime())) {
+            if (wash.getBeforeEnteringTime()<=0){
+                BusinessException.throwException("检测时间必须大于0分钟");
+            }
+        }
         wash = save(wash);
         if (Objects.equals(wash.getType(), WashRuleType.REGION)){
             washRegionService.add(addWashDto.getRegionId(),wash.getId());
@@ -110,6 +125,25 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         Wash wash = new Wash();
         BeanUtils.copyProperties(updateWashDto,wash);
         assertNameExist(wash.getName(),wash.getId());
+        if (Objects.nonNull(wash.getAfterEnteringTime()) && Objects.nonNull(wash.getBeforeEnteringTime())) {
+            BusinessException.throwException("检测洗手时间（进入之前/进入之后）只能二选一");
+        }
+        if (Objects.nonNull(wash.getAfterEnteringTime()) && Objects.isNull(wash.getBeforeEnteringTime())) {
+            BusinessException.throwException("检测洗手时间（进入之前/进入之后）必须选一个");
+        }
+        if (Objects.nonNull(wash.getAfterEnteringTime())) {
+            if (wash.getAfterEnteringTime()<=0){
+                BusinessException.throwException("检测时间必须大于0分钟");
+            }
+            wash.setBeforeEnteringTime(null);
+            washDao.setBeforeEnteringTime(wash.getId());
+        }else if (Objects.nonNull(wash.getBeforeEnteringTime())) {
+            if (wash.getBeforeEnteringTime()<=0){
+                BusinessException.throwException("检测时间必须大于0分钟");
+            }
+            wash.setAfterEnteringTime(null);
+            washDao.setAfterEnteringTimeIsNull(wash.getId());
+        }
         update(wash);
         if (Objects.equals(wash.getType(), WashRuleType.REGION)){
             washRegionService.add(updateWashDto.getRegionId(),wash.getId());
