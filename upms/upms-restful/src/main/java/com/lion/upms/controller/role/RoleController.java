@@ -51,6 +51,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
         Role role = new Role();
         BeanUtil.copyProperties(addRoleDto,role, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
         roleService.assertNameExist(role.getName(),null);
+        roleService.assertCodeExist(role.getCode(),null);
         roleService.save(role);
         return ResultData.instance();
     }
@@ -90,6 +91,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
         Role role = new Role();
         BeanUtils.copyProperties(updateRoleDto,role);
         roleService.assertNameExist(role.getName(),role.getId());
+        roleService.assertCodeExist(role.getCode(),role.getId());
         roleService.update(role);
         return ResultData.instance();
     }

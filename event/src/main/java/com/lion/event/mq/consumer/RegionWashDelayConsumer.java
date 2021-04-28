@@ -62,7 +62,7 @@ public class RegionWashDelayConsumer implements RocketMQListener<MessageExt> {
                 if (Objects.nonNull(userCurrentRegionDto)) {
                     //判断是否从X区域离开 （比如进入A区域之后5分钟需要检测是否洗手，如果在五分钟之内离开A区域则不进行洗手监控）
                     if (!Objects.equals(userCurrentRegionDto.getRegionId(), regionWashDelayDto.getRegionId())) {
-                        log.info("离开之前的区域，取消本次操作");
+                        log.info("离开之前的区域，取消洗手监控");
                         return;
                     } else {
                         //延迟推送洗手监控命令（采用MQ消息延迟推送机制）该逻辑属于循环延迟
@@ -74,12 +74,12 @@ public class RegionWashDelayConsumer implements RocketMQListener<MessageExt> {
                                 regionWashDto.setRegionId(userCurrentRegionDto.getRegionId());
                                 regionWashDto.setUserId(userCurrentRegionDto.getUserId());
                                 //推送洗手检测命令（）
-                                log.info("推送洗手检测命令（多次循环延迟后推送）");
+//                                log.info("推送洗手检测命令");
                                 rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDto)).build());
                             } else {
                                 Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
                                 if (delayLevel > -1) {
-                                    log.info("推送延迟检测命令(循环延迟)");
+//                                    log.info("推送延迟检测命令(循环延迟)");
                                     rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 1000, delayLevel);
                                 }
                             }
@@ -95,7 +95,7 @@ public class RegionWashDelayConsumer implements RocketMQListener<MessageExt> {
                                 regionWashDto.setRegionId(userCurrentRegionDto.getRegionId());
                                 regionWashDto.setUserId(userCurrentRegionDto.getUserId());
                                 try {
-                                    log.info("推送洗手检测命令");
+//                                    log.info("推送洗手检测命令");
                                     rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDto)).build());
                                 } catch (JsonProcessingException e) {
                                     e.printStackTrace();
@@ -107,7 +107,7 @@ public class RegionWashDelayConsumer implements RocketMQListener<MessageExt> {
                                 try {
                                     Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
                                     if (delayLevel > -1) {
-                                        log.info("推送延迟检测命令");
+//                                        log.info("推送延迟检测命令");
                                         rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 2000, delayLevel);
                                     }
                                 } catch (JsonProcessingException e) {

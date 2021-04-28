@@ -25,6 +25,6 @@ public class UpdateWashDto extends Wash {
     @ApiModelProperty(value = "用户id（全量，先删后增）")
     private List<Long> userId;
 
-    @ApiModelProperty(value = "洗手设备类型（全量，先删后增）")
-    private List<WashDeviceType> deviceType;
+//    @ApiModelProperty(value = "洗手设备类型（全量，先删后增）")
+//    private List<WashDeviceType> deviceType;
 }

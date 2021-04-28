@@ -252,7 +252,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
                 departmentUserExposeService.deleteByUserId(d.getId());
                 departmentResponsibleUserExposeService.deleteByUserId(d.getId());
                 redisTemplate.delete(RedisConstants.USER+d.getId());
-                tagUserExposeService.unbinding(user.getId());
+                tagUserExposeService.unbinding(user.getId(),false);
             }
         });
     }

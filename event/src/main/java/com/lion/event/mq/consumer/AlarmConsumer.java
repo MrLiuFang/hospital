@@ -69,6 +69,7 @@ public class AlarmConsumer implements RocketMQListener<MessageExt> {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION+user.getId());
         if (!Objects.equals(userCurrentRegionDto.getRegionId(),alarmDto.getRegionId())){
             //如果用户从需要警告的区域离开则解除警告
+            log.info(user.getName()+"->离开之前的区域,解除警告");
             return;
         }
         Alarm alarm = redisUtil.getAlarm(AlarmClassify.STAFF);
@@ -76,8 +77,9 @@ public class AlarmConsumer implements RocketMQListener<MessageExt> {
             return;
         }
         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
-        if (userLastWashDto.getDateTime().isAfter(alarmDto.getAlarmDateTime())){
+        if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && userLastWashDto.getDateTime().isAfter(alarmDto.getAlarmDateTime())){
             //解除警告
+            log.info(user.getName()+"->解除警告");
             return;
         }
         log.info(user.getName()+"->发送洗手警告");
@@ -86,7 +88,7 @@ public class AlarmConsumer implements RocketMQListener<MessageExt> {
         }
         Integer delayLevel = MessageDelayUtil.getDelayLevel(alarmDto.getDelayDateTime());
         if (delayLevel > -1) {
-            log.info("推送延迟警告命令");
+//            log.info("推送延迟警告命令");
             rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build(), 1000, delayLevel);
         }
     }

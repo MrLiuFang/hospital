@@ -115,8 +115,8 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         if (Objects.equals(wash.getIsAllUser(),false)){
             washUserService.add(addWashDto.getUserId(),wash.getId());
         }
-        washDeviceService.add(addWashDto.getDeviceType(),wash.getId());
-        persistence2Redis(addWashDto.getRegionId(),addWashDto.getUserId(),wash,addWashDto.getDeviceType(),false);
+//        washDeviceService.add(addWashDto.getDeviceType(),wash.getId());
+        persistence2Redis(addWashDto.getRegionId(),addWashDto.getUserId(),wash,false);
     }
 
     @Override
@@ -128,7 +128,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         if (Objects.nonNull(wash.getAfterEnteringTime()) && Objects.nonNull(wash.getBeforeEnteringTime())) {
             BusinessException.throwException("检测洗手时间（进入之前/进入之后）只能二选一");
         }
-        if (Objects.nonNull(wash.getAfterEnteringTime()) && Objects.isNull(wash.getBeforeEnteringTime())) {
+        if (Objects.isNull(wash.getAfterEnteringTime()) && Objects.isNull(wash.getBeforeEnteringTime())) {
             BusinessException.throwException("检测洗手时间（进入之前/进入之后）必须选一个");
         }
         if (Objects.nonNull(wash.getAfterEnteringTime())) {
@@ -151,8 +151,8 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         if (Objects.equals(wash.getIsAllUser(),false)){
             washUserService.add(updateWashDto.getUserId(),wash.getId());
         }
-        washDeviceService.add(updateWashDto.getDeviceType(),wash.getId());
-        persistence2Redis(updateWashDto.getRegionId(),updateWashDto.getUserId(),wash,updateWashDto.getDeviceType(),false);
+//        washDeviceService.add(updateWashDto.getDeviceType(),wash.getId());
+        persistence2Redis(updateWashDto.getRegionId(),updateWashDto.getUserId(),wash,false);
     }
 
     @Override
@@ -222,7 +222,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     @Transactional
     public void delete(List<DeleteDto> deleteDtos) {
         deleteDtos.forEach(deleteDto -> {
-            persistence2Redis(Collections.EMPTY_LIST,Collections.EMPTY_LIST,this.findById(deleteDto.getId()),Collections.EMPTY_LIST,true);
+            persistence2Redis(Collections.EMPTY_LIST,Collections.EMPTY_LIST,this.findById(deleteDto.getId()),true);
             this.deleteById(deleteDto.getId());
             washDeviceService.delete(deleteDto.getId());
             washRegionService.delete(deleteDto.getId());
@@ -240,13 +240,13 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         }
     }
 
-    private void persistence2Redis(List<Long> regionId,List<Long> userId,Wash wash,List<WashDeviceType> deviceType,Boolean isDelete){
+    private void persistence2Redis(List<Long> regionId,List<Long> userId,Wash wash,Boolean isDelete){
         redisTemplate.delete(RedisConstants.WASH_DEVICE_TYPE+wash.getId());
 
-        if (Objects.equals(false,isDelete)){
-            redisTemplate.opsForList().leftPushAll(RedisConstants.WASH_DEVICE_TYPE+wash.getId(),deviceType);
-            redisTemplate.expire(RedisConstants.WASH_DEVICE_TYPE+wash.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        }
+//        if (Objects.equals(false,isDelete)){
+//            redisTemplate.opsForList().leftPushAll(RedisConstants.WASH_DEVICE_TYPE+wash.getId(),deviceType);
+//            redisTemplate.expire(RedisConstants.WASH_DEVICE_TYPE+wash.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//        }
 
         if (Objects.equals(wash.getType(),WashRuleType.LOOP)) {
             if (wash.getIsAllUser()){

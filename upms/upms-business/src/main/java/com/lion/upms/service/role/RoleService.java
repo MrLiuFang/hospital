@@ -33,6 +33,13 @@ public interface RoleService extends BaseService<Role> {
     void assertNameExist(String name,Long id);
 
     /**
+     * 判断角色编码是否存在
+     * @param code
+     * @param id
+     */
+    public void assertCodeExist(String code, Long id);
+
+    /**
      * 根据用户获取角色
      * @param userId
      * @return

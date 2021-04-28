@@ -152,6 +152,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
                     //如果是全部用户
                     if (wash.getIsAllUser()) {
                         try {
+//                            log.info("推送延迟检测命令");
                             rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build());
                         } catch (JsonProcessingException e) {
                             e.printStackTrace();
@@ -160,6 +161,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
                         Wash wash1 = redisUtil.getWash(userCurrentRegionDto.getRegionId(), user.getId());
                         if (Objects.nonNull(wash1)) {
                             try {
+//                                log.info("推送延迟检测命令");
                                 rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build());
                             } catch (JsonProcessingException e) {
                                 e.printStackTrace();

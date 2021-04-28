@@ -3,18 +3,16 @@ package com.lion.event.mq.consumer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.RedisConstants;
-import com.lion.device.entity.device.Device;
-import com.lion.device.entity.enums.DeviceType;
 import com.lion.event.constant.TopicConstants;
-import com.lion.event.dto.*;
+import com.lion.event.dto.AlarmDto;
+import com.lion.event.dto.RegionWashDto;
+import com.lion.event.dto.UserCurrentRegionDto;
+import com.lion.event.dto.UserLastWashDto;
 import com.lion.event.entity.enums.AlarmType;
-import com.lion.event.utils.MessageDelayUtil;
 import com.lion.event.utils.RedisUtil;
 import com.lion.event.utils.WashRuleUtil;
-import com.lion.manage.entity.enums.WashDeviceType;
 import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.rule.Wash;
-import lombok.SneakyThrows;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
@@ -27,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.List;
 import java.util.Objects;
 
@@ -80,7 +77,7 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 //没有最后的洗手记录
                                 if (Objects.isNull(userLastWashDto)) {
                                     try {
-                                        log.info("推送延迟警告命令");
+//                                        log.info("推送延迟警告命令");
                                         rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     } catch (JsonProcessingException e) {
                                         e.printStackTrace();
@@ -109,7 +106,7 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 //没有最后的洗手记录
                                 if (Objects.isNull(userLastWashDto)) {
                                     try {
-                                        log.info("推送延迟警告命令");
+//                                        log.info("推送延迟警告命令");
                                         rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     } catch (JsonProcessingException e) {
                                         e.printStackTrace();
@@ -123,10 +120,11 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
 //                                    return;
 //                                }
                                 //超过时间范围
-                                if(Objects.nonNull(userCurrentRegionDto.getFirstEntryTime()) && !( userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusMinutes(wash.getAfterEnteringTime())) &&
-                                    userCurrentRegionDto.getFirstEntryTime().isAfter(userCurrentRegionDto.getFirstEntryTime()) )){
+                                if(Objects.nonNull(userCurrentRegionDto.getFirstEntryTime()) &&
+                                        !userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusMinutes(wash.getAfterEnteringTime())) &&
+                                        !userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime())){
                                     try {
-                                        log.info("推送延迟警告命令");
+//                                        log.info("推送延迟警告命令");
                                         rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     } catch (JsonProcessingException e) {
                                         e.printStackTrace();

@@ -20,8 +20,9 @@ public interface TagUserExposeService extends BaseService<TagUser> {
     /**
      * 用户与标签解绑
      * @param userId
+     * @param isDelete
      */
-    public void unbinding(Long userId);
+    public void unbinding(Long userId,Boolean isDelete);
 
     /**
      *

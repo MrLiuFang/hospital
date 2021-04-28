@@ -46,17 +46,18 @@ public class AlarmDelayConsumer implements RocketMQListener<MessageExt> {
             String msg = new String(body);
             AlarmDto alarmDto = jacksonObjectMapper.readValue(msg, AlarmDto.class);
             if (Objects.isNull(alarmDto.getDelayDateTime())){
+//                log.info("推送警告命令");
                 rocketMQTemplate.syncSend(TopicConstants.ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
             }else {
                 Duration duration = Duration.between(LocalDateTime.now(),alarmDto.getDelayDateTime());
                 long millis = duration.toMillis();
                 if (millis <= 1000) {
-                    log.info("推送警告命令");
+//                    log.info("推送警告命令");
                     rocketMQTemplate.syncSend(TopicConstants.ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                 }
                 Integer delayLevel = MessageDelayUtil.getDelayLevel(alarmDto.getDelayDateTime());
                 if (delayLevel > -1) {
-                    log.info("推送延迟警告命令(循环延迟)");
+//                    log.info("推送延迟警告命令(循环延迟)");
                     rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build(), 1000, delayLevel);
                 }
             }

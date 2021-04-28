@@ -25,6 +25,6 @@ public class AddWashDto extends Wash {
     @ApiModelProperty(value = "用户id")
     private List<Long> userId;
 
-    @ApiModelProperty(value = "洗手设备类型(ISINFECTION_GEL(0, \"免洗消毒凝胶\"),LIQUID_SOAP(1, \"洗手液\"),ALCOHOL(2, \"酒精\"),WASHING_FOAM(3, \"洗手泡沫\"), WATER(4, \"清水\"))")
-    private List<WashDeviceType> deviceType;
+//    @ApiModelProperty(value = "洗手设备类型(ISINFECTION_GEL(0, \"免洗消毒凝胶\"),LIQUID_SOAP(1, \"洗手液\"),ALCOHOL(2, \"酒精\"),WASHING_FOAM(3, \"洗手泡沫\"), WATER(4, \"清水\"))")
+//    private List<WashDeviceType> deviceType;
 }

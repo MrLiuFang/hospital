@@ -19,6 +19,13 @@ public interface TagUserDao extends BaseDao<TagUser> {
     public int deleteByTagId(Long tagId);
 
     /**
+     * 根据用户ID 删除关联关系
+     * @param userId
+     * @return
+     */
+    public int deleteByUserId(Long userId);
+
+    /**
      * 根据标签查询
      * @param tagId
      * @return

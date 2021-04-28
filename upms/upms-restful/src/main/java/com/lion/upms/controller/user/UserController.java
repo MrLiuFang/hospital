@@ -33,6 +33,7 @@ import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -133,14 +134,14 @@ public class UserController extends BaseControllerImpl implements BaseController
 
     @ApiOperation(value = "修改当前登陆用户信息")
     @PutMapping("/updateCurrentUser")
-    public IResultData updateCurrentUser(UpdateCurrentUserDto updateCurrentUserDto){
+    public IResultData updateCurrentUser(@RequestBody UpdateCurrentUserDto updateCurrentUserDto){
         Long userId = CurrentUserUtil.getCurrentUserId();
         User user = userService.findById(userId);
         user.setName(updateCurrentUserDto.getName());
         user.setHeadPortrait(updateCurrentUserDto.getHeadPortrait());
         if (StringUtils.hasText(updateCurrentUserDto.getNewPassword())){
             if (passwordEncoder.matches(updateCurrentUserDto.getOldPassword(),user.getPassword())) {
-                user.setPassword(passwordEncoder.encode(SecureUtil.md5(user.getPassword())));
+                user.setPassword(passwordEncoder.encode(updateCurrentUserDto.getNewPassword()));
             }else {
                 BusinessException.throwException("旧密码错误");
             }

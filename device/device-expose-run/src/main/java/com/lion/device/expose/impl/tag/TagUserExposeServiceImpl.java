@@ -44,7 +44,7 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
     @Override
     public void binding(Long userId, String tagCode) {
         if (!StringUtils.hasText(tagCode)){
-            unbinding(userId);
+            unbinding(userId,false);
         }
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){
@@ -67,11 +67,17 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
     }
 
     @Override
-    public void unbinding(Long userId) {
+    public void unbinding(Long userId,Boolean isDelete) {
         TagUser tagUser = tagUserDao.findFirstByUserIdAndUnbindingTimeIsNull(userId);
+        if (Objects.equals(true,isDelete)) {
+            tagUserDao.deleteByUserId(userId);
+        }else {
+            if (Objects.nonNull(tagUser)) {
+                tagUser.setUnbindingTime(LocalDateTime.now());
+                update(tagUser);
+            }
+        }
         if (Objects.nonNull(tagUser)) {
-            tagUser.setUnbindingTime(LocalDateTime.now());
-            update(tagUser);
             redisTemplate.delete(RedisConstants.TAG_USER + tagUser.getTagId());
             redisTemplate.delete(RedisConstants.USER_TAG + tagUser.getUserId());
         }

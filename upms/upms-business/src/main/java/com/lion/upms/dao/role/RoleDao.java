@@ -19,6 +19,13 @@ public interface RoleDao extends BaseDao<Role> {
     public Role findFirstByName(String name);
 
     /**
+     * 根据编码查询角色
+     * @param code
+     * @return
+     */
+    public Role findFirstByCode(String code);
+
+    /**
      * 查询用户关联的角色
      * @param userId
      * @return
