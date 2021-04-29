@@ -48,7 +48,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         entity = (S) setWarrantyPeriodDate(entity);
         assertNameExist(entity.getName(),null);
         assertCodeExist(entity.getCode(),null);
-        entity = save(entity);
+        entity = super.save(entity);
         redisTemplate.opsForValue().set(RedisConstants.DEVICE+entity.getId(),entity, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+entity.getCode(),entity, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         return entity;

@@ -170,6 +170,16 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         }
     }
 
+    private void assertDeviceGroupIsUse(Long deviceGroupId, Long id) {
+        Region region = regionDao.findFirstByDeviceGroupId(deviceGroupId);
+        if (Objects.isNull(id) && Objects.nonNull(region) ){
+            BusinessException.throwException("该设备组在其它区域已经使用");
+        }
+        if (Objects.nonNull(id) && Objects.nonNull(region) && !region.getId().equals(id)){
+            BusinessException.throwException("该设备组在其它区域已经使用");
+        }
+    }
+
     private void assertBuildExist(Long buildId) {
         Build build = buildService.findById(buildId);
         if (Objects.isNull(build)){
