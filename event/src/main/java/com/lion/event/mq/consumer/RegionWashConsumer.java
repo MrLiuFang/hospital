@@ -94,7 +94,7 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
                                 if (duration.toMinutes() > wash.getBeforeEnteringTime()){
                                     try {
-                                        log.info("推送延迟警告命令");
+//                                        log.info("推送延迟警告命令");
                                         rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     } catch (JsonProcessingException e) {
                                         e.printStackTrace();

@@ -126,7 +126,7 @@ public class RedisUtil {
         if (Objects.isNull(user)){
             user = userExposeService.findById(userId);
             if (Objects.nonNull(user)){
-                redisTemplate.opsForValue().set(RedisConstants.USER+userId,user,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
             }
         }
         return user;
@@ -168,10 +168,10 @@ public class RedisUtil {
                 user = userExposeService.findById(tagUser.getUserId());
                 if (Objects.nonNull(user)) {
                     redisTemplate.opsForValue().set(RedisConstants.TAG_USER + tagId, user.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                    redisTemplate.opsForValue().set(RedisConstants.USER + userId, user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.USER + user.getId(), user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }else {
                     redisTemplate.delete(RedisConstants.TAG_USER + tagId);
-                    redisTemplate.delete(RedisConstants.USER + userId);
+//                    redisTemplate.delete(RedisConstants.USER + userId);
                 }
             }
         }
@@ -360,7 +360,7 @@ public class RedisUtil {
             wash = washExposeService.find(regionId,userId);
             if (Objects.nonNull(wash)) {
                 redisTemplate.opsForValue().set(RedisConstants.REGION_USER_WASH+regionId+userId,wash.getId(),RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                redisTemplate.opsForValue().set(RedisConstants.WASH+washId,wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             }
         }
         return wash;

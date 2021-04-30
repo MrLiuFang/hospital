@@ -11,6 +11,7 @@ import com.lion.event.entity.Event;
 import com.lion.event.service.EventService;
 import io.swagger.annotations.Api;
 import lombok.extern.java.Log;
+import lombok.extern.log4j.Log4j2;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.support.MessageBuilder;
@@ -31,7 +32,7 @@ import java.util.List;
 @RequestMapping("")
 @Validated
 @Api(tags = {"事件"})
-@Log
+@Log4j2
 public class EventController {
 
     @Autowired
@@ -46,6 +47,7 @@ public class EventController {
     @PostMapping("/new")
     @AuthorizationIgnore
     public String newEvent(@RequestBody List<EventDto> eventDtos) {
+        log.info("收到事件数据");
         eventDtos.forEach(eventDto -> {
             try {
                 rocketMQTemplate.syncSend(TopicConstants.EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(eventDto)).build());

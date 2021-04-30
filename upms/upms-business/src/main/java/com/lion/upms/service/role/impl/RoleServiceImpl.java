@@ -58,10 +58,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
     @Override
     public void assertCodeExist(String code, Long id) {
         Role role = roleDao.findFirstByCode(code);
-        if (Objects.isNull(id) && Objects.nonNull(role) ){
-            BusinessException.throwException("该角色编码已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(role) && !role.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(role)) ||(Objects.nonNull(id) && Objects.nonNull(role) && !Objects.equals(role.getId(),id))  ){
             BusinessException.throwException("该角色编码已存在");
         }
     }
@@ -69,10 +66,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
     @Override
     public void assertNameExist(String name, Long id) {
         Role role = roleDao.findFirstByName(name);
-        if (Objects.isNull(id) && Objects.nonNull(role) ){
-            BusinessException.throwException("该角色名称已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(role) && !role.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(role)) || (Objects.nonNull(id) && Objects.nonNull(role) && ! Objects.equals(role.getId(),id)) ){
             BusinessException.throwException("该角色名称已存在");
         }
     }

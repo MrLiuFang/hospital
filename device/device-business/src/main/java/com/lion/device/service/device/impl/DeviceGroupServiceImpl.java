@@ -161,20 +161,14 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
 
     private void assertNameExist(String name, Long id) {
         DeviceGroup deviceGroup = deviceGroupDao.findFirstByName(name);
-        if (Objects.isNull(id) && Objects.nonNull(deviceGroup) ){
-            BusinessException.throwException("该设备组名称已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(deviceGroup) && !deviceGroup.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(deviceGroup)) || (Objects.nonNull(id) && Objects.nonNull(deviceGroup) && !Objects.equals( deviceGroup.getId(),id)) ){
             BusinessException.throwException("该设备组名称已存在");
         }
     }
 
     private void assertCodeExist(String code, Long id) {
         DeviceGroup deviceGroup = deviceGroupDao.findFirstByCode(code);
-        if (Objects.isNull(id) && Objects.nonNull(deviceGroup) ){
-            BusinessException.throwException("该设备组编号已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(deviceGroup) && !deviceGroup.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(deviceGroup)) || (Objects.nonNull(id) && Objects.nonNull(deviceGroup) && !Objects.equals(deviceGroup.getId() ,id)) ){
             BusinessException.throwException("该设备组编号已存在");
         }
     }

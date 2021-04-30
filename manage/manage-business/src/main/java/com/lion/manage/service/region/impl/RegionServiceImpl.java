@@ -162,20 +162,14 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
 
     private void assertNameExist(String name, Long id) {
         Region region = regionDao.findFirstByName(name);
-        if (Objects.isNull(id) && Objects.nonNull(region) ){
-            BusinessException.throwException("该区域名称已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(region) && !region.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(region)) || (Objects.nonNull(id) && Objects.nonNull(region) && !Objects.equals(region.getId(),id)) ){
             BusinessException.throwException("该区域名称已存在");
         }
     }
 
     private void assertDeviceGroupIsUse(Long deviceGroupId, Long id) {
         Region region = regionDao.findFirstByDeviceGroupId(deviceGroupId);
-        if (Objects.isNull(id) && Objects.nonNull(region) ){
-            BusinessException.throwException("该设备组在其它区域已经使用");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(region) && !region.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(region)) || (Objects.nonNull(id) && Objects.nonNull(region) && !Objects.equals(region.getId(),id)) ){
             BusinessException.throwException("该设备组在其它区域已经使用");
         }
     }

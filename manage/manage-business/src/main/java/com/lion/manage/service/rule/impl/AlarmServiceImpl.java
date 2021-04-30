@@ -58,11 +58,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     public void add(AddAlarmDto addAlarmDto) {
         Alarm alarm = new Alarm();
         BeanUtils.copyProperties(addAlarmDto,alarm);
-        if (Objects.equals(alarm.getClassify(),AlarmClassify.PATIENT)){
-            if (Objects.isNull(alarm.getLevel())) {
-                BusinessException.throwException("级别不能为空");
-            }
-        }
+        alarmClassify(alarm);
         assertAlarmClassifytExist(alarm.getClassify(),alarm.getLevel(),null);
         alarm = save(alarm);
         persistenceRedis(alarm,false);
@@ -72,11 +68,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     public void update(UpdateAlarmDto updateAlarmDto) {
         Alarm alarm = new Alarm();
         BeanUtils.copyProperties(updateAlarmDto,alarm);
-        if (Objects.equals(alarm.getClassify(),AlarmClassify.PATIENT)){
-            if (Objects.isNull(alarm.getLevel())) {
-                BusinessException.throwException("级别不能为空");
-            }
-        }
+        alarmClassify(alarm);
         assertAlarmClassifytExist(alarm.getClassify(),alarm.getLevel(),alarm.getId());
         update(alarm);
         persistenceRedis(alarm,false);
@@ -166,6 +158,14 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         return null;
     }
 
+    private void alarmClassify(Alarm alarm){
+        if (Objects.equals(alarm.getClassify(),AlarmClassify.PATIENT)){
+            if (Objects.isNull(alarm.getLevel())) {
+                BusinessException.throwException("级别不能为空");
+            }
+        }
+    }
+
     private void assertAlarmClassifytExist(AlarmClassify classify, Integer level, Long id) {
         Alarm alarm = null;
         if (Objects.equals(classify,AlarmClassify.PATIENT)){
@@ -173,21 +173,15 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         }else {
             alarm = alarmDao.findFirstByClassify(classify);
         }
-        if (Objects.isNull(id) && Objects.nonNull(alarm) ){
-            BusinessException.throwException("该警报分类已存在，重复的分类警告会导致警告冲突");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(alarm) && !alarm.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(alarm)) || (Objects.nonNull(id) && Objects.nonNull(alarm) && !Objects.equals(alarm.getId(),id)) ){
             BusinessException.throwException("该警报分类已存在，重复的分类警告会导致警告冲突");
         }
     }
 
     private void assertContentExist(String content, AlarmClassify classify, Long id) {
         Alarm alarm = alarmDao.findFirstByContentAndClassify(content,classify);
-        if (Objects.isNull(id) && Objects.nonNull(alarm) ){
-            BusinessException.throwException("该警报内容已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(alarm) && !alarm.getId().equals(id)){
-            BusinessException.throwException("该警报内容已存在");
+        if ((Objects.isNull(id) && Objects.nonNull(alarm)) || (Objects.nonNull(id) && Objects.nonNull(alarm) && !Objects.equals(alarm.getId(),id)) ){
+            BusinessException.throwException("该警分类报内容已存在");
         }
     }
 }

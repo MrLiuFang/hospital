@@ -1,11 +1,15 @@
 package com.lion.manage.service.rule.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.exception.BusinessException;
 import com.lion.manage.dao.rule.WashUserDao;
 import com.lion.manage.entity.rule.WashDevice;
 import com.lion.manage.entity.rule.WashRegion;
 import com.lion.manage.entity.rule.WashUser;
 import com.lion.manage.service.rule.WashUserServcie;
+import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.user.UserExposeService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,12 +27,20 @@ public class WashUserServcieImpl extends BaseServiceImpl<WashUser> implements Wa
     @Autowired
     private WashUserDao washUserDao;
 
+    @DubboReference
+    private UserExposeService userExposeService ;
+
     @Override
     public void add(List<Long> userId, Long washId) {
         if (Objects.nonNull(washId)){
             washUserDao.deleteByWashId(washId);
         }
         userId.forEach(id->{
+            List<WashUser> list = washUserDao.findByUserIdAndWashIdNot(id,washId);
+            if (Objects.nonNull(list) && list.size()>0){
+                User user = userExposeService.findById(id);
+                BusinessException.throwException(user.getName()+"已经存在其它洗手规则,多个洗手规则会造成洗手监控冲突");
+            }
             WashUser washUser = new WashUser();
             washUser.setUserId(id);
             washUser.setWashId(washId);

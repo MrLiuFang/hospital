@@ -24,4 +24,19 @@ public interface WashUserDao extends BaseDao<WashUser> {
      * @return
      */
     public List<WashUser> findByWashId(Long washId);
+
+    /**
+     * 根据用户查询洗手规则
+     * @param userId
+     * @param washId
+     * @return
+     */
+    public List<WashUser> findByUserIdAndWashIdNot(Long userId,Long washId);
+
+    /**
+     * 根据用户查询洗手规则
+     * @param userId
+     * @return
+     */
+    public List<WashUser> findByUserId(Long userId);
 }

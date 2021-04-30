@@ -5,7 +5,9 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
+import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.dao.rule.WashDao;
+import com.lion.manage.dao.rule.WashRegionDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
@@ -30,6 +32,8 @@ import com.lion.manage.service.rule.WashService;
 import com.lion.manage.service.rule.WashUserServcie;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.sun.corba.se.spi.ior.ObjectKey;
+import com.sun.xml.internal.ws.addressing.WsaActionUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +59,9 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     private WashDao washDao;
 
     @Autowired
+    private WashRegionDao washRegionDao;
+
+    @Autowired
     private WashDeviceService washDeviceService;
 
     @Autowired
@@ -65,6 +72,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
 
     @Autowired
     private RegionService regionService;
+
 
     @DubboReference
     private UserExposeService userExposeService;
@@ -93,21 +101,8 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         Wash wash = new Wash();
         BeanUtils.copyProperties(addWashDto,wash);
         assertNameExist(wash.getName(),null);
-        if (Objects.nonNull(wash.getAfterEnteringTime()) && Objects.nonNull(wash.getBeforeEnteringTime())) {
-            BusinessException.throwException("检测洗手时间（进入之前/进入之后）只能二选一");
-        }
-        if (Objects.isNull(wash.getAfterEnteringTime()) && Objects.isNull(wash.getBeforeEnteringTime())) {
-            BusinessException.throwException("检测洗手时间（进入之前/进入之后）必须选一个");
-        }
-        if (Objects.nonNull(wash.getAfterEnteringTime())) {
-            if (wash.getAfterEnteringTime()<=0){
-                BusinessException.throwException("检测时间必须大于0分钟");
-            }
-        }else if (Objects.nonNull(wash.getBeforeEnteringTime())) {
-            if (wash.getBeforeEnteringTime()<=0){
-                BusinessException.throwException("检测时间必须大于0分钟");
-            }
-        }
+        assertEnteringTime(wash,false);
+//        assertLoopWashExist(wash.getIsAllUser(),null);
         wash = save(wash);
         if (Objects.equals(wash.getType(), WashRuleType.REGION)){
             washRegionService.add(addWashDto.getRegionId(),wash.getId());
@@ -125,25 +120,8 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         Wash wash = new Wash();
         BeanUtils.copyProperties(updateWashDto,wash);
         assertNameExist(wash.getName(),wash.getId());
-        if (Objects.nonNull(wash.getAfterEnteringTime()) && Objects.nonNull(wash.getBeforeEnteringTime())) {
-            BusinessException.throwException("检测洗手时间（进入之前/进入之后）只能二选一");
-        }
-        if (Objects.isNull(wash.getAfterEnteringTime()) && Objects.isNull(wash.getBeforeEnteringTime())) {
-            BusinessException.throwException("检测洗手时间（进入之前/进入之后）必须选一个");
-        }
-        if (Objects.nonNull(wash.getAfterEnteringTime())) {
-            if (wash.getAfterEnteringTime()<=0){
-                BusinessException.throwException("检测时间必须大于0分钟");
-            }
-            wash.setBeforeEnteringTime(null);
-            washDao.setBeforeEnteringTime(wash.getId());
-        }else if (Objects.nonNull(wash.getBeforeEnteringTime())) {
-            if (wash.getBeforeEnteringTime()<=0){
-                BusinessException.throwException("检测时间必须大于0分钟");
-            }
-            wash.setAfterEnteringTime(null);
-            washDao.setAfterEnteringTimeIsNull(wash.getId());
-        }
+        assertEnteringTime(wash,true);
+//        assertLoopWashExist(wash.getIsAllUser(),wash.getId());
         update(wash);
         if (Objects.equals(wash.getType(), WashRuleType.REGION)){
             washRegionService.add(updateWashDto.getRegionId(),wash.getId());
@@ -230,12 +208,45 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         });
     }
 
+    private void assertLoopWashExist(Boolean isAllUser, Long washId, Boolean isUpdate, List<Long> userIds) {
+//        Wash washLoppAllUser = washDao.findFirstByTypeAndIsAllUser(WashRuleType.LOOP,true);
+//        if (Objects.equals(false,isAllUser) || (Objects.nonNull(userIds) && userIds.size()>0)) {
+//            if (Objects.nonNull(washLoppAllUser) && Objects.equals(false,isUpdate)){
+//                BusinessException.throwException("针对全员的定时洗手规则已经存在,多个定时洗手规则会造成洗手监控冲突");
+//            }
+//        }
+
+    }
+
+    private void assertEnteringTime(Wash wash,Boolean isUpdate) {
+        if (Objects.nonNull(wash.getAfterEnteringTime()) && Objects.nonNull(wash.getBeforeEnteringTime())) {
+            BusinessException.throwException("检测洗手时间（进入之前/进入之后）只能二选一");
+        }
+        if (Objects.isNull(wash.getAfterEnteringTime()) && Objects.isNull(wash.getBeforeEnteringTime())) {
+            BusinessException.throwException("检测洗手时间（进入之前/进入之后）必须选一个");
+        }
+        if (Objects.nonNull(wash.getAfterEnteringTime())) {
+            if (wash.getAfterEnteringTime()<=0){
+                BusinessException.throwException("检测时间必须大于0分钟");
+            }
+            wash.setBeforeEnteringTime(null);
+            if (Objects.equals(true,isUpdate)) {
+                washDao.setBeforeEnteringTime(wash.getId());
+            }
+        }else if (Objects.nonNull(wash.getBeforeEnteringTime())) {
+            if (wash.getBeforeEnteringTime()<=0){
+                BusinessException.throwException("检测时间必须大于0分钟");
+            }
+            wash.setAfterEnteringTime(null);
+            if (Objects.equals(true,isUpdate)) {
+                washDao.setAfterEnteringTimeIsNull(wash.getId());
+            }
+        }
+    }
+
     private void assertNameExist(String name, Long id) {
         Wash wash = washDao.findFirstByName(name);
-        if (Objects.isNull(id) && Objects.nonNull(wash) ){
-            BusinessException.throwException("该名称已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(wash) && !wash.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(wash) ) || (Objects.nonNull(id) && Objects.nonNull(wash) &&  !Objects.equals(wash.getId(),id)) ){
             BusinessException.throwException("该名称已存在");
         }
     }

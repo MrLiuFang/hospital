@@ -78,10 +78,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
     @Override
     public void assertNameExist(String name, Long id) {
         Department department = departmentDao.findFirstByName(name);
-        if (Objects.isNull(id) && Objects.nonNull(department) ){
-            BusinessException.throwException("该科室名称已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(department) && !department.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(department)) || (Objects.nonNull(id) && Objects.nonNull(department) && !Objects.equals(department.getId(),id)) ){
             BusinessException.throwException("该科室名称已存在");
         }
     }

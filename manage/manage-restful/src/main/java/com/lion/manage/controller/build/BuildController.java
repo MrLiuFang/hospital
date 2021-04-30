@@ -124,10 +124,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
     public IResultData floorAdd(@RequestBody @Validated({Validator.Insert.class}) AddBuildFloorDto addBuilidfFloorDto){
         BuildFloor buildFloor = new BuildFloor();
         BeanUtils.copyProperties(addBuilidfFloorDto,buildFloor);
-        Build build = this.buildService.findById(buildFloor.getBuildId());
-        if (Objects.isNull(build)){
-            BusinessException.throwException("关联的建筑不存在");
-        }
+        assertBuildExist(buildFloor.getBuildId());
         buildFloorService.save(buildFloor);
         return ResultData.instance();
     }
@@ -175,10 +172,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
     public IResultData floorUpdate(@RequestBody @Validated({Validator.Update.class}) UpdateBuildFloorDto updateBuildFloorDto){
         BuildFloor buildFloor =new BuildFloor();
         BeanUtils.copyProperties(updateBuildFloorDto,buildFloor);
-        Build build = this.buildService.findById(buildFloor.getBuildId());
-        if (Objects.isNull(build)){
-            BusinessException.throwException("关联的建筑不存在");
-        }
+        assertBuildExist(buildFloor.getBuildId());
         buildFloorService.update(buildFloor);
         return ResultData.instance();
     }
@@ -189,5 +183,12 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
         buildFloorService.delete(deleteDtoList);
         ResultData resultData = ResultData.instance();
         return resultData;
+    }
+
+    private void assertBuildExist(Long buildId){
+        Build build = this.buildService.findById(buildId);
+        if (Objects.isNull(build)){
+            BusinessException.throwException("关联的建筑不存在");
+        }
     }
 }

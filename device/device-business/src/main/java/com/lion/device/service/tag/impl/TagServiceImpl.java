@@ -95,30 +95,21 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 
     private void assertDeviceCodeExist(String deviceCode, Long id) {
         Tag tag = tagDao.findFirstByDeviceCode(deviceCode);
-        if (Objects.isNull(id) && Objects.nonNull(tag) ){
-            BusinessException.throwException("该设备编码已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(tag) && !tag.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(tag)) || (Objects.nonNull(id) && Objects.nonNull(tag) && !Objects.equals(tag.getId(),id) )){
             BusinessException.throwException("该设备编码已存在");
         }
     }
 
     private void assertDeviceNameExist(String deviceName, Long id) {
         Tag tag = tagDao.findFirstByDeviceName(deviceName);
-        if (Objects.isNull(id) && Objects.nonNull(tag) ){
-            BusinessException.throwException("该设备名称已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(tag) && !tag.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(tag) ) || (Objects.nonNull(id) && Objects.nonNull(tag) && !Objects.equals(tag.getId(),id))){
             BusinessException.throwException("该设备名称已存在");
         }
     }
 
     private void assertTagCodeExist(String tagCode, Long id) {
         Tag tag = tagDao.findFirstByTagCode(tagCode);
-        if (Objects.isNull(id) && Objects.nonNull(tag) ){
-            BusinessException.throwException("该标签编码已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(tag) && !tag.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(tag)) || (Objects.nonNull(id) && Objects.nonNull(tag) && !Objects.equals(tag.getId(),id)) ){
             BusinessException.throwException("该标签编码已存在");
         }
     }

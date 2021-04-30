@@ -170,10 +170,7 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     }
     private void assertNameExist(String name, Long id) {
         Ward ward = wardDao.findFirstByName(name);
-        if (Objects.isNull(id) && Objects.nonNull(ward) ){
-            BusinessException.throwException("该病房名称已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(ward) && !ward.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(ward)) || (Objects.nonNull(id) && Objects.nonNull(ward) && !Objects.equals(ward.getId(),id) ) ){
             BusinessException.throwException("该病房名称已存在");
         }
     }

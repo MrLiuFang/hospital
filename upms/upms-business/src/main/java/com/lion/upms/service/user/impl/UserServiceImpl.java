@@ -278,10 +278,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     private void assertEmailExist(String email, Long id) {
         User user = userDao.findFirstByEmail(email);
-        if (Objects.isNull(id) && Objects.nonNull(user) ){
-            BusinessException.throwException("该邮箱已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(user) && !user.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(user)) || (Objects.nonNull(id) && Objects.nonNull(user) && !Objects.equals(user.getId(),id)) ){
             BusinessException.throwException("该邮箱已存在");
         }
     }
@@ -297,10 +294,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     private void assertNumberExist(Integer number, Long id) {
         User user = userDao.findFirstByNumber(number);
-        if (Objects.isNull(id) && Objects.nonNull(user) ){
-            BusinessException.throwException("该工号已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(user) && !user.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(user)) ||(Objects.nonNull(id) && Objects.nonNull(user) && !Objects.equals(user.getId(),id))  ){
             BusinessException.throwException("该工号已存在");
         }
     }

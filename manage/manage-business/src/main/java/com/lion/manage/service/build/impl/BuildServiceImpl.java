@@ -71,10 +71,7 @@ public class BuildServiceImpl extends BaseServiceImpl<Build> implements BuildSer
 
     private void assertNameExist(String name, Long id) {
         Build build = buildDao.findFirstByName(name);
-        if (Objects.isNull(id) && Objects.nonNull(build) ){
-            BusinessException.throwException("该建筑名称已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(build) && !build.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(build)) || (Objects.nonNull(id) && Objects.nonNull(build) && !Objects.equals(build.getId(),id)) ){
             BusinessException.throwException("该建筑名称已存在");
         }
     }

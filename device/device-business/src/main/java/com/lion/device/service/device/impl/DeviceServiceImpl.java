@@ -56,20 +56,14 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 
     private void assertNameExist(String name, Long id) {
         Device device = deviceDao.findFirstByName(name);
-        if (Objects.isNull(id) && Objects.nonNull(device) ){
-            BusinessException.throwException("该设备名称已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(device) && !device.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(device)) || (Objects.nonNull(id) && Objects.nonNull(device) && !Objects.equals(device.getId(),id )) ){
             BusinessException.throwException("该设备名称已存在");
         }
     }
 
     private void assertCodeExist(String code, Long id) {
         Device device = deviceDao.findFirstByCode(code);
-        if (Objects.isNull(id) && Objects.nonNull(device) ){
-            BusinessException.throwException("该设备编号已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(device) && !device.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(device)) || ( Objects.nonNull(id) && Objects.nonNull(device) && !Objects.equals(device.getId(),id)) ){
             BusinessException.throwException("该设备编号已存在");
         }
     }

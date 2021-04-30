@@ -58,10 +58,7 @@ public class BuildFloorServiceImpl extends BaseServiceImpl<BuildFloor> implement
 
     private void assertNameExist(String name, Long buildId,Long id) {
         BuildFloor buildFloor = buildFloorDao.findFirstByBuildIdAndName(buildId,name);
-        if (Objects.isNull(id) && Objects.nonNull(buildFloor) ){
-            BusinessException.throwException("该建筑已经存在该楼层");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(buildFloor) && !buildFloor.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(buildFloor))||(Objects.nonNull(id) && Objects.nonNull(buildFloor) && !Objects.equals(buildFloor.getId(),id)) ){
             BusinessException.throwException("该建筑已经存在该楼层");
         }
     }

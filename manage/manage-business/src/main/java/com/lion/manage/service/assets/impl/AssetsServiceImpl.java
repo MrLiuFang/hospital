@@ -186,20 +186,14 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 
     private void assertNameExist(String name, Long id) {
         Assets assets = assetsDao.findFirstByName(name);
-        if (Objects.isNull(id) && Objects.nonNull(assets) ){
-            BusinessException.throwException("该资产名称已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(assets) && !assets.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(assets)) || (Objects.nonNull(id) && Objects.nonNull(assets) && !Objects.equals(assets.getId(),id)) ){
             BusinessException.throwException("该资产名称已存在");
         }
     }
 
     private void assertCodeExist(String code, Long id) {
         Assets assets = assetsDao.findFirstByCode(code);
-        if (Objects.isNull(id) && Objects.nonNull(assets) ){
-            BusinessException.throwException("该资产编码已存在");
-        }
-        if (Objects.nonNull(id) && Objects.nonNull(assets) && !assets.getId().equals(id)){
+        if ((Objects.isNull(id) && Objects.nonNull(assets)) || (Objects.nonNull(id) && Objects.nonNull(assets) && !Objects.equals(assets.getId(),id)) ){
             BusinessException.throwException("该资产编码已存在");
         }
     }
