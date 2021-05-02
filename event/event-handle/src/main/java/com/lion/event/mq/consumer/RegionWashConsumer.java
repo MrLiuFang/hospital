@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
+import com.lion.common.enums.EventType;
+import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.event.dto.AlarmDto;
 import com.lion.event.dto.RegionWashDto;
@@ -25,8 +27,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @Author Mr.Liu
@@ -59,6 +60,7 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
             RegionWashDto regionWashDto = jacksonObjectMapper.readValue(msg, RegionWashDto.class);
+            String uuid = UUID.randomUUID().toString();
             if (Objects.nonNull(regionWashDto) && Objects.nonNull(regionWashDto.getUserId())) {
                 UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + regionWashDto.getUserId());
                 if (Objects.nonNull(userCurrentRegionDto)) {
@@ -71,14 +73,21 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                         alarmDto.setRegionId(userCurrentRegionDto.getRegionId());
                         alarmDto.setAlarmType(AlarmType.REGION_WASH_ALARM);
                         alarmDto.setUserId(userCurrentRegionDto.getUserId());
+                        alarmDto.setUuid(uuid);
                         washList.forEach(wash -> {
+                            Map<String,Object> event = new HashMap<String,Object>();
+                            event.put("typ", Type.STAFF);//时间类型
+                            event.put("ia",false);//是否触发警告
+                            event.put("sdt",LocalDateTime.now());//系统时间
                             //进入X区域之前X分钟洗手检测
                             if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getBeforeEnteringTime()) && wash.getBeforeEnteringTime() >0){
                                 //没有最后的洗手记录
                                 if (Objects.isNull(userLastWashDto)) {
                                     try {
+                                        event.put("ia",true);
+                                        event.put("at", EventType.JRQRXS.getKey());//警告触发原因
 //                                        log.info("推送延迟警告命令");
-                                        rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
+                                        rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     } catch (JsonProcessingException e) {
                                         e.printStackTrace();
                                     }
@@ -86,15 +95,19 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 }
                                 Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(),wash);
                                 if (Objects.equals(false,b)){
-                                    log.info("推送告警没有按洗手规则中规定的设备来洗手");
+                                    event.put("ia",true);
+                                    event.put("at", EventType.JRHWZGDDSBXS.getKey());
+//                                    log.info("推送告警没有按洗手规则中规定的设备来洗手");
                                     return;
                                 }
                                 //超过时间范围
                                 Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
                                 if (duration.toMinutes() > wash.getBeforeEnteringTime()){
                                     try {
+                                        event.put("ia",true);
+                                        event.put("at", EventType.JRQRXS.getKey());
 //                                        log.info("推送延迟警告命令");
-                                        rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
+                                        rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     } catch (JsonProcessingException e) {
                                         e.printStackTrace();
                                     }
@@ -105,8 +118,10 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 //没有最后的洗手记录
                                 if (Objects.isNull(userLastWashDto)) {
                                     try {
+                                        event.put("ia",true);
+                                        event.put("at", EventType.JRHWXS.getKey());
 //                                        log.info("推送延迟警告命令");
-                                        rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
+                                        rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     } catch (JsonProcessingException e) {
                                         e.printStackTrace();
                                     }
@@ -114,7 +129,9 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 }
                                 Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(),wash);
                                 if (Objects.equals(false,b)){
-                                    log.info("推送告警没有按洗手规则中规定的设备来洗手");
+                                    event.put("ia",true);
+                                    event.put("at", EventType.JRHWZGDDSBXS.getKey());
+//                                    log.info("推送告警没有按洗手规则中规定的设备来洗手");
                                     return;
                                 }
                                 //超过时间范围
@@ -122,16 +139,26 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                         !userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusMinutes(wash.getAfterEnteringTime())) &&
                                         !userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime())){
                                     try {
+                                        event.put("ia",true);
+                                        event.put("at", EventType.JRHWXS.getKey());
 //                                        log.info("推送延迟警告命令");
-                                        rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
+                                        rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     } catch (JsonProcessingException e) {
                                         e.printStackTrace();
                                     }
                                     return;
                                 }
                             }
+                            event.put("pi",userCurrentRegionDto.getUserId());//员工id
+                            event.put("ri",userCurrentRegionDto.getRegionId());//区域id
+                            try {
+                                event.put("uuid",uuid);
+                                rocketMQTemplate.syncSend(TopicConstants.EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(event)).build());
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
+                            }
 
-    //                        else if (Objects.equals(wash.getType(), WashRuleType.LOOP)){
+                            //                        else if (Objects.equals(wash.getType(), WashRuleType.LOOP)){
     //                            UserLastWashDto previous = userLastWashDto.getPrevious();
     //                            if (wash.getDuration()>userLastWashDto.getTime()){
     //                                // TODO: 2021/4/25 推送洗手时间不够告警

@@ -35,7 +35,7 @@ public class PositionConsumer implements RocketMQListener<MessageExt> {
             Position position = jacksonObjectMapper.readValue(msg, Position.class);
             positionService.save(position);
         }catch (Exception e){
-
+            e.printStackTrace();
         }
     }
 }

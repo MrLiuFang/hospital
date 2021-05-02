@@ -12,6 +12,10 @@ import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Objects;
+
 /**
  * @Author Mr.Liu
  * @Description //TODO
@@ -33,10 +37,22 @@ public class AlarmConsumer implements RocketMQListener<MessageExt> {
         try {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
-            Alarm alarm = jacksonObjectMapper.readValue(msg, Alarm.class);
+            Map<String,Object> map = jacksonObjectMapper.readValue(msg, Map.class);
+            Alarm alarm = new Alarm();
+            alarm.setAi(Long.valueOf(String.valueOf(map.get("ai"))));
+            alarm.setAn(String.valueOf(map.get("an")));
+            alarm.setSdt((LocalDateTime) map.get("sdt"));
+            alarm.setUi(String.valueOf(map.get("uuid")));
+            alarm.setTyp(Integer.valueOf(String.valueOf(map.get("typ"))));
+            if (map.containsKey("dvi")) {
+                alarm.setDvi(Long.valueOf(String.valueOf(map.get("dvi"))));
+            }
+            if (map.containsKey("pi")) {
+                alarm.setPi(Long.valueOf(String.valueOf(map.get("pi"))));
+            }
             alarmService.save(alarm);
         }catch (Exception e){
-
+            e.printStackTrace();
         }
     }
 }

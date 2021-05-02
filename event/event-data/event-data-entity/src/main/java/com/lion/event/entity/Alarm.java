@@ -20,9 +20,9 @@ public class Alarm implements Serializable {
     private String _id;
 
     /**
-     * 事件id
+     * 事件唯一标识
      */
-    private String ei;
+    private String ui;
 
     //类型 (com.lion.event.entity.enums.Type)
     private Integer typ;
@@ -45,7 +45,7 @@ public class Alarm implements Serializable {
     /**
      * 警告名称
      */
-    private Long an;
+    private String an;
 
     /**
      * 发送告警时间

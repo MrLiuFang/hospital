@@ -153,6 +153,29 @@ public class RedisUtil {
         return build;
     }
 
+    public Region getRegionById(Long regionId){
+        if (Objects.isNull(regionId)){
+            return null;
+        }
+        Object object = redisTemplate.opsForValue().get(RedisConstants.REGION+regionId);
+        Region region= null;
+        if (Objects.nonNull(object)) {
+            if (!(object instanceof Region)){
+                redisTemplate.delete(RedisConstants.REGION+regionId);
+            }else {
+                region = (Region) object;
+            }
+        }
+
+        if (Objects.isNull(region)){
+            region = regionExposeService.findById(regionId);
+            if (Objects.nonNull(region)){
+                redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            }
+        }
+        return region;
+    }
+
     public Region getRegion(Long deviceId){
         if (Objects.isNull(deviceId)){
             return null;

@@ -2,6 +2,7 @@ package com.lion.event.mq.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.dto.DeviceDataDto;
+import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.common.constants.TopicConstants;
 import com.lion.device.entity.device.Device;
@@ -9,7 +10,6 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.entity.DeviceData;
-import com.lion.event.entity.enums.Type;
 import com.lion.event.service.DeviceDataService;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -89,6 +89,12 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 deviceData.setTyp(Type.STAFF.getKey());
                 deviceData.setPi(user.getId());
             }
+//            else if (){ //患者设备发出的数据
+//                deviceData.setTyp(Type.PATIENT.getKey());
+//                deviceData.setPi();
+//            }else { //资产设备发出的设备
+//                deviceData.setTyp(Type.DEVICE.getKey());
+//            }
 
             if (Objects.nonNull(monitor)) {
                 deviceData.setMc(deviceDataDto.getMonitorId());

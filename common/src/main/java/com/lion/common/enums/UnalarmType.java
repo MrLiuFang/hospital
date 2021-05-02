@@ -1,4 +1,4 @@
-package com.lion.event.entity.enums;
+package com.lion.common.enums;
 
 import cn.hutool.core.util.NumberUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -9,19 +9,20 @@ import java.util.Objects;
 /**
  * @Author Mr.Liu
  * @Description //TODO
- * @Date 2021/5/1 下午5:39
+ * @Date 2021/5/2 下午5:10
  **/
-public enum Type implements IEnum {
+public enum UnalarmType implements IEnum {
 
-    STAFF(0, "员工"),
-    PATIENT(1, "患者"),
-    DEVICE(2, "设备");
+    LEAVE_REGION(10, "离开区域"),
+    WASH(11, "按规定洗手"),
+    NO_WASH_RULE(12, "没有警告规则"),
+    DEFAULT(99, "默认值(只为填充数据)");
 
     private final int key;
 
     private final String desc;
 
-    private Type(int key, String desc) {
+    private UnalarmType(int key, String desc) {
         this.key = key;
         this.desc = desc;
     }
@@ -56,7 +57,7 @@ public enum Type implements IEnum {
     }
 
     @JsonCreator
-    public static Type instance(Object value){
+    public static UnalarmType instance(Object value){
         if (Objects.isNull(value)){
             return null;
         }
@@ -66,8 +67,8 @@ public enum Type implements IEnum {
         return instance(String.valueOf(value));
     }
 
-    private static Type instance(Integer key){
-        for(Type item : values()){
+    private static UnalarmType instance(Integer key){
+        for(UnalarmType item : values()){
             if (item.getKey()==key){
                 return item;
             }
@@ -75,8 +76,8 @@ public enum Type implements IEnum {
         return null;
     }
 
-    private static Type instance(String name){
-        for(Type item : values()){
+    private static UnalarmType instance(String name){
+        for(UnalarmType item : values()){
             if(Objects.equals(item.getName(),name)){
                 return item;
             }

@@ -39,4 +39,9 @@ public class AlarmDto implements Serializable {
      */
     private LocalDateTime delayDateTime;
 
+    /**
+     * 匹配事件的唯一标识
+     */
+    private String uuid;
+
 }

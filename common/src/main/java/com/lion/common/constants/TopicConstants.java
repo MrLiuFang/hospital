@@ -75,22 +75,22 @@ public class TopicConstants {
     /**
      * 警告处理消息延迟推送
      */
-    public static final String ALARM_DELAY = "alarm_delay";
+    public static final String REGION_WASH_ALARM_DELAY = "region_wash_alarm_delay";
 
     /**
      * 警告处理消息延迟推送消费组
      */
-    public static final String ALARM_DELAY_CONSUMER_GROUP = "alarm_delay_consumer_group";
+    public static final String REGION_WASH_ALARM_DELAY_CONSUMER_GROUP = "region_wash_alarm_delay_consumer_group";
 
     /**
      * 警告处理
      */
-    public static final String ALARM = "alarm";
+    public static final String REGION_WASH_ALARM = "region_wash_alarm";
 
     /**
      * 警告处理消费组
      */
-    public static final String ALARM_CONSUMER_GROUP = "alarm_consumer_group";
+    public static final String REGION_WASH_ALARM_CONSUMER_GROUP = "region_wash_alarm_consumer_group";
 
 
 }

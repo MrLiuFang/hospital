@@ -1,7 +1,6 @@
 package com.lion.event.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.lion.event.entity.enums.Type;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -25,7 +24,7 @@ public class DeviceData implements Serializable {
     //用户id(员工/患者)
     private Long pi;
 
-    //类型 (com.lion.event.entity.enums.Type)
+    //类型 (com.lion.common.enums.Type)
     private Integer typ;
 
     //Star 的 code

@@ -24,9 +24,9 @@ import java.util.Objects;
  * @Date 2021/4/27 下午5:18
  **/
 @Component
-@RocketMQMessageListener(topic = TopicConstants.ALARM_DELAY,selectorExpression="*",consumerGroup = TopicConstants.ALARM_DELAY_CONSUMER_GROUP)
+@RocketMQMessageListener(topic = TopicConstants.REGION_WASH_ALARM_DELAY,selectorExpression="*",consumerGroup = TopicConstants.REGION_WASH_ALARM_DELAY_CONSUMER_GROUP)
 @Log
-public class AlarmDelayConsumer implements RocketMQListener<MessageExt> {
+public class RegionWashAlarmDelayConsumer implements RocketMQListener<MessageExt> {
 
     @Autowired
     private ObjectMapper jacksonObjectMapper;
@@ -45,22 +45,22 @@ public class AlarmDelayConsumer implements RocketMQListener<MessageExt> {
             AlarmDto alarmDto = jacksonObjectMapper.readValue(msg, AlarmDto.class);
             if (Objects.isNull(alarmDto.getDelayDateTime())){
 //                log.info("推送警告命令");
-                rocketMQTemplate.syncSend(TopicConstants.ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
+                rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
             }else {
                 Duration duration = Duration.between(LocalDateTime.now(),alarmDto.getDelayDateTime());
                 long millis = duration.toMillis();
                 if (millis <= 1000) {
 //                    log.info("推送警告命令");
-                    rocketMQTemplate.syncSend(TopicConstants.ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
+                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                 }
                 Integer delayLevel = MessageDelayUtil.getDelayLevel(alarmDto.getDelayDateTime());
                 if (delayLevel > -1) {
 //                    log.info("推送延迟警告命令(循环延迟)");
-                    rocketMQTemplate.syncSend(TopicConstants.ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build(), 1000, delayLevel);
+                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build(), 1000, delayLevel);
                 }
             }
         }catch (Exception e){
-
+            e.printStackTrace();
         }
     }
 }
