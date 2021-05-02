@@ -1,13 +1,10 @@
 package com.lion.event.mq.consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lion.common.constants.RedisConstants;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.common.utils.RedisUtil;
 import com.lion.common.constants.TopicConstants;
 import com.lion.device.entity.device.Device;
-import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
@@ -15,6 +12,8 @@ import com.lion.event.entity.DeviceData;
 import com.lion.event.entity.enums.Type;
 import com.lion.event.service.DeviceDataService;
 import com.lion.manage.entity.build.Build;
+import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.upms.entity.user.User;
 import lombok.extern.java.Log;
@@ -22,18 +21,10 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -41,7 +32,7 @@ import java.util.concurrent.TimeUnit;
  **/
 
 @Component
-@RocketMQMessageListener(topic = TopicConstants.EVENT,selectorExpression="*",consumerGroup = TopicConstants.EVENT_TO_STORAGE_GROUP)
+@RocketMQMessageListener(topic = TopicConstants.DEVICE_DATA,selectorExpression="*",consumerGroup = TopicConstants.DEVICE_DATA_TO_STORAGE_CONSUMER_GROUP)
 @Log
 public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
 
@@ -123,9 +114,23 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             if (Objects.nonNull(region)){
                 deviceData.setRi(region.getId());
                 deviceData.setRn(region.getName());
-                Build build = redisUtil.get
-            }
+                Build build = redisUtil.getBuild(region.getBuildId());
+                if (Objects.nonNull(build)){
+                    deviceData.setBui(build.getId());
+                    deviceData.setBun(build.getName());
+                }
+                BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
+                if (Objects.nonNull(buildFloor)){
+                    deviceData.setBfi(buildFloor.getId());
+                    deviceData.setBfn(buildFloor.getName());
+                }
+                Department department = redisUtil.getDepartment(region.departmentId);
+                if (Objects.nonNull(department)){
+                    deviceData.setDi(department.getId());
+                    deviceData.setDn(department.getName());
+                }
 
+            }
             deviceData.setW(deviceDataDto.getWarning());
             deviceData.setT(deviceDataDto.getTemperature());
             deviceData.setH(deviceDataDto.getHumidity());

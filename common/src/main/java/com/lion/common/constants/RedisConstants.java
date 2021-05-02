@@ -140,6 +140,11 @@ public class RedisConstants {
     public static final String FLOOR_BUILD = "floor_build_";
 
     /**
+     * 部门(key:departmentId,value:department)
+     */
+    public static final String DEPARTMENT = "department_";
+
+    /**
      * 缓存过期时间
      */
     public static final Integer EXPIRE_TIME = 364;

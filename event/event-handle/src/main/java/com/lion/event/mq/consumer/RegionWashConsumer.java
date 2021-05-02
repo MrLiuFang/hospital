@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
+import com.lion.common.utils.RedisUtil;
 import com.lion.event.dto.AlarmDto;
 import com.lion.event.dto.RegionWashDto;
 import com.lion.event.dto.UserCurrentRegionDto;

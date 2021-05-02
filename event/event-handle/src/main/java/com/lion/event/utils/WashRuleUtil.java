@@ -1,5 +1,6 @@
 package com.lion.event.utils;
 
+import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceType;
 import com.lion.manage.entity.enums.WashDeviceType;

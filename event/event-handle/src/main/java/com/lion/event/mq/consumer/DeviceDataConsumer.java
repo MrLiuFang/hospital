@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  **/
 
 @Component
-@RocketMQMessageListener(topic = TopicConstants.EVENT,selectorExpression="*",consumerGroup = TopicConstants.EVENT_GROUP)
+@RocketMQMessageListener(topic = TopicConstants.DEVICE_DATA,selectorExpression="*",consumerGroup = TopicConstants.DEVICE_DATA_CONSUMER_GROUP)
 @Log
 public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
 

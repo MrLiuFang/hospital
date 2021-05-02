@@ -10,11 +10,16 @@ import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.manage.entity.build.Build;
+import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.WashDevice;
+import com.lion.manage.expose.build.BuildExposeService;
+import com.lion.manage.expose.build.BuildFloorExposeService;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.impl.RegionExposeService;
 import com.lion.manage.expose.rule.AlarmExposeService;
 import com.lion.manage.expose.rule.WashDeviceExposeService;
@@ -70,8 +75,82 @@ public class RedisUtil {
     @DubboReference
     private AlarmExposeService alarmExposeService;
 
-    public Build getBuild(Long regionId){
+    @DubboReference
+    private BuildExposeService buildExposeService;
 
+    @DubboReference
+    private BuildFloorExposeService buildFloorExposeService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
+    public Department getDepartment(Long departmentId) {
+        if (Objects.isNull(departmentId)){
+            return null;
+        }
+        Object object = redisTemplate.opsForValue().get(RedisConstants.DEPARTMENT+departmentId);
+        Department department = null;
+        if (Objects.nonNull(object)) {
+            if (!(object instanceof Department)){
+                redisTemplate.delete(RedisConstants.DEPARTMENT+departmentId);
+            }else {
+                department = (Department) object;
+            }
+        }
+
+        if (Objects.isNull(department)){
+            department = departmentExposeService.findById(departmentId);
+            if (Objects.nonNull(department)){
+                redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT+department.getId(),department,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            }
+        }
+        return department;
+    }
+
+    public BuildFloor getBuildFloor(Long buildFloorId) {
+        if (Objects.isNull(buildFloorId)){
+            return null;
+        }
+        Object object = redisTemplate.opsForValue().get(RedisConstants.BUILD_FLOOR+buildFloorId);
+        BuildFloor buildFloor = null;
+        if (Objects.nonNull(object)) {
+            if (!(object instanceof BuildFloor)){
+                redisTemplate.delete(RedisConstants.BUILD_FLOOR+buildFloorId);
+            }else {
+                buildFloor = (BuildFloor) object;
+            }
+        }
+
+        if (Objects.isNull(buildFloor)){
+            buildFloor = buildFloorExposeService.findById(buildFloorId);
+            if (Objects.nonNull(buildFloor)){
+                redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            }
+        }
+        return buildFloor;
+    }
+
+    public Build getBuild(Long buildId){
+        if (Objects.isNull(buildId)){
+            return null;
+        }
+        Object object = redisTemplate.opsForValue().get(RedisConstants.BUILD+buildId);
+        Build build = null;
+        if (Objects.nonNull(object)) {
+            if (!(object instanceof Build)){
+                redisTemplate.delete(RedisConstants.BUILD+buildId);
+            }else {
+                build = (Build) object;
+            }
+        }
+
+        if (Objects.isNull(build)){
+            build = buildExposeService.findById(buildId);
+            if (Objects.nonNull(build)){
+                redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            }
+        }
+        return build;
     }
 
     public Region getRegion(Long deviceId){

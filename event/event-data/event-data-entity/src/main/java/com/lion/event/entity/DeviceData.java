@@ -111,7 +111,7 @@ public class DeviceData implements Serializable {
     /**
      * 科室名称
      */
-    private Long dn;
+    private String dn;
 
     //区域id
     private Long ri;

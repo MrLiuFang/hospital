@@ -1,18 +1,22 @@
 package com.lion.manage.service.department.impl;
 
+import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.department.DepartmentDao;
 import com.lion.manage.dao.department.DepartmentResponsibleUserDao;
 import com.lion.manage.dao.department.DepartmentUserDao;
+import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.dao.ward.WardRoomDao;
+import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.DepartmentResponsibleUser;
 import com.lion.manage.entity.department.dto.AddDepartmentDto;
 import com.lion.manage.entity.department.dto.UpdateDepartmentDto;
 import com.lion.manage.entity.department.vo.DetailsDepartmentVo;
 import com.lion.manage.entity.department.vo.TreeDepartmentVo;
+import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.service.department.DepartmentResponsibleUserService;
 import com.lion.manage.service.department.DepartmentService;
@@ -20,11 +24,13 @@ import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -50,7 +56,13 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
     private RegionService regionService;
 
     @Autowired
+    private RegionDao regionDao;
+
+    @Autowired
     private WardService wardService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     @Transactional
@@ -60,6 +72,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
         assertNameExist(department.getName(),null);
         department = this.save(department);
         departmentResponsibleUserService.save(addDepartmentDto.getResponsible(),department.getId());
+        persistenceRedis(department);
         return department;
     }
 
@@ -107,6 +120,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
         this.update(department);
         this.departmentResponsibleUserDao.deleteByDepartmentId(department.getId());
         departmentResponsibleUserService.save(updateDepartmentDto.getResponsible(),department.getId());
+        persistenceRedis(department);
     }
 
     @Override
@@ -119,6 +133,17 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
                 departmentUserDao.deleteByDepartmentId(d.getId());
                 departmentResponsibleUserDao.deleteByDepartmentId(d.getId());
                 wardService.deleteByDepartmentId(d.getId());
+                List<Region> listRegion = regionDao.findByDepartmentId(d.getId());
+                List<DeleteDto> regionDeleteDtoList = new ArrayList<DeleteDto>();
+                listRegion.forEach(region -> {
+                    DeleteDto dto = new DeleteDto();
+                    dto.setId(region.getId());
+                    regionDeleteDtoList.add(dto);
+                });
+                if (regionDeleteDtoList.size()>0) {
+                    regionService.delete(regionDeleteDtoList);
+                }
+                redisTemplate.delete(RedisConstants.DEPARTMENT+d.getId());
                 List<Department> list = departmentDao.findByParentIdOrderByCreateDateTimeAsc(d.getId());
                 List<DeleteDto> tmp = new ArrayList<DeleteDto>();
                 list.forEach(de ->{
@@ -142,6 +167,10 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
             returnList.add(treeDepartmentVo);
         });
         return returnList;
+    }
+
+    private void persistenceRedis(Department department){
+        redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT+department.getId(),department,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
 

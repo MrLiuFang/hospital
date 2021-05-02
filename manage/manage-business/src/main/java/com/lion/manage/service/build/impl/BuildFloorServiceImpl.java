@@ -1,5 +1,6 @@
 package com.lion.manage.service.build.impl;
 
+import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
@@ -11,12 +12,16 @@ import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.service.build.BuildFloorService;
+import com.lion.manage.service.region.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -38,6 +43,12 @@ public class BuildFloorServiceImpl extends BaseServiceImpl<BuildFloor> implement
     @Autowired
     private RegionExposeObjectDao regionExposeObjectDao;
 
+    @Autowired
+    private RegionService regionService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
 
     @Override
     public List<BuildFloor> find(Long buildId) {
@@ -47,13 +58,16 @@ public class BuildFloorServiceImpl extends BaseServiceImpl<BuildFloor> implement
     @Override
     public void update(BuildFloor entity) {
         assertNameExist(entity.getName(),entity.getBuildId(),entity.getId());
+        persistenceRedis(entity);
         super.update(entity);
     }
 
     @Override
     public <S extends BuildFloor> S save(S entity) {
         assertNameExist(entity.getName(),entity.getBuildId(),null);
-        return super.save(entity);
+        entity = super.save(entity);
+        persistenceRedis(entity);
+        return entity;
     }
 
     private void assertNameExist(String name, Long buildId,Long id) {
@@ -69,11 +83,20 @@ public class BuildFloorServiceImpl extends BaseServiceImpl<BuildFloor> implement
         deleteDtoList.forEach(deleteDto -> {
             deleteById(deleteDto.getId());
             List<Region> listRegion = regionDao.findByBuildFloorId(deleteDto.getId());
+            List<DeleteDto> regionDeleteDtoList = new ArrayList<DeleteDto>();
             listRegion.forEach(region -> {
-                regionDao.delete(region);
-                regionCctvDao.deleteByRegionId(region.getId());
-                regionExposeObjectDao.deleteByRegionId(region.getId());
+                DeleteDto dto = new DeleteDto();
+                dto.setId(region.getId());
+                regionDeleteDtoList.add(dto);
             });
+            if (regionDeleteDtoList.size()>0) {
+                regionService.delete(regionDeleteDtoList);
+            }
+            redisTemplate.delete(RedisConstants.BUILD_FLOOR+deleteDto.getId());
         });
+    }
+
+    private void persistenceRedis(BuildFloor buildFloor){
+        redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 }

@@ -14,11 +14,13 @@ import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.service.build.BuildService;
+import com.lion.manage.service.region.RegionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -41,10 +43,7 @@ public class BuildServiceImpl extends BaseServiceImpl<Build> implements BuildSer
     private RegionDao regionDao;
 
     @Autowired
-    private RegionCctvDao regionCctvDao;
-
-    @Autowired
-    private RegionExposeObjectDao regionExposeObjectDao;
+    private RegionService regionService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -56,11 +55,15 @@ public class BuildServiceImpl extends BaseServiceImpl<Build> implements BuildSer
             this.deleteById(deleteDto.getId());
             buildFloorDao.deleteByBuildId(deleteDto.getId());
             List<Region> listRegion = regionDao.findByBuildId(deleteDto.getId());
+            List<DeleteDto> regionDeleteDtoList = new ArrayList<DeleteDto>();
             listRegion.forEach(region -> {
-                regionDao.delete(region);
-                regionCctvDao.deleteByRegionId(region.getId());
-                regionExposeObjectDao.deleteByRegionId(region.getId());
+                DeleteDto dto = new DeleteDto();
+                dto.setId(region.getId());
+                regionDeleteDtoList.add(dto);
             });
+            if (regionDeleteDtoList.size()>0) {
+                regionService.delete(regionDeleteDtoList);
+            }
             redisTemplate.delete(RedisConstants.BUILD+deleteDto.getId());
         });
     }
