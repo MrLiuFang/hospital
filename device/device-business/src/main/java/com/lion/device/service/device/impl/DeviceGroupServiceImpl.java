@@ -1,6 +1,6 @@
 package com.lion.device.service.device.impl;
 
-import com.lion.common.RedisConstants;
+import com.lion.common.constants.RedisConstants;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;

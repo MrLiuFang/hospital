@@ -1,6 +1,6 @@
 package com.lion.device.expose.impl.device;
 
-import com.lion.common.RedisConstants;
+import com.lion.common.constants.RedisConstants;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.entity.device.Device;

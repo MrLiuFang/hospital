@@ -36,9 +36,8 @@ public class WashDevice extends BaseEntity {
     @NotNull(message = "洗手规则id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long washId;
 
-    @ApiModelProperty(value = "洗手规则设备类型")
+    @ApiModelProperty(value = "洗手设备id")
     @Column(name = "type",nullable = false)
-    @Convert(converter = WashDeviceType.WashDeviceTypeConverter.class)
-    @NotNull(message = "洗手规则设备类型不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private WashDeviceType type;
+    @NotNull(message = "洗手设备id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private Long deviceId;
 }

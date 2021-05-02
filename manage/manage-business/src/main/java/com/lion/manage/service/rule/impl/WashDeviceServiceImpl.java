@@ -24,16 +24,18 @@ public class WashDeviceServiceImpl extends BaseServiceImpl<WashDevice> implement
     private WashDeviceDao washDeviceDao;
 
     @Override
-    public void add(List<WashDeviceType> deviceType, Long washId) {
+    public void add(List<Long> deviceId, Long washId) {
         if (Objects.nonNull(washId)){
             washDeviceDao.deleteByWashId(washId);
         }
-        deviceType.forEach(type->{
-            WashDevice washDevice = new WashDevice();
-            washDevice.setType(type);
-            washDevice.setWashId(washId);
-            save(washDevice);
-        });
+        if (Objects.nonNull(deviceId) && deviceId.size()>0) {
+            deviceId.forEach(id->{
+                WashDevice washDevice = new WashDevice();
+                washDevice.setDeviceId(id);
+                washDevice.setWashId(washId);
+                save(washDevice);
+            });
+        }
     }
 
     @Override

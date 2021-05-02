@@ -15,10 +15,10 @@ public interface WashDeviceService extends BaseService<WashDevice> {
 
     /**
      * 保存
-     * @param deviceType
+     * @param deviceId
      * @param washId
      */
-    public void add(List<WashDeviceType> deviceType, Long washId);
+    public void add(List<Long> deviceId, Long washId);
 
     /**
      * 根据洗手规则删除

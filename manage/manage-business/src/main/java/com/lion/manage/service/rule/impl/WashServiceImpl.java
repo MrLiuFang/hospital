@@ -1,17 +1,18 @@
 package com.lion.manage.service.rule.impl;
 
-import com.lion.common.RedisConstants;
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.entity.device.Device;
+import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.exception.BusinessException;
-import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.dao.rule.WashDao;
 import com.lion.manage.dao.rule.WashRegionDao;
+import com.lion.manage.dao.rule.WashUserDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.enums.WashDeviceType;
 import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Wash;
@@ -32,8 +33,6 @@ import com.lion.manage.service.rule.WashService;
 import com.lion.manage.service.rule.WashUserServcie;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
-import com.sun.corba.se.spi.ior.ObjectKey;
-import com.sun.xml.internal.ws.addressing.WsaActionUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +61,9 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     private WashRegionDao washRegionDao;
 
     @Autowired
+    private WashUserDao washUserDao;
+
+    @Autowired
     private WashDeviceService washDeviceService;
 
     @Autowired
@@ -83,6 +85,9 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     @DubboReference
     private FileExposeService fileExposeService;
 
+    @DubboReference
+    private DeviceExposeService deviceExposeService;
+
     @Autowired
     private BuildService buildService;
 
@@ -102,7 +107,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         BeanUtils.copyProperties(addWashDto,wash);
         assertNameExist(wash.getName(),null);
         assertEnteringTime(wash,false);
-//        assertLoopWashExist(wash.getIsAllUser(),null);
+        assertLoopWashExist(wash.getIsAllUser(),wash.getId());
         wash = save(wash);
         if (Objects.equals(wash.getType(), WashRuleType.REGION)){
             washRegionService.add(addWashDto.getRegionId(),wash.getId());
@@ -110,8 +115,8 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         if (Objects.equals(wash.getIsAllUser(),false)){
             washUserService.add(addWashDto.getUserId(),wash.getId());
         }
-//        washDeviceService.add(addWashDto.getDeviceType(),wash.getId());
-        persistence2Redis(addWashDto.getRegionId(),addWashDto.getUserId(),wash,false);
+        washDeviceService.add(addWashDto.getDeviceId(),wash.getId());
+        persistence2Redis(addWashDto.getRegionId(),addWashDto.getUserId(),addWashDto.getDeviceId(),wash,false);
     }
 
     @Override
@@ -121,7 +126,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         BeanUtils.copyProperties(updateWashDto,wash);
         assertNameExist(wash.getName(),wash.getId());
         assertEnteringTime(wash,true);
-//        assertLoopWashExist(wash.getIsAllUser(),wash.getId());
+        assertLoopWashExist(wash.getIsAllUser(),wash.getId());
         update(wash);
         if (Objects.equals(wash.getType(), WashRuleType.REGION)){
             washRegionService.add(updateWashDto.getRegionId(),wash.getId());
@@ -129,8 +134,8 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         if (Objects.equals(wash.getIsAllUser(),false)){
             washUserService.add(updateWashDto.getUserId(),wash.getId());
         }
-//        washDeviceService.add(updateWashDto.getDeviceType(),wash.getId());
-        persistence2Redis(updateWashDto.getRegionId(),updateWashDto.getUserId(),wash,false);
+        washDeviceService.add(updateWashDto.getDeviceId(),wash.getId());
+        persistence2Redis(updateWashDto.getRegionId(),updateWashDto.getUserId(),updateWashDto.getDeviceId(),wash,false);
     }
 
     @Override
@@ -143,11 +148,16 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         BeanUtils.copyProperties(wash,detailsWashVo);
         List<WashDevice> washDeviceList = washDeviceService.find(wash.getId());
         if (Objects.nonNull(washDeviceList) && washDeviceList.size()>0){
-            List<WashDeviceType> deviceTypes = new ArrayList<WashDeviceType>();
-            washDeviceList.forEach(type->{
-                deviceTypes.add(type.getType());
+            List<DetailsWashVo.DeviceVo> vos = new ArrayList<DetailsWashVo.DeviceVo>();
+            washDeviceList.forEach(washDevice->{
+                Device device = deviceExposeService.findById(washDevice.getDeviceId());
+                if (Objects.nonNull(device)){
+                    DetailsWashVo.DeviceVo vo = new DetailsWashVo.DeviceVo();
+                    BeanUtils.copyProperties(device,vo);
+                    vos.add(vo);
+                }
             });
-            detailsWashVo.setDeviceType(deviceTypes);
+            detailsWashVo.setDeviceVos(vos);
         }
         List<WashRegion>  washRegions = washRegionService.find(wash.getId());
         if (Objects.nonNull(washRegions) && washRegions.size()>0){
@@ -200,7 +210,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     @Transactional
     public void delete(List<DeleteDto> deleteDtos) {
         deleteDtos.forEach(deleteDto -> {
-            persistence2Redis(Collections.EMPTY_LIST,Collections.EMPTY_LIST,this.findById(deleteDto.getId()),true);
+            persistence2Redis(Collections.EMPTY_LIST,Collections.EMPTY_LIST,Collections.EMPTY_LIST,this.findById(deleteDto.getId()),true);
             this.deleteById(deleteDto.getId());
             washDeviceService.delete(deleteDto.getId());
             washRegionService.delete(deleteDto.getId());
@@ -208,13 +218,22 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         });
     }
 
-    private void assertLoopWashExist(Boolean isAllUser, Long washId, Boolean isUpdate, List<Long> userIds) {
-//        Wash washLoppAllUser = washDao.findFirstByTypeAndIsAllUser(WashRuleType.LOOP,true);
-//        if (Objects.equals(false,isAllUser) || (Objects.nonNull(userIds) && userIds.size()>0)) {
-//            if (Objects.nonNull(washLoppAllUser) && Objects.equals(false,isUpdate)){
-//                BusinessException.throwException("针对全员的定时洗手规则已经存在,多个定时洗手规则会造成洗手监控冲突");
-//            }
-//        }
+    private void assertLoopWashExist(Boolean isAllUser, Long id) {
+        List<WashUser> washUserList = washUserDao.find(WashRuleType.LOOP,false);
+        if (Objects.nonNull(washUserList) && washUserList.size()>0) {
+            if (Objects.equals(true,isAllUser)) {
+                BusinessException.throwException("已有其他人员在非全员的定时洗手规则中,不能再设置针对全员的定时洗手规则,会造成洗手监控冲突");
+            }
+        }
+
+        Wash washLoppAllUser = washDao.findFirstByTypeAndIsAllUser(WashRuleType.LOOP, true);
+        if ((Objects.isNull(id) && Objects.nonNull(washLoppAllUser) ) || (Objects.nonNull(id) && Objects.nonNull(washLoppAllUser) &&  !Objects.equals(washLoppAllUser.getId(),id)) ){
+            BusinessException.throwException("针对全员的定时洗手规则已经存在,多个定时洗手规则会造成洗手监控冲突");
+        }
+
+        if (Objects.nonNull(washLoppAllUser) && Objects.equals(false,isAllUser)){
+            BusinessException.throwException("针对全员的定时洗手规则已经存在,不能再给员工单独设置洗手规则");
+        }
 
     }
 
@@ -251,13 +270,14 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         }
     }
 
-    private void persistence2Redis(List<Long> regionId,List<Long> userId,Wash wash,Boolean isDelete){
-        redisTemplate.delete(RedisConstants.WASH_DEVICE_TYPE+wash.getId());
-
-//        if (Objects.equals(false,isDelete)){
-//            redisTemplate.opsForList().leftPushAll(RedisConstants.WASH_DEVICE_TYPE+wash.getId(),deviceType);
-//            redisTemplate.expire(RedisConstants.WASH_DEVICE_TYPE+wash.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-//        }
+    private void persistence2Redis(List<Long> regionIds,List<Long> userIds,List<Long> deviceIds,Wash wash,Boolean isDelete){
+        redisTemplate.delete(RedisConstants.WASH_DEVICE+wash.getId());
+        if (Objects.equals(false,isDelete)){
+            if (Objects.nonNull(deviceIds) && deviceIds.size()>0) {
+                redisTemplate.opsForList().leftPushAll(RedisConstants.WASH_DEVICE + wash.getId(), deviceIds);
+                redisTemplate.expire(RedisConstants.WASH_DEVICE + wash.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            }
+        }
 
         if (Objects.equals(wash.getType(),WashRuleType.LOOP)) {
             if (wash.getIsAllUser()){
@@ -291,8 +311,8 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
                     redisTemplate.expire(RedisConstants.USER_LOOP_WASH + washUser.getUserId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }
             });
-            if (Objects.nonNull(userId) && userId.size()>0) {
-                userId.forEach(ui -> {
+            if (Objects.nonNull(userIds) && userIds.size()>0) {
+                userIds.forEach(ui -> {
                     redisTemplate.opsForList().leftPush(RedisConstants.USER_LOOP_WASH + ui, wash.getId());
                     redisTemplate.expire(RedisConstants.USER_LOOP_WASH + ui, RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
                 });
@@ -317,7 +337,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
 
         List<WashUser> washUserList = washUserService.find(wash.getId());
         washUserList.forEach(washUser -> {
-            regionId.forEach(ri->{
+            regionIds.forEach(ri->{
                 redisTemplate.delete(RedisConstants.REGION_USER_WASH+ri+washUser.getUserId());
             });
         });
@@ -325,13 +345,13 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
 
 
         redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        regionId.forEach(ri->{
+        regionIds.forEach(ri->{
             redisTemplate.opsForList().leftPush(RedisConstants.REGION_WASH+ri,wash.getId());
             redisTemplate.expire(RedisConstants.REGION_WASH+ri, RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
         });
 
-        userId.forEach(ui->{
-            regionId.forEach(ri-> {
+        userIds.forEach(ui->{
+            regionIds.forEach(ri-> {
                 redisTemplate.opsForValue().set(RedisConstants.REGION_USER_WASH +ri +ui, wash.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });
         });

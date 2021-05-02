@@ -1,6 +1,6 @@
 package com.lion.manage.service.region.impl;
 
-import com.lion.common.RedisConstants;
+import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.device.DeviceGroupDevice;
@@ -218,5 +218,9 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
                 redisTemplate.expire(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(), RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
             });
         }
+
+        redisTemplate.opsForValue().set(RedisConstants.REGION_BUILD + region.getId(), region.getBuildId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.REGION_BUILD_FLOOR + region.getId(), region.getBuildFloorId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.REGION_DEPARTMENT + region.getId(), region.getDepartmentId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 }

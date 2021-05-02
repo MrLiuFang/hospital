@@ -3,8 +3,7 @@ package com.lion.manage.service.rule.impl;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.rule.WashUserDao;
-import com.lion.manage.entity.rule.WashDevice;
-import com.lion.manage.entity.rule.WashRegion;
+import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.rule.WashUser;
 import com.lion.manage.service.rule.WashUserServcie;
 import com.lion.upms.entity.user.User;
@@ -36,10 +35,10 @@ public class WashUserServcieImpl extends BaseServiceImpl<WashUser> implements Wa
             washUserDao.deleteByWashId(washId);
         }
         userId.forEach(id->{
-            List<WashUser> list = washUserDao.findByUserIdAndWashIdNot(id,washId);
+            List<WashUser> list = washUserDao.find(id, WashRuleType.LOOP,washId);
             if (Objects.nonNull(list) && list.size()>0){
                 User user = userExposeService.findById(id);
-                BusinessException.throwException(user.getName()+"已经存在其它洗手规则,多个洗手规则会造成洗手监控冲突");
+                BusinessException.throwException(user.getName()+"已经存在其它区域洗手规则中,多个洗手规则会造成洗手监控冲突");
             }
             WashUser washUser = new WashUser();
             washUser.setUserId(id);

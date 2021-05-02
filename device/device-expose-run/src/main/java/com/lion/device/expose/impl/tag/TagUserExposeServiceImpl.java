@@ -1,6 +1,6 @@
 package com.lion.device.expose.impl.tag;
 
-import com.lion.common.RedisConstants;
+import com.lion.common.constants.RedisConstants;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagDao;
 import com.lion.device.dao.tag.TagUserDao;
@@ -8,7 +8,6 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagUser;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.exception.BusinessException;
-import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;

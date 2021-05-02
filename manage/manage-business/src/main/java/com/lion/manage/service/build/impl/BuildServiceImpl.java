@@ -1,5 +1,6 @@
 package com.lion.manage.service.build.impl;
 
+import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
@@ -10,14 +11,17 @@ import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.dao.region.RegionExposeObjectDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.service.build.BuildService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -42,6 +46,9 @@ public class BuildServiceImpl extends BaseServiceImpl<Build> implements BuildSer
     @Autowired
     private RegionExposeObjectDao regionExposeObjectDao;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
@@ -54,19 +61,23 @@ public class BuildServiceImpl extends BaseServiceImpl<Build> implements BuildSer
                 regionCctvDao.deleteByRegionId(region.getId());
                 regionExposeObjectDao.deleteByRegionId(region.getId());
             });
+            redisTemplate.delete(RedisConstants.BUILD+deleteDto.getId());
         });
     }
 
     @Override
     public <S extends Build> S save(S entity) {
         assertNameExist(entity.getName(),null);
-        return super.save(entity);
+        entity = super.save(entity);
+        persistenceRedis(entity);
+        return entity;
     }
 
     @Override
     public void update(Build entity) {
         assertNameExist(entity.getName(),entity.getId());
         super.update(entity);
+        persistenceRedis(entity);
     }
 
     private void assertNameExist(String name, Long id) {
@@ -74,6 +85,10 @@ public class BuildServiceImpl extends BaseServiceImpl<Build> implements BuildSer
         if ((Objects.isNull(id) && Objects.nonNull(build)) || (Objects.nonNull(id) && Objects.nonNull(build) && !Objects.equals(build.getId(),id)) ){
             BusinessException.throwException("该建筑名称已存在");
         }
+    }
+
+    private void persistenceRedis(Build build){
+        redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
 }

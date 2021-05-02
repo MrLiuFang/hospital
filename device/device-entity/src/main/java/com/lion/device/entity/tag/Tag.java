@@ -43,9 +43,9 @@ public class Tag extends BaseEntity {
     @Column(name = "type",nullable = false)
     private TagType type;
 
-    @ApiModelProperty(value = "标签分类")
+    @ApiModelProperty(value = "标签用途")
     @Convert(converter = TagPurpose.TagPurposeConverter.class)
-    @NotNull(message = "标签分类不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "标签用途不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "purpose",nullable = false)
     private TagPurpose purpose;
 

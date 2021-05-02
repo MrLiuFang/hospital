@@ -1,12 +1,15 @@
 package com.lion.manage.entity.rule.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lion.core.persistence.Validator;
 import com.lion.manage.entity.enums.WashDeviceType;
 import com.lion.manage.entity.rule.Wash;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 /**
@@ -20,11 +23,14 @@ import java.util.List;
 public class UpdateWashDto extends Wash {
 
     @ApiModelProperty(value = "区域id（全量，先删后增）")
+    @NotEmpty(message = "请选择区域",groups = {Validator.Update.class})
     private List<Long> regionId;
 
     @ApiModelProperty(value = "用户id（全量，先删后增）")
     private List<Long> userId;
 
-//    @ApiModelProperty(value = "洗手设备类型（全量，先删后增）")
-//    private List<WashDeviceType> deviceType;
+    @ApiModelProperty(value = "洗手设备id（全量，先删后增）")
+    @NotEmpty( message = "请选择洗手设备",groups = {Validator.Update.class})
+    private List<Long> deviceId;
+
 }

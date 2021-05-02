@@ -1,6 +1,6 @@
 package com.lion.device.service.tag.impl;
 
-import com.lion.common.RedisConstants;
+import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.*;
