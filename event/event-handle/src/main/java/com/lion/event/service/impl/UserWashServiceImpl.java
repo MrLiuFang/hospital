@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.DeviceDataDto;
+import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceType;
@@ -25,7 +26,9 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -51,7 +54,7 @@ public class UserWashServiceImpl implements UserWashService {
 
 
     @Override
-    public void userWashEevent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, User user){
+    public void userWashEevent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, User user) throws JsonProcessingException {
         Region monitorRegion = null;
         Region starRegion = null;
         if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getId())) {
@@ -97,7 +100,7 @@ public class UserWashServiceImpl implements UserWashService {
     }
 
 
-    private UserCurrentRegionDto recordUserCurrentRegion(User user, Region monitorRegion, Region starRegion, DeviceDataDto deviceDataDto){
+    private UserCurrentRegionDto recordUserCurrentRegion(User user, Region monitorRegion, Region starRegion, DeviceDataDto deviceDataDto) throws JsonProcessingException {
         Region region = Objects.isNull(monitorRegion)?starRegion:monitorRegion;
         if (Objects.isNull(region)){
             return null;
@@ -111,6 +114,14 @@ public class UserWashServiceImpl implements UserWashService {
             userCurrentRegionDto.setPreviousRegionId(userCurrentRegionDto.getRegionId());
             userCurrentRegionDto.setWashRecord(null);
             userCurrentRegionDto.setCurrentRegionEvent(0);
+            //记录位置
+            Map<String,Object> map = new HashMap<>();
+            map.put("typ", Type.STAFF.getKey());
+            map.put("pi", user.getId());
+            map.put("ri", region.getId());
+            map.put("ddt", deviceDataDto.getTime());
+            map.put("sdt", deviceDataDto.getSystemDateTime());
+            rocketMQTemplate.syncSend(TopicConstants.POSITION, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(map)).build());
         }
         userCurrentRegionDto.setCurrentRegionEvent(userCurrentRegionDto.getCurrentRegionEvent()+1);
         userCurrentRegionDto.setUserId(user.getId());

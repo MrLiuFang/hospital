@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter;
  * @Date 2021/5/1 下午2:18
  **/
 @Data
-@Document
+@Document(value = "event")
 public class Event {
 
     @Id
@@ -82,7 +82,7 @@ public class Event {
     private Long run;
 
     /**
-     * 系统时间
+     * 系统时间(触发时间)
      */
     private LocalDateTime sdt;
 

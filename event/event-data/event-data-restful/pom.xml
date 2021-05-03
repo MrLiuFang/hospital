@@ -17,6 +17,7 @@
 			<artifactId>event-data-business</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
+
 		<dependency>
 			<groupId>com.lion</groupId>
 			<artifactId>lion-restful-starter</artifactId>

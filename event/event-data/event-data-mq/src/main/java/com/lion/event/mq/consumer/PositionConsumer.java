@@ -2,14 +2,25 @@ package com.lion.event.mq.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
+import com.lion.common.enums.Type;
+import com.lion.common.utils.RedisUtil;
 import com.lion.event.entity.Position;
 import com.lion.event.service.PositionService;
+import com.lion.manage.entity.build.Build;
+import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.region.Region;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @Author Mr.Liu
@@ -27,12 +38,41 @@ public class PositionConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private PositionService positionService;
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     @Override
     public void onMessage(MessageExt messageExt) {
         try {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
-            Position position = jacksonObjectMapper.readValue(msg, Position.class);
+            Map<String,Object> map = jacksonObjectMapper.readValue(msg, Map.class);
+            Position position = new Position();
+            position.setTyp(Integer.valueOf(String.valueOf(map.get("typ"))));
+            position.setPi(Long.valueOf(String.valueOf(map.get("pi"))));
+            position.setDdt(LocalDateTime.parse(String.valueOf(map.get("ddt")), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            position.setSdt(LocalDateTime.parse(String.valueOf(map.get("sdt")), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            position.setRi(Long.valueOf(String.valueOf(map.get("ri"))));
+
+            Region region = redisUtil.getRegionById(position.getRi());
+            if (Objects.nonNull(region)) {
+                position.setRn(region.getName());
+                Build build = redisUtil.getBuild(region.getBuildId());
+                if (Objects.nonNull(build)) {
+                    position.setBui(build.getId());
+                    position.setBun(build.getName());
+                }
+                BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
+                if (Objects.nonNull(buildFloor)) {
+                    position.setBfi(buildFloor.getId());
+                    position.setBfn(buildFloor.getName());
+                }
+                Department department = redisUtil.getDepartment(region.getDepartmentId());
+                if (Objects.nonNull(department)) {
+                    position.setDi(department.getId());
+                    position.setDn(department.getName());
+                }
+            }
             positionService.save(position);
         }catch (Exception e){
             e.printStackTrace();

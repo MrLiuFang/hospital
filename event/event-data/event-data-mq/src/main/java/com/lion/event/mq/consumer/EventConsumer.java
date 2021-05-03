@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Objects;
 
@@ -51,7 +52,7 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
                 event.setTyp(Integer.valueOf(String.valueOf(map.get("tpy"))));
                 event.setUi(String.valueOf(map.get("uuid")));
                 event.setPi(Long.valueOf(String.valueOf(map.get("pi"))));
-                event.setSdt((LocalDateTime) map.get("sdt"));
+                event.setSdt(LocalDateTime.parse(String.valueOf(map.get("sdt")), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
                 event.setIa(Boolean.valueOf(String.valueOf(map.get("ia"))));
                 event.setRi(Long.valueOf(String.valueOf(map.get("ri"))));
                 Region region = redisUtil.getRegionById(event.getRi());

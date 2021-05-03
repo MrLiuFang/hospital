@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
  * @Date 2021/5/1 上午11:24
  **/
 @Data
-@Document
+@Document(value = "alarm")
 public class Alarm implements Serializable {
 
     @Id

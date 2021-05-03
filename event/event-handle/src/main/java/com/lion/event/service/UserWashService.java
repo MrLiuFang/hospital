@@ -1,5 +1,6 @@
 package com.lion.event.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.tag.Tag;
@@ -20,5 +21,5 @@ public interface UserWashService {
      * @param tag
      * @param user
      */
-    public void userWashEevent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, User user);
+    public void userWashEevent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, User user) throws JsonProcessingException;
 }

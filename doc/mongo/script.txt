@@ -75,6 +75,21 @@ db.runCommand({
     key : {_id: 'hashed'}
 })
 
+db.runCommand({
+    shardcollection : "hospital.alarm",
+    key : {_id: 'hashed'}
+})
+
+db.runCommand({
+    shardcollection : "hospital.device_data",
+    key : {_id: 'hashed'}
+})
+
+db.runCommand({
+    shardcollection : "hospital.position",
+    key : {_id: 'hashed'}
+})
+
 use hospital;
 
 db.event.createIndex( { "ui":1 }, { sparse: true } )

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * @Date 2021/4/23 上午9:45
  **/
 @Data
-@Document
+@Document(value = "device_data")
 public class DeviceData implements Serializable {
 
     @Id

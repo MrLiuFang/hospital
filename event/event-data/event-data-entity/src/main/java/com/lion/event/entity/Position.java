@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  * @Date 2021/5/1 上午11:24
  **/
 @Data
-@Document
+@Document(value = "position")
 public class Position implements Serializable {
 
     @Id
@@ -53,7 +53,7 @@ public class Position implements Serializable {
     /**
      * 科室名称
      */
-    private Long dn;
+    private String dn;
 
     //区域id
     private Long ri;

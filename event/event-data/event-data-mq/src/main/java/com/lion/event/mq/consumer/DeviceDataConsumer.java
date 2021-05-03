@@ -141,6 +141,7 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             deviceData.setT(deviceDataDto.getTemperature());
             deviceData.setH(deviceDataDto.getHumidity());
             deviceData.setDdt(deviceDataDto.getTime());
+            deviceData.setSdt(deviceDataDto.getSystemDateTime());
             deviceDataService.save(deviceData);
 
             // 更新设备的电量
