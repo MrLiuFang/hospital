@@ -44,7 +44,7 @@ public class EventController {
         log.info("收到事件数据");
         deviceDataDtos.forEach(deviceDataDto -> {
             try {
-                rocketMQTemplate.syncSend(TopicConstants.EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(deviceDataDto)).build());
+                rocketMQTemplate.syncSend(TopicConstants.DEVICE_DATA, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(deviceDataDto)).build());
             } catch (JsonProcessingException e) {
                 e.printStackTrace();
             }

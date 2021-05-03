@@ -77,6 +77,9 @@ public class RegionWashAlarmConsumer implements RocketMQListener<MessageExt> {
 
     private void washAlarm(User user,AlarmDto alarmDto) throws JsonProcessingException {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION+user.getId());
+        if (Objects.isNull(userCurrentRegionDto)){
+            return;
+        }
         if (!Objects.equals(userCurrentRegionDto.getRegionId(),alarmDto.getRegionId())){
             //如果用户从需要警告的区域离开则解除警告
             unalarm(alarmDto,UnalarmType.LEAVE_REGION);
@@ -91,7 +94,7 @@ public class RegionWashAlarmConsumer implements RocketMQListener<MessageExt> {
         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
         if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && userLastWashDto.getDateTime().isAfter(alarmDto.getAlarmDateTime())){
             List<Wash> washList = redisUtil.getWash(alarmDto.getRegionId());
-            washList.forEach(wash -> {
+            for (Wash wash :washList){
                 Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(), wash);
                 if (Objects.equals(false, b)) {
                     log.info("->发送洗手警告");
@@ -103,7 +106,7 @@ public class RegionWashAlarmConsumer implements RocketMQListener<MessageExt> {
                     }
                     return;
                 }
-            });
+            };
 
             //解除警告
             log.info(user.getName()+"->解除警告");

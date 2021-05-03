@@ -2,6 +2,7 @@ package com.lion.event.mq.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
+import com.lion.common.utils.DateTimeFormatterUtil;
 import com.lion.event.entity.Alarm;
 import com.lion.event.entity.Event;
 import com.lion.event.service.AlarmService;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 import java.util.Objects;
 
@@ -41,7 +43,7 @@ public class AlarmConsumer implements RocketMQListener<MessageExt> {
             Alarm alarm = new Alarm();
             alarm.setAi(Long.valueOf(String.valueOf(map.get("ai"))));
             alarm.setAn(String.valueOf(map.get("an")));
-            alarm.setSdt((LocalDateTime) map.get("sdt"));
+            alarm.setSdt(LocalDateTime.parse(String.valueOf(map.get("sdt")), DateTimeFormatter.ofPattern(DateTimeFormatterUtil.pattern(String.valueOf(map.get("sdt"))))));
             alarm.setUi(String.valueOf(map.get("uuid")));
             alarm.setTyp(Integer.valueOf(String.valueOf(map.get("typ"))));
             if (map.containsKey("dvi")) {

@@ -2,6 +2,7 @@ package com.lion.event.mq.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
+import com.lion.common.utils.DateTimeFormatterUtil;
 import com.lion.common.utils.RedisUtil;
 import com.lion.event.entity.Event;
 import com.lion.event.service.EventService;
@@ -49,10 +50,10 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
 
             }else {
                 Event event = new Event();
-                event.setTyp(Integer.valueOf(String.valueOf(map.get("tpy"))));
+                event.setTyp(Integer.valueOf(String.valueOf(map.get("typ"))));
                 event.setUi(String.valueOf(map.get("uuid")));
                 event.setPi(Long.valueOf(String.valueOf(map.get("pi"))));
-                event.setSdt(LocalDateTime.parse(String.valueOf(map.get("sdt")), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                event.setSdt(LocalDateTime.parse(String.valueOf(map.get("sdt")), DateTimeFormatter.ofPattern(DateTimeFormatterUtil.pattern(String.valueOf(map.get("sdt"))))));
                 event.setIa(Boolean.valueOf(String.valueOf(map.get("ia"))));
                 event.setRi(Long.valueOf(String.valueOf(map.get("ri"))));
                 Region region = redisUtil.getRegionById(event.getRi());

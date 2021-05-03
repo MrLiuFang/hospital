@@ -109,25 +109,30 @@ public class UserWashServiceImpl implements UserWashService {
         if (Objects.isNull(userCurrentRegionDto)){
             userCurrentRegionDto  = new UserCurrentRegionDto();
             userCurrentRegionDto.setFirstEntryTime(deviceDataDto.getTime());
+            position(deviceDataDto,user,region);
         }else  if (Objects.nonNull(region) && !Objects.equals(region.getId(),userCurrentRegionDto.getRegionId())) {//判断是否从X区域进入X区域
             userCurrentRegionDto.setFirstEntryTime(deviceDataDto.getTime());
             userCurrentRegionDto.setPreviousRegionId(userCurrentRegionDto.getRegionId());
             userCurrentRegionDto.setWashRecord(null);
             userCurrentRegionDto.setCurrentRegionEvent(0);
-            //记录位置
-            Map<String,Object> map = new HashMap<>();
-            map.put("typ", Type.STAFF.getKey());
-            map.put("pi", user.getId());
-            map.put("ri", region.getId());
-            map.put("ddt", deviceDataDto.getTime());
-            map.put("sdt", deviceDataDto.getSystemDateTime());
-            rocketMQTemplate.syncSend(TopicConstants.POSITION, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(map)).build());
+            position(deviceDataDto,user,region);
         }
         userCurrentRegionDto.setCurrentRegionEvent(userCurrentRegionDto.getCurrentRegionEvent()+1);
         userCurrentRegionDto.setUserId(user.getId());
         userCurrentRegionDto.setRegionId(region.getId());
         redisTemplate.opsForValue().set(RedisConstants.USER_CURRENT_REGION+user.getId(),userCurrentRegionDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         return userCurrentRegionDto;
+    }
+
+    private void position(DeviceDataDto deviceDataDto,User user, Region region) throws JsonProcessingException {
+        //记录位置
+        Map<String,Object> map = new HashMap<>();
+        map.put("typ", Type.STAFF.getKey());
+        map.put("pi", user.getId());
+        map.put("ri", region.getId());
+        map.put("ddt", deviceDataDto.getTime());
+        map.put("sdt", deviceDataDto.getSystemDateTime());
+        rocketMQTemplate.syncSend(TopicConstants.POSITION, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(map)).build());
     }
 
     /**

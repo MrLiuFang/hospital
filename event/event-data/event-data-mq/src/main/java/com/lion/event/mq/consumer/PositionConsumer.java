@@ -3,6 +3,7 @@ package com.lion.event.mq.consumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.enums.Type;
+import com.lion.common.utils.DateTimeFormatterUtil;
 import com.lion.common.utils.RedisUtil;
 import com.lion.event.entity.Position;
 import com.lion.event.service.PositionService;
@@ -50,8 +51,8 @@ public class PositionConsumer implements RocketMQListener<MessageExt> {
             Position position = new Position();
             position.setTyp(Integer.valueOf(String.valueOf(map.get("typ"))));
             position.setPi(Long.valueOf(String.valueOf(map.get("pi"))));
-            position.setDdt(LocalDateTime.parse(String.valueOf(map.get("ddt")), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-            position.setSdt(LocalDateTime.parse(String.valueOf(map.get("sdt")), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            position.setDdt(LocalDateTime.parse(String.valueOf(map.get("ddt")), DateTimeFormatter.ofPattern(DateTimeFormatterUtil.pattern(String.valueOf(map.get("ddt"))))));
+            position.setSdt(LocalDateTime.parse(String.valueOf(map.get("sdt")), DateTimeFormatter.ofPattern(DateTimeFormatterUtil.pattern(String.valueOf(map.get("sdt"))))));
             position.setRi(Long.valueOf(String.valueOf(map.get("ri"))));
 
             Region region = redisUtil.getRegionById(position.getRi());
