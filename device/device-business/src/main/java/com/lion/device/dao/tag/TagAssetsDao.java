@@ -25,9 +25,16 @@ public interface TagAssetsDao extends BaseDao<TagAssets> {
     public int deleteByAssetsId(Long assetsId);
 
     /**
-     *
+     * 根据资产ID 查询
      * @param assetsId
      * @return
      */
     public TagAssets findFirstByAssetsIdAndUnbindingTimeIsNull(Long assetsId);
+
+    /**
+     * 根据标签ID 查询
+     * @param tagId
+     * @return
+     */
+    public TagAssets findFirstByTagIdAndUnbindingTimeIsNull(Long tagId);
 }

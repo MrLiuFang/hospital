@@ -1,23 +1,39 @@
 package com.lion.device.service.tag.impl;
 
 import com.lion.common.constants.RedisConstants;
+import com.lion.constant.SearchConstant;
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
+import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.*;
+import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
+import com.lion.device.entity.tag.TagAssets;
 import com.lion.device.entity.tag.TagUser;
 import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
+import com.lion.device.entity.tag.vo.ListTagVo;
 import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.department.DepartmentUser;
 import com.lion.manage.expose.department.DepartmentExposeService;
+import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -48,6 +64,12 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     @DubboReference
     private DepartmentExposeService departmentExposeService;
 
+    @DubboReference
+    private DepartmentUserExposeService departmentUserExposeService;
+
+    @DubboReference
+    private UserExposeService userExposeService;
+
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -59,6 +81,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         assertDeviceCodeExist(tag.getDeviceCode(),null);
         assertDeviceNameExist(tag.getDeviceName(),null);
         assertTagCodeExist(tag.getTagCode(),null);
+        assertTagPurpose(tag);
         tag = save(tag);
         redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
@@ -72,6 +95,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         assertDeviceCodeExist(tag.getDeviceCode(),tag.getId());
         assertDeviceNameExist(tag.getDeviceName(),tag.getId());
         assertTagCodeExist(tag.getTagCode(),tag.getId());
+        assertTagPurpose(tag);
         update(tag);
         redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
@@ -80,17 +104,64 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     @Override
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(deleteDto -> {
-            List<TagUser> list = tagUserDao.findByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
+            TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             this.deleteById(deleteDto.getId());
             tagAssetsDao.deleteByTagId(deleteDto.getId());
             tagPatientDao.deleteByTagId(deleteDto.getId());
             tagPostdocsDao.deleteByTagId(deleteDto.getId());
             tagUserDao.deleteByTagId(deleteDto.getId());
-            list.forEach(tagUser -> {
-                redisTemplate.delete(RedisConstants.USER_TAG+tagUser.getUserId());
-                redisTemplate.delete(RedisConstants.TAG_USER+tagUser.getTagId());
-            });
+            redisTemplate.delete(RedisConstants.USER_TAG+tagUser.getUserId());
+            redisTemplate.delete(RedisConstants.TAG_USER+tagUser.getTagId());
         });
+    }
+
+    @Override
+    public IPageResultData<List<ListTagVo>> list(Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
+        JpqlParameter jpqlParameter = new JpqlParameter();
+        if (StringUtils.hasText(tagCode)){
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_tagCode",tagCode);
+        }
+        if (Objects.nonNull(type)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_type",type);
+        }
+        if (Objects.nonNull(purpose)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_purpose",purpose);
+        }
+        if (Objects.nonNull(battery)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_battery",battery);
+        }
+        lionPage.setJpqlParameter(jpqlParameter);
+        Page<Tag> page = findNavigator(lionPage);
+        List<Tag> list = page.getContent();
+        List<ListTagVo> returnList = new ArrayList<>();
+        list.forEach(tag->{
+            ListTagVo vo = new ListTagVo();
+            BeanUtils.copyProperties(tag,vo);
+            if (Objects.equals(tag.getPurpose(),TagPurpose.STAFF)) {
+                TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
+                if (Objects.nonNull(tagUser)) {
+                    User user = userExposeService.findById(tagUser.getUserId());
+                    if (Objects.nonNull(user)) {
+                        vo.setBindingName(user.getName()+":"+user.getNumber());
+                        Department department = departmentUserExposeService.findDepartment(user.getId());
+                        if (Objects.nonNull(department)) {
+                            vo.setDepartmentName(department.getName());
+                        }
+                    }
+                }
+            }else if (Objects.equals(tag.getPurpose(),TagPurpose.PATIENT)) {
+
+            }else if (Objects.equals(tag.getPurpose(),TagPurpose.POSTDOCS)) {
+
+            }else if (Objects.equals(tag.getPurpose(),TagPurpose.ASSETS)) {
+                TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
+                if (Objects.nonNull(tagAssets)){
+
+                }
+            }
+            returnList.add(vo);
+        });
+        return new PageResultData<List<ListTagVo>>(returnList,page.getPageable(),page.getTotalElements());
     }
 
     private void assertDeviceCodeExist(String deviceCode, Long id) {
@@ -118,6 +189,20 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         Department department = departmentExposeService.findById(departmentId);
         if (Objects.isNull(department) ){
             BusinessException.throwException("该科室不存在");
+        }
+    }
+
+    private void assertTagPurpose(Tag tag) {
+        if (Objects.equals(tag.getType(), TagType.STAFF)) {
+            if (!Objects.equals(tag.getPurpose(), TagPurpose.STAFF)) {
+                BusinessException.throwException("该标签分类只能用途于员工");
+            }
+        }
+
+        if (Objects.equals(tag.getType(), TagType.TEMPERATURE_HUMIDITY)) {
+            if (!Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH)) {
+                BusinessException.throwException("该标签分类只能用途于温湿仪");
+            }
         }
     }
 }

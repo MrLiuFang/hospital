@@ -84,8 +84,8 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
 
     @Override
     public TagUser find(Long tagId) {
-        List<TagUser> list = tagUserDao.findByTagIdAndUnbindingTimeIsNull(tagId);
-        return list.size()>0?list.get(0):null;
+        TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(tagId);
+        return tagUser;
     }
 
 

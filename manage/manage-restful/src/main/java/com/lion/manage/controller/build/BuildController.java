@@ -150,7 +150,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
             BeanUtils.copyProperties(buildFloor,buildFloorVo);
             Build build = buildService.findById(buildFloor.getBuildId());
             if (Objects.nonNull(build)) {
-                buildFloorVo.setBuildName(build.getName());
+                buildFloorVo.setBuild(build);
             }
             buildFloorVo.setRegions(regionService.findByBuildFloorId(buildFloor.getId()));
             listBuildFloorVos.add(buildFloorVo);

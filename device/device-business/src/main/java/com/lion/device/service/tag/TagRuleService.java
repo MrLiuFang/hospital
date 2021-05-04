@@ -6,34 +6,36 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
-import com.lion.device.entity.tag.Tag;
+import com.lion.device.entity.tag.TagRule;
 import com.lion.device.entity.tag.dto.AddTagDto;
+import com.lion.device.entity.tag.dto.AddTagRuleDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
+import com.lion.device.entity.tag.dto.UpdateTagRuleDto;
 import com.lion.device.entity.tag.vo.ListTagVo;
 
 import java.util.List;
 
 /**
- * @author Mr.Liu
- * @Description:
- * @date 2021/4/7下午8:15
- */
-public interface TagService extends BaseService<Tag> {
+ * @Author Mr.Liu
+ * @Description //TODO
+ * @Date 2021/5/4 上午11:04
+ **/
+public interface TagRuleService extends BaseService<TagRule> {
 
     /**
-     * 新增标签
-     * @param addTagDto
+     * 新增标签规则
+     * @param addTagRuleDto
      */
-    public void add(AddTagDto addTagDto);
+    public void add(AddTagRuleDto addTagRuleDto);
 
     /**
-     * 修改标签
-     * @param updateTagDto
+     * 修改标签规则
+     * @param updateTagRuleDto
      */
-    public void update(UpdateTagDto updateTagDto);
+    public void update(UpdateTagRuleDto updateTagRuleDto);
 
     /**
-     * 删除标签
+     * 删除标签规则
      * @param deleteDtoList
      */
     public void delete(List<DeleteDto> deleteDtoList);
@@ -47,5 +49,5 @@ public interface TagService extends BaseService<Tag> {
      * @param lionPage
      * @return
      */
-    IPageResultData<List<ListTagVo>> list(Integer battery, String tagCode,  TagType type, TagPurpose purpose, LionPage lionPage);
+//    IPageResultData<List<ListTagVo>> list(Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage);
 }

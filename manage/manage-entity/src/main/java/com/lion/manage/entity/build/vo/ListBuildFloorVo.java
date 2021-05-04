@@ -19,7 +19,7 @@ import java.util.List;
 public class ListBuildFloorVo extends BuildFloor {
 
     @ApiModelProperty(value = "所属建筑")
-    private String buildName;
+    private Build build;
 
     @ApiModelProperty(value = "该楼层所有区域(某些功能模块会使用)")
     private List<Region> regions;

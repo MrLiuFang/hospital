@@ -30,7 +30,7 @@ public interface TagUserDao extends BaseDao<TagUser> {
      * @param tagId
      * @return
      */
-    public List<TagUser> findByTagIdAndUnbindingTimeIsNull(Long tagId);
+    public TagUser findFirstByTagIdAndUnbindingTimeIsNull(Long tagId);
 
     /**
      * 根据userid查村未解绑定的标签关联关系
