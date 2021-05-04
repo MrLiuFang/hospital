@@ -62,7 +62,7 @@ public class Region extends BaseEntity {
 
     @ApiModelProperty(value = "设备组id")
     @Column(name = "device_group_id")
-    @NotNull(message = "设备组不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotNull(message = "设备组不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long deviceGroupId;
 
     @ApiModelProperty(value = "建筑id")
