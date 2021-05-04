@@ -10,6 +10,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagRuleUserDao;
 import com.lion.device.entity.tag.TagRuleUser;
 import com.lion.device.entity.tag.vo.ListTagRuleUserVo;
+import com.lion.device.service.tag.TagRuleLogService;
 import com.lion.device.service.tag.TagRuleUserService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
@@ -41,6 +42,9 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
     @DubboReference
     private FileExposeService fileExposeService;
 
+    @Autowired
+    private TagRuleLogService tagRuleLogService;
+
     @DubboReference
     private DepartmentUserExposeService departmentUserExposeService;
 
@@ -49,6 +53,10 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
         if (Objects.nonNull(deleteUser)) {
             deleteUser.forEach(id->{
                 tagRuleUserDao.deleteByUserIdAndAndTagRuleId(id,tagRuleId);
+                User user = userExposeService.findById(id);
+                if (Objects.nonNull(user)){
+                    tagRuleLogService.add(tagRuleId,user.getName()+"从规则中删除");
+                }
             });
         }
 
@@ -66,6 +74,10 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                 newTagRuleUser.setUserId(id);
                 newTagRuleUser.setTagRuleId(tagRuleId);
                 save(newTagRuleUser);
+                User user = userExposeService.findById(id);
+                if (Objects.nonNull(user)){
+                    tagRuleLogService.add(tagRuleId,user.getName()+"添加到规则中");
+                }
             });
         }
     }

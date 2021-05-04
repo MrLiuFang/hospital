@@ -16,6 +16,7 @@ import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.AddTagRuleDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagRuleDto;
+import com.lion.device.entity.tag.vo.ListTagRuleLogVo;
 import com.lion.device.entity.tag.vo.ListTagRuleUserVo;
 import com.lion.device.entity.tag.vo.ListTagVo;
 import com.lion.device.service.tag.TagRuleLogService;
@@ -41,6 +42,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -157,13 +159,8 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/rule/log/list")
     @ApiOperation(value = "标签规则日志列表")
-    public IPageResultData<List<TagRuleLog>> ruleLogList(@NotNull(message = "标签规则id不能为空") @ApiParam(value = "标签规则id") Long tagRuleId, LionPage lionPage){
-        JpqlParameter jpqlParameter = new JpqlParameter();
-        if (Objects.nonNull(tagRuleId)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_tagRuleId",tagRuleId);
-        }
-        lionPage.setJpqlParameter(jpqlParameter);
-        return (IPageResultData<List<TagRuleLog>>) tagRuleLogService.findNavigator(lionPage);
+    public IPageResultData<List<ListTagRuleLogVo>> ruleLogList(@NotNull(message = "标签规则id不能为空") @ApiParam(value = "标签规则id") Long tagRuleId, LionPage lionPage){
+        return tagRuleLogService.list(tagRuleId, lionPage);
     }
 
 }

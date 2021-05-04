@@ -9,6 +9,7 @@ import com.lion.device.dao.tag.TagRuleUserDao;
 import com.lion.device.entity.tag.*;
 import com.lion.device.entity.tag.dto.AddTagRuleDto;
 import com.lion.device.entity.tag.dto.UpdateTagRuleDto;
+import com.lion.device.service.tag.TagRuleLogService;
 import com.lion.device.service.tag.TagRuleService;
 import com.lion.device.service.tag.TagRuleUserService;
 import com.lion.exception.BusinessException;
@@ -34,6 +35,9 @@ public class TagRuleServiceImpl extends BaseServiceImpl<TagRule> implements TagR
     private TagRuleDao tagRuleDao;
 
     @Autowired
+    private TagRuleLogService tagRuleLogService;
+
+    @Autowired
     private TagRuleLogDao tagRuleLogDao;
 
     @Autowired
@@ -50,6 +54,7 @@ public class TagRuleServiceImpl extends BaseServiceImpl<TagRule> implements TagR
         BeanUtils.copyProperties(addTagRuleDto,tagRule);
         tagRule = save(tagRule);
         tagRuleUserService.relationUser(addTagRuleDto.getUserIds(), Collections.EMPTY_LIST,tagRule.getId());
+        tagRuleLogService.add(tagRule.getId(),"新建规则");
     }
 
     @Override
@@ -60,6 +65,7 @@ public class TagRuleServiceImpl extends BaseServiceImpl<TagRule> implements TagR
         BeanUtils.copyProperties(updateTagRuleDto,tagRule);
         update(tagRule);
         tagRuleUserService.relationUser(updateTagRuleDto.getNewUserIds(), updateTagRuleDto.getDeleteUserIds(),tagRule.getId());
+        tagRuleLogService.add(tagRule.getId(),"修改规则");
     }
 
     @Override
