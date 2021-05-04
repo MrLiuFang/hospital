@@ -1,6 +1,7 @@
 package com.lion.device.dao.tag;
 
 import com.lion.core.persistence.curd.BaseDao;
+import com.lion.device.entity.tag.TagPatient;
 import com.lion.device.entity.tag.TagPostdocs;
 
 /**
@@ -15,4 +16,11 @@ public interface TagPostdocsDao extends BaseDao<TagPostdocs> {
      * @return
      */
     public int deleteByTagId(Long tagId);
+
+    /**
+     * 根据标签id查询
+     * @param tagId
+     * @return
+     */
+    public TagPostdocs findFirstByTagIdAndUnbindingTimeIsNull(Long tagId);
 }

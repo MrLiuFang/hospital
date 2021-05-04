@@ -12,6 +12,7 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
+import com.lion.device.expose.tag.TagLogExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
@@ -88,6 +89,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     @DubboReference
     private TagUserExposeService tagUserExposeService;
+
+    @DubboReference
+    private TagLogExposeService tagLogExposeService;
 
     @Override
     public User findUser(String username) {

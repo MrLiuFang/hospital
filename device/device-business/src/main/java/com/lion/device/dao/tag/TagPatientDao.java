@@ -3,6 +3,8 @@ package com.lion.device.dao.tag;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.tag.TagPatient;
 
+import java.security.PublicKey;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -15,4 +17,11 @@ public interface TagPatientDao extends BaseDao<TagPatient> {
      * @return
      */
     public int deleteByTagId(Long tagId);
+
+    /**
+     * 根据标签id查询
+     * @param tagId
+     * @return
+     */
+    public TagPatient findFirstByTagIdAndUnbindingTimeIsNull(Long tagId);
 }

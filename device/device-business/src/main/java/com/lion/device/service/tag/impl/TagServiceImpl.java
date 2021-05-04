@@ -11,9 +11,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.*;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
-import com.lion.device.entity.tag.Tag;
-import com.lion.device.entity.tag.TagAssets;
-import com.lion.device.entity.tag.TagUser;
+import com.lion.device.entity.tag.*;
 import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
 import com.lion.device.entity.tag.vo.ListTagVo;
@@ -103,6 +101,30 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 
     @Override
     public void delete(List<DeleteDto> deleteDtoList) {
+
+        deleteDtoList.forEach(deleteDto -> {
+            TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
+            if (Objects.nonNull(tagUser)) {
+                Tag tag = findById(tagUser.getTagId());
+                BusinessException.throwException(tag.getDeviceName() + "与用户绑定不能删除");
+            }
+            TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
+            if (Objects.nonNull(tagUser)) {
+                Tag tag = findById(tagAssets.getTagId());
+                BusinessException.throwException(tag.getDeviceName() + "与资产绑定不能删除");
+            }
+            TagPatient tagPatient = tagPatientDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
+            if (Objects.nonNull(tagPatient)) {
+                Tag tag = findById(tagPatient.getTagId());
+                BusinessException.throwException(tag.getDeviceName() + "与患者绑定不能删除");
+            }
+            TagPostdocs tagPostdocs = tagPostdocsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
+            if (Objects.nonNull(tagPostdocs)) {
+                Tag tag = findById(tagPostdocs.getTagId());
+                BusinessException.throwException(tag.getDeviceName() + "与流动人员绑定不能删除");
+            }
+        });
+
         deleteDtoList.forEach(deleteDto -> {
             TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             this.deleteById(deleteDto.getId());

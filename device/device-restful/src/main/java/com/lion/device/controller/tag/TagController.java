@@ -7,22 +7,18 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
+import com.lion.device.entity.enums.TagLogContent;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagRule;
 import com.lion.device.entity.tag.TagRuleLog;
-import com.lion.device.entity.tag.dto.AddTagDto;
-import com.lion.device.entity.tag.dto.AddTagRuleDto;
-import com.lion.device.entity.tag.dto.UpdateTagDto;
-import com.lion.device.entity.tag.dto.UpdateTagRuleDto;
+import com.lion.device.entity.tag.dto.*;
+import com.lion.device.entity.tag.vo.ListTagLogVo;
 import com.lion.device.entity.tag.vo.ListTagRuleLogVo;
 import com.lion.device.entity.tag.vo.ListTagRuleUserVo;
 import com.lion.device.entity.tag.vo.ListTagVo;
-import com.lion.device.service.tag.TagRuleLogService;
-import com.lion.device.service.tag.TagRuleService;
-import com.lion.device.service.tag.TagRuleUserService;
-import com.lion.device.service.tag.TagService;
+import com.lion.device.service.tag.*;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.dto.AddAssetsDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsDto;
@@ -43,11 +39,13 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -75,6 +73,9 @@ public class TagController extends BaseControllerImpl implements BaseController 
     @Autowired
     private TagRuleLogService tagRuleLogService;
 
+    @Autowired
+    private TagLogService tagLogService;
+
     @PostMapping("/add")
     @ApiOperation(value = "新增标签")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class}) AddTagDto addTagDto){
@@ -89,6 +90,15 @@ public class TagController extends BaseControllerImpl implements BaseController 
         return tagService.list(battery, tagCode, type, purpose, lionPage);
     }
 
+    @GetMapping("/log/list")
+    @ApiOperation(value = "标签列表")
+    public IPageResultData<List<ListTagLogVo>> logList(@NotNull(message = "标签id不能为空") @ApiParam(value = "标签ID") Long tagId,
+                                                       @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                       @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                       @ApiParam(value = "操作内容(绑定/解绑)") TagLogContent content,LionPage lionPage){
+        return tagLogService.list(tagId,startDateTime,endDateTime,content, lionPage);
+    }
+
 //    @GetMapping("/details")
 //    @ApiOperation(value = "标签详情")
 //    public IResultData<DetailsAssetsVo> details(@NotNull(message = "id不能为空") Long id){
@@ -101,6 +111,17 @@ public class TagController extends BaseControllerImpl implements BaseController 
     @ApiOperation(value = "修改标签")
     public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateTagDto updateTagDto){
         tagService.update(updateTagDto);
+        return ResultData.instance();
+    }
+
+    @PutMapping("/update/state")
+    @ApiOperation(value = "修改标签状态")
+    public IResultData updateState(@RequestBody @Validated({Validator.Update.class}) UpdateTagStateDto updateTagStateDto){
+        Tag tag = tagService.findById(updateTagStateDto.getId());
+        if (Objects.nonNull(tag)){
+            tag.setState(updateTagStateDto.getState());
+            tagService.update(tag);
+        }
         return ResultData.instance();
     }
 

@@ -1,12 +1,10 @@
 package com.lion.device.entity.tag;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lion.core.common.enums.State;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import com.lion.device.entity.enums.DeviceType;
-import com.lion.device.entity.enums.TagPurpose;
-import com.lion.device.entity.enums.TagType;
-import com.lion.device.entity.enums.TagUseState;
+import com.lion.device.entity.enums.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -89,8 +87,13 @@ public class Tag extends BaseEntity {
     @Column(name = "battery")
     private Integer battery;
 
-    @ApiModelProperty(value = "使用状态")
+    @ApiModelProperty(value = "使用使用状态")
     @Column(name = "use_state")
     private TagUseState useState;
+
+    @ApiModelProperty(value = "状态")
+    @Column(name = "state")
+    @Convert(converter = TagState.TagStateConverter.class)
+    private TagState state = TagState.NORMAL;
 
 }
