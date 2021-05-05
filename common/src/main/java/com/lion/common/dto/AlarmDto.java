@@ -1,6 +1,6 @@
-package com.lion.event.dto;
+package com.lion.common.dto;
 
-import com.lion.event.enums.AlarmType;
+import com.lion.common.enums.AlarmType;
 import lombok.Data;
 
 import java.io.Serializable;

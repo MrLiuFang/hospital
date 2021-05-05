@@ -3,6 +3,7 @@ package com.lion.device.service.device;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -19,4 +20,10 @@ public interface DeviceService extends BaseService<Device> {
      * @param deleteDtoList
      */
    public void delete(List<DeleteDto> deleteDtoList);
+
+    /**
+     * 设备统计
+     * @return
+     */
+   public DeviceStatisticsVo statistics();
 }

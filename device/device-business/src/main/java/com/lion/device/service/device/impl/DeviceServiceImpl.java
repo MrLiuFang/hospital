@@ -3,7 +3,11 @@ package com.lion.device.service.device.impl;
 import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.dao.cctv.CctvDao;
 import com.lion.device.dao.device.DeviceDao;
+import com.lion.device.dao.tag.TagDao;
+import com.lion.device.entity.device.vo.DeviceStatisticsVo;
+import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.service.device.DeviceService;
 import com.lion.device.entity.device.Device;
@@ -12,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +31,12 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 
     @Autowired
     private DeviceDao deviceDao;
+
+    @Autowired
+    private CctvDao cctvDao;
+
+    @Autowired
+    private TagDao tagDao;
 
     @Autowired
     private DeviceGroupDeviceService deviceGroupDeviceService;
@@ -88,5 +99,34 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
                 redisTemplate.delete(RedisConstants.DEVICE_REGION+device.getId());
             }
         });
+    }
+
+    @Override
+    public DeviceStatisticsVo statistics() {
+        DeviceStatisticsVo ov = new DeviceStatisticsVo();
+        List<DeviceStatisticsVo.DeviceStatisticsData> list = new ArrayList<>();
+        list.add(count(DeviceClassify.HAND_WASHING));
+        list.add(count(DeviceClassify.LF_EXCITER));
+        list.add(count(DeviceClassify.MONITOR));
+        list.add(count(DeviceClassify.RECYCLING_BOX));
+        list.add(count(DeviceClassify.STAR_AP));
+        list.add(count(DeviceClassify.VIRTUAL_WALL));
+        DeviceStatisticsVo.DeviceStatisticsData dataCctv = new DeviceStatisticsVo.DeviceStatisticsData();
+        dataCctv.setName("cctv");
+        dataCctv.setCount(cctvDao.count());
+        list.add(dataCctv);
+        DeviceStatisticsVo.DeviceStatisticsData dataTag = new DeviceStatisticsVo.DeviceStatisticsData();
+        dataTag.setName("tag");
+        dataTag.setCount(tagDao.count());
+        list.add(dataTag);
+        ov.setList(list);
+        return ov;
+    }
+
+    private DeviceStatisticsVo.DeviceStatisticsData count(DeviceClassify classify){
+        DeviceStatisticsVo.DeviceStatisticsData data = new DeviceStatisticsVo.DeviceStatisticsData();
+        data.setName(DeviceClassify.HAND_WASHING.getName());
+        data.setCount(deviceDao.countByDeviceClassify(classify));
+        return data;
     }
 }

@@ -2,6 +2,7 @@ package com.lion.device.dao.device;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceClassify;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -34,4 +35,11 @@ public interface DeviceDao extends BaseDao<Device> {
      */
     @Query(" select d from Device d join DeviceGroupDevice dgd on d.id = dgd.deviceId where dgd.deviceGroupId = :deviceGroupId ")
     public List<Device> findByDeviceGroupId(Long deviceGroupId);
+
+    /**
+     * 根据大类统计数量
+     * @param classify
+     * @return
+     */
+    public Integer countByDeviceClassify(DeviceClassify classify);
 }

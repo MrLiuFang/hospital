@@ -18,4 +18,5 @@ public interface CctvDao extends BaseDao<Cctv> {
      * @return
      */
     public List<Cctv> findByIdIn(List<Long> ids);
+
 }

@@ -49,11 +49,13 @@ public class Device extends BaseEntity {
     @ApiModelProperty(value = "设备大类")
     @Convert(converter = DeviceClassify.DeviceClassifyConverter.class)
     @NotNull(message = "设备大类不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @Column(name = "device_classify")
     private DeviceClassify deviceClassify;
 
     @ApiModelProperty(value = "设备分类")
     @Convert(converter = DeviceType.DeviceTypeConverter.class)
     @NotNull(message = "设备分类不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @Column(name = "device_type")
     private DeviceType deviceType;
 
     @ApiModelProperty(value = "保修期(月)")

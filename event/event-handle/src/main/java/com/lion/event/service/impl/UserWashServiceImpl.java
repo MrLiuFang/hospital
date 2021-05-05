@@ -141,7 +141,7 @@ public class UserWashServiceImpl implements UserWashService {
      * @param star
      * @param deviceDataDto
      */
-    private void userWashEevent(User user, Device monitor, Device star, DeviceDataDto deviceDataDto, UserCurrentRegionDto userCurrentRegionDto){
+    private void userWashEevent(User user, Device monitor, Device star, DeviceDataDto deviceDataDto, UserCurrentRegionDto userCurrentRegionDto) throws JsonProcessingException {
         Device device = Objects.isNull(monitor)?star:monitor;
         if (Objects.isNull(device)){
             return;
@@ -175,6 +175,15 @@ public class UserWashServiceImpl implements UserWashService {
                 washRecord.setDeviceId(Objects.isNull(userLastWashDto.getMonitorId())?userLastWashDto.getStarId():userLastWashDto.getMonitorId());
                 userCurrentRegionDto.setWashRecord(washRecord);
             }
+
+            //记录洗手
+            Map<String,Object> map = new HashMap<>();
+            map.put("pi", user.getId());
+            map.put("ri", userCurrentRegionDto.getRegionId());
+            map.put("dvi", device.getId());
+            map.put("ddt", deviceDataDto.getTime());
+            map.put("sdt", deviceDataDto.getSystemDateTime());
+            rocketMQTemplate.syncSend(TopicConstants.WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(map)).build());
         }else {
             //记录洗手时长
             UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());

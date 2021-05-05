@@ -15,6 +15,7 @@ import com.lion.device.entity.device.dto.AddDeviceGroupDto;
 import com.lion.device.entity.device.dto.UpdateDeviceGroupDto;
 import com.lion.device.entity.device.vo.DetailsDeviceGroupVo;
 import com.lion.device.entity.device.vo.DetailsDeviceVo;
+import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceGroupVo;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
@@ -175,6 +176,14 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
     public IResultData groupDelete(@RequestBody List<DeleteDto> deleteDtoList){
         deviceGroupService.delete(deleteDtoList);
         ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @GetMapping("/statistics")
+    @ApiOperation(value = "硬件设备统计")
+    public IResultData<DeviceStatisticsVo> deviceStatistics(){
+        ResultData resultData = ResultData.instance();
+        resultData.setData(deviceService.statistics());
         return resultData;
     }
 

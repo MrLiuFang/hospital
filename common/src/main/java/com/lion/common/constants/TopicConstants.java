@@ -8,6 +8,16 @@ package com.lion.common.constants;
 public class TopicConstants {
 
     /**
+     * 洗手
+     */
+    public static final String WASH = "wash";
+
+    /**
+     * 洗手
+     */
+    public static final String WASH_CONSUMER_GROUP = "wash_consumer_group";
+
+    /**
      * 位置
      */
     public static final String POSITION = "position";

@@ -1,22 +1,14 @@
 package com.lion.event.mq.consumer;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lion.common.constants.RedisConstants;
+import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.common.utils.RedisUtil;
-import com.lion.common.constants.TopicConstants;
 import com.lion.device.entity.device.Device;
-import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
-import com.lion.event.dto.RegionWashDelayDto;
-import com.lion.event.dto.UserCurrentRegionDto;
-import com.lion.event.dto.UserLastWashDto;
 import com.lion.event.service.UserWashService;
-import com.lion.manage.entity.region.Region;
-import com.lion.manage.entity.rule.Wash;
 import com.lion.upms.entity.user.User;
 import lombok.extern.java.Log;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -24,17 +16,11 @@ import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu

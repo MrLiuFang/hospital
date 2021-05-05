@@ -1,9 +1,8 @@
-package com.lion.event.enums;
+package com.lion.common.enums;
 
 import cn.hutool.core.util.NumberUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.lion.core.IEnum;
-import sun.java2d.pipe.LoopBasedPipe;
 
 import java.util.Objects;
 

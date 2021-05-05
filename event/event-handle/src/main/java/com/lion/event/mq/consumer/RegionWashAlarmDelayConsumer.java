@@ -2,7 +2,7 @@ package com.lion.event.mq.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
-import com.lion.event.dto.AlarmDto;
+import com.lion.common.dto.AlarmDto;
 import com.lion.event.utils.MessageDelayUtil;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;

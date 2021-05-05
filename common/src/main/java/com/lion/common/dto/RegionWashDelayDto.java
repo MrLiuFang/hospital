@@ -1,23 +1,27 @@
-package com.lion.event.dto;
+package com.lion.common.dto;
 
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 /**
  * @Author Mr.Liu
  * @Description //TODO
- * @Date 2021/4/25 下午7:04
+ * @Date 2021/4/25 下午4:44
  **/
 @Data
-public class RegionWashDto implements Serializable {
+public class RegionWashDelayDto implements Serializable {
     private static final long serialVersionUID = -90000050L;
     /**
      * 用户ID
      */
     private Long userId;
+
+    /**
+     * 延迟推送时间
+     */
+    private LocalDateTime delayDateTime;
 
     /**
      * 区域id

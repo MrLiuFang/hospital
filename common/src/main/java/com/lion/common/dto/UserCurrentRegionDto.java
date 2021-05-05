@@ -1,13 +1,11 @@
-package com.lion.event.dto;
+package com.lion.common.dto;
 
-import com.lion.manage.entity.region.Region;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**

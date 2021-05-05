@@ -1,6 +1,5 @@
-package com.lion.event.dto;
+package com.lion.common.dto;
 
-import com.lion.device.entity.device.Device;
 import lombok.Data;
 
 import java.io.Serializable;
