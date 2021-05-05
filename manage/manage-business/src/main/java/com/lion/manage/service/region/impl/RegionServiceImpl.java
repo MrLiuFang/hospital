@@ -102,6 +102,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         assertBuildFloorExist(region.getBuildId(),region.getBuildFloorId());
         assertDepartmentExist(region.departmentId);
         assertNameExist(region.getName(),null);
+        assertDeviceGroupIsUse(region.getDeviceGroupId(),null);
         if (addRegionDto.isPublic && (Objects.isNull(addRegionDto.getExposeObjects()) ||addRegionDto.getExposeObjects().size()<=0) ){
             BusinessException.throwException("请选择公开对象");
         }
@@ -128,6 +129,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         assertBuildFloorExist(region.getBuildId(),region.getBuildFloorId());
         assertDepartmentExist(region.departmentId);
         assertNameExist(region.getName(),region.getId());
+        assertDeviceGroupIsUse(region.getDeviceGroupId(),null);
         if (updateRegionDto.isPublic && (Objects.isNull(updateRegionDto.getExposeObjects()) ||updateRegionDto.getExposeObjects().size()<=0) ){
             BusinessException.throwException("请选择公开对象");
         }
@@ -168,6 +170,9 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     }
 
     private void assertDeviceGroupIsUse(Long deviceGroupId, Long id) {
+        if (Objects.isNull(deviceGroupId)){
+            return;
+        }
         Region region = regionDao.findFirstByDeviceGroupId(deviceGroupId);
         if ((Objects.isNull(id) && Objects.nonNull(region)) || (Objects.nonNull(id) && Objects.nonNull(region) && !Objects.equals(region.getId(),id)) ){
             BusinessException.throwException("该设备组在其它区域已经使用");

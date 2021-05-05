@@ -48,19 +48,21 @@ public class RegionCctvServiceImpl extends BaseServiceImpl<RegionCctv> implement
         }else {
             return;
         }
-        List<RegionCctv> list = new ArrayList<RegionCctv>();
-        cctvIds.forEach(id->{
-            RegionCctv regionCctv = new RegionCctv();
-            regionCctv.setCctvId(id);
-            regionCctv.setRegionId(regionId);
-            list.add(regionCctv);
-        });
-        if (list.size()>0){
-            saveAll(list);
+        if (Objects.nonNull(cctvIds)) {
+            List<RegionCctv> list = new ArrayList<RegionCctv>();
+            cctvIds.forEach(id -> {
+                RegionCctv regionCctv = new RegionCctv();
+                regionCctv.setCctvId(id);
+                regionCctv.setRegionId(regionId);
+                list.add(regionCctv);
+            });
+            if (list.size() > 0) {
+                saveAll(list);
+            }
         }
         Region region = regionService.findById(regionId);
-        if (Objects.nonNull(region)){
-            cctvExposeService.relationPosition(oldCctvIds,cctvIds,region.getBuildId(),region.getBuildFloorId(),regionId);
+        if (Objects.nonNull(region)) {
+            cctvExposeService.relationPosition(oldCctvIds, cctvIds, region.getBuildId(), region.getBuildFloorId(), regionId);
         }
     }
 

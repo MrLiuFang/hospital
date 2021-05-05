@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.yaml.snakeyaml.events.Event;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Mr.Liu
@@ -30,20 +31,23 @@ public class CctvExposeServiceImpl extends BaseServiceImpl<Cctv> implements Cctv
 
     @Override
     public void relationPosition(List<Long> oldCctvIds, List<Long> newCctvIds, Long buildId, Long buildFloorId, Long regionId) {
-        oldCctvIds.forEach(id->{
-            Cctv cctv = findById(id);
-            cctv.setBuildId(null);
-            cctv.setBuildFloorId(null);
-            cctv.setRegionId(null);
-            update(cctv);
-        });
-
-        newCctvIds.forEach(id->{
-            Cctv cctv = findById(id);
-            cctv.setBuildId(buildId);
-            cctv.setBuildFloorId(buildFloorId);
-            cctv.setRegionId(regionId);
-            update(cctv);
-        });
+        if(Objects.nonNull(oldCctvIds)) {
+            oldCctvIds.forEach(id -> {
+                Cctv cctv = findById(id);
+                cctv.setBuildId(null);
+                cctv.setBuildFloorId(null);
+                cctv.setRegionId(null);
+                update(cctv);
+            });
+        }
+        if(Objects.nonNull(oldCctvIds)) {
+            newCctvIds.forEach(id -> {
+                Cctv cctv = findById(id);
+                cctv.setBuildId(buildId);
+                cctv.setBuildFloorId(buildFloorId);
+                cctv.setRegionId(regionId);
+                update(cctv);
+            });
+        }
     }
 }

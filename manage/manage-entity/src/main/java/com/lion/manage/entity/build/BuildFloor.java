@@ -16,6 +16,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 /**
  * @author Mr.Liu
@@ -46,6 +47,18 @@ public class BuildFloor extends BaseEntity {
     @Column(name = "name",nullable = false)
     @NotBlank(message = "楼层名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
+
+    @ApiModelProperty(value = "地图高")
+    @Column(name = "map_height")
+    private BigDecimal mapHeight;
+
+    @ApiModelProperty(value = "地图宽")
+    @Column(name = "map_width")
+    private BigDecimal mapWidth;
+
+    @ApiModelProperty(value = "放大级别")
+    @Column(name = "level")
+    private Integer level;
 
     @ApiModelProperty(value = "备注")
     @Column(name = "remarks")
