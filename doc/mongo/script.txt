@@ -90,13 +90,18 @@ db.runCommand({
     key : {_id: 'hashed'}
 })
 
+db.runCommand({
+    shardcollection : "hospital.wash",
+    key : {_id: 'hashed'}
+})
+
 use hospital;
 
-db.event.createIndex( { "ui":1 }, { sparse: true } )
-db.event.createIndex( { "si":1 }, { sparse: true } )
-db.event.createIndex( { "mi":1 }, { sparse: true } )
-db.event.createIndex( { "ti":1 }, { sparse: true } )
-db.event.createIndex( { "dt":1 }, { sparse: true } )
+db.wash.createIndex( { "pi":1 }, { sparse: true } )
+db.wash.createIndex( { "ddt":1 }, { sparse: true } )
+
+db.event.createIndex( { "pi":1 }, { sparse: true } )
+db.event.createIndex( { "ddt":1 }, { sparse: true } )
 
 db.event.stats();
 

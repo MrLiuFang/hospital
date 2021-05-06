@@ -1,5 +1,7 @@
 package com.lion.event.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,57 +20,47 @@ public class Wash implements Serializable {
     @Id
     private String _id;
 
-    /**
-     * 员工/患者id
-     */
+    @ApiModelProperty(value = "员工id/患者id/流动人员id")
     private Long pi;
 
-    /**
-     * 洗手的设备id
-     */
+    @ApiModelProperty(value = "洗手的设备id")
     private Long dvi;
 
-    /**
-     * 洗手的设备名称
-     */
+    @ApiModelProperty(value = "洗手的设备名称")
     private String dvn;
 
-    /**
-     * 洗手的设备编码
-     */
+    @ApiModelProperty(value = "洗手的设备编码")
     private String dvc;
 
-    //建筑id
+    @ApiModelProperty(value = "建筑id")
     private Long bui;
 
-    //建筑名称
+    @ApiModelProperty(value = "建筑名称")
     private String bun;
 
-    //楼层id
+    @ApiModelProperty(value = "楼层id")
     private Long bfi;
 
-    //楼层名称
+    @ApiModelProperty(value = "楼层名称")
     private String bfn;
 
-    /**
-     * 科室id
-     */
+    @ApiModelProperty(value = "科室id")
     private Long di;
 
-    /**
-     * 科室名称
-     */
+    @ApiModelProperty(value = "科室名称")
     private String dn;
 
-    //区域id
+    @ApiModelProperty(value = "区域id")
     private Long ri;
 
-    //区域名称
+    @ApiModelProperty(value = "区域名称")
     private String rn;
 
-    //设备产生時間
+    @ApiModelProperty(value = "设备产生的洗手時間")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ddt;
 
-    //系统接受到时间
+    @ApiModelProperty(value = "系统接收到的时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sdt;
 }

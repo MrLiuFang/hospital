@@ -92,27 +92,27 @@ public class RegionWashAlarmConsumer implements RocketMQListener<MessageExt> {
         }
         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
         if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && userLastWashDto.getDateTime().isAfter(alarmDto.getAlarmDateTime())){
-            List<Wash> washList = redisUtil.getWash(alarmDto.getRegionId());
-            for (Wash wash :washList){
-                Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(), wash);
-                if (Objects.equals(false, b)) {
-                    log.info("->发送洗手警告");
-                    try {
-                        again(alarmDto,alarm);
-                        storageAlarm(alarmDto,alarm);
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
-                    return;
-                }
-            };
+//            List<Wash> washList = redisUtil.getWash(alarmDto.getRegionId());
+//            for (Wash wash :washList){
+//                Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(), wash);
+//                if (Objects.equals(false, b)) {
+//                    log.info("->发送洗手警告（未在规定洗手设备洗手）");
+//                    try {
+//                        again(alarmDto,alarm);
+//                        storageAlarm(alarmDto,alarm);
+//                    } catch (JsonProcessingException e) {
+//                        e.printStackTrace();
+//                    }
+//                    return;
+//                }
+//            };
 
             //解除警告
             log.info(user.getName()+"->解除警告");
             unalarm(alarmDto,UnalarmType.WASH);
             return;
         }
-        log.info(user.getName()+"->发送洗手警告");
+        log.info(user.getName()+"->发送洗手警告（未在规定时间内洗手）");
         again(alarmDto,alarm);
         storageAlarm(alarmDto,alarm);
     }

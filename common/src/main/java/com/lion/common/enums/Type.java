@@ -15,7 +15,8 @@ public enum Type implements IEnum {
 
     STAFF(0, "员工"),
     PATIENT(1, "患者"),
-    DEVICE(2, "设备");
+    DEVICE(2, "设备"),
+    MIGRANT(3, "流动人员");
 
     private final int key;
 

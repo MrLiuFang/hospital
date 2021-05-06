@@ -3,7 +3,6 @@ package com.lion.event.service;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.Wash;
-import io.swagger.annotations.ApiParam;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotNull;

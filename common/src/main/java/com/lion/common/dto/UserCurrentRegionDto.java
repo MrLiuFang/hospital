@@ -1,5 +1,7 @@
 package com.lion.common.dto;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,36 +16,26 @@ import java.util.Objects;
  * @Date 2021/4/24 下午8:31
  **/
 @Data
+@ApiModel
 public class UserCurrentRegionDto implements Serializable {
     private static final long serialVersionUID = -90000050L;
-    /**
-     * 上次事件所在区域
-     */
+
+    @ApiModelProperty(value = "上次所在的区域Id")
     private Long previousRegionId;
 
-    /**
-     * 用户ID
-     */
+    @ApiModelProperty(value = "用户ID")
     private Long userId;
 
-    /**
-     * 当前所在的区域Id
-     */
+    @ApiModelProperty(value = "当前所在的区域Id")
     private Long regionId;
 
-    /**
-     * 第一次进入时间
-     */
+    @ApiModelProperty(value = "第一次进入时间")
     private LocalDateTime firstEntryTime;
 
-    /**
-     * 当前区域事件次数
-     */
+    @ApiModelProperty(value = "当前区域事件次数")
     private Integer currentRegionEvent = 0;
 
-    /**
-     * 当前所在区域的洗手记录
-     */
+    @ApiModelProperty(value = "当前所在区域的洗手记录")
     private List<WashRecord> washRecordList;
 
     public void setWashRecord(WashRecord washRecord){
@@ -54,16 +46,14 @@ public class UserCurrentRegionDto implements Serializable {
     }
 
     @Data
+    @ApiModel
     public static class WashRecord implements Serializable{
         private static final long serialVersionUID = -90000050L;
-        /**
-         * 洗手时间
-         */
+
+        @ApiModelProperty(value = "洗手发生的时间")
         private LocalDateTime dateTime;
 
-        /**
-         * 洗手设备的id
-         */
+        @ApiModelProperty(value = "洗手设备的id")
         private Long deviceId;
     }
 }

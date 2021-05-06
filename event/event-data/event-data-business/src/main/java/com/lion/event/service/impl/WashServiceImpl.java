@@ -6,10 +6,12 @@ import com.lion.event.dao.WashDao;
 import com.lion.event.entity.Wash;
 import com.lion.event.service.WashService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author Mr.Liu
@@ -29,7 +31,14 @@ public class WashServiceImpl implements WashService {
 
     @Override
     public IPageResultData<List<Wash>> list(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        washDao.fi
-        return null;
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            endDateTime = LocalDateTime.now();
+            startDateTime = endDateTime.minusDays(7);
+        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
+            endDateTime = startDateTime.plusMinutes(7);
+        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
+            startDateTime = endDateTime.minusDays(7);
+        }
+        return washDao.list(userId, startDateTime, endDateTime, lionPage);
     }
 }

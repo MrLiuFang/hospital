@@ -1,6 +1,12 @@
 package com.lion.event.service;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.event.entity.DeviceData;
+import com.lion.event.entity.Wash;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @Author Mr.Liu
@@ -14,4 +20,14 @@ public interface DeviceDataService {
      * @param deviceData
      */
     public void save(DeviceData deviceData);
+
+    /**
+     * 列表
+     * @param starId
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     * @return
+     */
+    public IPageResultData<List<DeviceData>> list(Long starId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

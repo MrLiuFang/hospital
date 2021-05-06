@@ -8,5 +8,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * @Description //TODO
  * @Date 2021/4/23 上午11:12
  **/
-public interface DeviceDataDao extends MongoRepository<DeviceData,String> {
+public interface DeviceDataDao extends MongoRepository<DeviceData,String> ,DeviceDataDaoEx {
 }
