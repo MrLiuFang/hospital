@@ -42,8 +42,8 @@ public class WardRoom extends BaseEntity {
     @NotBlank(message = "房间编号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 
-    @ApiModelProperty(value = "区域id")
-    @Column(name = "region_id",nullable = false)
-    @NotNull(message = "区域不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private Long regionId;
+//    @ApiModelProperty(value = "区域id")
+//    @Column(name = "region_id",nullable = false)
+//    @NotNull(message = "区域不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+//    private Long regionId;
 }

@@ -152,7 +152,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
             });
             Region region = findById(deleteDto.getId());
             if (Objects.nonNull(region)){
-                cctvExposeService.relationPosition(oldCctvIds,new ArrayList<Long>(),region.getBuildId(),region.getBuildFloorId(),deleteDto.getId());
+                cctvExposeService.relationPosition(oldCctvIds,new ArrayList<Long>(),region.getBuildId(),region.getBuildFloorId(),deleteDto.getId(), region.getDepartmentId());
             }
             regionCctvDao.deleteByRegionId(deleteDto.getId());
             regionExposeObjectDao.deleteByRegionId(deleteDto.getId());

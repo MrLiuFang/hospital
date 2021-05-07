@@ -18,5 +18,12 @@ import java.util.List;
 public class DetailsDeviceGroupVo extends DeviceGroup {
 
     @ApiModelProperty(value = "设备")
-    private List<Device> devices;
+    private List<DeviceVo> devices;
+
+    @Data
+    @ApiModel
+    public static class DeviceVo extends Device {
+        @ApiModelProperty(value = "设备组id")
+        private Long deviceGroupId;
+    }
 }

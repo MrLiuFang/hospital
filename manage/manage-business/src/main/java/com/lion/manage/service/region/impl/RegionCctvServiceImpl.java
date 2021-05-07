@@ -3,21 +3,17 @@ package com.lion.manage.service.region.impl;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.manage.dao.region.RegionCctvDao;
-import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.service.region.RegionCctvService;
 import com.lion.manage.service.region.RegionService;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 /**
  * @author Mr.Liu
@@ -62,7 +58,7 @@ public class RegionCctvServiceImpl extends BaseServiceImpl<RegionCctv> implement
         }
         Region region = regionService.findById(regionId);
         if (Objects.nonNull(region)) {
-            cctvExposeService.relationPosition(oldCctvIds, cctvIds, region.getBuildId(), region.getBuildFloorId(), regionId);
+            cctvExposeService.relationPosition(oldCctvIds, cctvIds, region.getBuildId(), region.getBuildFloorId(), regionId,region.getDepartmentId() );
         }
     }
 

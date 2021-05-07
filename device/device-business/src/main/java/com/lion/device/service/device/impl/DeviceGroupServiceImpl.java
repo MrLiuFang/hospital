@@ -11,6 +11,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.dao.device.DeviceGroupDao;
 import com.lion.device.dao.device.DeviceGroupDeviceDao;
+import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.entity.device.dto.AddDeviceGroupDto;
 import com.lion.device.entity.device.dto.UpdateDeviceGroupDto;
@@ -110,11 +111,19 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
 
     @Override
     public DetailsDeviceGroupVo details(Long id) {
-        DeviceGroup deviceGroup = new DeviceGroup();
+        DeviceGroup deviceGroup = findById(id);
         if (Objects.nonNull(deviceGroup)) {
             DetailsDeviceGroupVo detailsDeviceGroupVo = new DetailsDeviceGroupVo();
             BeanUtils.copyProperties(deviceGroup, detailsDeviceGroupVo);
-            detailsDeviceGroupVo.setDevices(deviceDao.findByDeviceGroupId(id));
+            List<Device> list = deviceDao.findByDeviceGroupId(id);
+            List<DetailsDeviceGroupVo.DeviceVo> voList = new ArrayList<>();
+            list.forEach(device -> {
+                DetailsDeviceGroupVo.DeviceVo vo = new DetailsDeviceGroupVo.DeviceVo();
+                BeanUtils.copyProperties(device,vo);
+                vo.setDeviceGroupId(deviceGroup.getId());
+                voList.add(vo);
+            });
+            detailsDeviceGroupVo.setDevices(voList);
             return detailsDeviceGroupVo;
         }
         return null;
@@ -139,16 +148,13 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
 
     private void persistenceRedis(List<Long> newDeviceIds,List<Long> oldDeviceIds, Long deviceGroupId,Boolean isDelete){
         Region region = regionExposeService.find(deviceGroupId);
-        if (Objects.isNull(region)){
-            oldDeviceIds.forEach(id->{
-                redisTemplate.delete(RedisConstants.DEVICE_REGION+id);
-            });
-            return;
-        }
         if (Objects.nonNull(oldDeviceIds) && oldDeviceIds.size()>0){
             oldDeviceIds.forEach(id->{
                 redisTemplate.delete(RedisConstants.DEVICE_REGION+id);
             });
+        }
+        if (Objects.isNull(region)){
+            return;
         }
         if (Objects.equals(false,isDelete)){
             if (Objects.nonNull(newDeviceIds) && newDeviceIds.size()>0){

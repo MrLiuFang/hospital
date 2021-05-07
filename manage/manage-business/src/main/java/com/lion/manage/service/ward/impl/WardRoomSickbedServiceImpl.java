@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Mr.Liu
@@ -23,6 +24,9 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
 
     @Override
     public void save(List<? extends WardRoomSickbed> addWardRoomSickbedDto, Long wardRoomId) {
+        if (Objects.isNull(addWardRoomSickbedDto)){
+            return;
+        }
         addWardRoomSickbedDto.forEach(dto->{
             WardRoomSickbed wardRoomSickbed = new WardRoomSickbed();
             BeanUtils.copyProperties(dto,wardRoomSickbed);

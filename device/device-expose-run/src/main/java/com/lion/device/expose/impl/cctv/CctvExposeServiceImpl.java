@@ -4,10 +4,8 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.cctv.CctvDao;
 import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.expose.cctv.CctvExposeService;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.yaml.snakeyaml.events.Event;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,13 +28,14 @@ public class CctvExposeServiceImpl extends BaseServiceImpl<Cctv> implements Cctv
     }
 
     @Override
-    public void relationPosition(List<Long> oldCctvIds, List<Long> newCctvIds, Long buildId, Long buildFloorId, Long regionId) {
+    public void relationPosition(List<Long> oldCctvIds, List<Long> newCctvIds, Long buildId, Long buildFloorId, Long regionId, Long departmentId) {
         if(Objects.nonNull(oldCctvIds)) {
             oldCctvIds.forEach(id -> {
                 Cctv cctv = findById(id);
                 cctv.setBuildId(null);
                 cctv.setBuildFloorId(null);
                 cctv.setRegionId(null);
+                cctv.setDepartmentId(null);
                 update(cctv);
             });
         }
@@ -46,6 +45,7 @@ public class CctvExposeServiceImpl extends BaseServiceImpl<Cctv> implements Cctv
                 cctv.setBuildId(buildId);
                 cctv.setBuildFloorId(buildFloorId);
                 cctv.setRegionId(regionId);
+                cctv.setDepartmentId(departmentId);
                 update(cctv);
             });
         }

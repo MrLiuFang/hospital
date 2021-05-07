@@ -54,6 +54,9 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
     @Override
     @Transactional
     public void save(List<? extends WardRoom> wardRoomDto, Long wardId) {
+        if (Objects.isNull(wardRoomDto)){
+            return;
+        }
         if (Objects.isNull(wardId)){
             return;
         }

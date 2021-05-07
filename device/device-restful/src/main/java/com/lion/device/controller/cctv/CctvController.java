@@ -1,31 +1,40 @@
 package com.lion.device.controller.cctv;
 
 import com.lion.constant.SearchConstant;
-import com.lion.core.IPageResultData;
-import com.lion.core.IResultData;
-import com.lion.core.LionPage;
-import com.lion.core.ResultData;
+import com.lion.core.*;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.cctv.dto.UpdateCctvDto;
+import com.lion.device.entity.cctv.vo.CctvVo;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.dto.UpdateDeviceDto;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.service.cctv.CctvService;
+import com.lion.manage.entity.build.Build;
+import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.build.BuildExposeService;
+import com.lion.manage.expose.build.BuildFloorExposeService;
+import com.lion.manage.expose.department.DepartmentExposeService;
+import com.lion.manage.expose.region.impl.RegionExposeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,9 +52,21 @@ public class CctvController extends BaseControllerImpl implements BaseController
     @Autowired
     private CctvService cctvService;
 
+    @DubboReference
+    private BuildExposeService buildExposeService;
+
+    @DubboReference
+    private BuildFloorExposeService buildFloorExposeService;
+
+    @DubboReference
+    private RegionExposeService regionExposeService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
     @GetMapping("/list")
     @ApiOperation(value = "设备列表")
-    public IPageResultData<List<Cctv>> list(@ApiParam(value = "cctv名称") String name, @ApiParam(value = "cctv编号") String code, @ApiParam(value = "型号")String model, LionPage lionPage){
+    public IPageResultData<List<CctvVo>> list(@ApiParam(value = "cctv名称") String name, @ApiParam(value = "cctv编号") String code, @ApiParam(value = "型号")String model, LionPage lionPage){
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
@@ -54,7 +75,13 @@ public class CctvController extends BaseControllerImpl implements BaseController
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
         }
         lionPage.setJpqlParameter(jpqlParameter);
-        return (IPageResultData<List<Cctv>>) cctvService.findNavigator(lionPage);
+        Page<Cctv> page = cctvService.findNavigator(lionPage);
+        List<Cctv> list = page.getContent();
+        List<CctvVo>  returnList= new ArrayList<>();
+        list.forEach(cctv -> {
+            returnList.add(convertVo(cctv));
+        });
+        return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
     }
 
     @PutMapping("/update")
@@ -66,13 +93,43 @@ public class CctvController extends BaseControllerImpl implements BaseController
         return ResultData.instance();
     }
 
-
-
     @GetMapping("/details")
     @ApiOperation(value = "cctv详情")
-    public IResultData<Device> details(@ApiParam(value = "id") @NotNull(message = "id不能为空") Long id){
+    public IResultData<CctvVo> details(@ApiParam(value = "id") @NotNull(message = "id不能为空") Long id){
         ResultData resultData = ResultData.instance();
-        resultData.setData(cctvService.findById(id));
+        resultData.setData(convertVo(cctvService.findById(id)));
         return resultData;
     }
+
+    private CctvVo convertVo(Cctv cctv) {
+        if (Objects.isNull(cctv)) {
+            return null;
+        }
+        CctvVo vo = new CctvVo();
+        BeanUtils.copyProperties(cctv,vo);
+
+        Build build = buildExposeService.findById(cctv.getBuildId());
+        if (Objects.nonNull(build)){
+            vo.setBuildName(build.getName());
+        }
+
+        BuildFloor buildFloor = buildFloorExposeService.findById(cctv.getBuildFloorId());
+        if (Objects.nonNull(buildFloor)){
+            vo.setBuildFloorName(buildFloor.getName());
+        }
+
+        Region region = regionExposeService.findById(cctv.getRegionId());
+        if (Objects.nonNull(region)){
+            vo.setRegionName(region.getName());
+        }
+
+        Department department = departmentExposeService.findById(cctv.getDepartmentId());
+        if (Objects.nonNull(department)){
+            vo.setDepartmentName(department.getName());
+        }
+
+        return vo;
+    }
+
+
 }

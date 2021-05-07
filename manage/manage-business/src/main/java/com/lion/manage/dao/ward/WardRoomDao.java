@@ -14,19 +14,12 @@ import java.util.List;
  */
 public interface WardRoomDao extends BaseDao<WardRoom> {
 
-    /**
-     * 根据区域删除
-     * @param regionId
-     * @return
-     */
-    public int deleteByRegionId(Long regionId);
 
     /**
      * 根据病房基本信息删除
      * @param wardId
      * @return
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public int deleteByWardId(Long wardId);
 
     /**

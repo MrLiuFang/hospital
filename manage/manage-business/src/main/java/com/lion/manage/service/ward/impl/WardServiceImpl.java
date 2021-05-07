@@ -113,10 +113,10 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
         assertNameExist(wardDto.getName(),id);
         if (wardDto instanceof AddWardDto){
             assertRepeat(((AddWardDto)wardDto).getWardRoom());
-            assertRegionExist(((AddWardDto)wardDto).getWardRoom());
+//            assertRegionExist(((AddWardDto)wardDto).getWardRoom());
         }else if (wardDto instanceof UpdateWardDto){
             assertRepeat(((UpdateWardDto)wardDto).getWardRoom());
-            assertRegionExist(((UpdateWardDto)wardDto).getWardRoom());
+//            assertRegionExist(((UpdateWardDto)wardDto).getWardRoom());
         }
 
     }
@@ -124,33 +124,37 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
 
     private void assertRepeat(List<? extends WardRoom> list){
         Map<String,String> wardRoomCodeHash = new ConcurrentHashMap<String,String>();
-        list.forEach(wardRoom->{
-            if (!StringUtils.hasText(wardRoom.getCode())){
-                BusinessException.throwException("房间编号不能为空");
-            }
-            if (wardRoomCodeHash.containsKey(wardRoom.getCode())){
-                BusinessException.throwException("该病房存在重复的房间编号("+wardRoom.getCode()+")");
-            }
-            wardRoomCodeHash.put(wardRoom.getCode(),"");
-            if (wardRoom instanceof AddWardRoomDto){
-                assertRepeat(((AddWardRoomDto)wardRoom).getWardRoomSickbed(),wardRoom.getCode());
-            }else if (wardRoom instanceof UpdateWardRoomDto){
-                assertRepeat(((UpdateWardRoomDto)wardRoom).getWardRoomSickbed(),wardRoom.getCode());
-            }
-        });
+        if (Objects.nonNull(list)) {
+            list.forEach(wardRoom -> {
+                if (!StringUtils.hasText(wardRoom.getCode())) {
+                    BusinessException.throwException("房间编号不能为空");
+                }
+                if (wardRoomCodeHash.containsKey(wardRoom.getCode())) {
+                    BusinessException.throwException("该病房存在重复的房间编号(" + wardRoom.getCode() + ")");
+                }
+                wardRoomCodeHash.put(wardRoom.getCode(), "");
+                if (wardRoom instanceof AddWardRoomDto) {
+                    assertRepeat(((AddWardRoomDto) wardRoom).getWardRoomSickbed(), wardRoom.getCode());
+                } else if (wardRoom instanceof UpdateWardRoomDto) {
+                    assertRepeat(((UpdateWardRoomDto) wardRoom).getWardRoomSickbed(), wardRoom.getCode());
+                }
+            });
+        }
     }
 
     private void assertRepeat(List<? extends WardRoomSickbed> list,String code){
         Map<String,String> wardRoomSickbedCodeHash = new ConcurrentHashMap<String,String>();
-        list.forEach(wardRoomSickbed->{
-            if (!StringUtils.hasText(wardRoomSickbed.getBedCode())){
-                BusinessException.throwException("床位不能为空");
-            }
-            if (wardRoomSickbedCodeHash.containsKey(wardRoomSickbed.getBedCode())){
-                BusinessException.throwException(code+"-房间存在重复的床位("+wardRoomSickbed.getBedCode()+")");
-            }
-            wardRoomSickbedCodeHash.put(wardRoomSickbed.getBedCode(),"");
-        });
+        if (Objects.nonNull(list)) {
+            list.forEach(wardRoomSickbed -> {
+                if (!StringUtils.hasText(wardRoomSickbed.getBedCode())) {
+                    BusinessException.throwException("床位不能为空");
+                }
+                if (wardRoomSickbedCodeHash.containsKey(wardRoomSickbed.getBedCode())) {
+                    BusinessException.throwException(code + "-房间存在重复的床位(" + wardRoomSickbed.getBedCode() + ")");
+                }
+                wardRoomSickbedCodeHash.put(wardRoomSickbed.getBedCode(), "");
+            });
+        }
     }
     private void assertDepartmentExist(Long id) {
         Department department = this.departmentService.findById(id);
@@ -158,16 +162,16 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
             BusinessException.throwException("该科室不存在");
         }
     }
-    private void assertRegionExist(List<? extends WardRoom> wardRoomDto) {
-        wardRoomDto.forEach(wardRoom -> {
-            if (Objects.isNull(wardRoom.getRegionId())){
-                BusinessException.throwException(wardRoom.getCode()+"房间编码请选择区域");
-            }
-            if ( Objects.isNull(regionService.findById(wardRoom.getRegionId()))){
-                BusinessException.throwException(wardRoom.getCode()+"房间编码选择区域的区域不存在");
-            }
-        });
-    }
+//    private void assertRegionExist(List<? extends WardRoom> wardRoomDto) {
+//        wardRoomDto.forEach(wardRoom -> {
+//            if (Objects.isNull(wardRoom.getRegionId())){
+//                BusinessException.throwException(wardRoom.getCode()+"房间编码请选择区域");
+//            }
+//            if ( Objects.isNull(regionService.findById(wardRoom.getRegionId()))){
+//                BusinessException.throwException(wardRoom.getCode()+"房间编码选择区域的区域不存在");
+//            }
+//        });
+//    }
     private void assertNameExist(String name, Long id) {
         Ward ward = wardDao.findFirstByName(name);
         if ((Objects.isNull(id) && Objects.nonNull(ward)) || (Objects.nonNull(id) && Objects.nonNull(ward) && !Objects.equals(ward.getId(),id) ) ){

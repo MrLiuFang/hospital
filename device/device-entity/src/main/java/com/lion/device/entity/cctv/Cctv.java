@@ -39,7 +39,6 @@ public class Cctv extends BaseEntity {
 
     @ApiModelProperty(value = "cctv型号")
     @Column(name = "model")
-    @NotBlank(message = "cctv型号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String model;
 
     @ApiModelProperty(value = "cctv编号")
@@ -56,9 +55,9 @@ public class Cctv extends BaseEntity {
     @NotBlank(message = "ip地址不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String ip;
 
-    @ApiModelProperty(value = "ip地址端口")
+    @ApiModelProperty(value = "端口")
     @Column(name = "port")
-    @NotNull(message = "ip地址端口不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotNull(message = "端口不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer port;
 
     @ApiModelProperty(value = "建筑id（关联区域自动更新该值）")
@@ -72,4 +71,8 @@ public class Cctv extends BaseEntity {
     @ApiModelProperty(value = "区域Id（关联区域自动更新该值）")
     @Column(name = "region_id")
     private Long regionId;
+
+    @ApiModelProperty(value = "科室Id（关联区域自动更新该值）")
+    @Column(name = "department_id")
+    private Long departmentId;
 }

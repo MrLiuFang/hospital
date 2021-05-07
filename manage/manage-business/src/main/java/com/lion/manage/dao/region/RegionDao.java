@@ -2,6 +2,7 @@ package com.lion.manage.dao.region;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.region.Region;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -60,5 +61,6 @@ public interface RegionDao extends BaseDao<Region> {
      * @param deviceGroupId
      */
     @Query(" update Region set deviceGroupId = null where deviceGroupId = :deviceGroupId ")
+    @Modifying
     public void deleteDeviceGroup(Long deviceGroupId);
 }

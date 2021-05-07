@@ -26,6 +26,7 @@ public interface CctvExposeService extends BaseService<Cctv> {
      * @param buildId
      * @param buildFloorId
      * @param regionId
+     * @param departmentId
      */
-    public void relationPosition(List<Long> oldCctvIds,List<Long> newCctvIds,Long buildId,Long buildFloorId,Long regionId);
+    public void relationPosition(List<Long> oldCctvIds,List<Long> newCctvIds,Long buildId,Long buildFloorId,Long regionId,Long departmentId);
 }
