@@ -54,6 +54,7 @@ public class WashUserServcieImpl extends BaseServiceImpl<WashUser> implements Wa
 
     @Override
     public List<WashUser> find(Long washId) {
-        return washUserDao.findByWashId(washId);
+        List<WashUser> list = washUserDao.findByWashId(washId);
+        return list;
     }
 }

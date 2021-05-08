@@ -37,7 +37,7 @@ public class WashDevice extends BaseEntity {
     private Long washId;
 
     @ApiModelProperty(value = "洗手设备id")
-    @Column(name = "type",nullable = false)
+    @Column(name = "device_id",nullable = false)
     @NotNull(message = "洗手设备id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long deviceId;
 }

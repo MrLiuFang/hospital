@@ -179,7 +179,7 @@ public class UserWashServiceImpl implements UserWashService {
             //记录洗手
             Map<String,Object> map = new HashMap<>();
             map.put("pi", user.getId());
-            map.put("ri", userCurrentRegionDto.getRegionId());
+            map.put("ri", Objects.isNull(userCurrentRegionDto)?null:userCurrentRegionDto.getRegionId());
             map.put("dvi", device.getId());
             map.put("ddt", deviceDataDto.getTime());
             map.put("sdt", deviceDataDto.getSystemDateTime());

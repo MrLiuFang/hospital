@@ -58,7 +58,6 @@ public class Wash extends BaseEntity {
 
     @ApiModelProperty(value = "进入之后X分钟需要洗手")
     @Column(name = "after_entering_time")
-//    @NotNull(message = "超时提醒不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer afterEnteringTime;
 
     @ApiModelProperty(value = "进入之前X分钟需要洗手")

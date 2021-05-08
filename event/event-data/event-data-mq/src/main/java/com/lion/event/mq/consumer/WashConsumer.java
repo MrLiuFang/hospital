@@ -51,11 +51,11 @@ public class WashConsumer implements RocketMQListener<MessageExt> {
             String msg = new String(body);
             Map<String,Object> map = jacksonObjectMapper.readValue(msg, Map.class);
             Wash wash = new Wash();
-            wash.setPi(Long.valueOf(String.valueOf(map.get("pi"))));
+            wash.setPi(Objects.nonNull(map.get("pi"))?Long.valueOf(String.valueOf(map.get("pi"))):null);
             wash.setDdt(LocalDateTime.parse(String.valueOf(map.get("ddt")), DateTimeFormatter.ofPattern(DateTimeFormatterUtil.pattern(String.valueOf(map.get("ddt"))))));
             wash.setSdt(LocalDateTime.parse(String.valueOf(map.get("sdt")), DateTimeFormatter.ofPattern(DateTimeFormatterUtil.pattern(String.valueOf(map.get("sdt"))))));
-            wash.setRi(Long.valueOf(String.valueOf(map.get("ri"))));
-            wash.setDvi(Long.valueOf(String.valueOf(map.get("dvi"))));
+            wash.setRi(Objects.nonNull(map.get("ri"))?Long.valueOf(String.valueOf(map.get("ri"))):null);
+            wash.setDvi(Objects.nonNull(map.get("dvi"))?Long.valueOf(String.valueOf(map.get("dvi"))):null);
 
             Device device = redisUtil.getDevice(wash.getDvi());
             if (Objects.nonNull(device)){

@@ -52,10 +52,10 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
                 Event event = new Event();
                 event.setTyp(Integer.valueOf(String.valueOf(map.get("typ"))));
                 event.setUi(String.valueOf(map.get("uuid")));
-                event.setPi(Long.valueOf(String.valueOf(map.get("pi"))));
+                event.setPi(Objects.nonNull(map.get("pi"))?Long.valueOf(String.valueOf(map.get("pi"))):null);
                 event.setSdt(LocalDateTime.parse(String.valueOf(map.get("sdt")), DateTimeFormatter.ofPattern(DateTimeFormatterUtil.pattern(String.valueOf(map.get("sdt"))))));
                 event.setIa(Boolean.valueOf(String.valueOf(map.get("ia"))));
-                event.setRi(Long.valueOf(String.valueOf(map.get("ri"))));
+                event.setRi(Objects.nonNull(map.get("ri"))?Long.valueOf(String.valueOf(map.get("ri"))):null);
                 Region region = redisUtil.getRegionById(event.getRi());
                 if (Objects.nonNull(region)) {
                     event.setRn(region.getName());
