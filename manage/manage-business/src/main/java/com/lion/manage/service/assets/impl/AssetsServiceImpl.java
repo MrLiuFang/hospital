@@ -4,7 +4,6 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.tag.Tag;
-import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.exception.BusinessException;
@@ -12,8 +11,6 @@ import com.lion.manage.dao.assets.AssetsBorrowDao;
 import com.lion.manage.dao.assets.AssetsDao;
 import com.lion.manage.dao.assets.AssetsFaultDao;
 import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.assets.AssetsBorrow;
-import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.dto.AddAssetsDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsVo;
@@ -26,10 +23,7 @@ import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
-import com.sun.corba.se.spi.ior.ObjectKey;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.checkerframework.checker.guieffect.qual.UI;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -84,14 +78,15 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         BeanUtils.copyProperties(addAssetsDto,assets);
         assertNameExist(assets.getName(),null);
         assertCodeExist(assets.getCode(),null);
-        assertDepartmentExist(assets.getDepartmentId());
         assertRegionExist(assets.getRegionId());
-        Region region = regionService.findById(assets.getRegionId());
-        assets = setBuildAndFloor(assets);
+        assets = setBuildAndFloorAndDepartment(assets);
         assertBuildExist(assets.getBuildId());
         assertBuildFloorExist(assets.getBuildFloorId());
+        assertDepartmentExist(assets.getDepartmentId());
         assets = this.save(assets);
-        tagAssetsExposeService.relation(assets.getId(),addAssetsDto.getTagId());
+        if (Objects.nonNull(addAssetsDto.getTagCode())) {
+            tagAssetsExposeService.relation(assets.getId(), addAssetsDto.getTagCode());
+        }
     }
 
     @Override
@@ -102,13 +97,17 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         BeanUtils.copyProperties(updateAssetsDto,assets);
         assertNameExist(assets.getName(),assets.getId());
         assertCodeExist(assets.getCode(),assets.getId());
-        assertDepartmentExist(assets.getDepartmentId());
         assertRegionExist(assets.getRegionId());
-        Region region = regionService.findById(assets.getRegionId());
-        assets = setBuildAndFloor(assets);
+        assets = setBuildAndFloorAndDepartment(assets);
         assertBuildExist(assets.getBuildId());
         assertBuildFloorExist(assets.getBuildFloorId());
+        assertDepartmentExist(assets.getDepartmentId());
         this.update(assets);
+        if (Objects.nonNull(updateAssetsDto.getTagCode())) {
+            tagAssetsExposeService.relation(assets.getId(), updateAssetsDto.getTagCode());
+        }else {
+            tagAssetsExposeService.deleteByAssetsId(assets.getId());
+        }
     }
 
     @Override
@@ -198,10 +197,11 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         }
     }
 
-    private Assets setBuildAndFloor(Assets assets){
+    private Assets setBuildAndFloorAndDepartment(Assets assets){
         Region region = regionService.findById(assets.getRegionId());
         assets.setBuildId(region.getBuildId());
         assets.setBuildFloorId(region.getBuildFloorId());
+        assets.setDepartmentId(region.getDepartmentId());
         return assets;
     }
 }

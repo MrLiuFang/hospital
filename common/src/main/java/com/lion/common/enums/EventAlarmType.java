@@ -11,7 +11,7 @@ import java.util.Objects;
  * @Description //TODO
  * @Date 2021/5/2 下午4:05
  **/
-public enum EventType implements IEnum {
+public enum EventAlarmType implements IEnum {
 
     JRQRXS(0, "进入区域前未在规定时间内洗手"),
     JQQXSWZGDDXSSBXS(1, "进入区域前洗手未在规定洗手设备洗手"),
@@ -23,7 +23,7 @@ public enum EventType implements IEnum {
 
     private final String desc;
 
-    private EventType(int key, String desc) {
+    private EventAlarmType(int key, String desc) {
         this.key = key;
         this.desc = desc;
     }
@@ -58,7 +58,7 @@ public enum EventType implements IEnum {
     }
 
     @JsonCreator
-    public static EventType instance(Object value){
+    public static EventAlarmType instance(Object value){
         if (Objects.isNull(value)){
             return null;
         }
@@ -68,8 +68,8 @@ public enum EventType implements IEnum {
         return instance(String.valueOf(value));
     }
 
-    private static EventType instance(Integer key){
-        for(EventType item : values()){
+    private static EventAlarmType instance(Integer key){
+        for(EventAlarmType item : values()){
             if (item.getKey()==key){
                 return item;
             }
@@ -77,8 +77,8 @@ public enum EventType implements IEnum {
         return null;
     }
 
-    private static EventType instance(String name){
-        for(EventType item : values()){
+    private static EventAlarmType instance(String name){
+        for(EventAlarmType item : values()){
             if(Objects.equals(item.getName(),name)){
                 return item;
             }

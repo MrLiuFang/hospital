@@ -4,6 +4,7 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.dto.AddRegionDto;
+import com.lion.manage.entity.region.dto.UpdateRegionCoordinatesDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
 
 import java.util.List;
@@ -36,10 +37,16 @@ public interface RegionService extends BaseService<Region> {
     public void add(AddRegionDto addRegionDto);
 
     /**
-     * 新增区域
+     * 修改区域
      * @param updateRegionDto
      */
     public void update(UpdateRegionDto updateRegionDto);
+
+    /**
+     * 修改区域范围坐标
+     * @param updateRegionCoordinatesDto
+     */
+    public void updateCoordinates(UpdateRegionCoordinatesDto updateRegionCoordinatesDto);
 
     /**
      * 删除

@@ -37,6 +37,11 @@
 			<artifactId>springfox-boot-starter</artifactId>
 			<scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-core</artifactId>
+			<scope>provided</scope>
+        </dependency>
 
     </dependencies>
 </project>

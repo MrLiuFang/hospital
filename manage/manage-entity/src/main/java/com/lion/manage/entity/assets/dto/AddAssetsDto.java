@@ -19,7 +19,6 @@ import javax.validation.constraints.NotNull;
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"id","buildId","buildFloorId","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class AddAssetsDto extends Assets {
 
-    @ApiModelProperty(value = "标签Id")
-    @NotNull(message = "标签不能为空")
-    private Long tagId;
+    @ApiModelProperty(value = "标签编码")
+    private String tagCode;
 }

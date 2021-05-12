@@ -9,15 +9,10 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
-import com.lion.manage.entity.build.Build;
-import com.lion.manage.entity.build.dto.AddBuildDto;
-import com.lion.manage.entity.build.dto.UpdateBuildDto;
-import com.lion.manage.entity.build.vo.DetailsBuildVo;
-import com.lion.manage.entity.build.vo.ListBuildVo;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
-import com.lion.manage.entity.region.RegionExposeObject;
 import com.lion.manage.entity.region.dto.AddRegionDto;
+import com.lion.manage.entity.region.dto.UpdateRegionCoordinatesDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
 import com.lion.manage.entity.region.vo.DetailsRegionVo;
 import com.lion.manage.service.region.RegionCctvService;
@@ -27,7 +22,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -119,6 +113,13 @@ public class RegionController extends BaseControllerImpl implements BaseControll
     @ApiOperation(value = "修改区域")
     public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateRegionDto updateRegionDto){
         regionService.update(updateRegionDto);
+        return ResultData.instance();
+    }
+
+    @PutMapping("/update/coordinates")
+    @ApiOperation(value = "修改区域范围坐标")
+    public IResultData updateCoordinates(@RequestBody @Validated({Validator.OtherOne.class}) UpdateRegionCoordinatesDto updateRegionCoordinatesDto){
+        regionService.updateCoordinates(updateRegionCoordinatesDto);
         return ResultData.instance();
     }
 

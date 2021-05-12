@@ -1,12 +1,9 @@
-package com.lion.upms.entity.enums;
+package com.lion.common.enums;
 
 import cn.hutool.core.util.NumberUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.lion.core.IEnum;
-import com.lion.core.common.enums.EnumConverter;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -88,8 +85,5 @@ public enum UserType implements IEnum {
             }
         }
         return null;
-    }
-
-    public static class UserTypeConverter extends EnumConverter<UserType,Integer> {
     }
 }

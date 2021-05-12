@@ -87,7 +87,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/list")
     @ApiOperation(value = "资产列表")
-    public IPageResultData<List<ListAssetsVo>> list(@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code, @ApiParam(value = "标签编号") String tagCode,
+    public IPageResultData<List<ListAssetsVo>> list(@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code,
                                                   @ApiParam(value = "资产分类") AssetsType type, @ApiParam(value = "使用状态") AssetsUseState useState, LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
@@ -96,9 +96,6 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
         }
         if (StringUtils.hasText(code)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
-        }
-        if (StringUtils.hasText(tagCode)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_tagCode",tagCode);
         }
         if (Objects.nonNull(type)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_type",type);

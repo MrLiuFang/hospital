@@ -18,6 +18,7 @@ import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.region.dto.AddRegionDto;
+import com.lion.manage.entity.region.dto.UpdateRegionCoordinatesDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
@@ -140,25 +141,36 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     }
 
     @Override
+    @Transactional
+    public void updateCoordinates(UpdateRegionCoordinatesDto updateRegionCoordinatesDto) {
+        Region region = new Region();
+        BeanUtils.copyProperties(updateRegionCoordinatesDto,region);
+        if (Objects.isNull(region.getId())){
+            BusinessException.throwException("id不能为空");
+        }
+        update(region);
+        redisTemplate.opsForValue().set(RedisConstants.REGION + region.getId(), region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+    }
+
+    @Override
 //    @GlobalTransactional
     @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(deleteDto -> {
+            Region region = findById(deleteDto.getId());
             deleteById(deleteDto.getId());
             List<RegionCctv> listreRegionCctvs = regionCctvDao.findByRegionId(deleteDto.getId());
             List<Long> oldCctvIds = new ArrayList<>();
             listreRegionCctvs.forEach(regionCctv -> {
                 oldCctvIds.add(regionCctv.getCctvId());
             });
-            Region region = findById(deleteDto.getId());
             if (Objects.nonNull(region)){
                 cctvExposeService.relationPosition(oldCctvIds,new ArrayList<Long>(),region.getBuildId(),region.getBuildFloorId(),deleteDto.getId(), region.getDepartmentId());
             }
             regionCctvDao.deleteByRegionId(deleteDto.getId());
             regionExposeObjectDao.deleteByRegionId(deleteDto.getId());
             wardRoomDao.deleteByWardId(deleteDto.getId());
-
-            persistenceRedis(region, Collections.EMPTY_LIST, null,region.getDeviceGroupId());
+            persistenceRedis(region, Collections.EMPTY_LIST, null,Objects.nonNull(region.getDeviceGroupId())?region.getDeviceGroupId():null);
         });
     }
 
@@ -223,7 +235,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
                 redisTemplate.expire(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(), RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
             });
         }
-
+        redisTemplate.opsForValue().set(RedisConstants.REGION + region.getId(), region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.REGION_BUILD + region.getId(), region.getBuildId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.REGION_BUILD_FLOOR + region.getId(), region.getBuildFloorId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.REGION_DEPARTMENT + region.getId(), region.getDepartmentId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);

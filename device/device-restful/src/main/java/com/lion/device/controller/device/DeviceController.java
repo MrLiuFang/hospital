@@ -91,7 +91,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/list")
     @ApiOperation(value = "设备列表")
-    public IPageResultData<List<Device>> list(@ApiParam(value = "设备名称") String name, @ApiParam(value = "设备编号") String code, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备分类")  DeviceType deviceType, LionPage lionPage){
+    public IPageResultData<List<Device>> list(@ApiParam(value = "设备组ID") Long deviceGroupId,@ApiParam(value = "设备名称") String name, @ApiParam(value = "设备编号") String code, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备分类")  DeviceType deviceType, LionPage lionPage){
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
@@ -105,6 +105,10 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
         if (Objects.nonNull(deviceType)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_deviceType",deviceType);
         }
+        if (Objects.nonNull(deviceGroupId)){
+            jpqlParameter.setSearchParameter(SearchConstant.INNER_JOIN,deviceType);
+        }
+
         lionPage.setJpqlParameter(jpqlParameter);
         return (IPageResultData<List<Device>>) deviceService.findNavigator(lionPage);
     }
@@ -129,6 +133,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
                 detailsDeviceVo.setMapUrl(buildFloor.getMapUrl());
             }
         }
+
         resultData.setData(detailsDeviceVo);
         return resultData;
     }

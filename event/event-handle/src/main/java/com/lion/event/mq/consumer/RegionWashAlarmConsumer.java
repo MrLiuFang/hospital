@@ -28,6 +28,7 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,7 +82,7 @@ public class RegionWashAlarmConsumer implements RocketMQListener<MessageExt> {
         }
         if (!Objects.equals(userCurrentRegionDto.getRegionId(),alarmDto.getRegionId())){
             //如果用户从需要警告的区域离开则解除警告
-            unalarm(alarmDto,UnalarmType.LEAVE_REGION);
+//            unalarm(alarmDto,UnalarmType.LEAVE_REGION);
             log.info(user.getName()+"->离开之前的区域,解除警告");
             return;
         }
@@ -92,8 +93,8 @@ public class RegionWashAlarmConsumer implements RocketMQListener<MessageExt> {
         }
         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
         if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && userLastWashDto.getDateTime().isAfter(alarmDto.getAlarmDateTime())){
-//            List<Wash> washList = redisUtil.getWash(alarmDto.getRegionId());
-//            for (Wash wash :washList){
+            List<Wash> washList = redisUtil.getWash(alarmDto.getRegionId());
+            for (Wash wash :washList){
 //                Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(), wash);
 //                if (Objects.equals(false, b)) {
 //                    log.info("->发送洗手警告（未在规定洗手设备洗手）");
@@ -105,7 +106,7 @@ public class RegionWashAlarmConsumer implements RocketMQListener<MessageExt> {
 //                    }
 //                    return;
 //                }
-//            };
+            };
 
             //解除警告
             log.info(user.getName()+"->解除警告");
@@ -153,7 +154,8 @@ public class RegionWashAlarmConsumer implements RocketMQListener<MessageExt> {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("uuid",alarmDto.getUuid()); //事件唯一标识
         map.put("uat",unalarmType.getKey()); //解除警告原因
-        map.put("uadt",LocalDateTime.now()); //解除警告时间
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        map.put("uadt",df.format(LocalDateTime.now())); //解除警告时间
         map.put("unalarm",true);
         rocketMQTemplate.syncSend(TopicConstants.EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(map)).build());
     }

@@ -25,13 +25,28 @@ public class Event {
     private String ui;
 
 
-    //类型 (com.lion.common.enums.Type)
+    //事件类型 (com.lion.common.enums.Type)
     private Integer typ;
 
     /**
      * 员工/患者id
      */
     private Long pi;
+
+    /**
+     * 员工类型(com.lion.upms.entity.enums.UserType)
+     */
+    private int py;
+
+    /**
+     * 员工所在的科室id
+     */
+    private Long pdi;
+
+    /**
+     * 员工所在的科室名称
+     */
+    private String pdn;
 
     /**
      * 设备id
@@ -69,7 +84,7 @@ public class Event {
     /**
      * 是否触发警告
      */
-    private Boolean ia;
+    private Boolean ia = false;
 
     /**
      * 触发警告的规则id
@@ -87,7 +102,7 @@ public class Event {
     private LocalDateTime sdt;
 
     /**
-     * 触发警告原因(com.lion.common.enums.EventType)
+     * 触发警告原因(com.lion.common.enums.EventAlarmType)
      */
     private Integer at;
 
@@ -95,8 +110,5 @@ public class Event {
      * 解除警告时间
      */
     private LocalDateTime uadt = LocalDateTime.parse("9999-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-    //解除警告原因(com.lion.common.enums.RemoveAlarmType)
-    private Integer uat = 99;
 
 }

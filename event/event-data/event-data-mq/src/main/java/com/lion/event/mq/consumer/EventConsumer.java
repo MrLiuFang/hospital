@@ -10,7 +10,11 @@ import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.user.UserExposeService;
 import lombok.extern.java.Log;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
@@ -40,6 +44,12 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private RedisUtil redisUtil;
 
+    @DubboReference
+    private DepartmentUserExposeService departmentUserExposeService;
+
+    @DubboReference
+    private UserExposeService userExposeService;
+
     @Override
     public void onMessage(MessageExt messageExt) {
         try {
@@ -47,15 +57,23 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
             String msg = new String(body);
             Map<String,Object> map = jacksonObjectMapper.readValue(msg, Map.class);
             if (map.containsKey("unalarm") && Objects.equals(true,Boolean.valueOf(String.valueOf(map.get("unalarm"))))) {
-
+                String uuid = String.valueOf(map.get("uuid"));
+                DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime uadt = LocalDateTime.parse(String.valueOf(map.get("uadt")), df);
+                eventService.updateUadt(uuid,uadt);
             }else {
                 Event event = new Event();
                 event.setTyp(Integer.valueOf(String.valueOf(map.get("typ"))));
                 event.setUi(String.valueOf(map.get("uuid")));
                 event.setPi(Objects.nonNull(map.get("pi"))?Long.valueOf(String.valueOf(map.get("pi"))):null);
                 event.setSdt(LocalDateTime.parse(String.valueOf(map.get("sdt")), DateTimeFormatter.ofPattern(DateTimeFormatterUtil.pattern(String.valueOf(map.get("sdt"))))));
-                event.setIa(Boolean.valueOf(String.valueOf(map.get("ia"))));
+                if (map.containsKey("ia")) {
+                    event.setIa(Boolean.valueOf(String.valueOf(map.get("ia"))));
+                }
                 event.setRi(Objects.nonNull(map.get("ri"))?Long.valueOf(String.valueOf(map.get("ri"))):null);
+                if (map.containsKey("at")) {
+                    event.setAt(Integer.valueOf(String.valueOf(map.get("at"))));
+                }
                 Region region = redisUtil.getRegionById(event.getRi());
                 if (Objects.nonNull(region)) {
                     event.setRn(region.getName());
@@ -74,6 +92,17 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
                         event.setDi(department.getId());
                         event.setDn(department.getName());
                     }
+                }
+
+                Department department = departmentUserExposeService.findDepartment(event.getPi());
+                if (Objects.nonNull(department)) {
+                    event.setPdi(department.getId());
+                    event.setPdn(department.getName());
+                }
+
+                User user = userExposeService.findById(event.getPi());
+                if (Objects.nonNull(user)){
+                    event.setPy(user.getUserType().getKey());
                 }
                 eventService.save(event);
             }

@@ -7,8 +7,6 @@ import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagAssets;
-import com.lion.device.entity.tag.TagPostdocs;
-import com.lion.device.entity.tag.TagUser;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.service.tag.TagAssetsService;
 import com.lion.device.service.tag.TagService;
@@ -31,14 +29,17 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
     private TagService tagService;
 
     @Autowired
+    private TagDao tagDao;
+
+    @Autowired
     private TagAssetsService tagAssetsService;
 
     @Autowired
     private TagAssetsDao tagAssetsDao;
 
     @Override
-    public Boolean relation(Long assetsId, Long tagId) {
-        Tag tag = tagService.findById(tagId);
+    public Boolean relation(Long assetsId, String tagCode) {
+        Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){
             BusinessException.throwException("该标签不存在");
         }
@@ -47,7 +48,7 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
         }
         TagAssets tagAssets = tagAssetsDao.findFirstByAssetsIdAndUnbindingTimeIsNull(assetsId);
         if (Objects.nonNull(tagAssets)){
-            if (!Objects.equals( tagAssets.getTagId(),tagId)){
+            if (!Objects.equals( tagAssets.getAssetsId(), assetsId)){
                 if (Objects.equals(tag.getUseState(), TagUseState.USEING)){
                     BusinessException.throwException("该标签正在使用中");
                 }
@@ -61,7 +62,7 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
         }
         TagAssets newTagAssets = new TagAssets();
         newTagAssets.setAssetsId(assetsId);
-        newTagAssets.setTagId(tagId);
+        newTagAssets.setTagId(tag.getId());
         newTagAssets.setBindingTime(LocalDateTime.now());
         tagAssetsService.save(newTagAssets);
 

@@ -165,7 +165,8 @@ public class UserWashServiceImpl implements UserWashService {
             userLastWashDto.setUserId(user.getId());
             userLastWashDto.setMonitorId(Objects.isNull(monitor)?null:monitor.getId());
             userLastWashDto.setStarId(Objects.isNull(star)?null:star.getId());
-            userLastWashDto.setDateTime(deviceDataDto.getSystemDateTime());
+//            userLastWashDto.setDateTime(deviceDataDto.getSystemDateTime());
+            userLastWashDto.setDateTime(deviceDataDto.getTime());
             redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+user.getId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
 
             //记录用户当前区域的洗手记录

@@ -13,10 +13,10 @@ public interface TagAssetsExposeService extends BaseService<TagAssets> {
     /**
      * 资产关联标签
      * @param assetsId
-     * @param tagId
+     * @param tagCode
      * @return
      */
-    public Boolean relation(Long assetsId,Long tagId);
+    public Boolean relation(Long assetsId,String tagCode);
 
     /**
      * 解除绑定

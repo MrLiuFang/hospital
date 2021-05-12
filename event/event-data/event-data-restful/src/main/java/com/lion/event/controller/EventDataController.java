@@ -10,9 +10,12 @@ import com.lion.core.ResultData;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.event.entity.DeviceData;
+import com.lion.event.entity.Event;
 import com.lion.event.entity.Wash;
 import com.lion.event.entity.vo.UserCurrentRegionVo;
+import com.lion.event.entity.vo.WashMonitorVo;
 import com.lion.event.service.DeviceDataService;
+import com.lion.event.service.EventService;
 import com.lion.event.service.WashService;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -56,6 +59,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @Autowired
     private DeviceDataService deviceDataService;
+
+    @Autowired
+    private EventService eventService;
 
     @GetMapping("/user/current/region")
     @ApiOperation(value = "用户当前位置")
@@ -105,5 +111,12 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                       @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                       LionPage lionPage) {
         return deviceDataService.list(starId, startDateTime, endDateTime, lionPage);
+    }
+
+    @GetMapping("/wash/ratio")
+    @ApiOperation(value = "手卫生监控（科室/全院合规率）")
+    public IResultData<WashMonitorVo> washRatio(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                          @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) {
+        return ResultData.instance().setData(eventService.eventCount(startDateTime,endDateTime));
     }
 }

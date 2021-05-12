@@ -24,4 +24,5 @@ public class DetailsDeviceVo extends Device {
 
     @ApiModelProperty(value = "地图")
     private String mapUrl;
+
 }
