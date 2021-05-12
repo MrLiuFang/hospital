@@ -5,6 +5,7 @@ import com.lion.core.LionPage;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.department.DepartmentUserDao;
+import com.lion.manage.dao.work.WorkDao;
 import com.lion.manage.entity.work.Work;
 import com.lion.manage.expose.work.WorkExposeService;
 import com.lion.upms.entity.enums.UserType;
@@ -29,6 +30,9 @@ import java.util.*;
 public class WorkExposeServiceImpl extends BaseServiceImpl<Work> implements WorkExposeService {
 
     @Autowired
+    private WorkDao workDao;
+
+    @Autowired
     private DepartmentUserDao departmentUserDao;
 
     @DubboReference
@@ -36,26 +40,13 @@ public class WorkExposeServiceImpl extends BaseServiceImpl<Work> implements Work
 
     @Override
     public Map<String, Object> find(Long departmentId, String name, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, int page, int size) {
-        Map<String,Object> map = userExposeService.find(departmentId,name,userType,null,1, 99999);
+        Map<String,Object> map = userExposeService.find(departmentId,name,userType,null,1, 999999999);
         List<User> userList = (List<User>) map.get("list");
         List<Long> userListId = new ArrayList<>();
         userList.forEach(user -> {
             userListId.add(user.getId());
         });
-
-        JpqlParameter jpqlParameter = new JpqlParameter();
-        if (Objects.nonNull(userListId) && userListId.size()>0){
-            jpqlParameter.setSearchParameter(SearchConstant.IN + "_userId", userListId);
-        }
-        if (Objects.nonNull(startDateTime)){
-            jpqlParameter.setSearchParameter(SearchConstant.GREATER_THAN_OR_EQUAL_TO + "_startWorkTime", startDateTime);
-        }
-        if (Objects.nonNull(endDateTime)){
-            jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO + "_endWorkTime", endDateTime);
-        }
-        LionPage lionPage = new LionPage(page,size, Sort.unsorted());
-        lionPage.setJpqlParameter(jpqlParameter);
-        Page<Work> p = findNavigator(lionPage);
+        Page<Work> p = workDao.list(userListId,startDateTime,endDateTime,page,size);
         Map<String,Object> returnMap = new HashMap<String,Object>();
         returnMap.put("totalElements",p.getTotalElements());
         returnMap.put("list",p.getContent());

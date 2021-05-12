@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 /**
@@ -139,24 +140,27 @@ public class EventServiceImpl implements EventService {
         List<Work> list = (List<Work>) map.get("list");
         List<ListUserWashMonitorVo> returnList = new ArrayList<>();
         list.forEach(work -> {
-            ListUserWashMonitorVo vo = null;
-            List<Document> documentList = eventDao.eventCount(work.getStartWorkTime(),work.getEndWorkTime(),null,null, work.getUserId() , null);
-            if (Objects.nonNull(documentList) && documentList.size()>0) {
-                Document document = documentList.get(0);
-                vo = init(work.getStartWorkTime(),work.getEndWorkTime(),work.getUserId(),document);
-            }else {
-                vo = init(work.getStartWorkTime(),work.getEndWorkTime(),work.getUserId(),null);
-            }
-            List<WashUser> washUserList = washUserExposeService.find(work.getUserId());
-            if (Objects.isNull(washUserList) || washUserList.size()<=0) {
-                List<Wash> washList = washExposeService.find(true);
-                if (Objects.isNull(washList) || washList.size()<=0) {
-                    if (Objects.nonNull(vo)) {
-                        vo.setIsExistWashRule(false);
+            if (Objects.nonNull(work.getStartWorkTime())) {
+                ListUserWashMonitorVo vo = null;
+                LocalDateTime localDateTime = Objects.isNull(work.getEndWorkTime()) ? LocalDateTime.of(work.getStartWorkTime().toLocalDate(), LocalTime.MAX) : work.getEndWorkTime();
+                List<Document> documentList = eventDao.eventCount(work.getStartWorkTime(), localDateTime, null, null, work.getUserId(), null);
+                if (Objects.nonNull(documentList) && documentList.size() > 0) {
+                    Document document = documentList.get(0);
+                    vo = init(work.getStartWorkTime(), work.getEndWorkTime(), work.getUserId(), document);
+                } else {
+                    vo = init(work.getStartWorkTime(), work.getEndWorkTime(), work.getUserId(), null);
+                }
+                List<WashUser> washUserList = washUserExposeService.find(work.getUserId());
+                if (Objects.isNull(washUserList) || washUserList.size() <= 0) {
+                    List<Wash> washList = washExposeService.find(true);
+                    if (Objects.isNull(washList) || washList.size() <= 0) {
+                        if (Objects.nonNull(vo)) {
+                            vo.setIsExistWashRule(false);
+                        }
                     }
                 }
+                returnList.add(vo);
             }
-            returnList.add(vo);
         });
         return new PageResultData<>(returnList,lionPage,totalElements);
     }

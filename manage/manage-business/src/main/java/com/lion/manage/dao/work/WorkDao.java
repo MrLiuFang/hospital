@@ -8,5 +8,5 @@ import com.lion.manage.entity.work.Work;
  * @Description //TODO
  * @Date 2021/5/12 下午9:30
  **/
-public interface WorkDao extends BaseDao<Work> {
+public interface WorkDao extends BaseDao<Work> ,WorkDaoEx{
 }
