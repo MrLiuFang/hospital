@@ -32,7 +32,6 @@ public interface RoleUserDao extends BaseDao<RoleUser> {
      * 根据用户ID删除角色关联
      * @param userId
      */
-    @Transactional(propagation= Propagation.REQUIRES_NEW)
     public void deleteByUserId(Long userId);
 
     /**

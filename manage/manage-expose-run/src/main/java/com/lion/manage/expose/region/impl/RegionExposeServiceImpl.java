@@ -3,6 +3,7 @@ package com.lion.manage.expose.region.impl;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.region.RegionExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;

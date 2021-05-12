@@ -11,7 +11,13 @@ import com.lion.event.entity.vo.ListUserWashMonitorVo;
 import com.lion.event.entity.vo.ListWashMonitorVo;
 import com.lion.event.service.EventService;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.rule.Wash;
+import com.lion.manage.entity.rule.WashUser;
+import com.lion.manage.entity.work.Work;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.manage.expose.rule.WashExposeService;
+import com.lion.manage.expose.rule.WashUserExposeService;
+import com.lion.manage.expose.work.WorkExposeService;
 import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
@@ -44,6 +50,15 @@ public class EventServiceImpl implements EventService {
 
     @DubboReference
     private DepartmentUserExposeService departmentUserExposeService;
+
+    @DubboReference
+    private WorkExposeService workExposeService;
+
+    @DubboReference
+    private WashUserExposeService washUserExposeService;
+
+    @DubboReference
+    private WashExposeService washExposeService;
 
     @Override
     public void save(Event event) {
@@ -79,22 +94,7 @@ public class EventServiceImpl implements EventService {
         List<Document> list = eventDao.eventCount(startDateTime,endDateTime,null,userType, null , lionPage);
         List<ListUserWashMonitorVo> returnList = new ArrayList<>();
         list.forEach(document -> {
-            ListUserWashMonitorVo vo = new ListUserWashMonitorVo();
-            vo.setViolation(new BigDecimal(document.getDouble("allViolationRatio")).setScale(2, BigDecimal.ROUND_HALF_UP));
-            vo.setNoWash(new BigDecimal(document.getDouble("allNoWashRatio")).setScale(2, BigDecimal.ROUND_HALF_UP));
-            vo.setConformance(new BigDecimal(document.getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP));
-            vo.setUserId(document.getLong("_id"));
-            User user = userExposeService.findById(vo.getUserId());
-            if (Objects.nonNull(user)){
-                vo.setUserName(user.getName());
-                vo.setHeadPortrait(user.getHeadPortrait());
-                vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
-                Department department = departmentUserExposeService.findDepartment(vo.getUserId());
-                if (Objects.nonNull(department)){
-                    vo.setDepartmentName(department.getName());
-                }
-            }
-            returnList.add(vo);
+            returnList.add(init(null,null,document.getLong("_id"),document));
         });
         return new PageResultData<>(returnList,lionPage,0L);
     }
@@ -129,6 +129,62 @@ public class EventServiceImpl implements EventService {
             pageList.add(userWashEvent);
         });
         vo.setUserWashEvent(new PageResultData<>(pageList,lionPage,0L));
+        return vo;
+    }
+
+    @Override
+    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName, Long departmentId, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        Map<String,Object> map = workExposeService.find(departmentId,userName,userType,startDateTime,endDateTime,lionPage.getPageNumber(),lionPage.getPageSize());
+        Long totalElements = (Long) map.get("totalElements");
+        List<Work> list = (List<Work>) map.get("list");
+        List<ListUserWashMonitorVo> returnList = new ArrayList<>();
+        list.forEach(work -> {
+            ListUserWashMonitorVo vo = null;
+            List<Document> documentList = eventDao.eventCount(work.getStartWorkTime(),work.getEndWorkTime(),null,null, work.getUserId() , null);
+            if (Objects.nonNull(documentList) && documentList.size()>0) {
+                Document document = documentList.get(0);
+                vo = init(work.getStartWorkTime(),work.getEndWorkTime(),work.getUserId(),document);
+            }else {
+                vo = init(work.getStartWorkTime(),work.getEndWorkTime(),work.getUserId(),null);
+            }
+            List<WashUser> washUserList = washUserExposeService.find(work.getUserId());
+            if (Objects.isNull(washUserList) || washUserList.size()<=0) {
+                List<Wash> washList = washExposeService.find(true);
+                if (Objects.isNull(washList) || washList.size()<=0) {
+                    if (Objects.nonNull(vo)) {
+                        vo.setIsExistWashRule(false);
+                    }
+                }
+            }
+            returnList.add(vo);
+        });
+        return new PageResultData<>(returnList,lionPage,totalElements);
+    }
+
+    private ListUserWashMonitorVo init(LocalDateTime startDateTime, LocalDateTime endDateTime,Long userId,Document document){
+        ListUserWashMonitorVo vo = new ListUserWashMonitorVo();
+        if (Objects.nonNull(document)) {
+            BigDecimal allViolationRatio = new BigDecimal(document.getDouble("allViolationRatio")).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal allNoWashRatio = new BigDecimal(document.getDouble("allNoWashRatio")).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal allNoAlarmRatio = new BigDecimal(document.getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP);
+            vo.setViolation(allViolationRatio);
+            vo.setNoWash(allNoWashRatio);
+            vo.setConformance(allNoAlarmRatio);
+        }
+        vo.setStartWorkTime(startDateTime);
+        vo.setEndWorkTime(endDateTime);
+        vo.setUserId(userId);
+        User user = userExposeService.findById(vo.getUserId());
+        if (Objects.nonNull(user)) {
+            vo.setUserName(user.getName());
+            vo.setHeadPortrait(user.getHeadPortrait());
+            vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+            Department department = departmentUserExposeService.findDepartment(vo.getUserId());
+            if (Objects.nonNull(department)) {
+                vo.setDepartmentName(department.getName());
+            }
+
+        }
         return vo;
     }
 

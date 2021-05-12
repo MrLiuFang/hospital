@@ -5,11 +5,13 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.upms.dao.user.UserDao;
 import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.upms.service.user.UserService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -32,6 +34,9 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
     @Autowired
     private UserService userService;
 
+    @DubboReference
+    private DepartmentUserExposeService departmentUserExposeService;
+
     @Autowired
     private UserDao userDao;
 
@@ -49,7 +54,10 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
     public Map<String,Object> find(Long departmentId, String name, UserType userType, List<Long> ontIn, int page, int size) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.nonNull(departmentId)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
+            List<Long> list = departmentUserExposeService.findAllUser(departmentId);
+            if (Objects.nonNull(list) && list.size()>0 ) {
+                jpqlParameter.setSearchParameter(SearchConstant.IN + "_id", list);
+            }
         }
         if (Objects.nonNull(userType)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_userType",userType);
@@ -60,7 +68,7 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }
-        LionPage lionPage = new LionPage(page,size, Sort.unsorted());
+        LionPage lionPage = new LionPage(page,size);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<User> p = findNavigator(lionPage);
         Map<String,Object> map = new HashMap<String,Object>();

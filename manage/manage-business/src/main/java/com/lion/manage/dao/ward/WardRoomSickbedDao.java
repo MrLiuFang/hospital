@@ -19,7 +19,6 @@ public interface WardRoomSickbedDao extends BaseDao<WardRoomSickbed> {
      * @param wardRoomId
      * @return
      */
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public int deleteByWardRoomId(Long wardRoomId);
 
     /**

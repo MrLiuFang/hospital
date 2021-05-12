@@ -19,7 +19,6 @@ public interface DepartmentUserDao extends BaseDao<DepartmentUser> {
      * @param departmentId
      * @return
      */
-    @Transactional(propagation= Propagation.REQUIRES_NEW)
     public int deleteByDepartmentId(Long departmentId);
 
     /**
@@ -27,7 +26,6 @@ public interface DepartmentUserDao extends BaseDao<DepartmentUser> {
      * @param userId
      * @return
      */
-    @Transactional(propagation= Propagation.REQUIRES_NEW)
     public int deleteByUserId(Long userId);
 
     /**

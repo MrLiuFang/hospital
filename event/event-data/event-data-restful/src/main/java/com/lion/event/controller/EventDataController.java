@@ -138,4 +138,13 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                                     LionPage lionPage) {
         return ResultData.instance().setData(eventService.userWashDetails(userId, startDateTime, endDateTime, lionPage));
     }
+
+    @GetMapping("/user/wash/conformance/ratio")
+    @ApiOperation(value = "手卫生监控（员工合规率）")
+    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") Long departmentId,@ApiParam(value = "用户类型")  UserType userType,
+                                                          @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                          @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                          LionPage lionPage) {
+        return eventService.userWashConformanceRatio(userName,departmentId,userType,startDateTime,endDateTime,lionPage);
+    }
 }

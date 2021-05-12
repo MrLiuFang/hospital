@@ -6,6 +6,7 @@ import com.lion.upms.entity.role.RoleUser;
 import com.lion.upms.service.role.RoleUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -22,6 +23,7 @@ public class RoleUserServiceImpl extends BaseServiceImpl<RoleUser> implements Ro
     private RoleUserDao roleUserDao;
 
     @Override
+    @Transactional
     public void deleteByRoleId(Long roleId) {
         roleUserDao.deleteByRoleId(roleId);
     }
@@ -32,6 +34,7 @@ public class RoleUserServiceImpl extends BaseServiceImpl<RoleUser> implements Ro
     }
 
     @Override
+    @Transactional
     public void relationRole(Long userId, Long roleId) {
         roleUserDao.deleteByUserId(userId);
         if (Objects.nonNull(roleId) && roleId>0) {

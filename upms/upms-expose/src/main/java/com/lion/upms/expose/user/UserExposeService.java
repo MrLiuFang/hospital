@@ -43,5 +43,4 @@ public interface UserExposeService extends BaseService<User> {
      */
     public Map<String,Object> find(Long departmentId, String name, UserType userType, List<Long> ontIn, int page, int size);
 
-
 }

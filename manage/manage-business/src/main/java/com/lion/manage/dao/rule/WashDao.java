@@ -80,4 +80,11 @@ public interface WashDao extends BaseDao<Wash> {
      * @return
      */
     public Wash findFirstByTypeAndIsAllUser(WashRuleType type,Boolean isAllUser);
+
+    /**
+     * 根据是否全员查询
+     * @param isAllUser
+     * @return
+     */
+    public List<Wash> findByIsAllUser(Boolean isAllUser);
 }

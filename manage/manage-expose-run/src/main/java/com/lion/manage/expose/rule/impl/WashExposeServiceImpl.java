@@ -35,4 +35,9 @@ public class WashExposeServiceImpl extends BaseServiceImpl<Wash> implements Wash
     public List<Wash> findLoopWash(Long userId) {
         return washDao.findLoopWash(userId, WashRuleType.LOOP);
     }
+
+    @Override
+    public List<Wash> find(Boolean isAllUser) {
+        return null;
+    }
 }

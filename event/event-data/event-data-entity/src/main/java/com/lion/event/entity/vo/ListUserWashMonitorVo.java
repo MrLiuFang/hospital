@@ -1,5 +1,6 @@
 package com.lion.event.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -33,7 +34,7 @@ public class ListUserWashMonitorVo {
     private String headPortraitUrl;
 
     @ApiModelProperty(value = "是否有洗手规则")
-    private Boolean isExistWashRule;
+    private Boolean isExistWashRule = true;
 
     @ApiModelProperty(value = "合规率")
     private BigDecimal conformance = new BigDecimal(0);
@@ -45,8 +46,14 @@ public class ListUserWashMonitorVo {
     private BigDecimal noWash =new BigDecimal(0);
 
     @ApiModelProperty(value = "上班时间")
+    @JsonFormat(
+            pattern = "YYYY-MM-dd HH:mm:ss"
+    )
     private LocalDateTime startWorkTime;
 
     @ApiModelProperty(value = "下班时间")
+    @JsonFormat(
+            pattern = "YYYY-MM-dd HH:mm:ss"
+    )
     private LocalDateTime endWorkTime;
 }

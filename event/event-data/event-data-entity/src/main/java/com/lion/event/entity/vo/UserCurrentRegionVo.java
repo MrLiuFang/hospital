@@ -1,5 +1,6 @@
 package com.lion.event.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -40,6 +41,9 @@ public class UserCurrentRegionVo {
     private String departmentName;
 
     @ApiModelProperty(value = "进入时间")
+    @JsonFormat(
+            pattern = "YYYY-MM-dd HH:mm:ss"
+    )
     private LocalDateTime firstEntryTime;
 
 }

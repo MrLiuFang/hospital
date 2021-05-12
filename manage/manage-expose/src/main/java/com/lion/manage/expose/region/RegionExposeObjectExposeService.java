@@ -1,4 +1,4 @@
-package com.lion.manage.expose.region.impl;
+package com.lion.manage.expose.region;
 
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.region.RegionExposeObject;

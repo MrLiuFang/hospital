@@ -2,6 +2,7 @@ package com.lion.manage.expose.region.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.entity.region.RegionExposeObject;
+import com.lion.manage.expose.region.RegionExposeObjectExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
 
 /**

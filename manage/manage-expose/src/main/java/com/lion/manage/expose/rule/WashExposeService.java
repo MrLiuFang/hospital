@@ -33,4 +33,11 @@ public interface WashExposeService extends BaseService<Wash> {
      * @return
      */
     public List<Wash> findLoopWash(Long userId);
+
+    /**
+     * 根据是否全员查询
+     * @param isAllUser
+     * @return
+     */
+    public List<Wash> find(Boolean isAllUser);
 }
