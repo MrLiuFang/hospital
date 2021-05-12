@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.utils.DateTimeFormatterUtil;
 import com.lion.common.utils.RedisUtil;
+import com.lion.device.entity.device.Device;
+import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.event.entity.Event;
 import com.lion.event.service.EventService;
 import com.lion.manage.entity.build.Build;
@@ -50,6 +52,9 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
     @DubboReference
     private UserExposeService userExposeService;
 
+    @DubboReference
+    private DeviceExposeService deviceExposeService;
+
     @Override
     public void onMessage(MessageExt messageExt) {
         try {
@@ -63,6 +68,13 @@ public class EventConsumer implements RocketMQListener<MessageExt> {
                 eventService.updateUadt(uuid,uadt);
             }else {
                 Event event = new Event();
+                if (map.containsKey("dvi")) {
+                    event.setDvi(Long.valueOf(String.valueOf(map.get("dvi"))));
+                    Device device = redisUtil.getDevice(event.getDvi());
+                    if (Objects.nonNull(device)){
+                        event.setDvn(device.getName());
+                    }
+                }
                 event.setTyp(Integer.valueOf(String.valueOf(map.get("typ"))));
                 event.setUi(String.valueOf(map.get("uuid")));
                 event.setPi(Objects.nonNull(map.get("pi"))?Long.valueOf(String.valueOf(map.get("pi"))):null);

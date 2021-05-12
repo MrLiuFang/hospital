@@ -85,7 +85,7 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 if (Objects.isNull(userLastWashDto)) {
                                     event.put("ia",true);//是否触发警告
                                     event.put("at", EventAlarmType.JRQRXS.getKey());//警告触发原因
-                                    producerEvent(event,userCurrentRegionDto,uuid);
+                                    producerEvent(event,userCurrentRegionDto,uuid,userLastWashDto.getMonitorId());
 //                                  log.info("推送延迟警告命令");
                                     rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     return;
@@ -94,7 +94,7 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 if (Objects.equals(false,b)){
                                     event.put("ia",true);//是否触发警告
                                     event.put("at", EventAlarmType.JRHWZGDDSBXS.getKey());//警告触发原因
-                                    producerEvent(event,userCurrentRegionDto,uuid);
+                                    producerEvent(event,userCurrentRegionDto,uuid,userLastWashDto.getMonitorId());
 //                                    log.info("推送告警没有按洗手规则中规定的设备来洗手");
                                     return;
                                 }
@@ -103,7 +103,7 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 if (duration.toMinutes() > wash.getBeforeEnteringTime()){
                                     event.put("ia",true);//是否触发警告
                                     event.put("at", EventAlarmType.JRQRXS.getKey());//警告触发原因
-                                    producerEvent(event,userCurrentRegionDto,uuid);
+                                    producerEvent(event,userCurrentRegionDto,uuid,userLastWashDto.getMonitorId());
 //                                  log.info("推送延迟警告命令");
                                     rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     return;
@@ -114,7 +114,7 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 if (Objects.isNull(userLastWashDto)) {
                                     event.put("ia",true);//是否触发警告
                                     event.put("at", EventAlarmType.JRHWXS.getKey());//警告触发原因
-                                    producerEvent(event,userCurrentRegionDto,uuid);
+                                    producerEvent(event,userCurrentRegionDto,uuid,userLastWashDto.getMonitorId());
 //                                  log.info("推送延迟警告命令");
                                     rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     return;
@@ -123,7 +123,7 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                 if (Objects.equals(false,b)){
                                     event.put("ia",true);//是否触发警告
                                     event.put("at", EventAlarmType.JRHWZGDDSBXS.getKey());//警告触发原因
-                                    producerEvent(event,userCurrentRegionDto,uuid);
+                                    producerEvent(event,userCurrentRegionDto,uuid,userLastWashDto.getMonitorId());
 //                                    log.info("推送告警没有按洗手规则中规定的设备来洗手");
                                     return;
                                 }
@@ -133,13 +133,13 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
                                         !userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime())){
                                     event.put("ia",true);//是否触发警告
                                     event.put("at", EventAlarmType.JRHWXS.getKey());//警告触发原因
-                                    producerEvent(event,userCurrentRegionDto,uuid);
+                                    producerEvent(event,userCurrentRegionDto,uuid,userLastWashDto.getMonitorId());
 //                                  log.info("推送延迟警告命令");
                                     rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
                                     return;
                                 }
                             }
-                            producerEvent(event,userCurrentRegionDto,uuid);
+                            producerEvent(event,userCurrentRegionDto,uuid,userLastWashDto.getMonitorId());
 
 
 
@@ -187,9 +187,10 @@ public class RegionWashConsumer implements RocketMQListener<MessageExt> {
         }
     }
 
-    private void producerEvent(Map<String,Object> event,UserCurrentRegionDto userCurrentRegionDto,String uuid){
+    private void producerEvent(Map<String,Object> event,UserCurrentRegionDto userCurrentRegionDto,String uuid,Long monitorId){
         event.put("pi",userCurrentRegionDto.getUserId());//员工id
         event.put("ri",userCurrentRegionDto.getRegionId());//区域id
+        event.put("dvi",monitorId);//洗手设备id
         event.put("uuid",uuid);//事件uuid
         try {
             rocketMQTemplate.syncSend(TopicConstants.EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(event)).build());

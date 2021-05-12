@@ -53,6 +53,11 @@ public class Event {
      */
     private Long dvi;
 
+    /**
+     * 设备名称
+     */
+    private String dvn;
+
     //建筑id
     private Long bui;
 

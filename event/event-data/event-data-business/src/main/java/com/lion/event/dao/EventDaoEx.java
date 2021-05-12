@@ -1,5 +1,8 @@
 package com.lion.event.dao;
 
+import com.lion.core.LionPage;
+import com.lion.event.entity.Event;
+import com.lion.upms.entity.enums.UserType;
 import org.bson.Document;
 
 import java.time.LocalDateTime;
@@ -23,10 +26,21 @@ public interface EventDaoEx {
      *
      * @param startDateTime
      * @param endDateTime
-     * @param isDepartmentGroup 是否按部门分组统计
-     * @param isAlarm 是否触发警告（违规）
-     * @param isNoWash 是否错过洗手（uadt = 9999-01-01 00:00:00）
+     * @param isDepartmentGroup
+     * @param userType
+     * @param userId
+     * @param lionPage
      * @return
      */
-    public List<Document> eventCount(LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isDepartmentGroup, Boolean isAlarm, Boolean isNoWash);
+    public List<Document> eventCount(LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isDepartmentGroup, UserType userType,Long userId, LionPage lionPage);
+
+    /**
+     * 用户洗手详情
+     * @param userId
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     * @return
+     */
+    public List<Event> userWashDetails(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

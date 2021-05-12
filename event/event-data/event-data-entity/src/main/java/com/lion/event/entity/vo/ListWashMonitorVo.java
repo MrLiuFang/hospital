@@ -14,7 +14,7 @@ import java.util.List;
  **/
 @Data
 @ApiModel
-public class WashMonitorVo {
+public class ListWashMonitorVo {
 
     @ApiModelProperty(value = "科室合规率")
     private List<Ratio> department;
