@@ -27,10 +27,7 @@ import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.department.DepartmentUserService;
 import com.lion.manage.service.region.RegionService;
-import com.lion.manage.service.rule.WashDeviceService;
-import com.lion.manage.service.rule.WashRegionService;
-import com.lion.manage.service.rule.WashService;
-import com.lion.manage.service.rule.WashUserServcie;
+import com.lion.manage.service.rule.*;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -101,6 +98,9 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     private DepartmentUserService departmentUserService;
 
     @Autowired
+    private WashDeviceTypeService washDeviceTypeService;
+
+    @Autowired
     private RedisTemplate redisTemplate;
 
     @Override
@@ -114,11 +114,14 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         wash = save(wash);
         if (Objects.equals(wash.getType(), WashRuleType.REGION)){
             washRegionService.add(addWashDto.getRegionId(),wash.getId());
+            washDeviceService.add(addWashDto.getDeviceId(),wash.getId());
         }
         if (Objects.equals(wash.getIsAllUser(),false)){
             washUserService.add(addWashDto.getUserId(),wash.getId());
         }
-        washDeviceService.add(addWashDto.getDeviceId(),wash.getId());
+        if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.nonNull(addWashDto.getDeviceTypes()) && addWashDto.getDeviceTypes().size()>0){
+            washDeviceTypeService.add(wash.getId(),addWashDto.getDeviceTypes());
+        }
         persistence2Redis(addWashDto.getRegionId(),addWashDto.getUserId(),addWashDto.getDeviceId(),wash,false);
     }
 
@@ -133,11 +136,15 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         update(wash);
         if (Objects.equals(wash.getType(), WashRuleType.REGION)){
             washRegionService.add(updateWashDto.getRegionId(),wash.getId());
+            washDeviceService.add(updateWashDto.getDeviceId(),wash.getId());
         }
         if (Objects.equals(wash.getIsAllUser(),false)){
             washUserService.add(updateWashDto.getUserId(),wash.getId());
         }
-        washDeviceService.add(updateWashDto.getDeviceId(),wash.getId());
+        if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.nonNull(updateWashDto.getDeviceTypes()) && updateWashDto.getDeviceTypes().size()>0){
+            washDeviceTypeService.add(wash.getId(),updateWashDto.getDeviceTypes());
+        }
+
         persistence2Redis(updateWashDto.getRegionId(),updateWashDto.getUserId(),updateWashDto.getDeviceId(),wash,false);
     }
 
@@ -218,6 +225,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             washDeviceService.delete(deleteDto.getId());
             washRegionService.delete(deleteDto.getId());
             washUserService.delete(deleteDto.getId());
+            washDeviceTypeService.add(deleteDto.getId(),null);
         });
     }
 
@@ -241,6 +249,9 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     }
 
     private void assertEnteringTime(Wash wash,Boolean isUpdate) {
+        if (Objects.nonNull(wash) &&Objects.equals(wash.getType(),WashRuleType.LOOP)){
+            return;
+        }
         if (Objects.nonNull(wash.getAfterEnteringTime()) && Objects.nonNull(wash.getBeforeEnteringTime())) {
             BusinessException.throwException("检测洗手时间（进入之前/进入之后）只能二选一");
         }

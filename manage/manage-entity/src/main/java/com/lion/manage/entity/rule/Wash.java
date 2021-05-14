@@ -43,12 +43,10 @@ public class Wash extends BaseEntity {
 
     @ApiModelProperty(value = "洗手间隔")
     @Column(name = "interval")
-    @NotNull(message = "洗手间隔不能为空")
     private Integer interval;
 
     @ApiModelProperty(value = "洗手时长")
     @Column(name = "duration")
-    @NotNull(message = "洗手时长不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer duration;
 
     @ApiModelProperty(value = "是否提醒")

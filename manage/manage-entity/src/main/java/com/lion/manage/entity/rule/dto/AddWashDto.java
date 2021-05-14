@@ -23,13 +23,16 @@ import java.util.List;
 public class AddWashDto extends Wash {
 
     @ApiModelProperty(value = "区域id")
-    @NotEmpty(message = "请选择区域",groups = {Validator.Insert.class})
+//    @NotEmpty(message = "请选择区域",groups = {Validator.Insert.class})
     private List<Long> regionId;
 
     @ApiModelProperty(value = "用户id")
     private List<Long> userId;
 
     @ApiModelProperty(value = "洗手设备id")
-    @NotEmpty(message = "请选择洗手设备",groups = {Validator.Insert.class})
+//    @NotEmpty(message = "请选择洗手设备",groups = {Validator.Insert.class})
     private List<Long> deviceId;
+
+    @ApiModelProperty(value = "洗手设备类型(ISINFECTION_GEL(0, \"免洗消毒凝胶\"),LIQUID_SOAP(1, \"洗手液\"),ALCOHOL(2, \"酒精\"),WASHING_FOAM(3, \"洗手泡沫\"), WATER(4, \"清水\"))")
+    private List<WashDeviceType> deviceTypes;
 }

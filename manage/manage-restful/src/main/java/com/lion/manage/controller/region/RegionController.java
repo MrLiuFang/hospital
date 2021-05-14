@@ -9,12 +9,19 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.manage.entity.build.Build;
+import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.region.dto.AddRegionDto;
 import com.lion.manage.entity.region.dto.UpdateRegionCoordinatesDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
 import com.lion.manage.entity.region.vo.DetailsRegionVo;
+import com.lion.manage.entity.region.vo.ListRegionVo;
+import com.lion.manage.service.build.BuildFloorService;
+import com.lion.manage.service.build.BuildService;
+import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionCctvService;
 import com.lion.manage.service.region.RegionExposeObjectService;
 import com.lion.manage.service.region.RegionService;
@@ -59,6 +66,15 @@ public class RegionController extends BaseControllerImpl implements BaseControll
     @Autowired
     private RegionExposeObjectService regionExposeObjectService;
 
+    @Autowired
+    private BuildService buildService;
+
+    @Autowired
+    private BuildFloorService buildFloorService;
+
+    @Autowired
+    private DepartmentService departmentService;
+
     @PostMapping("/add")
     @ApiOperation(value = "新增区域")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class}) AddRegionDto addRegionDto){
@@ -69,7 +85,7 @@ public class RegionController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/list")
     @ApiOperation(value = "区域列表")
-    public IPageResultData<List<Region>> list(@ApiParam(value = "区域名称") String name, @ApiParam(value = "建筑id")Long buildId, @ApiParam(value = "建筑楼层id")Long buildFloorId, LionPage lionPage){
+    public IPageResultData<List<ListRegionVo>> list(@ApiParam(value = "区域名称") String name, @ApiParam(value = "建筑id")Long buildId, @ApiParam(value = "建筑楼层id")Long buildFloorId, LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
@@ -83,7 +99,26 @@ public class RegionController extends BaseControllerImpl implements BaseControll
         }
         lionPage.setJpqlParameter(jpqlParameter);
         PageResultData page = (PageResultData) regionService.findNavigator(lionPage);
-        return page;
+        List<Region> list = page.getContent();
+        List<ListRegionVo> returnList = new ArrayList<>();
+        list.forEach(region -> {
+            ListRegionVo vo = new ListRegionVo();
+            BeanUtils.copyProperties(region,vo);
+            Build build = buildService.findById(region.getBuildId());
+            if (Objects.nonNull(build)){
+                vo.setBuildName(build.getName());
+            }
+            BuildFloor buildFloor = buildFloorService.findById(region.getBuildFloorId());
+            if (Objects.nonNull(buildFloor)){
+                vo.setBuildFloorName(buildFloor.getName());
+            }
+            Department department = departmentService.findById(region.getDepartmentId());
+            if (Objects.nonNull(department)){
+                vo.setDepartmentName(department.getName());
+            }
+            returnList.add(vo);
+        });
+        return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
     }
 
     @GetMapping("/details")

@@ -20,9 +20,14 @@ public class RedisConstants {
     public static final String WASH = "wash_";
 
     /**
-     * 洗手规则设备类型(key:washId,value:list<deviceId>)
+     * 洗手规则设备(key:washId,value:list<deviceId>)
      */
     public static final String WASH_DEVICE = "wash_device_";
+
+    /**
+     * 洗手规则设备类型(key:washId,value:list<com.lion.manage.entity.enums.WashDeviceType>)
+     */
+    public static final String WASH_DEVICE_TYPE = "wash_device_type_";
 
     /**
      * 区域洗手规则(key:regionId,value:List<washId>)
