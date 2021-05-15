@@ -33,4 +33,11 @@ public interface DeviceGroupDeviceService extends BaseService<DeviceGroupDevice>
      * @return
      */
     public int add(Long deviceGroupId, List<Long> deviceId);
+
+    /**
+     * 根据设备组id查询所有的设备
+     * @param deviceGroupId
+     * @return
+     */
+    public List<DeviceGroupDevice> find(Long deviceGroupId);
 }

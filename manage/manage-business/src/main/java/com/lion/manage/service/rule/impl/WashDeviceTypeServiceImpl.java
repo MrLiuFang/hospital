@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -46,5 +47,17 @@ public class WashDeviceTypeServiceImpl extends BaseServiceImpl<WashDeviceType> i
         }
 
 
+    }
+
+    @Override
+    public List<com.lion.manage.entity.enums.WashDeviceType> find(Long washId) {
+        List<WashDeviceType> list = washDeviceTypeDao.findByWashId(washId);
+        List<com.lion.manage.entity.enums.WashDeviceType> returnList = new ArrayList<>();
+        if (Objects.nonNull(list) && list.size()>0) {
+            list.forEach(washDeviceType -> {
+                returnList.add(washDeviceType.getType());
+            });
+        }
+        return returnList;
     }
 }

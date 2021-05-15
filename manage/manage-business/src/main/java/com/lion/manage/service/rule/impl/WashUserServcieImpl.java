@@ -4,6 +4,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.rule.WashUserDao;
 import com.lion.manage.entity.enums.WashRuleType;
+import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.WashUser;
 import com.lion.manage.service.rule.WashUserServcie;
 import com.lion.upms.entity.user.User;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.TreeMap;
 
 /**
  * @author Mr.Liu
@@ -30,19 +32,23 @@ public class WashUserServcieImpl extends BaseServiceImpl<WashUser> implements Wa
     private UserExposeService userExposeService ;
 
     @Override
-    public void add(List<Long> userId, Long washId) {
-        if (Objects.nonNull(washId)){
-            washUserDao.deleteByWashId(washId);
+    public void add(List<Long> userId, Wash wash) {
+        if (Objects.nonNull(wash)){
+            washUserDao.deleteByWashId(wash.getId());
         }
         userId.forEach(id->{
-            List<WashUser> list = washUserDao.find(id, WashRuleType.LOOP,washId);
-            if (Objects.nonNull(list) && list.size()>0){
-                User user = userExposeService.findById(id);
-                BusinessException.throwException(user.getName()+"已经存在其它区域洗手规则中,多个洗手规则会造成洗手监控冲突");
+            if (Objects.equals(wash.getType(),WashRuleType.LOOP) && Objects.equals(false,wash.getIsAllUser())) {
+                List<WashUser> list = washUserDao.find(id, WashRuleType.LOOP, wash.getId());
+                if (Objects.nonNull(list) && list.size() > 0) {
+                    User user = userExposeService.findById(id);
+                    BusinessException.throwException(user.getName() + "已经存在其它定时洗手规则中,多个定时洗手规则会造成洗手监控冲突");
+                }
             }
+        });
+        userId.forEach(id->{
             WashUser washUser = new WashUser();
             washUser.setUserId(id);
-            washUser.setWashId(washId);
+            washUser.setWashId(wash.getId());
             save(washUser);
         });
     }

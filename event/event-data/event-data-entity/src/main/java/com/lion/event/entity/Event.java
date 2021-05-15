@@ -92,6 +92,11 @@ public class Event {
     private Boolean ia = false;
 
     /**
+     * 是否已处理警告
+     */
+    private Boolean iaa = false;
+
+    /**
      * 触发警告的规则id
      */
     private Long rui;

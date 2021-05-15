@@ -7,20 +7,27 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
-import com.lion.manage.entity.enums.WashDeviceType;
+import com.lion.device.entity.device.Device;
+import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.region.dto.AddRegionDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
 import com.lion.manage.entity.region.vo.DetailsRegionVo;
 import com.lion.manage.entity.rule.Wash;
+import com.lion.manage.entity.rule.WashDevice;
+import com.lion.manage.entity.rule.WashDeviceType;
 import com.lion.manage.entity.rule.dto.AddWashDto;
 import com.lion.manage.entity.rule.dto.UpdateWashDto;
 import com.lion.manage.entity.rule.vo.DetailsWashVo;
+import com.lion.manage.entity.rule.vo.ListWashVo;
+import com.lion.manage.service.rule.WashDeviceService;
+import com.lion.manage.service.rule.WashDeviceTypeService;
 import com.lion.manage.service.rule.WashService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -46,6 +53,15 @@ public class WashController extends BaseControllerImpl implements BaseController
     @Autowired
     private WashService washService;
 
+    @Autowired
+    private WashDeviceService washDeviceService;
+
+    @Autowired
+    private WashDeviceTypeService washDeviceTypeService;
+
+    @DubboReference
+    private DeviceExposeService deviceExposeService;
+
     @PostMapping("/add")
     @ApiOperation(value = "新增洗手规则")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class}) AddWashDto addWashDto){
@@ -56,7 +72,7 @@ public class WashController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/list")
     @ApiOperation(value = "洗手规则列表")
-    public IPageResultData<List<Wash>> list(@ApiParam(value = "名称") String name, LionPage lionPage){
+    public IPageResultData<List<ListWashVo>> list(@ApiParam(value = "名称") String name, LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
@@ -64,7 +80,26 @@ public class WashController extends BaseControllerImpl implements BaseController
         }
         lionPage.setJpqlParameter(jpqlParameter);
         PageResultData page = (PageResultData) washService.findNavigator(lionPage);
-        return page;
+        List<Wash> list = page.getContent();
+        List<ListWashVo> returnList = new ArrayList<>();
+        list.forEach(wash -> {
+            ListWashVo vo = new ListWashVo();
+            BeanUtils.copyProperties(wash,vo);
+            List<WashDevice> washDevices = washDeviceService.find(wash.getId());
+            if (Objects.nonNull(washDevices) && washDevices.size()>0){
+                List<Device> deviceList = new ArrayList<>();
+                washDevices.forEach(washDevice -> {
+                    Device device = deviceExposeService.findById(washDevice.getDeviceId());
+                    if (Objects.nonNull(device)) {
+                        deviceList.add(device);
+                    }
+                });
+                vo.setDevices(deviceList);
+            }
+            vo.setWashDeviceTypes(washDeviceTypeService.find(wash.getId()));
+            returnList.add(vo);
+        });
+        return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
     }
 
     @GetMapping("/details")

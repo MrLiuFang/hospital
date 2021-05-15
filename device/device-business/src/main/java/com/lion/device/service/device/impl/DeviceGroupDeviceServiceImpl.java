@@ -64,4 +64,9 @@ public class DeviceGroupDeviceServiceImpl extends BaseServiceImpl<DeviceGroupDev
         }
         return 0;
     }
+
+    @Override
+    public List<DeviceGroupDevice> find(Long deviceGroupId) {
+        return deviceGroupDeviceDao.findByDeviceGroupId(deviceGroupId);
+    }
 }

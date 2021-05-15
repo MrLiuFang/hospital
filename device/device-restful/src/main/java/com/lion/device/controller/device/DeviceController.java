@@ -11,6 +11,7 @@ import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.device.entity.device.DeviceGroup;
+import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.entity.device.dto.AddDeviceGroupDto;
 import com.lion.device.entity.device.dto.UpdateDeviceGroupDto;
 import com.lion.device.entity.device.vo.DetailsDeviceGroupVo;
@@ -41,6 +42,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -106,7 +108,14 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_deviceType",deviceType);
         }
         if (Objects.nonNull(deviceGroupId)){
-            jpqlParameter.setSearchParameter(SearchConstant.INNER_JOIN,deviceType);
+            List<DeviceGroupDevice> list = deviceGroupDeviceService.find(deviceGroupId);
+            List<Long> ids = new ArrayList<>();
+            list.forEach(deviceGroupDevice -> {
+                ids.add(deviceGroupDevice.getDeviceId());
+            });
+            if (ids.size()>0) {
+                jpqlParameter.setSearchParameter(SearchConstant.IN, ids);
+            }
         }
 
         lionPage.setJpqlParameter(jpqlParameter);

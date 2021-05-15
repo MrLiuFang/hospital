@@ -19,4 +19,11 @@ public interface WashDeviceTypeService extends BaseService<WashDeviceType> {
      * @param typeList
      */
     public void add(Long washId, List<com.lion.manage.entity.enums.WashDeviceType> typeList);
+
+    /**
+     * 查询洗手设备类型
+     * @param washId
+     * @return
+     */
+    public List<com.lion.manage.entity.enums.WashDeviceType> find(Long washId);
 }

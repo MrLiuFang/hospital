@@ -117,7 +117,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             washDeviceService.add(addWashDto.getDeviceId(),wash.getId());
         }
         if (Objects.equals(wash.getIsAllUser(),false)){
-            washUserService.add(addWashDto.getUserId(),wash.getId());
+            washUserService.add(addWashDto.getUserId(),wash);
         }
         if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.nonNull(addWashDto.getDeviceTypes()) && addWashDto.getDeviceTypes().size()>0){
             washDeviceTypeService.add(wash.getId(),addWashDto.getDeviceTypes());
@@ -139,7 +139,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             washDeviceService.add(updateWashDto.getDeviceId(),wash.getId());
         }
         if (Objects.equals(wash.getIsAllUser(),false)){
-            washUserService.add(updateWashDto.getUserId(),wash.getId());
+            washUserService.add(updateWashDto.getUserId(),wash);
         }
         if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.nonNull(updateWashDto.getDeviceTypes()) && updateWashDto.getDeviceTypes().size()>0){
             washDeviceTypeService.add(wash.getId(),updateWashDto.getDeviceTypes());
@@ -171,23 +171,24 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         }
         List<WashRegion>  washRegions = washRegionService.find(wash.getId());
         if (Objects.nonNull(washRegions) && washRegions.size()>0){
-            List<DetailsWashVo.RegionVo> regionVos = new ArrayList<DetailsWashVo.RegionVo>();
+            List<Region> regionVos = new ArrayList<Region>();
             washRegions.forEach(washRegion->{
                 Region region = regionService.findById(washRegion.getRegionId());
                 if (Objects.nonNull(region)){
-                    DetailsWashVo.RegionVo regionVo = new DetailsWashVo.RegionVo();
-                    regionVo.setRegionName(region.getName());
-                    regionVo.setRemarks(region.getRemarks());
-                    regionVo.setId(region.getId());
-                    Build build = buildService.findById(region.getBuildId());
-                    if (Objects.nonNull(build)){
-                        regionVo.setBuildName(build.getName());
-                    }
-                    BuildFloor buildFloor = buildFloorService.findById(region.getBuildFloorId());
-                    if (Objects.nonNull(buildFloor)){
-                        regionVo.setBuildFloorName(buildFloor.getName());
-                    }
-                    regionVos.add(regionVo);
+//                    DetailsWashVo.RegionVo regionVo = new DetailsWashVo.RegionVo();
+//                    regionVo.setRegionName(region.getName());
+//                    regionVo.setRemarks(region.getRemarks());
+//                    regionVo.setId(region.getId());
+//                    Build build = buildService.findById(region.getBuildId());
+//                    if (Objects.nonNull(build)){
+//                        regionVo.setBuildName(build.getName());
+//                    }
+//                    BuildFloor buildFloor = buildFloorService.findById(region.getBuildFloorId());
+//                    if (Objects.nonNull(buildFloor)){
+//                        regionVo.setBuildFloorName(buildFloor.getName());
+//                    }
+//                    regionVos.add(regionVo);
+                    regionVos.add(region);
                 }
             });
             detailsWashVo.setRegionVos(regionVos);
@@ -212,6 +213,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
                 }
             });
             detailsWashVo.setUserVos(userVos);
+            detailsWashVo.setWashDeviceTypes(washDeviceTypeService.find(wash.getId()));
         }
         return detailsWashVo;
     }
@@ -230,20 +232,20 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     }
 
     private void assertLoopWashExist(Boolean isAllUser, Long id) {
-        List<WashUser> washUserList = washUserDao.find(WashRuleType.LOOP,false);
-        if (Objects.nonNull(washUserList) && washUserList.size()>0) {
-            if (Objects.equals(true,isAllUser)) {
-                BusinessException.throwException("已有其他人员在非全员的定时洗手规则中,不能再设置针对全员的定时洗手规则,会造成洗手监控冲突");
-            }
-        }
+//        List<WashUser> washUserList = washUserDao.find(WashRuleType.LOOP,true);
+//        if (Objects.nonNull(washUserList) && washUserList.size()>0) {
+//            if (Objects.equals(true,isAllUser)) {
+//                BusinessException.throwException("已有其他人员在非全员的定时洗手规则中,不能再设置针对全员的定时洗手规则,会造成洗手监控冲突");
+//            }
+//        }
 
         Wash washLoppAllUser = washDao.findFirstByTypeAndIsAllUser(WashRuleType.LOOP, true);
         if ((Objects.isNull(id) && Objects.nonNull(washLoppAllUser) ) || (Objects.nonNull(id) && Objects.nonNull(washLoppAllUser) &&  !Objects.equals(washLoppAllUser.getId(),id)) ){
-            BusinessException.throwException("针对全员的定时洗手规则已经存在,多个定时洗手规则会造成洗手监控冲突");
+            BusinessException.throwException("针对全员的定时洗手规则已经存在,多个全员定时洗手规则会造成洗手监控冲突");
         }
 
         if (Objects.nonNull(washLoppAllUser) && Objects.equals(false,isAllUser)){
-            BusinessException.throwException("针对全员的定时洗手规则已经存在,不能再给员工单独设置洗手规则");
+            BusinessException.throwException("针对全员的定时洗手规则已经存在,不能再给员工单独设置定时洗手规则，会造成洗手监控冲突");
         }
 
     }

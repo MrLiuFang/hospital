@@ -54,6 +54,11 @@ public class Wash extends BaseEntity {
     @NotNull(message = "是否提醒不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Boolean remind;
 
+    @ApiModelProperty(value = "超时提醒")
+    @Column(name = "overtime_remind")
+    private Integer overtimeRemind;
+
+
     @ApiModelProperty(value = "进入之后X分钟需要洗手")
     @Column(name = "after_entering_time")
     private Integer afterEnteringTime;

@@ -33,7 +33,7 @@ public interface WashUserDao extends BaseDao<WashUser> {
      * @param washId
      * @return
      */
-    @Query( " select wu from WashUser wu join Wash w on w.id = wu.washId where wu.userId = :userId and w.type <> :type and w.id <> :washId" )
+    @Query( " select wu from WashUser wu join Wash w on w.id = wu.washId where wu.userId = :userId and w.type = :type and w.id <> :washId and w.isAllUser <> true " )
     public List<WashUser> find(Long userId, WashRuleType type, Long washId);
 
     /**
@@ -41,7 +41,7 @@ public interface WashUserDao extends BaseDao<WashUser> {
      * @param isAllUser
      * @return
      */
-    @Query( " select wu from WashUser wu join Wash w on w.id = wu.washId where w.type <> :type and w.isAllUser = :isAllUser" )
+    @Query( " select wu from WashUser wu join Wash w on w.id = wu.washId where w.type = :type and w.isAllUser = :isAllUser" )
     public List<WashUser> find(WashRuleType type, Boolean isAllUser);
 
 
