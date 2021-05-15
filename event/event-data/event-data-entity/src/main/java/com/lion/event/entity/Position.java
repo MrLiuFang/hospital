@@ -1,6 +1,7 @@
 package com.lion.event.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -32,6 +33,11 @@ public class Position implements Serializable {
      * 设备id
      */
     private Long dvi;
+
+    /**
+     * tagid
+     */
+    private Long ti;
 
     //建筑id
     private Long bui;

@@ -170,7 +170,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
             regionCctvDao.deleteByRegionId(deleteDto.getId());
             regionExposeObjectDao.deleteByRegionId(deleteDto.getId());
             wardRoomDao.deleteByWardId(deleteDto.getId());
-            persistenceRedis(region, Collections.EMPTY_LIST, null,Objects.nonNull(region.getDeviceGroupId())?region.getDeviceGroupId():null);
+            persistenceRedis(region, Collections.EMPTY_LIST, null,region.getDeviceGroupId());
         });
     }
 

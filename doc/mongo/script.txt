@@ -95,6 +95,11 @@ db.runCommand({
     key : {_id: 'hashed'}
 })
 
+db.runCommand({
+    shardcollection : "hospital.current_position",
+    key : {_id: 1}
+})
+
 use hospital;
 
 db.wash.createIndex( { "pi":1 }, { sparse: true } )
@@ -108,3 +113,29 @@ db.event.stats();
 
 use admin;
 db.shutdownServer();
+
+
+
+___________________________________________________________________________________________________
+
+db.event.aggregate( [
+    { $match: { typ: 0 } },
+     {
+      $group: {
+         _id: "$pi",
+         allCount: { $sum: 1 },
+         allNoAlarm: { "$sum": {$cond:{if:{$eq:["$ia",false]},then:1,else:0}}},
+         allViolation: { "$sum": {$cond:{if:{$and:[ {$eq:["$ia",true]},{ "$lte": ["$uadt",ISODate("9990-12-31T16:00:00Z")]} ]},then:1,else:0}}},
+         allNoWash: { "$sum": {$cond:{if:{$and:[ {$eq:["$ia",true]},{ "$gte": ["$uadt",ISODate("9990-12-31T16:00:00Z")]} ]},then:1,else:0}}}
+      }
+    },
+    {
+        $project:{
+            _id: 1,
+            allNoAlarmRatio:{ $divide:["$allNoAlarm","$allCount"]},
+            allViolationRatio:{ $divide:["$allViolation","$allCount"]},
+            allNoWashRatio:{ $divide:["$allNoWash","$allCount"]},
+        }
+    },
+    { $match: { allNoAlarmRatio: {$lt:80}} },
+ ] )

@@ -38,18 +38,18 @@ public class Tag extends BaseEntity {
     @ApiModelProperty(value = "标签分类")
     @Convert(converter = TagType.TagTypeConverter.class)
     @NotNull(message = "标签分类不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "type",nullable = false)
+    @Column(name = "type")
     private TagType type;
 
     @ApiModelProperty(value = "标签用途")
     @Convert(converter = TagPurpose.TagPurposeConverter.class)
     @NotNull(message = "标签用途不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "purpose",nullable = false)
+    @Column(name = "purpose")
     private TagPurpose purpose;
 
     @ApiModelProperty(value = "标签编码")
     @NotBlank(message = "标签编码不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "tag_code",unique = true)
+    @Column(name = "tag_code")
     private String tagCode;
 
     @ApiModelProperty(value = "所属科室")
@@ -58,13 +58,11 @@ public class Tag extends BaseEntity {
     private Long departmentId;
 
     @ApiModelProperty(value = "设备名称")
-    @NotBlank(message = "设备名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "device_name",unique = true)
+    @Column(name = "device_name")
     private String deviceName;
 
     @ApiModelProperty(value = "设备编码")
-    @NotBlank(message = "设备编码不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "device_code",unique = true)
+    @Column(name = "device_code")
     private String deviceCode;
 
     @ApiModelProperty(value = "最高温度")

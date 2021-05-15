@@ -13,6 +13,7 @@ import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.tag.Tag;
+import com.lion.event.service.CommonService;
 import com.lion.event.service.UserWashService;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Wash;
@@ -51,6 +52,9 @@ public class UserWashServiceImpl implements UserWashService {
 
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
+
+    @Autowired
+    private CommonService commonService;
 
 
     @Override
@@ -126,13 +130,7 @@ public class UserWashServiceImpl implements UserWashService {
 
     private void position(DeviceDataDto deviceDataDto,User user, Region region) throws JsonProcessingException {
         //记录位置
-        Map<String,Object> map = new HashMap<>();
-        map.put("typ", Type.STAFF.getKey());
-        map.put("pi", user.getId());
-        map.put("ri", region.getId());
-        map.put("ddt", deviceDataDto.getTime());
-        map.put("sdt", deviceDataDto.getSystemDateTime());
-        rocketMQTemplate.syncSend(TopicConstants.POSITION, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(map)).build());
+        commonService.position(deviceDataDto,user,region);
     }
 
     /**

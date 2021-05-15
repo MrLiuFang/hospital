@@ -67,7 +67,6 @@ public class EventDaoImpl implements EventDaoEx {
         group = BasicDBObjectUtil.put(group,"$group","allNoWash",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$gte",new Object[]{"$uadt",uadt}) })).append("then",1).append("else",0))));//错过洗手
 
         BasicDBObject match = new BasicDBObject();
-        match = BasicDBObjectUtil.put(match,"$match","typ",new BasicDBObject("$eq",Type.STAFF.getKey()) );
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime)) {
             match = BasicDBObjectUtil.put(match,"$match","sdt", new BasicDBObject("$gte",startDateTime).append("$lte",endDateTime));
         }else if (Objects.nonNull(startDateTime) && Objects.isNull(endDateTime)) {
@@ -81,6 +80,7 @@ public class EventDaoImpl implements EventDaoEx {
         if (Objects.nonNull(userId)){
             match = BasicDBObjectUtil.put(match,"$match","pi",new BasicDBObject("$eq",userId) );
         }
+        match = BasicDBObjectUtil.put(match,"$match","typ",new BasicDBObject("$eq",Type.STAFF.getKey()) );
 
         BasicDBObject project = new BasicDBObject();
         project = BasicDBObjectUtil.put(project,"$project","_id",1);
@@ -109,6 +109,28 @@ public class EventDaoImpl implements EventDaoEx {
             list.add(document);
         });
         return list;
+
+//        db.event.aggregate( [
+//        { $match: { typ: 0 } },
+//        {
+//            $group: {
+//                _id: "$pi",
+//                allCount: { $sum: 1 },
+//                allNoAlarm: { "$sum": {$cond:{if:{$eq:["$ia",false]},then:1,else:0}}},
+//                allViolation: { "$sum": {$cond:{if:{$and:[ {$eq:["$ia",true]},{ "$lte": ["$uadt",ISODate("9990-12-31T16:00:00Z")]} ]},then:1,else:0}}},
+//                allNoWash: { "$sum": {$cond:{if:{$and:[ {$eq:["$ia",true]},{ "$gte": ["$uadt",ISODate("9990-12-31T16:00:00Z")]} ]},then:1,else:0}}}
+//            }
+//        },
+//        {
+//            $project:{
+//                _id: 1,
+//                allNoAlarmRatio:{ $divide:["$allNoAlarm","$allCount"]},
+//                allViolationRatio:{ $divide:["$allViolation","$allCount"]},
+//                allNoWashRatio:{ $divide:["$allNoWash","$allCount"]},
+//            }
+//        },
+//        { $match: { allNoAlarmRatio: {$lt:80}} },
+// ] )
     }
 
     @Override

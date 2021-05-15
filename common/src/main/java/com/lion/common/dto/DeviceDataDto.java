@@ -1,6 +1,8 @@
 package com.lion.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.common.enums.Hygiene;
+import com.lion.common.enums.TagType;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -51,6 +53,12 @@ public class DeviceDataDto implements Serializable {
     //時間
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
+
+    //标签类型
+    private TagType tagType;
+
+    //是否洗手设备
+    private Hygiene hygiene;
 
     //系统接受到时间
     private LocalDateTime systemDateTime = LocalDateTime.now();

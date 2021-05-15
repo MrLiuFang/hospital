@@ -99,13 +99,13 @@ public class TagController extends BaseControllerImpl implements BaseController 
         return tagLogService.list(tagId,startDateTime,endDateTime,content, lionPage);
     }
 
-//    @GetMapping("/details")
-//    @ApiOperation(value = "标签详情")
-//    public IResultData<DetailsAssetsVo> details(@NotNull(message = "id不能为空") Long id){
-//        ResultData resultData = ResultData.instance();
-//        resultData.setData(tagService.findById(id));
-//        return resultData;
-//    }
+    @GetMapping("/details")
+    @ApiOperation(value = "标签详情")
+    public IResultData<Tag> details(@NotNull(message = "id不能为空") Long id){
+        ResultData resultData = ResultData.instance();
+        resultData.setData(tagService.findById(id));
+        return resultData;
+    }
 
     @PutMapping("/update")
     @ApiOperation(value = "修改标签")

@@ -9,21 +9,23 @@ import java.util.Objects;
 /**
  * @Author Mr.Liu
  * @Description //TODO
- * @Date 2021/5/1 下午5:39
+ * @Date 2021/5/15 上午10:19
  **/
-public enum Type implements IEnum {
+public enum TagType implements IEnum {
 
-    STAFF(0, "员工"),
-    PATIENT(1, "患者"),
-    DEVICE(2, "设备(资产)"),
-    TAG(3, "tag"),
-    MIGRANT(4, "流动人员");
+    ASSET(0, "资产"),
+    STAFF(1, "员工"),
+    TEMPERATUE(2, "温度仪"),
+    ERU(3, "eru"),
+    HUMIDITY(4, "湿度仪"),
+    TEMP(5, "临时标签");
+
 
     private final int key;
 
     private final String desc;
 
-    private Type(int key, String desc) {
+    private TagType(int key, String desc) {
         this.key = key;
         this.desc = desc;
     }
@@ -54,11 +56,11 @@ public enum Type implements IEnum {
 
     @Override
     public Object jsonValue() {
-        return getKey();
+        return getName();
     }
 
     @JsonCreator
-    public static Type instance(Object value){
+    public static TagType instance(Object value){
         if (Objects.isNull(value)){
             return null;
         }
@@ -68,8 +70,8 @@ public enum Type implements IEnum {
         return instance(String.valueOf(value));
     }
 
-    private static Type instance(Integer key){
-        for(Type item : values()){
+    private static TagType instance(Integer key){
+        for(TagType item : values()){
             if (item.getKey()==key){
                 return item;
             }
@@ -77,8 +79,8 @@ public enum Type implements IEnum {
         return null;
     }
 
-    private static Type instance(String name){
-        for(Type item : values()){
+    private static TagType instance(String name){
+        for(TagType item : values()){
             if(Objects.equals(item.getName(),name)){
                 return item;
             }
