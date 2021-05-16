@@ -85,7 +85,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         assertDepartmentExist(assets.getDepartmentId());
         assets = this.save(assets);
         if (Objects.nonNull(addAssetsDto.getTagCode())) {
-            tagAssetsExposeService.relation(assets.getId(), addAssetsDto.getTagCode());
+            tagAssetsExposeService.relation(assets.getId(), addAssetsDto.getTagCode(), addAssetsDto.getDepartmentId());
         }
     }
 
@@ -104,7 +104,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         assertDepartmentExist(assets.getDepartmentId());
         this.update(assets);
         if (Objects.nonNull(updateAssetsDto.getTagCode())) {
-            tagAssetsExposeService.relation(assets.getId(), updateAssetsDto.getTagCode());
+            tagAssetsExposeService.relation(assets.getId(), updateAssetsDto.getTagCode(), updateAssetsDto.getDepartmentId());
         }else {
             tagAssetsExposeService.deleteByAssetsId(assets.getId());
         }

@@ -14,8 +14,9 @@ public interface TagUserExposeService extends BaseService<TagUser> {
      * 用户与标签绑定
      * @param userId
      * @param tagCode
+     * @param departmentId
      */
-    public void binding(Long userId,String tagCode);
+    public void binding(Long userId,String tagCode,Long departmentId);
 
     /**
      * 用户与标签解绑

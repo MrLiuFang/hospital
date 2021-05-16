@@ -11,14 +11,17 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.*;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
+import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.*;
 import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
 import com.lion.device.entity.tag.vo.ListTagVo;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
+import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.department.DepartmentUser;
+import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.upms.entity.user.User;
@@ -26,6 +29,7 @@ import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -70,6 +74,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private AssetsExposeService assetsExposeService;
 
     @Override
     public void add(AddTagDto addTagDto) {
@@ -138,7 +145,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     }
 
     @Override
-    public IPageResultData<List<ListTagVo>> list(Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
+    public IPageResultData<List<ListTagVo>> list(TagUseState useState, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(tagCode)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_tagCode",tagCode);
@@ -152,6 +159,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         if (Objects.nonNull(battery)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_battery",battery);
         }
+        if (Objects.nonNull(useState)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_useState",useState);
+        }
         lionPage.setJpqlParameter(jpqlParameter);
         Page<Tag> page = findNavigator(lionPage);
         List<Tag> list = page.getContent();
@@ -159,16 +169,22 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         list.forEach(tag->{
             ListTagVo vo = new ListTagVo();
             BeanUtils.copyProperties(tag,vo);
+            if (Objects.nonNull(tag.getDepartmentId())) {
+                Department department = departmentExposeService.findById(tag.getDepartmentId());
+                if (Objects.nonNull(department)){
+                    vo.setDepartmentName(department.getName());
+                }
+            }
             if (Objects.equals(tag.getPurpose(),TagPurpose.STAFF)) {
                 TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
                 if (Objects.nonNull(tagUser)) {
                     User user = userExposeService.findById(tagUser.getUserId());
                     if (Objects.nonNull(user)) {
                         vo.setBindingName(user.getName()+":"+user.getNumber());
-                        Department department = departmentUserExposeService.findDepartment(user.getId());
-                        if (Objects.nonNull(department)) {
-                            vo.setDepartmentName(department.getName());
-                        }
+//                        Department department = departmentUserExposeService.findDepartment(user.getId());
+//                        if (Objects.nonNull(department)) {
+//                            vo.setDepartmentName(department.getName());
+//                        }
                     }
                 }
             }else if (Objects.equals(tag.getPurpose(),TagPurpose.PATIENT)) {
@@ -178,7 +194,10 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             }else if (Objects.equals(tag.getPurpose(),TagPurpose.ASSETS)) {
                 TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
                 if (Objects.nonNull(tagAssets)){
-
+                    Assets assets = assetsExposeService.findById(tagAssets.getAssetsId());
+                    if (Objects.nonNull(assets)){
+                        vo.setBindingName(assets.getName());
+                    }
                 }
             }
             returnList.add(vo);

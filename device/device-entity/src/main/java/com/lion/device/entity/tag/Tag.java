@@ -87,7 +87,7 @@ public class Tag extends BaseEntity {
 
     @ApiModelProperty(value = "使用使用状态")
     @Column(name = "use_state")
-    private TagUseState useState;
+    private TagUseState useState = TagUseState.NOT_USED;
 
     @ApiModelProperty(value = "状态")
     @Column(name = "state")

@@ -133,7 +133,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         departmentUserExposeService.relationDepartment(user.getId(),addUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),addUserDto.getResponsibleDepartmentIds());
         if (StringUtils.hasText(user.getTagCode())) {
-            tagUserExposeService.binding(user.getId(), user.getTagCode());
+            tagUserExposeService.binding(user.getId(), user.getTagCode(), addUserDto.getDepartmentId());
         }
         redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
@@ -241,7 +241,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         roleUserService.relationRole(user.getId(),updateUserDto.getRoleId());
         departmentUserExposeService.relationDepartment(user.getId(),updateUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),updateUserDto.getResponsibleDepartmentIds());
-        tagUserExposeService.binding(user.getId(),user.getTagCode());
+        tagUserExposeService.binding(user.getId(),user.getTagCode(), updateUserDto.getDepartmentId());
         redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 

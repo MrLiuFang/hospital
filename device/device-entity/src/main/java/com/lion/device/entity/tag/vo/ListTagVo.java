@@ -14,7 +14,7 @@ public class ListTagVo extends Tag {
     /**
      * 绑定对象
      */
-    private String bindingName = "默认值";
+    private String bindingName;
 
     /**
      * 科室

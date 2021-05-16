@@ -10,35 +10,21 @@ import com.lion.core.persistence.Validator;
 import com.lion.device.entity.enums.TagLogContent;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
+import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagRule;
-import com.lion.device.entity.tag.TagRuleLog;
 import com.lion.device.entity.tag.dto.*;
 import com.lion.device.entity.tag.vo.ListTagLogVo;
 import com.lion.device.entity.tag.vo.ListTagRuleLogVo;
 import com.lion.device.entity.tag.vo.ListTagRuleUserVo;
 import com.lion.device.entity.tag.vo.ListTagVo;
 import com.lion.device.service.tag.*;
-import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.assets.dto.AddAssetsDto;
-import com.lion.manage.entity.assets.dto.UpdateAssetsDto;
-import com.lion.manage.entity.assets.vo.DetailsAssetsVo;
-import com.lion.manage.entity.assets.vo.ListAssetsVo;
-import com.lion.manage.entity.build.Build;
-import com.lion.manage.entity.build.BuildFloor;
-import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.enums.AssetsType;
-import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
-import com.sun.imageio.spi.RAFImageInputStreamSpi;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -46,7 +32,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -86,8 +71,8 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/list")
     @ApiOperation(value = "标签列表")
-    public IPageResultData<List<ListTagVo>> list(@ApiParam(value = "电量(0=正常,1=少於90 天,2=少於30天)")Integer battery, @ApiParam(value = "标签编码") String tagCode, @ApiParam(value = "标签分类") TagType type, @ApiParam(value = "用途") TagPurpose purpose, LionPage lionPage){
-        return tagService.list(battery, tagCode, type, purpose, lionPage);
+    public IPageResultData<List<ListTagVo>> list( @ApiParam(value = "使用状态")TagUseState useState,@ApiParam(value = "电量(0=正常,1=少於90 天,2=少於30天)")Integer battery, @ApiParam(value = "标签编码") String tagCode, @ApiParam(value = "标签分类") TagType type, @ApiParam(value = "用途") TagPurpose purpose, LionPage lionPage){
+        return tagService.list(useState, battery, tagCode, type, purpose, lionPage);
     }
 
     @GetMapping("/log/list")

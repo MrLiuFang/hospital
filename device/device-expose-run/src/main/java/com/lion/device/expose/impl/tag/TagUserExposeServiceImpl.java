@@ -8,7 +8,6 @@ import com.lion.device.entity.enums.TagLogContent;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagUser;
-import com.lion.device.expose.tag.TagLogExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.device.service.tag.TagLogService;
 import com.lion.exception.BusinessException;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -50,11 +48,17 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
 
     @Override
     @Transactional
-    public void binding(Long userId, String tagCode) {
+    public void binding(Long userId, String tagCode, Long departmentId) {
         if (!StringUtils.hasText(tagCode)){
             unbinding(userId,false);
         }
         Tag tag = tagDao.findFirstByTagCode(tagCode);
+        if (!Objects.equals(tag.getPurpose(),TagPurpose.STAFF)) {
+            BusinessException.throwException("此标签不能绑定员工");
+        }
+        if (!Objects.equals(departmentId,tag.getDepartmentId())) {
+            BusinessException.throwException("该表标签与员工不在同一科室不能绑定");
+        }
         if (Objects.isNull(tag)){
             BusinessException.throwException("该标签不存在");
         }

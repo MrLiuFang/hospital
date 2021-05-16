@@ -38,13 +38,16 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
     private TagAssetsDao tagAssetsDao;
 
     @Override
-    public Boolean relation(Long assetsId, String tagCode) {
+    public Boolean relation(Long assetsId, String tagCode, Long departmentId) {
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){
             BusinessException.throwException("该标签不存在");
         }
         if (!Objects.equals(tag.getPurpose(), TagPurpose.ASSETS)){
             BusinessException.throwException("该标签不能与资产关联");
+        }
+        if (!Objects.equals(tag.getDepartmentId(), departmentId)){
+            BusinessException.throwException("该资产与标签不在同一科室,不能进行绑定");
         }
         TagAssets tagAssets = tagAssetsDao.findFirstByAssetsIdAndUnbindingTimeIsNull(assetsId);
         if (Objects.nonNull(tagAssets)){

@@ -6,6 +6,7 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
+import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
@@ -40,6 +41,8 @@ public interface TagService extends BaseService<Tag> {
 
     /**
      * 列表
+     *
+     * @param useState
      * @param battery
      * @param tagCode
      * @param type
@@ -47,5 +50,5 @@ public interface TagService extends BaseService<Tag> {
      * @param lionPage
      * @return
      */
-    IPageResultData<List<ListTagVo>> list(Integer battery, String tagCode,  TagType type, TagPurpose purpose, LionPage lionPage);
+    IPageResultData<List<ListTagVo>> list(TagUseState useState,Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage);
 }
