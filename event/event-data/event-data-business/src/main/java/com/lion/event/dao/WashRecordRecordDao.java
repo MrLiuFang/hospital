@@ -1,6 +1,6 @@
 package com.lion.event.dao;
 
-import com.lion.event.entity.Wash;
+import com.lion.event.entity.WashRecord;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
@@ -8,6 +8,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * @Description //TODO
  * @Date 2021/5/5 上午8:44
  **/
-public interface WashDao extends MongoRepository<Wash,String> ,WashDaoEx{
+public interface WashRecordRecordDao extends MongoRepository<WashRecord,String> , WashRecordDaoEx {
 
 }

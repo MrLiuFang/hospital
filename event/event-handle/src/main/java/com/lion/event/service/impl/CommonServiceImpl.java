@@ -44,17 +44,21 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public void position(DeviceDataDto deviceDataDto, User user, Region region) throws JsonProcessingException {
-        position(Type.STAFF,user.getId(),region.getId(),null,null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+        position(Type.STAFF,user.getId(),region.getId(),null,null,null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
     }
 
     @Override
     public void position(DeviceDataDto deviceDataDto, Tag tag, Region region) throws JsonProcessingException {
-        position(Type.TAG,null,region.getId(),null,tag.getId(),deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+        if (Objects.equals(deviceDataDto.getTagType(),Type.TEMPERATURE)) {
+            position(Type.HUMIDITY, null, region.getId(), null, tag.getId(), null, deviceDataDto.getTime(), deviceDataDto.getSystemDateTime());
+        }else if (Objects.equals(deviceDataDto.getTagType(),Type.TEMPERATURE)) {
+            position(Type.TEMPERATURE, null, region.getId(), null, null, tag.getId(), deviceDataDto.getTime(), deviceDataDto.getSystemDateTime());
+        }
     }
 
     @Override
     public void position(DeviceDataDto deviceDataDto, Assets assets, Region region) throws JsonProcessingException {
-        position(Type.DEVICE,null,region.getId(),assets.getId(),null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+        position(Type.ASSET_OR_DEVICE,null,region.getId(),assets.getId(),null,null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
     }
 
     /**
@@ -63,12 +67,13 @@ public class CommonServiceImpl implements CommonService {
      * @param pi 员工/患者/流动人员id
      * @param ri 区域id
      * @param dvi 设备id(资产)
-     * @param ti 标签id
+     * @param thi 标签id(温度)
+     * @param tti 标签id
      * @param ddt 设备产生的时间
      * @param sdt 系统接收到的时间
      * @throws JsonProcessingException
      */
-    private void position(Type type, Long pi, Long ri, Long dvi, Long ti, LocalDateTime ddt, LocalDateTime sdt) throws JsonProcessingException {
+    private void position(Type type, Long pi, Long ri, Long dvi, Long thi,Long tti, LocalDateTime ddt, LocalDateTime sdt) throws JsonProcessingException {
         //记录位置
         Map<String,Object> map = new HashMap<>();
         map.put("typ", type);
@@ -81,8 +86,11 @@ public class CommonServiceImpl implements CommonService {
         if (Objects.nonNull(dvi)) {
             map.put("dvi", dvi);
         }
-        if (Objects.nonNull(ti)) {
-            map.put("ti", ti);
+        if (Objects.nonNull(thi)) {
+            map.put("ti", thi);
+        }
+        if (Objects.nonNull(tti)) {
+            map.put("ti", tti);
         }
         map.put("ddt", ddt);
         map.put("sdt", sdt);

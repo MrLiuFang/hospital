@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * @Date 2021/4/27 下午5:28
  **/
 @Data
-public class AlarmDto implements Serializable {
+public class RegionWashAlarmDto implements Serializable {
 
     /**
      * 用户id

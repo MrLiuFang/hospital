@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.utils.DateTimeFormatterUtil;
 import com.lion.event.entity.Alarm;
-import com.lion.event.entity.Event;
 import com.lion.event.service.AlarmService;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;
@@ -16,7 +15,6 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  * @Author Mr.Liu

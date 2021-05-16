@@ -31,23 +31,23 @@ import javax.validation.constraints.NotNull;
 public class Region extends BaseEntity {
 
     @ApiModelProperty(value = "区域名称")
-    @Column(name = "name",unique = true)
+    @Column(name = "name")
     @NotBlank(message = "区域名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "是否公开")
-    @Column(name = "is_public",nullable = false)
+    @Column(name = "is_public")
     @NotNull(message = "是否公开不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     public Boolean isPublic = false;
 
     @ApiModelProperty(value = "分类")
-    @Column(name = "type",nullable = false)
+    @Column(name = "type")
     @Convert(converter = RegionType.RegionTypeConverter.class)
     @NotNull(message = "分类不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     public RegionType type;
 
     @ApiModelProperty(value = "科室")
-    @Column(name = "department_id",nullable = false)
+    @Column(name = "department_id")
     @NotNull(message = "科室不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     public Long departmentId;
 
@@ -66,12 +66,12 @@ public class Region extends BaseEntity {
     private Long deviceGroupId;
 
     @ApiModelProperty(value = "建筑id")
-    @Column(name = "build_id",nullable = false)
+    @Column(name = "build_id")
     @NotNull(message = "建筑不能为空", groups = {Validator.Insert.class})
     private Long buildId;
 
     @ApiModelProperty(value = "建筑楼层id")
-    @Column(name = "build_floor_id",nullable = false)
+    @Column(name = "build_floor_id")
     @NotNull(message = "建筑楼层不能为空", groups = {Validator.Insert.class})
     private Long buildFloorId;
 }

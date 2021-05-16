@@ -35,16 +35,16 @@ public class BuildFloor extends BaseEntity {
 
     @ApiModelProperty(value = "建筑id")
     @NotNull(message = "建筑名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "build_id",nullable = false)
+    @Column(name = "build_id")
     private Long buildId;
 
     @ApiModelProperty(value = "地图url")
     @NotBlank(message = "地图url名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "map_url",nullable = false)
+    @Column(name = "map_url")
     private String mapUrl;
 
     @ApiModelProperty(value = "楼层名称")
-    @Column(name = "name",nullable = false)
+    @Column(name = "name")
     @NotBlank(message = "楼层名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 

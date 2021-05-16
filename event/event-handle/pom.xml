@@ -8,7 +8,7 @@
 		<artifactId>hospital</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>event-handle</artifactId>
+	<artifactId>washEvent-handle</artifactId>
 	<packaging>jar</packaging>
 
 	<dependencies>

@@ -2,7 +2,6 @@ package com.lion.event.mq.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
-import com.lion.common.enums.Type;
 import com.lion.common.utils.DateTimeFormatterUtil;
 import com.lion.common.utils.RedisUtil;
 import com.lion.event.entity.Position;

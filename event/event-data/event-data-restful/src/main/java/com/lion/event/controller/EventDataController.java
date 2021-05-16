@@ -15,8 +15,8 @@ import com.lion.event.entity.vo.UserCurrentRegionVo;
 import com.lion.event.entity.vo.ListUserWashMonitorVo;
 import com.lion.event.entity.vo.ListWashMonitorVo;
 import com.lion.event.service.DeviceDataService;
-import com.lion.event.service.EventService;
-import com.lion.event.service.WashService;
+import com.lion.event.service.WashEventService;
+import com.lion.event.service.WashRecordService;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
@@ -56,13 +56,13 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     private RedisTemplate redisTemplate;
 
     @Autowired
-    private WashService washService;
+    private WashRecordService washService;
 
     @Autowired
     private DeviceDataService deviceDataService;
 
     @Autowired
-    private EventService eventService;
+    private WashEventService eventService;
 
     @GetMapping("/user/current/region")
     @ApiOperation(value = "用户当前位置")

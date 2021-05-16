@@ -8,10 +8,10 @@
 		<artifactId>hospital</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>event</artifactId>
+	<artifactId>washEvent</artifactId>
 	<packaging>pom</packaging>
 	<modules>
-		<module>event-handle</module>
-		<module>event-data</module>
+		<module>washEvent-handle</module>
+		<module>washEvent-data</module>
     </modules>
 </project>

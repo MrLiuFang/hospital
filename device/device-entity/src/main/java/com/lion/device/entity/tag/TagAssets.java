@@ -32,12 +32,12 @@ public class TagAssets extends BaseEntity {
 
     @ApiModelProperty(value = "标签id")
     @NotNull(message = "标签id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "tag_id",nullable = false)
+    @Column(name = "tag_id")
     private Long tagId;
 
     @ApiModelProperty(value = "资产id")
     @NotNull(message = "资产id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "assets_id",nullable = false)
+    @Column(name = "assets_id")
     private Long assetsId;
 
     @ApiModelProperty(value = "绑定时间")

@@ -4,12 +4,12 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
-import com.lion.event.dao.EventDao;
-import com.lion.event.entity.Event;
+import com.lion.event.dao.WashEventDao;
+import com.lion.event.entity.WashEvent;
 import com.lion.event.entity.vo.UserWashDetailsVo;
 import com.lion.event.entity.vo.ListUserWashMonitorVo;
 import com.lion.event.entity.vo.ListWashMonitorVo;
-import com.lion.event.service.EventService;
+import com.lion.event.service.WashEventService;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.WashUser;
@@ -38,10 +38,10 @@ import java.util.*;
  * @Date 2021/5/1 下午6:11
  **/
 @Service
-public class EventServiceImpl implements EventService {
+public class WashEventServiceImpl implements WashEventService {
 
     @Autowired
-    private EventDao eventDao;
+    private WashEventDao washEventDao;
 
     @DubboReference
     private UserExposeService userExposeService;
@@ -62,26 +62,26 @@ public class EventServiceImpl implements EventService {
     private WashExposeService washExposeService;
 
     @Override
-    public void save(Event event) {
-        eventDao.save(event);
+    public void save(WashEvent washEvent) {
+        washEventDao.save(washEvent);
     }
 
     @Override
     public void updateUadt(String uuid, LocalDateTime uadt ) {
-        eventDao.updateUadt(uuid,uadt);
+        washEventDao.updateUadt(uuid,uadt);
     }
 
     @Override
     public ListWashMonitorVo washRatio(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         ListWashMonitorVo listWashMonitorVo = new ListWashMonitorVo();
         //医院所有事件
-        List<Document> listHospitalAll = eventDao.eventCount(startDateTime,endDateTime, false, null, null , null);
+        List<Document> listHospitalAll = washEventDao.eventCount(startDateTime,endDateTime, false, null, null , null);
         if (Objects.nonNull(listHospitalAll) && listHospitalAll.size()>0){
             Document hospitalAll = listHospitalAll.get(0);
             listWashMonitorVo.setHospital(init("全院合规率",hospitalAll.getDouble("allViolationRatio"),hospitalAll.getDouble("allNoWashRatio"),hospitalAll.getDouble("allNoAlarmRatio")));
         }
         //所有科室事件
-        List<Document> listDepartmentAll = eventDao.eventCount(startDateTime,endDateTime,true,null, null , null);
+        List<Document> listDepartmentAll = washEventDao.eventCount(startDateTime,endDateTime,true,null, null , null);
         List<ListWashMonitorVo.Ratio> list = new ArrayList<>();
         listDepartmentAll.forEach(document -> {
             list.add(init(document.getString("_id"),document.getDouble("allViolationRatio"),document.getDouble("allNoWashRatio"),document.getDouble("allNoAlarmRatio")));
@@ -92,7 +92,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public IPageResultData<List<ListUserWashMonitorVo>> userWashRatio(UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        List<Document> list = eventDao.eventCount(startDateTime,endDateTime,null,userType, null , lionPage);
+        List<Document> list = washEventDao.eventCount(startDateTime,endDateTime,null,userType, null , lionPage);
         List<ListUserWashMonitorVo> returnList = new ArrayList<>();
         list.forEach(document -> {
             returnList.add(init(null,null,document.getLong("_id"),document));
@@ -115,11 +115,11 @@ public class EventServiceImpl implements EventService {
         }else {
             return null;
         }
-        List<Document> userWash = eventDao.eventCount(startDateTime,endDateTime,null,null, userId , null);
+        List<Document> userWash = washEventDao.eventCount(startDateTime,endDateTime,null,null, userId , null);
         if (Objects.nonNull(userWash) && userWash.size()>0) {
             vo.setConformance(new BigDecimal(userWash.get(0).getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP));
         }
-        List<Event> list = eventDao.userWashDetails(userId,startDateTime,endDateTime,lionPage);
+        List<WashEvent> list = washEventDao.userWashDetails(userId,startDateTime,endDateTime,lionPage);
         List<UserWashDetailsVo.UserWashEvent> pageList = new ArrayList<>();
         list.forEach(event -> {
             UserWashDetailsVo.UserWashEvent userWashEvent = new UserWashDetailsVo.UserWashEvent();
@@ -143,7 +143,7 @@ public class EventServiceImpl implements EventService {
             if (Objects.nonNull(work.getStartWorkTime())) {
                 ListUserWashMonitorVo vo = null;
                 LocalDateTime localDateTime = Objects.isNull(work.getEndWorkTime()) ? LocalDateTime.of(work.getStartWorkTime().toLocalDate(), LocalTime.MAX) : work.getEndWorkTime();
-                List<Document> documentList = eventDao.eventCount(work.getStartWorkTime(), localDateTime, null, null, work.getUserId(), null);
+                List<Document> documentList = washEventDao.eventCount(work.getStartWorkTime(), localDateTime, null, null, work.getUserId(), null);
                 if (Objects.nonNull(documentList) && documentList.size() > 0) {
                     Document document = documentList.get(0);
                     vo = init(work.getStartWorkTime(), work.getEndWorkTime(), work.getUserId(), document);

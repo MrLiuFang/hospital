@@ -1,6 +1,7 @@
 package com.lion.event.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -15,13 +16,39 @@ import java.time.LocalDateTime;
  * @Date 2021/5/5 上午8:42
  **/
 @Data
-@Document(value = "wash")
-public class Wash implements Serializable {
+@Document(value = "wash_record")
+@ApiModel(value = "洗手记录(为减少mongo存储空间字段采用缩写方式)")
+public class WashRecord implements Serializable {
     @Id
     private String _id;
 
+    @ApiModelProperty(value = "用于与洗手事件唯一关联标识(区域洗手),定时洗手没有此关联")
+    private String ui;
+
+
+
     @ApiModelProperty(value = "员工id/患者id/流动人员id")
     private Long pi;
+
+    /**
+     * 员工类型(com.lion.upms.entity.enums.UserType)
+     */
+    @ApiModelProperty(value = "员工类型")
+    private int py;
+
+
+    @ApiModelProperty(value = "员工所在的科室id")
+    private Long pdi;
+
+    @ApiModelProperty(value = "员工所在的科室名称")
+    private String pdn;
+
+    @ApiModelProperty(value = "tag id")
+    private Long ti;
+
+    @ApiModelProperty(value = "tag名称")
+    private String tn;
+
 
     @ApiModelProperty(value = "洗手的设备id")
     private Long dvi;
@@ -55,6 +82,9 @@ public class Wash implements Serializable {
 
     @ApiModelProperty(value = "区域名称")
     private String rn;
+
+    @ApiModelProperty(value = "洗手时长")
+    private Integer t;
 
     @ApiModelProperty(value = "设备产生的洗手時間")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

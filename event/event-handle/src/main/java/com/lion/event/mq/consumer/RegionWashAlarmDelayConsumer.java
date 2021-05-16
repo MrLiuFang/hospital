@@ -2,7 +2,7 @@ package com.lion.event.mq.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
-import com.lion.common.dto.AlarmDto;
+import com.lion.common.dto.RegionWashAlarmDto;
 import com.lion.event.utils.MessageDelayUtil;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;
@@ -26,6 +26,7 @@ import java.util.Objects;
 @Component
 @RocketMQMessageListener(topic = TopicConstants.REGION_WASH_ALARM_DELAY,selectorExpression="*",consumerGroup = TopicConstants.REGION_WASH_ALARM_DELAY_CONSUMER_GROUP)
 @Log
+@Deprecated
 public class RegionWashAlarmDelayConsumer implements RocketMQListener<MessageExt> {
 
     @Autowired
@@ -42,21 +43,21 @@ public class RegionWashAlarmDelayConsumer implements RocketMQListener<MessageExt
         try {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
-            AlarmDto alarmDto = jacksonObjectMapper.readValue(msg, AlarmDto.class);
-            if (Objects.isNull(alarmDto.getDelayDateTime())){
+            RegionWashAlarmDto regionWashAlarmDto = jacksonObjectMapper.readValue(msg, RegionWashAlarmDto.class);
+            if (Objects.isNull(regionWashAlarmDto.getDelayDateTime())){
 //                log.info("推送警告命令");
-                rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
+                rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashAlarmDto)).build());
             }else {
-                Duration duration = Duration.between(LocalDateTime.now(),alarmDto.getDelayDateTime());
+                Duration duration = Duration.between(LocalDateTime.now(), regionWashAlarmDto.getDelayDateTime());
                 long millis = duration.toMillis();
                 if (millis <= 1000) {
 //                    log.info("推送警告命令");
-                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build());
+                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashAlarmDto)).build());
                 }
-                Integer delayLevel = MessageDelayUtil.getDelayLevel(alarmDto.getDelayDateTime());
+                Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashAlarmDto.getDelayDateTime());
                 if (delayLevel > -1) {
 //                    log.info("推送延迟警告命令(循环延迟)");
-                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(alarmDto)).build(), 1000, delayLevel);
+                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_ALARM_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashAlarmDto)).build(), 1000, delayLevel);
                 }
             }
         }catch (Exception e){

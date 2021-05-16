@@ -35,12 +35,12 @@ public class TagRule extends BaseEntity {
 
     @ApiModelProperty(value = "规则名称")
     @NotBlank(message = "规则名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "name",nullable = false)
+    @Column(name = "name")
     private String name;
 
     @ApiModelProperty(value = "绿色按钮")
     @NotNull(message = "绿色按钮不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "green_button",nullable = false)
+    @Column(name = "green_button")
     private TagRuleEffect greenButton;
 
     @ApiModelProperty(value = "红色按钮")

@@ -31,12 +31,12 @@ import javax.validation.constraints.NotNull;
 public class Wash extends BaseEntity {
 
     @ApiModelProperty(value = "规则名称")
-    @Column(name = "name",nullable = false)
+    @Column(name = "name")
     @NotBlank(message = "规则名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "洗手规则类型")
-    @Column(name = "type",nullable = false)
+    @Column(name = "type")
     @Convert(converter = WashRuleType.WashRuleTypeConverter.class)
     @NotNull(message = "洗手规则类型不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private WashRuleType type;

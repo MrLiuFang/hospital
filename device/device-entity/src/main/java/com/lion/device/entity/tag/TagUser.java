@@ -34,17 +34,17 @@ public class TagUser extends BaseEntity {
 
     @ApiModelProperty(value = "标签id")
     @NotNull(message = "标签id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "tag_id",nullable = false)
+    @Column(name = "tag_id")
     private Long tagId;
 
     @ApiModelProperty(value = "员工(用户)id")
     @NotNull(message = "员工id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "user_id",nullable = false)
+    @Column(name = "user_id")
     private Long userId;
 
     @ApiModelProperty(value = "绑定时间")
     @NotNull(message = "绑定时间不能为空", groups = {Validator.Insert.class})
-    @Column(name = "binding_time",updatable = false,nullable = false)
+    @Column(name = "binding_time",updatable = false)
     private LocalDateTime bindingTime = LocalDateTime.now();
 
     @ApiModelProperty(value = "解绑时间")

@@ -2,7 +2,7 @@ package com.lion.event.service;
 
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
-import com.lion.event.entity.Event;
+import com.lion.event.entity.WashEvent;
 import com.lion.event.entity.vo.UserWashDetailsVo;
 import com.lion.event.entity.vo.ListUserWashMonitorVo;
 import com.lion.event.entity.vo.ListWashMonitorVo;
@@ -16,13 +16,13 @@ import java.util.List;
  * @Description //TODO
  * @Date 2021/5/1 下午6:11
  **/
-public interface EventService {
+public interface WashEventService {
 
     /**
      * 保存事件
-     * @param event
+     * @param washEvent
      */
-    public void save(Event event);
+    public void save(WashEvent washEvent);
 
     /**
      * 更新解除警告时间

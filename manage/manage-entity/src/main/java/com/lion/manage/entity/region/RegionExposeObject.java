@@ -31,12 +31,12 @@ import javax.validation.constraints.NotNull;
 public class RegionExposeObject extends BaseEntity {
 
     @ApiModelProperty(value = "区域id")
-    @Column(name = "region_id",nullable = false)
+    @Column(name = "region_id")
     @NotNull(message = "区域不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long regionId;
 
     @ApiModelProperty(value = "公开对象")
-    @Column(name = "expose_object",nullable = false)
+    @Column(name = "expose_object")
     @Convert(converter = ExposeObject.ExposeObjectConverter.class)
     @NotNull(message = "公开对象不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private ExposeObject exposeObject;

@@ -33,7 +33,7 @@ import javax.validation.constraints.NotNull;
 public class WardRoomSickbed extends BaseEntity {
 
     @ApiModelProperty(value = "病房id")
-    @Column(name = "ward_room_id",nullable = false)
+    @Column(name = "ward_room_id")
     @NotNull(message = "病房(基本信息)不能为空")
     private Long wardRoomId;
 

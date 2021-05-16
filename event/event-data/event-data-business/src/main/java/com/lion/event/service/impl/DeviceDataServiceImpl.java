@@ -7,7 +7,6 @@ import com.lion.device.entity.device.Device;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.event.dao.DeviceDataDao;
 import com.lion.event.entity.DeviceData;
-import com.lion.event.entity.Wash;
 import com.lion.event.service.DeviceDataService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;

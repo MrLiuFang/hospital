@@ -9,23 +9,21 @@ import java.util.Objects;
 /**
  * @Author Mr.Liu
  * @Description //TODO
- * @Date 2021/5/15 上午10:19
+ * @Date 2021/5/2 下午4:05
  **/
-public enum TagType implements IEnum {
+public enum WashEventAlarmType implements IEnum {
 
-    ASSET(0, "资产"),
-    STAFF(1, "员工"),
-    TEMPERATUE(2, "温度仪"),
-    ERU(3, "eru"),
-    HUMIDITY(4, "湿度仪"),
-    TEMP(5, "临时标签");
-
+    JRQRXS(0, "进入区域前未在规定时间内洗手"),
+    JQQXSWZGDDXSSBXS(1, "进入区域前洗手未在规定洗手设备洗手"),
+    JRHWXS(2, "进入区域后未在规定的时间内洗手"),
+    JRHWZGDDSBXS(3, "进入区域前后洗手未在规定洗手设备洗手"),
+    DSWXS(4, "定时未洗手");
 
     private final int key;
 
     private final String desc;
 
-    private TagType(int key, String desc) {
+    private WashEventAlarmType(int key, String desc) {
         this.key = key;
         this.desc = desc;
     }
@@ -56,11 +54,11 @@ public enum TagType implements IEnum {
 
     @Override
     public Object jsonValue() {
-        return getName();
+        return getKey();
     }
 
     @JsonCreator
-    public static TagType instance(Object value){
+    public static WashEventAlarmType instance(Object value){
         if (Objects.isNull(value)){
             return null;
         }
@@ -70,8 +68,8 @@ public enum TagType implements IEnum {
         return instance(String.valueOf(value));
     }
 
-    private static TagType instance(Integer key){
-        for(TagType item : values()){
+    private static WashEventAlarmType instance(Integer key){
+        for(WashEventAlarmType item : values()){
             if (item.getKey()==key){
                 return item;
             }
@@ -79,8 +77,8 @@ public enum TagType implements IEnum {
         return null;
     }
 
-    private static TagType instance(String name){
-        for(TagType item : values()){
+    private static WashEventAlarmType instance(String name){
+        for(WashEventAlarmType item : values()){
             if(Objects.equals(item.getName(),name)){
                 return item;
             }

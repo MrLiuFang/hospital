@@ -2,7 +2,7 @@ package com.lion.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.common.enums.Hygiene;
-import com.lion.common.enums.TagType;
+import com.lion.common.enums.Type;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -55,7 +55,7 @@ public class DeviceDataDto implements Serializable {
     private LocalDateTime time;
 
     //标签类型
-    private TagType tagType;
+    private Type tagType;
 
     //是否洗手设备
     private Hygiene hygiene;

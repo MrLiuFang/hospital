@@ -28,9 +28,9 @@ import javax.persistence.Table;
 @ApiModel(description = "角色与用户关联表")
 public class RoleUser extends BaseEntity {
 
-    @Column(name = "role_id",nullable = false)
+    @Column(name = "role_id")
     private Long roleId;
 
-    @Column(name = "user_id",nullable = false)
+    @Column(name = "user_id")
     private Long userId;
 }

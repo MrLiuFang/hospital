@@ -32,7 +32,7 @@ import javax.validation.constraints.NotBlank;
 public class Build extends BaseEntity {
 
     @ApiModelProperty(value = "建筑名称")
-    @Column(name = "name",unique = true)
+    @Column(name = "name")
     @NotBlank(message = "建筑名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 

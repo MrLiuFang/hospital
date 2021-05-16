@@ -32,12 +32,12 @@ import javax.validation.constraints.NotNull;
 public class Assets extends BaseEntity {
 
     @ApiModelProperty(value = "资产名称")
-    @Column(name = "name",unique = true)
+    @Column(name = "name")
     @NotBlank(message = "资产名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "资产编号")
-    @Column(name = "code",unique = true)
+    @Column(name = "code")
     @NotBlank(message = "资产编号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 

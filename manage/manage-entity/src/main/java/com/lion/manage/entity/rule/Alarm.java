@@ -34,7 +34,7 @@ import javax.validation.constraints.NotNull;
 public class Alarm extends BaseEntity {
 
     @ApiModelProperty(value = "警报分类")
-    @Column(name = "classify",nullable = false)
+    @Column(name = "classify")
     @Convert(converter = AlarmClassify.AlarmClassifyConverter.class)
     @NotNull(message = "警报分类不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private AlarmClassify classify;
@@ -44,18 +44,18 @@ public class Alarm extends BaseEntity {
     private Integer level;
 
     @ApiModelProperty(value = "警报内容")
-    @Column(name = "content",nullable = false)
+    @Column(name = "content")
     @NotBlank(message = "警报内容不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String content;
 
     @ApiModelProperty(value = "警报方式")
-    @Column(name = "way",nullable = false)
+    @Column(name = "way")
     @Convert(converter = AlarmWay.AlarmWayConverter.class)
     @NotNull(message = "警报方式不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private AlarmWay way;
 
     @ApiModelProperty(value = "警报声持续时间")
-    @Column(name = "duration",nullable = false)
+    @Column(name = "duration")
     @Convert(converter = AlarmDuration.AlarmDurationConverter.class)
     @NotNull(message = "警报声持续时间不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private AlarmDuration duration;
@@ -65,7 +65,7 @@ public class Alarm extends BaseEntity {
     private String blueCode;
 
     @ApiModelProperty(value = "再次提醒未处理警报事件")
-    @Column(name = "again",nullable = false)
+    @Column(name = "again")
     @NotNull(message = "再次提醒未处理警报事件不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Boolean again = false;
 
@@ -74,7 +74,7 @@ public class Alarm extends BaseEntity {
     private Integer Interval;
 
     @ApiModelProperty(value = "是否发邮件给科室负责人")
-    @Column(name = "is_send_mail_to_department_manager",nullable = false)
+    @Column(name = "is_send_mail_to_department_manager")
     @NotNull(message = "是否发邮件给科室负责人不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Boolean isSendMailToDepartmentManager = false;
 

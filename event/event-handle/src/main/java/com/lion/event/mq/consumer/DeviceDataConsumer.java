@@ -3,13 +3,14 @@ package com.lion.event.mq.consumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.DeviceDataDto;
-import com.lion.common.enums.TagType;
+import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
+import com.lion.event.service.DeviceService;
 import com.lion.event.service.UserWashService;
 import com.lion.upms.entity.user.User;
 import lombok.extern.java.Log;
@@ -57,6 +58,9 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private UserWashService userWashService;
 
+    @Autowired
+    private DeviceService deviceService;
+
     @Override
     public void onMessage(MessageExt messageExt) {
         try {
@@ -81,7 +85,7 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 user = redisUtil.getUser(tag.getId());
             }
 
-            if (Objects.nonNull(user)){ //如果根据标签查出用户，进行洗手事件处理
+            if (Objects.nonNull(user) && Objects.equals(deviceDataDto.getTagType(), Type.STAFF) ){ //如果根据标签查出员工，进行洗手事件处理
                 userWashService.userWashEevent(deviceDataDto,monitor,star,tag,user);
             }
 //            else  if (Objects.isNull()) { //处理患者数据
@@ -90,8 +94,8 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
 //
 //            }
 
-            else if (Objects.nonNull(tag) && (Objects.equals(deviceDataDto.getTagType(), TagType.ASSET) || Objects.equals(deviceDataDto.getTagType(), TagType.HUMIDITY) || Objects.equals(deviceDataDto.getTagType(), TagType.TEMPERATUE) ) && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
-
+            else if (Objects.nonNull(tag) && (Objects.equals(deviceDataDto.getTagType(), Type.ASSET_OR_DEVICE) || Objects.equals(deviceDataDto.getTagType(), Type.HUMIDITY) || Objects.equals(deviceDataDto.getTagType(), Type.TEMPERATURE) ) && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
+                deviceService.deviceEevent(deviceDataDto,monitor,star,tag);
             }
 
 

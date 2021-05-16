@@ -31,12 +31,12 @@ import javax.validation.constraints.NotNull;
 public class RegionCctv extends BaseEntity {
 
     @ApiModelProperty(value = "区域id")
-    @Column(name = "region_id",nullable = false)
+    @Column(name = "region_id")
     @NotNull(message = "区域不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long regionId;
 
     @ApiModelProperty(value = "cctvid")
-    @Column(name = "cctv_id",nullable = false)
+    @Column(name = "cctv_id")
     @NotNull(message = "cctv不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long cctvId;
 }

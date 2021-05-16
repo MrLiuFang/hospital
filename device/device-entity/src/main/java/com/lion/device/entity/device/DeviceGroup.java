@@ -33,12 +33,12 @@ import javax.validation.constraints.NotNull;
 public class DeviceGroup extends BaseEntity {
 
     @ApiModelProperty(value = "设备组名称")
-    @Column(name = "name",unique = true)
+    @Column(name = "name")
     @NotBlank(message = "设备组名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "设备组编号")
-    @Column(name = "code",unique = true)
+    @Column(name = "code")
     @NotBlank(message = "设备组名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 

@@ -53,7 +53,7 @@ public class Tag extends BaseEntity {
     private String tagCode;
 
     @ApiModelProperty(value = "所属科室")
-    @Column(name = "department_id",nullable = false)
+    @Column(name = "department_id")
     @NotNull(message = "所属科室不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long departmentId;
 

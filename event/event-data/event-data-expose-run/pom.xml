@@ -5,10 +5,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.lion</groupId>
-		<artifactId>event</artifactId>
+		<artifactId>washEvent</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>event-data-expose-run</artifactId>
+	<artifactId>washEvent-data-expose-run</artifactId>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -22,12 +22,12 @@
 		</dependency>
 		<dependency>
 			<groupId>com.lion</groupId>
-			<artifactId>event-data-expose</artifactId>
+			<artifactId>washEvent-data-expose</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.lion</groupId>
-			<artifactId>event-data-business</artifactId>
+			<artifactId>washEvent-data-business</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>
 	</dependencies>

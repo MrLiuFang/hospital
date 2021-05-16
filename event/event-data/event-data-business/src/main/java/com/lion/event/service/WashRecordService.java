@@ -2,10 +2,8 @@ package com.lion.event.service;
 
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
-import com.lion.event.entity.Wash;
-import org.springframework.format.annotation.DateTimeFormat;
+import com.lion.event.entity.WashRecord;
 
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,13 +12,13 @@ import java.util.List;
  * @Description //TODO
  * @Date 2021/5/5 上午8:46
  **/
-public interface WashService {
+public interface WashRecordService {
 
     /**
      * 保存
-     * @param wash
+     * @param washRecord
      */
-    public void save(Wash wash);
+    public void save(WashRecord washRecord);
 
     /**
      * 列表
@@ -30,5 +28,5 @@ public interface WashService {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<Wash>> list(Long userId,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<WashRecord>> list(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

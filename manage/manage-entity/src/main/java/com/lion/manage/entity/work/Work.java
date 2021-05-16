@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
 @ApiModel(description = "员工上下班")
 public class Work extends BaseEntity {
 
-    @Column(name = "user_id",nullable = false)
+    @Column(name = "user_id")
     private Long userId;
 
     @ApiModelProperty(value = "上班时间")

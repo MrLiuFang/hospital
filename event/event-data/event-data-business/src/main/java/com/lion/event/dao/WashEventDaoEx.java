@@ -1,7 +1,7 @@
 package com.lion.event.dao;
 
 import com.lion.core.LionPage;
-import com.lion.event.entity.Event;
+import com.lion.event.entity.WashEvent;
 import com.lion.upms.entity.enums.UserType;
 import org.bson.Document;
 
@@ -13,14 +13,14 @@ import java.util.List;
  * @Description //TODO
  * @Date 2021/5/11 下午3:08
  **/
-public interface EventDaoEx {
+public interface WashEventDaoEx {
 
     /**
-     * 更新解除警告时间
+     * 更新解除事件洗手事件
      * @param uuid
-     * @param uadt
+     * @param wt
      */
-    public void updateUadt(String uuid, LocalDateTime uadt);
+    public void updateWt(String uuid, LocalDateTime wt);
 
     /**
      *
@@ -42,5 +42,5 @@ public interface EventDaoEx {
      * @param lionPage
      * @return
      */
-    public List<Event> userWashDetails(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public List<WashEvent> userWashDetails(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

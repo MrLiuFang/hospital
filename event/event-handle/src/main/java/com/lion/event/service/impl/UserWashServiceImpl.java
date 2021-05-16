@@ -5,10 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.DeviceDataDto;
-import com.lion.common.dto.RegionWashDelayDto;
+import com.lion.common.dto.RegionWashMonitorDelayDto;
 import com.lion.common.dto.UserCurrentRegionDto;
 import com.lion.common.dto.UserLastWashDto;
-import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceType;
@@ -27,10 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -69,21 +65,23 @@ public class UserWashServiceImpl implements UserWashService {
         }
         //记录当前用户所在区域
         UserCurrentRegionDto userCurrentRegionDto = recordUserCurrentRegion(user,monitorRegion,starRegion, deviceDataDto);
+        String uuid = UUID.randomUUID().toString();
         userWashEevent(user,monitor,star, deviceDataDto,userCurrentRegionDto);
 
         //判断是否从X区域进入X区域，如果是就进行新的洗手事件监控
         if (Objects.nonNull(userCurrentRegionDto) && userCurrentRegionDto.getCurrentRegionEvent()==1 && !Objects.equals(userCurrentRegionDto.getRegionId(),userCurrentRegionDto.getPreviousRegionId())) {
             List<Wash> list = redisUtil.getWash(userCurrentRegionDto.getRegionId());
-            RegionWashDelayDto regionWashDelayDto = new RegionWashDelayDto();
-            regionWashDelayDto.setUserId(user.getId());
-            regionWashDelayDto.setRegionId(userCurrentRegionDto.getRegionId());
+            RegionWashMonitorDelayDto regionWashMonitorDelayDto = new RegionWashMonitorDelayDto();
+            regionWashMonitorDelayDto.setUserId(user.getId());
+            regionWashMonitorDelayDto.setRegionId(userCurrentRegionDto.getRegionId());
+            regionWashMonitorDelayDto.setUuid(userCurrentRegionDto.getUuid());
             if (Objects.nonNull(list) && list.size() > 0) {
                 list.forEach(wash -> {
                     //如果是全部用户
                     if (wash.getIsAllUser()) {
                         try {
 //                            log.info("推送延迟检测命令");
-                            rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build());
+                            rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
                         } catch (JsonProcessingException e) {
                             e.printStackTrace();
                         }
@@ -92,7 +90,7 @@ public class UserWashServiceImpl implements UserWashService {
                         if (Objects.nonNull(wash1)) {
                             try {
 //                                log.info("推送延迟检测命令");
-                                rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build());
+                                rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
                             } catch (JsonProcessingException e) {
                                 e.printStackTrace();
                             }
@@ -103,22 +101,33 @@ public class UserWashServiceImpl implements UserWashService {
         }
     }
 
-
+    /**
+     * 记录员工当前位置
+     * @param user
+     * @param monitorRegion
+     * @param starRegion
+     * @param deviceDataDto
+     * @return
+     * @throws JsonProcessingException
+     */
     private UserCurrentRegionDto recordUserCurrentRegion(User user, Region monitorRegion, Region starRegion, DeviceDataDto deviceDataDto) throws JsonProcessingException {
         Region region = Objects.isNull(monitorRegion)?starRegion:monitorRegion;
         if (Objects.isNull(region)){
             return null;
         }
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION+user.getId());
+        String uuid = UUID.randomUUID().toString();
         if (Objects.isNull(userCurrentRegionDto)){
             userCurrentRegionDto  = new UserCurrentRegionDto();
             userCurrentRegionDto.setFirstEntryTime(deviceDataDto.getTime());
+            userCurrentRegionDto.setUuid(uuid);
             position(deviceDataDto,user,region);
         }else  if (Objects.nonNull(region) && !Objects.equals(region.getId(),userCurrentRegionDto.getRegionId())) {//判断是否从X区域进入X区域
             userCurrentRegionDto.setFirstEntryTime(deviceDataDto.getTime());
             userCurrentRegionDto.setPreviousRegionId(userCurrentRegionDto.getRegionId());
             userCurrentRegionDto.setWashRecord(null);
             userCurrentRegionDto.setCurrentRegionEvent(0);
+            userCurrentRegionDto.setUuid(uuid);
             position(deviceDataDto,user,region);
         }
         userCurrentRegionDto.setCurrentRegionEvent(userCurrentRegionDto.getCurrentRegionEvent()+1);
@@ -149,7 +158,7 @@ public class UserWashServiceImpl implements UserWashService {
         //判断是否是洗手设备发出的事件
         if (Objects.equals(deviceType,DeviceType.ALCOHOL) || Objects.equals(deviceType,DeviceType.DISINFECTANT_GEL)
                 || Objects.equals(deviceType,DeviceType.LIQUID_SOAP) || Objects.equals(deviceType,DeviceType.WASHING_FOAM)
-                || Objects.equals(deviceType,DeviceType.WATER) ) {
+                || Objects.equals(deviceType,DeviceType.WATER)) {
             //记录最后一次洗手事件
             UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
             if (Objects.isNull(userLastWashDto)) {
@@ -177,12 +186,13 @@ public class UserWashServiceImpl implements UserWashService {
 
             //记录洗手
             Map<String,Object> map = new HashMap<>();
-            map.put("pi", user.getId());
-            map.put("ri", Objects.isNull(userCurrentRegionDto)?null:userCurrentRegionDto.getRegionId());
-            map.put("dvi", device.getId());
-            map.put("ddt", deviceDataDto.getTime());
-            map.put("sdt", deviceDataDto.getSystemDateTime());
-            rocketMQTemplate.syncSend(TopicConstants.WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(map)).build());
+            map.put("pi", user.getId()); //员工id
+            map.put("ri", Objects.isNull(userCurrentRegionDto)?null:userCurrentRegionDto.getRegionId()); //区域id
+            map.put("dvi", device.getId()); //洗手设备id
+            map.put("ui", userCurrentRegionDto.getUuid());//uuid
+            map.put("ddt", deviceDataDto.getTime());//设备产生时间
+            map.put("sdt", deviceDataDto.getSystemDateTime());//系统时间
+            rocketMQTemplate.syncSend(TopicConstants.WASH_RECORD, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(map)).build());
         }else {
             //记录洗手时长
             UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());

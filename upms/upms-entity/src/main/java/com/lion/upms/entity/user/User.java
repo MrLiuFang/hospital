@@ -107,22 +107,22 @@ public class User extends BaseEntity {
 
     @ApiModelProperty(hidden = true,value = "账号是否未过期")
     @JsonIgnore
-    @Column(name = "is_account_non_expired", nullable = false)
+    @Column(name = "is_account_non_expired")
     private Boolean isAccountNonExpired = false;
 
     @ApiModelProperty(hidden = true,value = "账号是否未锁定")
     @JsonIgnore
-    @Column(name = "is_account_non_locked", nullable = false)
+    @Column(name = "is_account_non_locked")
     private Boolean isAccountNonLocked = false;
 
     @ApiModelProperty(hidden = true,value = "账号凭证是否未过期")
     @JsonIgnore
-    @Column(name = "is_credentials_non_expired", nullable = false)
+    @Column(name = "is_credentials_non_expired")
     private Boolean isCredentialsNonExpired = false;
 
     @ApiModelProperty(hidden = true,value = "账号是否可用")
     @JsonIgnore
-    @Column(name = "is_nabled", nullable = false)
+    @Column(name = "is_nabled")
     private Boolean isEnabled = true;
 
 }

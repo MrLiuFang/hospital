@@ -30,9 +30,9 @@ import javax.persistence.Table;
 @ApiModel(description = "科室用户关联")
 public class DepartmentUser extends BaseEntity {
 
-    @Column(name = "department_id",nullable = false)
+    @Column(name = "department_id")
     private Long departmentId;
 
-    @Column(name = "user_id",nullable = false)
+    @Column(name = "user_id")
     private Long userId;
 }

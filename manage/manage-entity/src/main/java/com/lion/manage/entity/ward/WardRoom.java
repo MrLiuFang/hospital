@@ -33,7 +33,7 @@ import javax.validation.constraints.NotNull;
 public class WardRoom extends BaseEntity {
 
     @ApiModelProperty(value = "病房id")
-    @Column(name = "ward_id",nullable = false)
+    @Column(name = "ward_id")
     @NotNull(message = "病房(基本信息)不能为空")
     private Long wardId;
 
@@ -43,7 +43,7 @@ public class WardRoom extends BaseEntity {
     private String code;
 
 //    @ApiModelProperty(value = "区域id")
-//    @Column(name = "region_id",nullable = false)
+//    @Column(name = "region_id")
 //    @NotNull(message = "区域不能为空", groups = {Validator.Insert.class, Validator.Update.class})
 //    private Long regionId;
 }

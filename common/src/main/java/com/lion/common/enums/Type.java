@@ -13,11 +13,14 @@ import java.util.Objects;
  **/
 public enum Type implements IEnum {
 
-    STAFF(0, "员工"),
-    PATIENT(1, "患者"),
-    DEVICE(2, "设备(资产)"),
-    TAG(3, "tag"),
-    MIGRANT(4, "流动人员");
+    ASSET_OR_DEVICE(0, "设备(资产等等)"),
+    STAFF(1, "员工"),
+    TEMPERATURE(2, "温度仪"),
+    ERU(3, "eru"),
+    HUMIDITY(4, "湿度仪"),
+    TEMP_TAG(5, "临时标签"),
+    PATIENT(6, "患者"),
+    MIGRANT(7, "流动人员");
 
     private final int key;
 

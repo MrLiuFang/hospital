@@ -34,12 +34,12 @@ public class TagPostdocs extends BaseEntity {
 
     @ApiModelProperty(value = "标签id")
     @NotNull(message = "标签id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "tag_id",nullable = false)
+    @Column(name = "tag_id")
     private Long tagId;
 
     @ApiModelProperty(value = "流动人员姓名")
     @NotNull(message = "流动人员姓名不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "name",nullable = false)
+    @Column(name = "name")
     private String name;
 
     @ApiModelProperty(value = "绑定时间")

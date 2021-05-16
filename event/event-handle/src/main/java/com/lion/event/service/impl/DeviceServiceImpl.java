@@ -2,7 +2,7 @@ package com.lion.event.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.dto.DeviceDataDto;
-import com.lion.common.enums.TagType;
+import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.TagPurpose;
@@ -37,22 +37,22 @@ public class DeviceServiceImpl implements DeviceService {
 
     @Override
     public void deviceEevent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag) {
-        if (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH)) {
-
-        }else if (Objects.equals(tag.getPurpose(), TagPurpose.ASSETS)){
+        if (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) && (Objects.equals(deviceDataDto.getTagType(),Type.HUMIDITY) || Objects.equals(deviceDataDto.getTagType(),Type.TEMPERATURE)) ) {
+            thermohygrograph(deviceDataDto,monitor,star,tag);
+        }else if (Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) && Objects.equals(deviceDataDto.getTagType(),Type.ASSET_OR_DEVICE) ){
 
         }
     }
 
     /**
-     * 温湿仪时间处理
+     * 温湿仪事件处理
      * @param deviceDataDto
      * @param monitor
      * @param star
      * @param tag
      */
     private void thermohygrograph(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag) {
-        if (Objects.equals(deviceDataDto.getTagType(), TagType.HUMIDITY)) {//湿度仪
+        if (Objects.equals(deviceDataDto.getTagType(), Type.HUMIDITY)) {//湿度仪
             if (Objects.nonNull(tag.getMaxHumidity())) {
                 if (deviceDataDto.getHumidity().compareTo(tag.getMaxHumidity()) == 1) {
 
@@ -64,23 +64,21 @@ public class DeviceServiceImpl implements DeviceService {
 
                 }
             }
-        }else if (Objects.equals(deviceDataDto.getTagType(), TagType.TEMPERATUE)){//温度仪
+        }else if (Objects.equals(deviceDataDto.getTagType(), Type.TEMPERATURE)){//温度仪
             if (Objects.nonNull(tag.getMaxTemperature())) {
                 if (deviceDataDto.getTemperature().compareTo(tag.getMaxTemperature()) == 1) {
 
                 }
             }
-
             if (Objects.nonNull(tag.getMinTemperature())) {
                 if (deviceDataDto.getTemperature().compareTo(tag.getMinTemperature()) == -1) {
 
                 }
             }
-        }else if (Objects.equals(deviceDataDto.getTagType(), TagType.ASSET)){//资产
+        }else if (Objects.equals(deviceDataDto.getTagType(), Type.ASSET_OR_DEVICE)){//资产
 
         }
     }
 
-
-
+    private void
 }

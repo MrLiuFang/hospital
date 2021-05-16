@@ -8,14 +8,14 @@
 		<artifactId>hospital</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>event-data</artifactId>
+	<artifactId>washEvent-data</artifactId>
 	<packaging>pom</packaging>
 	<modules>
-		<module>event-data-business</module>
-		<module>event-data-entity</module>
-		<module>event-data-expose</module>
-		<module>event-data-expose-run</module>
-		<module>event-data-restful</module>
-		<module>event-data-mq</module>
+		<module>washEvent-data-business</module>
+		<module>washEvent-data-entity</module>
+		<module>washEvent-data-expose</module>
+		<module>washEvent-data-expose-run</module>
+		<module>washEvent-data-restful</module>
+		<module>washEvent-data-mq</module>
     </modules>
 </project>

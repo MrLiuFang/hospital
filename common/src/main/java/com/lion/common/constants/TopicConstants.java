@@ -8,14 +8,14 @@ package com.lion.common.constants;
 public class TopicConstants {
 
     /**
-     * 洗手
+     * 洗手记录
      */
-    public static final String WASH = "wash";
+    public static final String WASH_RECORD = "wash_record";
 
     /**
-     * 洗手
+     * 洗手记录
      */
-    public static final String WASH_CONSUMER_GROUP = "wash_consumer_group";
+    public static final String WASH_RECORD_CONSUMER_GROUP = "wash_record_consumer_group";
 
     /**
      * 位置
@@ -28,14 +28,14 @@ public class TopicConstants {
     public static final String POSITION_CONSUMER_GROUP = "position_consumer_group";
 
     /**
-     * 事件
+     * 洗手事件
      */
-    public static final String EVENT = "event";
+    public static final String WASH_EVENT = "wash_event";
 
     /**
-     * 事件
+     * 洗手事件
      */
-    public static final String EVENT_CONSUMER_GROUP = "event_consumer_group";
+    public static final String WASH_EVENT_CONSUMER_GROUP = "wash_event_consumer_group";
 
     /**
      * 警告

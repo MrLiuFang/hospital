@@ -32,14 +32,14 @@ import javax.validation.constraints.NotNull;
 public class TagRuleLog extends BaseEntity {
 
     @ApiModelProperty(value = "标签id")
-    @Column(name = "tag_rule_id",nullable = false)
+    @Column(name = "tag_rule_id")
     private Long tagRuleId;
 
     @ApiModelProperty(value = "操作人")
-    @Column(name = "user_id",nullable = false)
+    @Column(name = "user_id")
     private Long userId;
 
     @ApiModelProperty(value = "操作内容")
-    @Column(name = "content",nullable = false)
+    @Column(name = "content")
     private String content;
 }

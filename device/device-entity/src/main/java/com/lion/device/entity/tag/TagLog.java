@@ -28,11 +28,11 @@ import javax.persistence.*;
 public class TagLog extends BaseEntity {
 
     @ApiModelProperty(value = "标签id")
-    @Column(name = "tag_id",nullable = false)
+    @Column(name = "tag_id")
     private Long tagId;
 
     @ApiModelProperty(value = "操作人id")
-    @Column(name = "user_id",nullable = false)
+    @Column(name = "user_id")
     private Long userId;
 
     @ApiModelProperty(value = "操作内容")

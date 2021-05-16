@@ -42,7 +42,7 @@ public class Cctv extends BaseEntity {
     private String model;
 
     @ApiModelProperty(value = "cctv编号")
-    @Column(name = "code",unique = true)
+    @Column(name = "code")
     @NotNull(message = "cctv编号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 

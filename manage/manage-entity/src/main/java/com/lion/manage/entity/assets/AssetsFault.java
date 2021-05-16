@@ -61,7 +61,7 @@ public class AssetsFault extends BaseEntity {
     private AssetsFaultState state = AssetsFaultState.NOT_FINISHED;
 
     @ApiModelProperty(value = "申报时间(yyyy-MM-dd HH:mm:ss)")
-    @Column(name = "declarant_time",updatable = false,nullable = false)
+    @Column(name = "declarant_time",updatable = false)
     @NotNull(message = "申报时间不能为空")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime declarantTime;

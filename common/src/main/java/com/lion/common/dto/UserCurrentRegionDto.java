@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 
 /**
  * @Author Mr.Liu
@@ -32,11 +33,16 @@ public class UserCurrentRegionDto implements Serializable {
     @ApiModelProperty(value = "第一次进入时间")
     private LocalDateTime firstEntryTime;
 
-    @ApiModelProperty(value = "当前区域事件次数")
+    @ApiModelProperty(value = "当前区域事件次数(主要洗手事件数量记录)")
     private Integer currentRegionEvent = 0;
 
     @ApiModelProperty(value = "当前所在区域的洗手记录")
     private List<WashRecord> washRecordList;
+
+    /**
+     * 用于员工在该区域的后续的洗手事件关联(记录洗手事件如有违规,再记录该违规事件的洗手事件时间)
+     */
+    private String uuid;
 
     public void setWashRecord(WashRecord washRecord){
         if (Objects.isNull(washRecordList)) {

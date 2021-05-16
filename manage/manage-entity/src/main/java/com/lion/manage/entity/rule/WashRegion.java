@@ -30,12 +30,12 @@ import javax.validation.constraints.NotNull;
 public class WashRegion extends BaseEntity {
 
     @ApiModelProperty(value = "洗手规则id")
-    @Column(name = "wash_id",nullable = false)
+    @Column(name = "wash_id")
     @NotNull(message = "洗手规则id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long washId;
 
     @ApiModelProperty(value = "区域id")
-    @Column(name = "region_id",nullable = false)
+    @Column(name = "region_id")
     @NotNull(message = "区域id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long regionId;
 }

@@ -71,7 +71,7 @@ sh.status()
 db.runCommand({ enablesharding : "hospital"});
 
 db.runCommand({ 
-    shardcollection : "hospital.event", 
+    shardcollection : "hospital.washEvent",
     key : {_id: 'hashed'}
 })
 
@@ -91,7 +91,7 @@ db.runCommand({
 })
 
 db.runCommand({
-    shardcollection : "hospital.wash",
+    shardcollection : "hospital.washRecord",
     key : {_id: 'hashed'}
 })
 
@@ -102,13 +102,13 @@ db.runCommand({
 
 use hospital;
 
-db.wash.createIndex( { "pi":1 }, { sparse: true } )
-db.wash.createIndex( { "ddt":1 }, { sparse: true } )
+db.washRecord.createIndex( { "pi":1 }, { sparse: true } )
+db.washRecord.createIndex( { "ddt":1 }, { sparse: true } )
 
-db.event.createIndex( { "pi":1 }, { sparse: true } )
-db.event.createIndex( { "ddt":1 }, { sparse: true } )
+db.washEvent.createIndex( { "pi":1 }, { sparse: true } )
+db.washEvent.createIndex( { "ddt":1 }, { sparse: true } )
 
-db.event.stats();
+db.washEvent.stats();
 
 
 use admin;
@@ -118,7 +118,7 @@ db.shutdownServer();
 
 ___________________________________________________________________________________________________
 
-db.event.aggregate( [
+db.washEvent.aggregate( [
     { $match: { typ: 0 } },
      {
       $group: {

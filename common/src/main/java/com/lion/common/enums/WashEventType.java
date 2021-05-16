@@ -9,21 +9,18 @@ import java.util.Objects;
 /**
  * @Author Mr.Liu
  * @Description //TODO
- * @Date 2021/5/2 下午4:05
+ * @Date 2021/5/16 下午2:44
  **/
-public enum EventAlarmType implements IEnum {
+public enum WashEventType implements IEnum {
 
-    JRQRXS(0, "进入区域前未在规定时间内洗手"),
-    JQQXSWZGDDXSSBXS(1, "进入区域前洗手未在规定洗手设备洗手"),
-    JRHWXS(2, "进入区域后未在规定的时间内洗手"),
-    JRHWZGDDSBXS(3, "进入区域前后洗手未在规定洗手设备洗手"),
-    DSWXS(4, "定时未洗手");
+    REGION(0, "区域洗手事件"),
+    LOOP(1, "定时洗手事件");
 
     private final int key;
 
     private final String desc;
 
-    private EventAlarmType(int key, String desc) {
+    private WashEventType(int key, String desc) {
         this.key = key;
         this.desc = desc;
     }
@@ -58,7 +55,7 @@ public enum EventAlarmType implements IEnum {
     }
 
     @JsonCreator
-    public static EventAlarmType instance(Object value){
+    public static WashEventType instance(Object value){
         if (Objects.isNull(value)){
             return null;
         }
@@ -68,8 +65,8 @@ public enum EventAlarmType implements IEnum {
         return instance(String.valueOf(value));
     }
 
-    private static EventAlarmType instance(Integer key){
-        for(EventAlarmType item : values()){
+    private static WashEventType instance(Integer key){
+        for(WashEventType item : values()){
             if (item.getKey()==key){
                 return item;
             }
@@ -77,8 +74,8 @@ public enum EventAlarmType implements IEnum {
         return null;
     }
 
-    private static EventAlarmType instance(String name){
-        for(EventAlarmType item : values()){
+    private static WashEventType instance(String name){
+        for(WashEventType item : values()){
             if(Objects.equals(item.getName(),name)){
                 return item;
             }

@@ -1,10 +1,9 @@
 package com.lion.event.dao.impl;
 
-import com.lion.common.enums.Type;
 import com.lion.common.utils.BasicDBObjectUtil;
 import com.lion.core.LionPage;
-import com.lion.event.dao.EventDaoEx;
-import com.lion.event.entity.Event;
+import com.lion.event.dao.WashEventDaoEx;
+import com.lion.event.entity.WashEvent;
 import com.lion.upms.entity.enums.UserType;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
@@ -29,24 +28,27 @@ import java.util.Objects;
  * @Date 2021/5/11 下午3:09
  **/
 @Log
-public class EventDaoImpl implements EventDaoEx {
+public class WashEventDaoImpl implements WashEventDaoEx {
 
     @Autowired
     private MongoTemplate mongoTemplate;
 
 
     @Override
-    public void updateUadt(String uuid, LocalDateTime uadt) {
+    public void updateWt(String uuid, LocalDateTime wt) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         criteria.and("ui").is(uuid);
         query.addCriteria(criteria);
-        Event event = mongoTemplate.findOne(query, Event.class);
-        query = new Query();
-        query.addCriteria(Criteria.where("_id").is(event.get_id()));
-        Update update = new Update();
-        update.set("uadt",uadt);
-        mongoTemplate.updateFirst(query, update,"event");
+        WashEvent washEvent = mongoTemplate.findOne(query, WashEvent.class);
+        LocalDateTime dateTime = LocalDateTime.parse("9990-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        if (Objects.nonNull(washEvent) && Objects.equals(true,washEvent.getIa()) && dateTime.isAfter(washEvent.getWt()) ) {
+            query = new Query();
+            query.addCriteria(Criteria.where("_id").is(washEvent.get_id()));
+            Update update = new Update();
+            update.set("wt", wt);
+            mongoTemplate.updateFirst(query, update, "event");
+        }
     }
 
     @Override
@@ -56,15 +58,15 @@ public class EventDaoImpl implements EventDaoEx {
         if (Objects.nonNull(isDepartmentGroup) && Objects.equals(true,isDepartmentGroup)) {
             group = BasicDBObjectUtil.put(group,"$group","_id","$pdn"); //部门分组
         }else if (Objects.nonNull(isDepartmentGroup)){
-            group = BasicDBObjectUtil.put(group,"$group","_id","$typ"); //全院
+            group = BasicDBObjectUtil.put(group,"$group","_id","$a"); //全院
         }else if (Objects.isNull(isDepartmentGroup)){
             group = BasicDBObjectUtil.put(group,"$group","_id","$pi"); //员工分组
         }
         group = BasicDBObjectUtil.put(group,"$group","allCount",new BasicDBObject("$sum",1));//全部
-        LocalDateTime uadt = LocalDateTime.parse("9998-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime wt = LocalDateTime.parse("9998-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         group = BasicDBObjectUtil.put(group,"$group","allNoAlarm",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",false})})).append("then",1).append("else",0))));//合规
-        group = BasicDBObjectUtil.put(group,"$group","allViolation",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$lte",new Object[]{"$uadt", uadt}) })).append("then",1).append("else",0))));//违规
-        group = BasicDBObjectUtil.put(group,"$group","allNoWash",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$gte",new Object[]{"$uadt",uadt}) })).append("then",1).append("else",0))));//错过洗手
+        group = BasicDBObjectUtil.put(group,"$group","allViolation",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$lte",new Object[]{"$wt", wt}) })).append("then",1).append("else",0))));//违规
+        group = BasicDBObjectUtil.put(group,"$group","allNoWash",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$gte",new Object[]{"$wt",wt}) })).append("then",1).append("else",0))));//错过洗手
 
         BasicDBObject match = new BasicDBObject();
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime)) {
@@ -80,7 +82,6 @@ public class EventDaoImpl implements EventDaoEx {
         if (Objects.nonNull(userId)){
             match = BasicDBObjectUtil.put(match,"$match","pi",new BasicDBObject("$eq",userId) );
         }
-        match = BasicDBObjectUtil.put(match,"$match","typ",new BasicDBObject("$eq",Type.STAFF.getKey()) );
 
         BasicDBObject project = new BasicDBObject();
         project = BasicDBObjectUtil.put(project,"$project","_id",1);
@@ -103,7 +104,7 @@ public class EventDaoImpl implements EventDaoEx {
             pipeline.add(new BasicDBObject("$limit",lionPage.getPageSize()));
         }
 
-        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("event").aggregate(pipeline);
+        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("wash_event").aggregate(pipeline);
         List<Document> list = new ArrayList<>();
         aggregateIterable.forEach(document -> {
             list.add(document);
@@ -111,7 +112,6 @@ public class EventDaoImpl implements EventDaoEx {
         return list;
 
 //        db.event.aggregate( [
-//        { $match: { typ: 0 } },
 //        {
 //            $group: {
 //                _id: "$pi",
@@ -134,7 +134,7 @@ public class EventDaoImpl implements EventDaoEx {
     }
 
     @Override
-    public List<Event> userWashDetails(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public List<WashEvent> userWashDetails(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(userId)) {
@@ -149,7 +149,7 @@ public class EventDaoImpl implements EventDaoEx {
         }
         query.addCriteria(criteria);
         query.with(lionPage);
-        List<Event> items = mongoTemplate.find(query,Event.class);
+        List<WashEvent> items = mongoTemplate.find(query, WashEvent.class);
         return items;
     }
 }

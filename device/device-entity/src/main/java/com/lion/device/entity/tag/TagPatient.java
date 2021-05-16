@@ -34,12 +34,12 @@ public class TagPatient extends BaseEntity {
 
     @ApiModelProperty(value = "标签id")
     @NotNull(message = "标签id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "tag_id",nullable = false)
+    @Column(name = "tag_id")
     private Long tagId;
 
     @ApiModelProperty(value = "患者id")
     @NotNull(message = "患者id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "patient_id",nullable = false)
+    @Column(name = "patient_id")
     private Long userId;
 
     @ApiModelProperty(value = "绑定时间")
