@@ -15,7 +15,7 @@ import javax.persistence.AttributeConverter;
  * @Description //TODO
  * @Date 2021/4/29 下午4:46
  **/
-@Component(value = "manageEnumPersistence")
+@Component(value = "commonEnumPersistence")
 @ConditionalOnWebApplication
 @ConditionalOnClass({Reflections.class, AttributeConverter.class})
 @Order(Ordered.LOWEST_PRECEDENCE)

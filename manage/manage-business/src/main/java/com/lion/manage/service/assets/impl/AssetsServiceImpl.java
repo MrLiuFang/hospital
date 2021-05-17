@@ -1,6 +1,5 @@
 package com.lion.manage.service.assets.impl;
 
-import cn.hutool.cache.impl.FIFOCache;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.common.dto.DeleteDto;
@@ -32,8 +31,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sun.font.TextRecord;
-import sun.plugin2.message.BestJREAvailableMessage;
 
 import java.util.List;
 import java.util.Objects;
