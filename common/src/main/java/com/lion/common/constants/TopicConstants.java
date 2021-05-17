@@ -102,5 +102,25 @@ public class TopicConstants {
      */
     public static final String REGION_WASH_ALARM_CONSUMER_GROUP = "region_wash_alarm_consumer_group";
 
+    /**
+     * 标签记录(温湿标签)
+     */
+    public static final String TAG_RECORD = "tag_record";
+
+    /**
+     * 标签记录(温湿标签)
+     */
+    public static final String TAG_RECORD_CONSUMER_GROUP = "tag_record_consumer_group";
+
+    /**
+     * 标签事件(温湿标签)
+     */
+    public static final String TAG_EVENT = "tag_event";
+
+    /**
+     * 标签事件(温湿标签)
+     */
+    public static final String TAG_EVENT_CONSUMER_GROUP = "tag_event_consumer_group";
+
 
 }

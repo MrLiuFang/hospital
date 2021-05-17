@@ -1,5 +1,6 @@
 package com.lion.event.entity;
 
+import com.lion.common.dto.TagEventDto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -17,23 +18,8 @@ import java.time.LocalDateTime;
  **/
 @Data
 @Document(value = "tag_event")
-public class TagEvent extends TagRecord implements Serializable {
+public class TagEvent extends TagEventDto implements Serializable {
     @Id
     private String _id;
-
-    //类型 (com.lion.event.entity.enums.Type)
-    private Integer typ;
-
-    //最高温度
-    private BigDecimal mxt;
-
-    //最低温度
-    private BigDecimal mit;
-
-    //最高湿度
-    private BigDecimal mxh;
-
-    //最低湿度
-    private BigDecimal mih;
 
 }

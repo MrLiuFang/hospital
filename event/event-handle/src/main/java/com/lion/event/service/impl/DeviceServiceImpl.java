@@ -94,30 +94,61 @@ public class DeviceServiceImpl implements DeviceService {
             tagCurrentRegionDto.setTagId(tag.getId());
             commonService.position(deviceDataDto,tag,currentRegionDto.getRegionId());
         }
+        TagRecordDto tagRecordDto = tagRecord(tag,currentRegionDto,deviceDataDto);
         if (Objects.equals(deviceDataDto.getTagType(), Type.HUMIDITY)) {//湿度仪
             if (Objects.nonNull(tag.getMaxHumidity())) {
                 if (deviceDataDto.getHumidity().compareTo(tag.getMaxHumidity()) == 1) {
                     SystemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGG);
+                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.SDGG);
                 }
             }
 
             if (Objects.nonNull(tag.getMinHumidity())) {
                 if (deviceDataDto.getHumidity().compareTo(tag.getMinHumidity()) == -1) {
                     SystemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGD);
+                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.SDGD);
                 }
             }
         }else if (Objects.equals(deviceDataDto.getTagType(), Type.TEMPERATURE)){//温度仪
             if (Objects.nonNull(tag.getMaxTemperature())) {
                 if (deviceDataDto.getTemperature().compareTo(tag.getMaxTemperature()) == 1) {
                     SystemAlarm(Type.TEMPERATURE,tag,null,SystemAlarmType.WDGG);
+                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.WDGG);
                 }
             }
             if (Objects.nonNull(tag.getMinTemperature())) {
                 if (deviceDataDto.getTemperature().compareTo(tag.getMinTemperature()) == -1) {
                     SystemAlarm(Type.TEMPERATURE,tag,null,SystemAlarmType.WDGD);
+                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.WDGD);
                 }
             }
         }
+    }
+
+    private void tagEvent(TagRecordDto tagRecordDto,Tag tag,DeviceDataDto deviceDataDto,SystemAlarmType systemAlarmType) throws JsonProcessingException {
+        TagEventDto tagEventDto = new TagEventDto();
+        BeanUtils.copyProperties(tagRecordDto,tagEventDto);
+        tagEventDto.setAt(systemAlarmType.getKey());
+        tagEventDto.setMxh(tag.getMaxHumidity());
+        tagEventDto.setMih(tag.getMinHumidity());
+        tagEventDto.setMxt(tag.getMaxTemperature());
+        tagEventDto.setMit(tag.getMinTemperature());
+        rocketMQTemplate.syncSend(TopicConstants.TAG_EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(tagEventDto)).build());
+    }
+
+    private TagRecordDto tagRecord(Tag tag,CurrentRegionDto currentRegionDto,DeviceDataDto deviceDataDto) throws JsonProcessingException {
+        TagRecordDto tagRecordDto = new TagRecordDto();
+        tagRecordDto.setRi(currentRegionDto.getRegionId());
+        tagRecordDto.setTyp(deviceDataDto.getTagType().getKey());
+        tagRecordDto.setTi(tag.getId());
+        if (Objects.nonNull(deviceDataDto.getTemperature())) {
+            tagRecordDto.setT(deviceDataDto.getTemperature());
+        }
+        if (Objects.nonNull(deviceDataDto.getHumidity())) {
+            tagRecordDto.setH(deviceDataDto.getHumidity());
+        }
+        rocketMQTemplate.syncSend(TopicConstants.TAG_RECORD, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(tagRecordDto)).build());
+        return tagRecordDto;
     }
 
     private void SystemAlarm(Type type, Tag tag, Assets assets, SystemAlarmType systemAlarmType) throws JsonProcessingException {

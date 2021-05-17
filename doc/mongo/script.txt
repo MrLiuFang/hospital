@@ -71,12 +71,12 @@ sh.status()
 db.runCommand({ enablesharding : "hospital"});
 
 db.runCommand({ 
-    shardcollection : "hospital.washEvent",
+    shardcollection : "hospital.wash_event",
     key : {_id: 'hashed'}
 })
 
 db.runCommand({
-    shardcollection : "hospital.systemAlarm",
+    shardcollection : "hospital.system_alarm",
     key : {_id: 'hashed'}
 })
 
@@ -91,13 +91,23 @@ db.runCommand({
 })
 
 db.runCommand({
-    shardcollection : "hospital.washRecord",
+    shardcollection : "hospital.washr_ecord",
     key : {_id: 'hashed'}
 })
 
 db.runCommand({
     shardcollection : "hospital.current_position",
     key : {_id: 1}
+})
+
+db.runCommand({
+    shardcollection : "hospital.tag_event",
+    key : {_id: 'hashed'}
+})
+
+db.runCommand({
+    shardcollection : "hospital.tag_record",
+    key : {_id: 'hashed'}
 })
 
 use hospital;
