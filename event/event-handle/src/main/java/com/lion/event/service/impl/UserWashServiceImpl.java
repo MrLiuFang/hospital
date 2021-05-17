@@ -139,7 +139,7 @@ public class UserWashServiceImpl implements UserWashService {
 
     private void position(DeviceDataDto deviceDataDto,User user, Region region) throws JsonProcessingException {
         //记录位置
-        commonService.position(deviceDataDto,user,region);
+        commonService.position(deviceDataDto,user,region.getId());
     }
 
     /**

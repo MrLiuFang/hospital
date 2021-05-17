@@ -1,6 +1,6 @@
-package com.lion.event.utils;
+package com.lion.common.utils;
 
-import com.lion.event.constant.DelayLevelConstants;
+import com.lion.common.constants.DelayLevelConstants;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

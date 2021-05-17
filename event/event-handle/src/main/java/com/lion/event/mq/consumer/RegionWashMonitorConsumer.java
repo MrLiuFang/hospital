@@ -4,21 +4,18 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
-import com.lion.common.dto.RegionWashAlarmDto;
 import com.lion.common.dto.RegionWashMonitorDelayDto;
+import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.dto.UserCurrentRegionDto;
 import com.lion.common.dto.UserLastWashDto;
-import com.lion.common.enums.WashEventAlarmType;
+import com.lion.common.enums.SystemAlarmType;
 import com.lion.common.enums.Type;
 import com.lion.common.enums.WashEventType;
 import com.lion.common.utils.RedisUtil;
-import com.lion.common.enums.AlarmType;
-import com.lion.device.entity.tag.Tag;
 import com.lion.event.utils.WashRuleUtil;
 import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.upms.entity.user.User;
-import com.lion.utils.CurrentUserUtil;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
@@ -31,7 +28,10 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 /**
  * @Author Mr.Liu
@@ -71,12 +71,6 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                     if (Objects.nonNull(userCurrentRegionDto.getRegionId()) && Objects.equals(userCurrentRegionDto.getRegionId(),regionWashMonitorDelayDto.getRegionId())) {
                         List<Wash> washList = redisUtil.getWash(regionWashMonitorDelayDto.getRegionId());
                         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
-                        RegionWashAlarmDto regionWashAlarmDto = new RegionWashAlarmDto();
-                        regionWashAlarmDto.setAlarmDateTime(LocalDateTime.now());
-                        regionWashAlarmDto.setRegionId(userCurrentRegionDto.getRegionId());
-                        regionWashAlarmDto.setAlarmType(AlarmType.REGION_WASH_ALARM);
-                        regionWashAlarmDto.setUserId(userCurrentRegionDto.getUserId());
-                        regionWashAlarmDto.setUuid(userCurrentRegionDto.getUuid());
                         for (Wash wash :washList){
                             Map<String,Object> event = new HashMap<String,Object>();
                             event.put("typ", Type.STAFF.getKey());//类型
@@ -87,39 +81,39 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                             if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getBeforeEnteringTime()) && wash.getBeforeEnteringTime() >0){
                                 //没有最后的洗手记录(未洗手)
                                 if (Objects.isNull(userLastWashDto)) {
-                                    alarm(event,true,WashEventAlarmType.JRQRXS,null,userCurrentRegionDto,userLastWashDto,wash);
+                                    alarm(event,true,SystemAlarmType.JRQYQWXS,null,userCurrentRegionDto,null,wash);
                                     return;
                                 }
                                 //超过时间范围(未洗手)
                                 Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
                                 if (duration.toMinutes() > wash.getBeforeEnteringTime()){
-                                    alarm(event,true,WashEventAlarmType.JRQRXS,null,userCurrentRegionDto,userLastWashDto,wash);
+                                    alarm(event,true,SystemAlarmType.JRQYQWXS,null,userCurrentRegionDto,userLastWashDto,wash);
                                     return;
                                 }
                                 //判断是否用规定的洗手设备洗手
                                 Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(),wash);
                                 if (Objects.equals(false,b)){
-                                    alarm(event,true,WashEventAlarmType.JRHWZGDDSBXS,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,wash);
+                                    alarm(event,true,SystemAlarmType.JRQYQWZGDDSBXS,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,wash);
                                     return;
                                 }
                             }else if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getAfterEnteringTime()) && wash.getAfterEnteringTime() >0){
                                 //进入X区域之后X分钟洗手检测
                                 //没有最后的洗手记录(未洗手)
                                 if (Objects.isNull(userLastWashDto)) {
-                                    alarm(event,true,WashEventAlarmType.JRHWXS,null,userCurrentRegionDto,null,wash);
+                                    alarm(event,true,SystemAlarmType.JRQYHWXS,null,userCurrentRegionDto,null,wash);
                                     return;
                                 }
                                 //超过时间范围(未洗手)
                                 if(Objects.nonNull(userCurrentRegionDto.getFirstEntryTime()) &&
                                         !userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusMinutes(wash.getAfterEnteringTime())) &&
                                         !userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime())){
-                                    alarm(event,true,WashEventAlarmType.JRHWXS,null,userCurrentRegionDto,userLastWashDto,wash);
+                                    alarm(event,true,SystemAlarmType.JRQYHWXS,null,userCurrentRegionDto,userLastWashDto,wash);
                                     return;
                                 }
                                 //判断有没有在规定的洗手设备洗手
                                 Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(),wash);
                                 if (Objects.equals(false,b)){
-                                    alarm(event,true,WashEventAlarmType.JRHWZGDDSBXS,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,wash);
+                                    alarm(event,true,SystemAlarmType.JRQYHWZGDDSBXS,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,wash);
                                     return;
                                 }
                             }
@@ -171,18 +165,18 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
         }
     }
 
-    private void alarm(Map<String,Object> event,Boolean ia,WashEventAlarmType washEventAlarmType,LocalDateTime wt,UserCurrentRegionDto userCurrentRegionDto,UserLastWashDto userLastWashDto,Wash wash){
+    private void alarm(Map<String,Object> event,Boolean ia,SystemAlarmType systemAlarmType,LocalDateTime wt,UserCurrentRegionDto userCurrentRegionDto,UserLastWashDto userLastWashDto,Wash wash) throws JsonProcessingException {
         if (Objects.nonNull(ia)) {
             event.put("ia", true);//是否触发警告
         }
-        if (Objects.nonNull(washEventAlarmType)) {
-            event.put("at", washEventAlarmType.getKey());//警告触发原因
+        if (Objects.nonNull(systemAlarmType)) {
+            event.put("at", systemAlarmType.getKey());//警告触发原因
         }
         if (Objects.nonNull(wt)) {
             event.put("wt", wt); //洗手时间
         }
         recordWashEvent(event,userCurrentRegionDto,userCurrentRegionDto.getUuid(),Objects.isNull(userLastWashDto)?null:userLastWashDto.getMonitorId());
-        sendAlarmToTag(userCurrentRegionDto.getUserId(),wash);
+        sendAlarmToTag(userCurrentRegionDto.getUserId(),wash,userCurrentRegionDto.getUuid(),systemAlarmType);
     }
 
     /**
@@ -190,14 +184,22 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
      * @param userId
      * @param wash
      */
-    private void sendAlarmToTag(Long userId, Wash wash){
+    private void sendAlarmToTag(Long userId, Wash wash, String uuid, SystemAlarmType systemAlarmType) throws JsonProcessingException {
         if (Objects.equals(true,wash.getRemind())) {
             User user = redisUtil.getUserById(userId);
             if (Objects.nonNull(user)) {
+                // TODO: 2021/5/17 给设备发送数据
                 log.info("给"+user.getTagCode()+"发送设备警报");
             }
             //系统内警告
-
+            SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+            systemAlarmDto.setDateTime(LocalDateTime.now());
+            systemAlarmDto.setType(Type.STAFF);
+            systemAlarmDto.setPeopleId(userId);
+            systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
+            systemAlarmDto.setUuid(uuid);
+            systemAlarmDto.setSystemAlarmType(systemAlarmType);
+            rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
         }
     }
 

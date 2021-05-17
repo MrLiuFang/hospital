@@ -38,14 +38,14 @@ public class TopicConstants {
     public static final String WASH_EVENT_CONSUMER_GROUP = "wash_event_consumer_group";
 
     /**
-     * 警告
+     * 系统内警告
      */
-    public static final String ALARM_TO_STORAGE = "alarm_to_storage";
+    public static final String SYSTEM_ALARM = "system_alarm";
 
     /**
-     * 警告
+     * 系统内警告
      */
-    public static final String ALARM_TO_STORAGE_CONSUMER_GROUP = "alarm_to_storage_consumer_group";
+    public static final String SYSTEM_ALARM_CONSUMER_GROUP = "system_alarm_consumer_group";
 
     /**
      * 设备数据

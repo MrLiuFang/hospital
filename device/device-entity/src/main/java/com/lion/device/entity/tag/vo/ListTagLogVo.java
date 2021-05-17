@@ -26,6 +26,9 @@ public class ListTagLogVo {
     @ApiModelProperty(value = "用户姓名")
     private String name;
 
+    @ApiModelProperty(value = "用户编号")
+    private Integer number;
+
     @ApiModelProperty(value = "操作内容")
     private TagLogContent content;
 

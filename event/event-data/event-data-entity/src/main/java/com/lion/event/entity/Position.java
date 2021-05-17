@@ -1,6 +1,7 @@
 package com.lion.event.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.common.dto.PositionDto;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -16,60 +17,6 @@ import java.time.LocalDateTime;
  **/
 @Data
 @Document(value = "position")
-public class Position implements Serializable {
+public class Position extends PositionDto implements Serializable {
 
-    @Id
-    private String _id;
-
-    //类型 (com.lion.event.entity.enums.Type)
-    private Integer typ;
-
-    /**
-     * 员工/患者id
-     */
-    private Long pi;
-
-    /**
-     * 设备/资产id
-     */
-    private Long dvi;
-
-    /**
-     * tagid
-     */
-    private Long ti;
-
-    //建筑id
-    private Long bui;
-
-    //建筑名称
-    private String bun;
-
-    //楼层id
-    private Long bfi;
-
-    //楼层名称
-    private String bfn;
-
-    /**
-     * 科室id
-     */
-    private Long di;
-
-    /**
-     * 科室名称
-     */
-    private String dn;
-
-    //区域id
-    private Long ri;
-
-    //区域名称
-    private String rn;
-
-    //设备产生時間
-    private LocalDateTime ddt;
-
-    //系统接受到时间
-    private LocalDateTime sdt;
 }

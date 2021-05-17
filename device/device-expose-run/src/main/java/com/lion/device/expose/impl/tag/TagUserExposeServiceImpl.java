@@ -89,8 +89,8 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         }else {
             if (Objects.nonNull(tagUser)) {
                 tagUser.setUnbindingTime(LocalDateTime.now());
-                tagLogService.add( TagLogContent.unbinding,tagUser.getTagId());
                 update(tagUser);
+                tagLogService.add( TagLogContent.unbinding,tagUser.getTagId());
             }
         }
         if (Objects.nonNull(tagUser)) {

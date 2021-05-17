@@ -18,7 +18,7 @@ import java.util.UUID;
  **/
 @Data
 @ApiModel
-public class UserCurrentRegionDto implements Serializable {
+public class UserCurrentRegionDto extends CurrentRegionDto implements Serializable {
     private static final long serialVersionUID = -90000050L;
 
     @ApiModelProperty(value = "上次所在的区域Id")
@@ -26,12 +26,6 @@ public class UserCurrentRegionDto implements Serializable {
 
     @ApiModelProperty(value = "用户ID")
     private Long userId;
-
-    @ApiModelProperty(value = "当前所在的区域Id")
-    private Long regionId;
-
-    @ApiModelProperty(value = "第一次进入时间")
-    private LocalDateTime firstEntryTime;
 
     @ApiModelProperty(value = "当前区域事件次数(主要洗手事件数量记录)")
     private Integer currentRegionEvent = 0;

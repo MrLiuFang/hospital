@@ -9,4 +9,11 @@ import com.lion.manage.entity.assets.Assets;
  * @Date 2021/5/16 上午9:49
  **/
 public interface AssetsExposeService extends BaseService<Assets> {
+
+    /**
+     * 根据标签查村资产
+     * @param tagId
+     * @return
+     */
+    public Assets find(Long tagId);
 }

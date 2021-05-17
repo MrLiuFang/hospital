@@ -6,6 +6,7 @@ import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.dto.AddAssetsDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsVo;
+import sun.rmi.runtime.Log;
 
 import java.util.List;
 
@@ -40,4 +41,11 @@ public interface AssetsService extends BaseService<Assets> {
      * @return
      */
     public DetailsAssetsVo details(Long id);
+
+    /**
+     * 根据标签id查询资产
+     * @param tagId
+     * @return
+     */
+    public Assets findByTagId(Long tagId);
 }

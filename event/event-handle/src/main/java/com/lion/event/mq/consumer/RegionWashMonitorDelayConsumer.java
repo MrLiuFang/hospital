@@ -7,7 +7,7 @@ import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.RegionWashMonitorDelayDto;
 import com.lion.common.dto.UserCurrentRegionDto;
 import com.lion.common.utils.RedisUtil;
-import com.lion.event.utils.MessageDelayUtil;
+import com.lion.common.utils.MessageDelayUtil;
 import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.rule.Wash;
 import lombok.extern.java.Log;

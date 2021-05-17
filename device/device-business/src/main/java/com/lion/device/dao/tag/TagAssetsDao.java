@@ -17,6 +17,7 @@ public interface TagAssetsDao extends BaseDao<TagAssets> {
      */
     public int deleteByTagId(Long tagId);
 
+
     /**
      * 根据资产删除关联
      * @param assetsId

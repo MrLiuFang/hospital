@@ -5,10 +5,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.lion</groupId>
-		<artifactId>washEvent</artifactId>
+		<artifactId>event</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>washEvent-data-expose</artifactId>
+	<artifactId>event-data-expose</artifactId>
 	<packaging>jar</packaging>
 
 	<dependencies>

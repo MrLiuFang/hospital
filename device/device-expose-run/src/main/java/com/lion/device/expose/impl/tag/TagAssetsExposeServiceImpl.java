@@ -3,12 +3,14 @@ package com.lion.device.expose.impl.tag;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagAssetsDao;
 import com.lion.device.dao.tag.TagDao;
+import com.lion.device.entity.enums.TagLogContent;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagAssets;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.service.tag.TagAssetsService;
+import com.lion.device.service.tag.TagLogService;
 import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -36,6 +38,9 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
 
     @Autowired
     private TagAssetsDao tagAssetsDao;
+
+    @Autowired
+    private TagLogService tagLogService;
 
     @Override
     public Boolean relation(Long assetsId, String tagCode, Long departmentId) {
@@ -68,7 +73,7 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
         newTagAssets.setTagId(tag.getId());
         newTagAssets.setBindingTime(LocalDateTime.now());
         tagAssetsService.save(newTagAssets);
-
+        tagLogService.add( TagLogContent.binding,tag.getId());
         tag.setUseState(TagUseState.USEING);
         tagService.update(tag);
         return true;
@@ -84,6 +89,7 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
             if (Objects.nonNull(tag)){
                 tag.setUseState(TagUseState.NOT_USED);
                 tagService.update(tag);
+                tagLogService.add( TagLogContent.unbinding,tagAssets.getTagId());
             }
         }
         return true;
@@ -93,6 +99,17 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
     public Boolean deleteByAssetsId(Long assetsId) {
         unrelation(assetsId);
         tagAssetsDao.deleteByAssetsId(assetsId);
-        return null;
+        return true;
+    }
+
+    @Override
+    public TagAssets find(Long assetsId) {
+        TagAssets tagAssets = tagAssetsDao.findFirstByAssetsIdAndUnbindingTimeIsNull(assetsId);
+        return tagAssets;
+    }
+
+    @Override
+    public TagAssets findByTagId(Long tagId) {
+        return tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(tagId);
     }
 }

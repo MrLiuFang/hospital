@@ -5,10 +5,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.lion</groupId>
-		<artifactId>washEvent</artifactId>
+		<artifactId>event</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>washEvent-data-entity</artifactId>
+	<artifactId>event-data-entity</artifactId>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -40,6 +40,12 @@
 			<groupId>com.lion</groupId>
 			<artifactId>upms-entity</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+		<dependency>
+			<groupId>com.lion</groupId>
+			<artifactId>common</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>

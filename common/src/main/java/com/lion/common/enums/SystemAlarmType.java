@@ -9,20 +9,28 @@ import java.util.Objects;
 /**
  * @Author Mr.Liu
  * @Description //TODO
- * @Date 2021/5/2 下午5:10
+ * @Date 2021/4/27 下午5:39
  **/
-public enum UnalarmType implements IEnum {
+public enum SystemAlarmType implements IEnum {
 
-    LEAVE_REGION(10, "离开区域"),
-    WASH(11, "按规定洗手"),
-    NO_WASH_RULE(12, "没有警告规则"),
-    DEFAULT(99, "默认值(只为填充数据)");
+    JRQYQWXS(0, "进入区域前未洗手"),
+    JRQYQWZGDDSBXS(1, "进入区域前未在规定的设备洗手"),
+    JRQYHWXS(2, "进入区域后未洗手"),
+    JRQYHWZGDDSBXS(3, "进入区域后未在规定的设备洗手"),
+    DSWXS(4, "定时未洗手"),
+    DSWZGDDXSSBLXXS(5, "定时未在规定的洗手设备类型洗手"),
+    JRJQ(6, "进入禁区"),
+    WSQCCSSQY(7, "未授权超出所属区域"),
+    WDGD(8, "温度过低"),
+    WDGG(9, "温度过高"),
+    SDGD(10, "湿度过低"),
+    SDGG(11, "湿度过高");
 
     private final int key;
 
     private final String desc;
 
-    private UnalarmType(int key, String desc) {
+    private SystemAlarmType(int key, String desc) {
         this.key = key;
         this.desc = desc;
     }
@@ -53,11 +61,11 @@ public enum UnalarmType implements IEnum {
 
     @Override
     public Object jsonValue() {
-        return getKey();
+        return getName();
     }
 
     @JsonCreator
-    public static UnalarmType instance(Object value){
+    public static SystemAlarmType instance(Object value){
         if (Objects.isNull(value)){
             return null;
         }
@@ -67,8 +75,8 @@ public enum UnalarmType implements IEnum {
         return instance(String.valueOf(value));
     }
 
-    private static UnalarmType instance(Integer key){
-        for(UnalarmType item : values()){
+    private static SystemAlarmType instance(Integer key){
+        for(SystemAlarmType item : values()){
             if (item.getKey()==key){
                 return item;
             }
@@ -76,12 +84,13 @@ public enum UnalarmType implements IEnum {
         return null;
     }
 
-    private static UnalarmType instance(String name){
-        for(UnalarmType item : values()){
+    private static SystemAlarmType instance(String name){
+        for(SystemAlarmType item : values()){
             if(Objects.equals(item.getName(),name)){
                 return item;
             }
         }
         return null;
     }
+
 }

@@ -1,9 +1,12 @@
 package com.lion.manage.service.assets.impl;
 
+import cn.hutool.cache.impl.FIFOCache;
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.tag.Tag;
+import com.lion.device.entity.tag.TagAssets;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.exception.BusinessException;
@@ -26,11 +29,15 @@ import com.lion.manage.service.region.RegionService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.font.TextRecord;
+import sun.plugin2.message.BestJREAvailableMessage;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -70,6 +77,9 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     @DubboReference
     private TagAssetsExposeService tagAssetsExposeService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     @Transactional
     //    @GlobalTransactional
@@ -87,6 +97,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         if (Objects.nonNull(addAssetsDto.getTagCode())) {
             tagAssetsExposeService.relation(assets.getId(), addAssetsDto.getTagCode(), addAssetsDto.getDepartmentId());
         }
+        persistenceRedis(assets,addAssetsDto.getTagCode());
     }
 
     @Override
@@ -103,8 +114,13 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         assertBuildFloorExist(assets.getBuildFloorId());
         assertDepartmentExist(assets.getDepartmentId());
         this.update(assets);
+        Tag tag = tagExposeService.find(assets.getId());
+        if (Objects.nonNull(tag)) {
+            redisTemplate.delete(RedisConstants.TAG_ASSETS + tag.getId());
+        }
         if (Objects.nonNull(updateAssetsDto.getTagCode())) {
             tagAssetsExposeService.relation(assets.getId(), updateAssetsDto.getTagCode(), updateAssetsDto.getDepartmentId());
+            persistenceRedis(assets,updateAssetsDto.getTagCode());
         }else {
             tagAssetsExposeService.deleteByAssetsId(assets.getId());
         }
@@ -115,6 +131,11 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 //    @GlobalTransactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(deleteDto -> {
+            Tag tag = tagExposeService.find(deleteDto.getId());
+            if (Objects.nonNull(tag)) {
+                redisTemplate.delete(RedisConstants.TAG_ASSETS + tag.getId());
+            }
+            redisTemplate.delete(RedisConstants.ASSETS+deleteDto.getId());
             this.deleteById(deleteDto.getId());
             assetsBorrowDao.deleteByAssetsId(deleteDto.getId());
             assetsFaultDao.deleteByAssetsId(deleteDto.getId());
@@ -158,6 +179,17 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         }
         return detailsAssetsVo;
     }
+
+    @Override
+    public Assets findByTagId(Long tagId) {
+        TagAssets tagAssets =  tagAssetsExposeService.findByTagId(tagId);
+        if (Objects.nonNull(tagAssets)) {
+            Assets assets = findById(tagAssets.getAssetsId());
+            return assets;
+        }
+        return null;
+    }
+
     private void assertDepartmentExist(Long id) {
         Department department = this.departmentService.findById(id);
         if (Objects.isNull(department) ){
@@ -203,5 +235,17 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         assets.setBuildFloorId(region.getBuildFloorId());
         assets.setDepartmentId(region.getDepartmentId());
         return assets;
+    }
+
+    private void persistenceRedis(Assets assets,String tagCode){
+        Tag tag = null;
+        if (Objects.nonNull(tagCode)){
+            tag = tagExposeService.find(tagCode);
+        }
+        redisTemplate.opsForValue().set(RedisConstants.ASSETS+assets.getId(),assets,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        if (Objects.nonNull(tag)) {
+            redisTemplate.opsForValue().set(RedisConstants.TAG_ASSETS + tag.getId(), assets.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        }
+
     }
 }

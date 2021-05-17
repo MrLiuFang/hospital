@@ -9,6 +9,7 @@ import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
+import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
@@ -17,6 +18,7 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.WashDevice;
+import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
@@ -83,6 +85,10 @@ public class RedisUtil {
 
     @DubboReference
     private DepartmentExposeService departmentExposeService;
+
+    @DubboReference
+    private AssetsExposeService assetsExposeService;
+
 
     public Department getDepartment(Long departmentId) {
         if (Objects.isNull(departmentId)){
@@ -478,15 +484,15 @@ public class RedisUtil {
         return wash;
     }
 
-    public Alarm getAlarm(AlarmClassify alarmClassify){
+    public Alarm getAlarm(AlarmClassify alarmClassify,Integer level){
         if (Objects.isNull(alarmClassify)){
             return null;
         }
-        Object obj = redisTemplate.opsForValue().get(RedisConstants.ALARM_CLASSIFY+alarmClassify.toString());
+        Object obj = redisTemplate.opsForValue().get(RedisConstants.ALARM_CLASSIFY+alarmClassify.toString()+(Objects.nonNull(level)?level:""));
         Long id =null;
         Alarm alarm = null;
         if (Objects.nonNull(obj) && !(obj instanceof Long )){
-            redisTemplate.delete(RedisConstants.ALARM_CLASSIFY+alarmClassify.toString());
+            redisTemplate.delete(RedisConstants.ALARM_CLASSIFY+alarmClassify.toString()+(Objects.nonNull(level)?level:""));
         }else if (Objects.nonNull(obj) ) {
             id = (Long) obj;
         }
@@ -511,9 +517,41 @@ public class RedisUtil {
                 }
             }
         }
-
         return alarm;
+    }
 
+    public Assets getAssets(String tagCode){
+        if (Objects.isNull(tagCode)) {
+            return null;
+        }
+        Tag tag = this.getTag(tagCode);
+        if (Objects.isNull(tag)){
+            return null;
+        }
+        return getAssets(tag.getId());
+    }
+
+    public Assets getAssets(Long tagId){
+        if (Objects.isNull(tagId)) {
+            return null;
+        }
+
+        Object obj = redisTemplate.opsForValue().get(RedisConstants.TAG_ASSETS+tagId);
+        Assets assets = null;
+
+        if (Objects.nonNull(obj) && !(obj instanceof Assets)){
+            redisTemplate.delete(RedisConstants.TAG_ASSETS+tagId);
+        }else if (Objects.nonNull(obj)) {
+            assets = (Assets) obj;
+        }
+
+        if (Objects.isNull(assets)){
+            assets = assetsExposeService.find(tagId);
+            if (Objects.nonNull(assets)) {
+                redisTemplate.opsForValue().set(RedisConstants.TAG_ASSETS + tagId, assets, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            }
+        }
+        return assets;
     }
 
 

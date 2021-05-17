@@ -32,4 +32,18 @@ public interface TagAssetsExposeService extends BaseService<TagAssets> {
      * @return
      */
     public Boolean deleteByAssetsId(Long assetsId);
+
+    /**
+     * 根据资产id查询绑定关系
+     * @param assetsId
+     * @return
+     */
+    public TagAssets find(Long assetsId);
+
+    /**
+     * 根据tag id查询绑定关系
+     * @param tagId
+     * @return
+     */
+    public TagAssets findByTagId(Long tagId);
 }

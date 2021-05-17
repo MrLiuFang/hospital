@@ -1,4 +1,4 @@
-package com.lion.event.constant;
+package com.lion.common.constants;
 
 /**
  * @Author Mr.Liu

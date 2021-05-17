@@ -1,6 +1,5 @@
 package com.lion.event.dao;
 
-import com.lion.event.entity.Alarm;
 import com.lion.event.entity.CurrentPosition;
 import org.springframework.data.mongodb.repository.MongoRepository;
 

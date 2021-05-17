@@ -1,6 +1,7 @@
 package com.lion.event.service;
 
 import com.lion.event.entity.Position;
+import com.lion.event.entity.SystemAlarm;
 
 /**
  * @Author Mr.Liu
@@ -14,4 +15,5 @@ public interface CurrentPositionService  {
      * @param position
      */
     public void save(Position position);
+
 }

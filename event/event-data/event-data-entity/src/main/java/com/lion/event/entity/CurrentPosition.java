@@ -1,5 +1,6 @@
 package com.lion.event.entity;
 
+import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -10,5 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  **/
 @Data
 @Document(value = "current_position")
+@ApiModel
 public class CurrentPosition extends Position {
+
 }

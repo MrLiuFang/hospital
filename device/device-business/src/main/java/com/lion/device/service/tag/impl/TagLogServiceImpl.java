@@ -74,6 +74,7 @@ public class TagLogServiceImpl extends BaseServiceImpl<TagLog> implements TagLog
             User user = userExposeService.findById(tagLog.getUserId());
             if (Objects.nonNull(user)) {
                 vo.setName(user.getName());
+                vo.setNumber(user.getNumber());
                 vo.setHeadPortrait(user.getHeadPortrait());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                 returnList.add(vo);

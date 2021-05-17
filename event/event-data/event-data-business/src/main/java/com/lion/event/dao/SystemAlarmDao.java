@@ -1,6 +1,6 @@
 package com.lion.event.dao;
 
-import com.lion.event.entity.Alarm;
+import com.lion.event.entity.SystemAlarm;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
@@ -8,5 +8,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * @Description //TODO
  * @Date 2021/5/1 下午6:00
  **/
-public interface AlarmDao extends MongoRepository<Alarm,String> {
+public interface SystemAlarmDao extends MongoRepository<SystemAlarm,String> ,SystemAlarmDaoEx {
 }

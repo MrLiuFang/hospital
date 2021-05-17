@@ -25,11 +25,11 @@ public interface WashEventService {
     public void save(WashEvent washEvent);
 
     /**
-     * 更新解除警告时间
+     * 更新洗手时间
      * @param uuid
      * @param uadt
      */
-    public void updateUadt(String uuid, LocalDateTime uadt );
+    public void updateWt(String uuid, LocalDateTime uadt );
 
     /**
      * 手卫生监控

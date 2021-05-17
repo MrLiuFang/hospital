@@ -1,9 +1,9 @@
 package com.lion.event.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.tag.Tag;
-import com.lion.upms.entity.user.User;
 
 /**
  * @Author Mr.Liu
@@ -19,6 +19,6 @@ public interface DeviceService {
      * @param star
      * @param tag
      */
-    public void deviceEevent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag);
+    public void deviceEevent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag) throws JsonProcessingException;
 
 }

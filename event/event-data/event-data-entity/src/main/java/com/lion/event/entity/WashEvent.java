@@ -36,11 +36,6 @@ public class WashEvent extends WashRecord {
     private Boolean ia = false;
 
     /**
-     * 警告是否已知熟(已处理)ia=false时该值无实际意义
-     */
-    private Boolean iua = false;
-
-    /**
      * 系统时间(触发时间)
      */
     private LocalDateTime sdt;

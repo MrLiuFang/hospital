@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.device.entity.tag.Tag;
 import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.region.Region;
 import com.lion.upms.entity.user.User;
 
 /**
@@ -18,27 +17,27 @@ public interface CommonService {
      * 记录位置
      * @param deviceDataDto
      * @param user
-     * @param region
+     * @param regionId
      * @throws JsonProcessingException
      */
-    public void position(DeviceDataDto deviceDataDto, User user, Region region) throws JsonProcessingException;
+    public void position(DeviceDataDto deviceDataDto, User user, Long regionId) throws JsonProcessingException;
 
     /**
      * 记录位置
      * @param deviceDataDto
      * @param tag
-     * @param region
+     * @param regionId
      * @throws JsonProcessingException
      */
-    public void position(DeviceDataDto deviceDataDto, Tag tag,  Region region) throws JsonProcessingException;
+    public void position(DeviceDataDto deviceDataDto, Tag tag,  Long regionId) throws JsonProcessingException;
 
     /**
      * 记录位置
      * @param deviceDataDto
      * @param assets
-     * @param region
+     * @param regionId
      * @throws JsonProcessingException
      */
-    public void position(DeviceDataDto deviceDataDto, Assets assets, Region region) throws JsonProcessingException;
+    public void position(DeviceDataDto deviceDataDto, Assets assets, Long regionId) throws JsonProcessingException;
 
 }

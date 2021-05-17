@@ -33,6 +33,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -107,6 +108,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     }
 
     @Override
+    @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
 
         deleteDtoList.forEach(deleteDto -> {
@@ -139,8 +141,10 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             tagPatientDao.deleteByTagId(deleteDto.getId());
             tagPostdocsDao.deleteByTagId(deleteDto.getId());
             tagUserDao.deleteByTagId(deleteDto.getId());
-            redisTemplate.delete(RedisConstants.USER_TAG+tagUser.getUserId());
-            redisTemplate.delete(RedisConstants.TAG_USER+tagUser.getTagId());
+            if (Objects.nonNull(tagUser)) {
+                redisTemplate.delete(RedisConstants.USER_TAG + tagUser.getUserId());
+                redisTemplate.delete(RedisConstants.TAG_USER + tagUser.getTagId());
+            }
         });
     }
 
@@ -206,9 +210,11 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     }
 
     private void assertDeviceCodeExist(String deviceCode, Long id) {
-        Tag tag = tagDao.findFirstByDeviceCode(deviceCode);
-        if ((Objects.isNull(id) && Objects.nonNull(tag)) || (Objects.nonNull(id) && Objects.nonNull(tag) && !Objects.equals(tag.getId(),id) )){
-            BusinessException.throwException("该设备编码已存在");
+        if (StringUtils.hasText(deviceCode)) {
+            Tag tag = tagDao.findFirstByDeviceCode(deviceCode);
+            if ((Objects.isNull(id) && Objects.nonNull(tag)) || (Objects.nonNull(id) && Objects.nonNull(tag) && !Objects.equals(tag.getId(), id))) {
+                BusinessException.throwException("该设备编码已存在");
+            }
         }
     }
 

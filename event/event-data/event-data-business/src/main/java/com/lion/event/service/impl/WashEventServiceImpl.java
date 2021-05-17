@@ -67,8 +67,8 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
-    public void updateUadt(String uuid, LocalDateTime uadt ) {
-        washEventDao.updateUadt(uuid,uadt);
+    public void updateWt(String uuid, LocalDateTime uadt ) {
+        washEventDao.updateWt(uuid,uadt);
     }
 
     @Override

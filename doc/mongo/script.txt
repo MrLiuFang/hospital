@@ -76,7 +76,7 @@ db.runCommand({
 })
 
 db.runCommand({
-    shardcollection : "hospital.alarm",
+    shardcollection : "hospital.systemAlarm",
     key : {_id: 'hashed'}
 })
 

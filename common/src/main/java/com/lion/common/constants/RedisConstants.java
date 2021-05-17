@@ -150,7 +150,19 @@ public class RedisConstants {
     public static final String DEPARTMENT = "department_";
 
     /**
+     * 资产(key:assetsId,value:assets)
+     */
+    public static final String ASSETS ="assets_";
+
+    /**
+     * 资产(key:tagId,value:assetsId)
+     */
+    public static final String TAG_ASSETS ="tag_assets_";
+
+    /**
      * 缓存过期时间
      */
     public static final Integer EXPIRE_TIME = 364;
+
+
 }

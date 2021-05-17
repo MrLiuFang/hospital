@@ -46,15 +46,7 @@ public class PositionConsumer implements RocketMQListener<MessageExt> {
         try {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
-            Map<String,Object> map = jacksonObjectMapper.readValue(msg, Map.class);
-            Position position = new Position();
-            position.setTyp(Integer.valueOf(String.valueOf(map.get("typ"))));
-            position.setPi(Objects.nonNull(map.get("pi"))?Long.valueOf(String.valueOf(map.get("pi"))):null);
-            position.setDvi(Objects.nonNull(map.get("dvi"))?Long.valueOf(String.valueOf(map.get("dvi"))):null);
-            position.setTi(Objects.nonNull(map.get("ti"))?Long.valueOf(String.valueOf(map.get("ti"))):null);
-            position.setDdt(LocalDateTime.parse(String.valueOf(map.get("ddt")), DateTimeFormatter.ofPattern(DateTimeFormatterUtil.pattern(String.valueOf(map.get("ddt"))))));
-            position.setSdt(LocalDateTime.parse(String.valueOf(map.get("sdt")), DateTimeFormatter.ofPattern(DateTimeFormatterUtil.pattern(String.valueOf(map.get("sdt"))))));
-            position.setRi(Objects.nonNull(map.get("ri"))?Long.valueOf(String.valueOf(map.get("ri"))):null);
+            Position position = jacksonObjectMapper.readValue(msg, Position.class);
             Region region = redisUtil.getRegionById(position.getRi());
             if (Objects.nonNull(region)) {
                 position.setRn(region.getName());
