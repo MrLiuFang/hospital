@@ -11,6 +11,7 @@ import com.lion.event.entity.SystemAlarm;
 import com.lion.event.service.CurrentPositionService;
 import com.lion.event.service.SystemAlarmService;
 import com.lion.manage.entity.enums.AlarmClassify;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.rule.Alarm;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;
@@ -58,7 +59,7 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                 againAlarm(systemAlarmDto);
                 return;
             }else {
-                Alarm alarm = getAlarm(systemAlarmDto.getType());
+                Alarm alarm = getAlarm(systemAlarmDto);
                 if (systemAlarmDto.getCount()>1){
                     systemAlarmDto.setCount(systemAlarmDto.getCount()+1);
                     systemAlarmService.updateSdt(systemAlarmDto.getUuid());
@@ -82,32 +83,33 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                         systemAlarm.setAli(alarm.getId());
                     }
                     systemAlarmService.save(systemAlarm);
-
                     systemAlarmDto.setCount(systemAlarmDto.getCount() + 1);
-                    if (Objects.nonNull(alarm) && Objects.equals(true, alarm.getAgain())) {
-                        againAlarm(systemAlarmDto);
-                    }
+                }
+                if (Objects.nonNull(alarm) && Objects.equals(true, alarm.getAgain())) {
+                    systemAlarmDto.setDelayDateTime(LocalDateTime.now().plusMinutes(alarm.getInterval()));
+                    againAlarm(systemAlarmDto);
                 }
             }
+
         }catch (Exception e){
             e.printStackTrace();
         }
     }
 
-    private Alarm getAlarm(Type type){
+    private Alarm getAlarm(SystemAlarmDto systemAlarmDto){
         Alarm alarm = null;
-        if (Objects.equals(type, Type.STAFF.getKey())){
-            alarm = redisUtil.getAlarm(AlarmClassify.STAFF,null);
-        }else if (Objects.equals(type, Type.TEMPERATURE.getKey()) || Objects.equals(type, Type.HUMIDITY.getKey())){
-            alarm = redisUtil.getAlarm(AlarmClassify.TEMPERATURE_HUMIDITY_INSTRUMENT,null);
-        }else if (Objects.equals(type, Type.ASSET.getKey())){
-            alarm = redisUtil.getAlarm(AlarmClassify.ASSETS,null);
-        }else if (Objects.equals(type, Type.PATIENT.getKey())){
+        if (Objects.equals(systemAlarmDto.getType(), Type.STAFF.getKey())){
+            alarm = redisUtil.getAlarm(AlarmClassify.STAFF, systemAlarmDto.getSystemAlarmType(),null);
+        }else if (Objects.equals(systemAlarmDto.getType(), Type.TEMPERATURE.getKey()) || Objects.equals(systemAlarmDto.getType(), Type.HUMIDITY.getKey())){
+            alarm = redisUtil.getAlarm(AlarmClassify.TEMPERATURE_HUMIDITY_INSTRUMENT,systemAlarmDto.getSystemAlarmType(),null);
+        }else if (Objects.equals(systemAlarmDto.getType(), Type.ASSET.getKey())){
+            alarm = redisUtil.getAlarm(AlarmClassify.ASSETS,systemAlarmDto.getSystemAlarmType(),null);
+        }else if (Objects.equals(systemAlarmDto.getType(), Type.PATIENT.getKey())){
             // TODO: 2021/5/17 获取患者级别
-            alarm = redisUtil.getAlarm(AlarmClassify.PATIENT,null);
+            alarm = redisUtil.getAlarm(AlarmClassify.PATIENT,systemAlarmDto.getSystemAlarmType(),null);
         }
-        else if (Objects.equals(type, Type.DEVICE.getKey())){
-            alarm = redisUtil.getAlarm(AlarmClassify.DEVICE,null);
+        else if (Objects.equals(systemAlarmDto.getType(), Type.DEVICE.getKey())){
+            alarm = redisUtil.getAlarm(AlarmClassify.DEVICE,systemAlarmDto.getSystemAlarmType(),null);
         }
         return alarm;
     }

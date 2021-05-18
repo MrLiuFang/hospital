@@ -3,6 +3,7 @@ package com.lion.common.dto;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
  * @Date 2021/5/17 下午4:20
  **/
 @Data
-public class PositionDto {
+public class PositionDto implements Serializable {
 
     @Id
     private String _id;

@@ -1,12 +1,11 @@
 package com.lion.manage.entity.rule;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.enums.AlarmDuration;
-import com.lion.manage.entity.enums.AlarmWay;
-import com.lion.manage.entity.enums.WashRuleType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -43,16 +42,21 @@ public class Alarm extends BaseEntity {
     @Column(name = "level")
     private Integer level;
 
+    @ApiModelProperty(value = "排序")
+    @Column(name = "sort")
+    @NotNull(message = "排序不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private Integer sort;
+
+    @ApiModelProperty(value = "警报编码")
+    @Column(name = "code",updatable = false)
+    @Convert(converter = SystemAlarmType.SystemAlarmTypeConverter.class)
+    @NotNull(message = "警报编码不能为空", groups = {Validator.Insert.class,Validator.Update.class})
+    private SystemAlarmType code;
+
     @ApiModelProperty(value = "警报内容")
     @Column(name = "content")
     @NotBlank(message = "警报内容不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String content;
-
-    @ApiModelProperty(value = "警报方式")
-    @Column(name = "way")
-    @Convert(converter = AlarmWay.AlarmWayConverter.class)
-    @NotNull(message = "警报方式不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private AlarmWay way;
 
     @ApiModelProperty(value = "警报声持续时间")
     @Column(name = "duration")

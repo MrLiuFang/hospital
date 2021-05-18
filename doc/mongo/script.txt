@@ -91,7 +91,7 @@ db.runCommand({
 })
 
 db.runCommand({
-    shardcollection : "hospital.washr_ecord",
+    shardcollection : "hospital.wash_record",
     key : {_id: 'hashed'}
 })
 
@@ -111,6 +111,14 @@ db.runCommand({
 })
 
 use hospital;
+db.wash_event.drop();
+db.system_alarm.drop();
+db.device_data.drop();
+db.position.drop();
+db.wash_record.drop();
+db.current_position.drop();
+db.tag_event.drop();
+db.tag_record.drop();
 
 db.washRecord.createIndex( { "pi":1 }, { sparse: true } )
 db.washRecord.createIndex( { "ddt":1 }, { sparse: true } )

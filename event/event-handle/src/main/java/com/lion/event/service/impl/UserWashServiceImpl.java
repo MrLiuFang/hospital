@@ -4,14 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
-import com.lion.common.dto.DeviceDataDto;
-import com.lion.common.dto.RegionWashMonitorDelayDto;
-import com.lion.common.dto.UserCurrentRegionDto;
-import com.lion.common.dto.UserLastWashDto;
+import com.lion.common.dto.*;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.tag.Tag;
+import com.lion.event.mq.consumer.common.WashCommon;
 import com.lion.event.service.CommonService;
 import com.lion.event.service.UserWashService;
 import com.lion.manage.entity.region.Region;
@@ -51,6 +49,9 @@ public class UserWashServiceImpl implements UserWashService {
 
     @Autowired
     private CommonService commonService;
+
+    @Autowired
+    private WashCommon washCommon;
 
 
     @Override
@@ -172,7 +173,7 @@ public class UserWashServiceImpl implements UserWashService {
             userLastWashDto.setUserId(user.getId());
             userLastWashDto.setMonitorId(Objects.isNull(monitor)?null:monitor.getId());
             userLastWashDto.setStarId(Objects.isNull(star)?null:star.getId());
-//            userLastWashDto.setDateTime(deviceDataDto.getSystemDateTime());
+            userLastWashDto.setSystemDateTime(deviceDataDto.getSystemDateTime());
             userLastWashDto.setDateTime(deviceDataDto.getTime());
             redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+user.getId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
 
@@ -185,14 +186,9 @@ public class UserWashServiceImpl implements UserWashService {
             }
 
             //记录洗手
-            Map<String,Object> map = new HashMap<>();
-            map.put("pi", user.getId()); //员工id
-            map.put("ri", Objects.isNull(userCurrentRegionDto)?null:userCurrentRegionDto.getRegionId()); //区域id
-            map.put("dvi", device.getId()); //洗手设备id
-            map.put("ui", userCurrentRegionDto.getUuid());//uuid
-            map.put("ddt", deviceDataDto.getTime());//设备产生时间
-            map.put("sdt", deviceDataDto.getSystemDateTime());//系统时间
-            rocketMQTemplate.syncSend(TopicConstants.WASH_RECORD, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(map)).build());
+            WashRecordDto washRecordDto = washCommon.init(user.getId(),Objects.isNull(userCurrentRegionDto)?null:userCurrentRegionDto.getRegionId()
+                    ,device.getId(),userCurrentRegionDto.getUuid(),deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+            rocketMQTemplate.syncSend(TopicConstants.WASH_RECORD, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washRecordDto)).build());
         }else {
             //记录洗手时长
             UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());

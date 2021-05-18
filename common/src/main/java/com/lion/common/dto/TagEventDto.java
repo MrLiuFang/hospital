@@ -2,6 +2,7 @@ package com.lion.common.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -10,9 +11,9 @@ import java.math.BigDecimal;
  * @Date 2021/5/17 下午8:31
  **/
 @Data
-public class TagEventDto extends TagRecordDto {
+public class TagEventDto extends TagRecordDto implements Serializable {
 
-    //事件类型(com.lion.common.enums.SystemAlarmType)
+    //事件类型(com.lion.manage.entity.enums.SystemAlarmType)
     private Integer at;
 
     //最高温度

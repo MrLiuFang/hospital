@@ -1,8 +1,9 @@
-package com.lion.common.enums;
+package com.lion.manage.entity.enums;
 
 import cn.hutool.core.util.NumberUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.lion.core.IEnum;
+import com.lion.core.common.enums.EnumConverter;
 
 import java.util.Objects;
 
@@ -13,18 +14,27 @@ import java.util.Objects;
  **/
 public enum SystemAlarmType implements IEnum {
 
-    JRQYQWXS(0, "进入区域前未洗手"),
-    JRQYQWZGDDSBXS(1, "进入区域前未在规定的设备洗手"),
-    JRQYHWXS(2, "进入区域后未洗手"),
-    JRQYHWZGDDSBXS(3, "进入区域后未在规定的设备洗手"),
+//    JRQYQWXS(0, "进入区域前未洗手(在指定区域无进行洗手操作)"),
+//    JRQYQWZGDDSBXS(1, "进入区域前未在规定的设备洗手(未使用标准的洗手设备洗手)"),
+//    JRQYHWXS(2, "进入区域后未洗手(在指定区域无进行洗手操作)"),
+//    JRQYHWZGDDSBXS(3, "进入区域后未在规定的设备洗手(未使用标准的洗手设备洗手)"),
     DSWXS(4, "定时未洗手"),
-    DSWZGDDXSSBLXXS(5, "定时未在规定的洗手设备类型洗手"),
-    JRJQ(6, "进入禁区"),
-    WSQCCSSQY(7, "未授权超出所属区域"),
-    WDGD(8, "温度过低"),
-    WDGG(9, "温度过高"),
-    SDGD(10, "湿度过低"),
-    SDGG(11, "湿度过高");
+//    DSWZGDDXSSBLXXS(5, "定时未在规定的洗手设备类型洗手(未使用标准的洗手设备洗手)"),
+    ZZDQYWJXXSCZ(6, "在指定区域无进行洗手操作"),
+    WXYBZDXSSBXS(7, "未使用标准的洗手设备洗手"),
+    WDDBZSXSC(8, "未到达标准洗手时长"),
+    CCXDFW(9, "超出行动范围"),
+    WJSQQXBQ(10, "未经授权取下标签"),
+    CSJWFYDJX(11, "长时间无法移动迹象"),
+    ZDHJ(12, "主动呼叫"),
+    JRJQ(13, "进入禁区"),
+    WSQCCSSQY(14, "未授权超出所属区域"),
+    WDGD(15, "温度过低"),
+    WDGG(16, "温度过高"),
+    SDGD(17, "湿度过低"),
+    SDGG(18, "湿度过高"),
+    BQDCBZ(19, "标签电池不足"),
+    SBGZ(20, "设备故障");
 
     private final int key;
 
@@ -93,4 +103,6 @@ public enum SystemAlarmType implements IEnum {
         return null;
     }
 
+    public static class SystemAlarmTypeConverter extends EnumConverter<SystemAlarmType,Integer> {
+    }
 }

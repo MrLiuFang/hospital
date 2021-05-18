@@ -55,7 +55,7 @@ public class SystemAlarm implements Serializable {
     private Long ali;
 
     /**
-     * 警告类型(com.lion.common.enums.SystemAlarmType)
+     * 警告类型(com.lion.manage.entity.enums.SystemAlarmType)
      */
     private Integer sat;
 

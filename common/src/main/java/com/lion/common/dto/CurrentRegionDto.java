@@ -3,6 +3,7 @@ package com.lion.common.dto;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
  * @Date 2021/5/17 下午4:00
  **/
 @Data
-public class CurrentRegionDto  {
+public class CurrentRegionDto implements Serializable {
 
     @ApiModelProperty(value = "当前所在的区域Id")
     private Long regionId;

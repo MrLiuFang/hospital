@@ -1,6 +1,6 @@
 package com.lion.common.dto;
 
-import com.lion.common.enums.SystemAlarmType;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.common.enums.Type;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;

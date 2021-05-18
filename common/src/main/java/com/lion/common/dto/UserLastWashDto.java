@@ -34,6 +34,11 @@ public class UserLastWashDto implements Serializable {
     private LocalDateTime dateTime;
 
     /**
+     * 系统接收到的时间
+     */
+    private LocalDateTime systemDateTime;
+
+    /**
      * 洗了多长时间（秒）
      */
     private Integer time;

@@ -66,26 +66,9 @@ public class WashEventConsumer implements RocketMQListener<MessageExt> {
         try {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
-            Map<String,Object> map = jacksonObjectMapper.readValue(msg, Map.class);
-
-            WashEvent washEvent = new WashEvent();
-            WashRecord washRecord = washCommonUtil.mapToBean(map);
-            BeanUtils.copyProperties(washRecord,washEvent);
-            if (map.containsKey("wet")) {
-                washEvent.setWet(Integer.valueOf(String.valueOf(map.get("wet"))));
-            }
-            if (map.containsKey("wt")) {
-                washEvent.setWt(LocalDateTime.parse(String.valueOf(map.get("wt")), DateTimeFormatter.ofPattern(DateTimeFormatterUtil.pattern(String.valueOf(map.get("wt"))))));
-            }
-            if (map.containsKey("ia")) {
-                washEvent.setIa(Boolean.valueOf(String.valueOf(map.get("ia"))));
-            }
-            if (map.containsKey("at")) {
-                washEvent.setAt(Integer.valueOf(String.valueOf(map.get("at"))));
-            }
-
+            WashEvent washEvent = jacksonObjectMapper.readValue(msg, WashEvent.class);
+            washEvent = (WashEvent) washCommonUtil.setInfo(washEvent);
             eventService.save(washEvent);
-
         }catch (Exception e){
             e.printStackTrace();
         }

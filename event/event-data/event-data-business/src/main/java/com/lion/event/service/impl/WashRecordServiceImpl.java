@@ -3,7 +3,7 @@ package com.lion.event.service.impl;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.dao.WashEventDao;
-import com.lion.event.dao.WashRecordRecordDao;
+import com.lion.event.dao.WashRecordDao;
 import com.lion.event.entity.WashRecord;
 import com.lion.event.service.WashRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.Objects;
 public class WashRecordServiceImpl implements WashRecordService {
 
     @Autowired
-    private WashRecordRecordDao washRecordDao;
+    private WashRecordDao washRecordDao;
 
     @Autowired
     private WashEventDao washEventDao;

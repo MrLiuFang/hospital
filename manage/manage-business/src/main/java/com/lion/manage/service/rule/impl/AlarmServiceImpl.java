@@ -1,6 +1,7 @@
 package com.lion.manage.service.rule.impl;
 
 import com.lion.common.constants.RedisConstants;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -19,6 +20,7 @@ import com.lion.manage.entity.rule.dto.UpdateAlarmDto;
 import com.lion.manage.entity.rule.vo.DetailsAlarmVo;
 import com.lion.manage.entity.rule.vo.ListAlarmVo;
 import com.lion.manage.service.rule.AlarmService;
+import com.lion.manage.service.rule.AlarmWayService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -52,6 +54,9 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     private FileExposeService fileExposeService;
 
     @Autowired
+    private AlarmWayService alarmWayService;
+
+    @Autowired
     private RedisTemplate redisTemplate;
 
     @Override
@@ -59,8 +64,10 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         Alarm alarm = new Alarm();
         BeanUtils.copyProperties(addAlarmDto,alarm);
         alarmClassify(alarm);
-        assertAlarmClassifytExist(alarm.getClassify(),alarm.getLevel(),null);
+        assertCodeExist(addAlarmDto.getCode(),alarm.getClassify(),null);
+        assertAlarmClassifytExist(alarm.getClassify(),alarm.getContent(),alarm.getLevel(),null);
         alarm = save(alarm);
+        alarmWayService.add(alarm.getId(),addAlarmDto.getWays());
         persistenceRedis(alarm,false);
     }
 
@@ -69,8 +76,10 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         Alarm alarm = new Alarm();
         BeanUtils.copyProperties(updateAlarmDto,alarm);
         alarmClassify(alarm);
-        assertAlarmClassifytExist(alarm.getClassify(),alarm.getLevel(),alarm.getId());
+        assertCodeExist(alarm.getCode(),alarm.getClassify(),alarm.getId());
+        assertAlarmClassifytExist(alarm.getClassify(),alarm.getContent(),alarm.getLevel(),alarm.getId());
         update(alarm);
+        alarmWayService.add(alarm.getId(),updateAlarmDto.getWays());
         persistenceRedis(alarm,false);
     }
 
@@ -81,6 +90,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
             DetailsAlarmVo detailsAlarmVo = new DetailsAlarmVo();
             BeanUtils.copyProperties(alarm,detailsAlarmVo);
             detailsAlarmVo.setManagerVos(convertManagerVo(detailsAlarmVo.getManager()));
+            detailsAlarmVo.setWays(alarmWayService.find(alarm.getId()));
             return detailsAlarmVo;
         }
         return null;
@@ -102,14 +112,16 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         lionPage.setJpqlParameter(jpqlParameter);
         Page<Alarm> page = findNavigator(lionPage);
         List<Alarm> list = page.getContent();
-        List<ListAlarmVo> renturnList = new ArrayList<>();
+        List<ListAlarmVo> returnList = new ArrayList<>();
         list.forEach(alarm -> {
             ListAlarmVo vo = new ListAlarmVo();
             BeanUtils.copyProperties(alarm,vo);
             vo.setManagerVos(convertManagerVo(alarm.getManager()));
-            renturnList.add(vo);
+            vo.setWays(alarmWayService.find(alarm.getId()));
+            returnList.add(vo);
         });
-        return new PageResultData(renturnList,page.getPageable(),page.getTotalElements());
+
+        return new PageResultData(returnList,page.getPageable(),page.getTotalElements());
     }
 
     @Override
@@ -125,16 +137,16 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         if (Objects.equals(true,delete)){
             redisTemplate.delete(RedisConstants.ALARM+alarm.getId());
             if (Objects.isNull(alarm.getLevel())){
-                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY+alarm.getClassify().toString(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.delete(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey());
             }else {
-                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY+alarm.getClassify().toString()+alarm.getLevel(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.delete(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey()+alarm.getLevel());
             }
         }else {
             redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             if (Objects.isNull(alarm.getLevel())){
-                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY+alarm.getClassify().toString(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             }else {
-                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY+alarm.getClassify().toString()+alarm.getLevel(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey()+alarm.getLevel(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             }
         }
     }
@@ -166,22 +178,23 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         }
     }
 
-    private void assertAlarmClassifytExist(AlarmClassify classify, Integer level, Long id) {
-        Alarm alarm = null;
-        if (Objects.equals(classify,AlarmClassify.PATIENT)){
-            alarm = alarmDao.findFirstByClassifyAndLevel(classify,level);
-        }else {
-            alarm = alarmDao.findFirstByClassify(classify);
-        }
+    private void assertCodeExist(SystemAlarmType code,AlarmClassify classify, Long id) {
+        Alarm alarm = alarmDao.findFirstByCodeAndClassify(code,classify);
         if ((Objects.isNull(id) && Objects.nonNull(alarm)) || (Objects.nonNull(id) && Objects.nonNull(alarm) && !Objects.equals(alarm.getId(),id)) ){
-            BusinessException.throwException("该警报分类已存在，重复的分类警告会导致警告冲突");
+            BusinessException.throwException("该分类已存在该编码");
         }
     }
 
-    private void assertContentExist(String content, AlarmClassify classify, Long id) {
-        Alarm alarm = alarmDao.findFirstByContentAndClassify(content,classify);
+    private void assertAlarmClassifytExist(AlarmClassify classify,String content, Integer level, Long id) {
+        Alarm alarm = null;
+        if (Objects.equals(classify,AlarmClassify.PATIENT)){
+            alarm = alarmDao.findFirstByClassifyAndLevelAndContent(classify,level,content);
+        }else {
+            alarm = alarmDao.findFirstByClassifyAndContent(classify,content);
+        }
         if ((Objects.isNull(id) && Objects.nonNull(alarm)) || (Objects.nonNull(id) && Objects.nonNull(alarm) && !Objects.equals(alarm.getId(),id)) ){
-            BusinessException.throwException("该警分类报内容已存在");
+            BusinessException.throwException("该警报分类已存在("+content+")警报内容");
         }
     }
+
 }

@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 /**
  * @Author Mr.Liu
  * @Description //当前位置
@@ -12,6 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Document(value = "current_position")
 @ApiModel
-public class CurrentPosition extends Position {
+public class CurrentPosition extends Position implements Serializable {
 
 }

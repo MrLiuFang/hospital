@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
  */
 @Data
 public class DeviceDataDto implements Serializable {
+
     private static final long serialVersionUID = -90000050L;
     //Star 的 MacID
     private String starId;

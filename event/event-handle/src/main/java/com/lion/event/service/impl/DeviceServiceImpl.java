@@ -2,10 +2,9 @@ package com.lion.event.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.*;
-import com.lion.common.enums.SystemAlarmType;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
@@ -15,8 +14,6 @@ import com.lion.event.service.CommonService;
 import com.lion.event.service.DeviceService;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.region.Region;
-import com.lion.upms.entity.user.User;
-import com.sun.xml.bind.v2.model.core.ValuePropertyInfo;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +24,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu

@@ -14,6 +14,7 @@ import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AlarmClassify;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.entity.rule.Wash;
@@ -22,6 +23,7 @@ import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
+import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.rule.AlarmExposeService;
 import com.lion.manage.expose.rule.WashDeviceExposeService;
@@ -87,9 +89,40 @@ public class RedisUtil {
     private DepartmentExposeService departmentExposeService;
 
     @DubboReference
+    private DepartmentUserExposeService departmentUserExposeService;
+
+    @DubboReference
     private AssetsExposeService assetsExposeService;
 
+    public Department getDepartmentByUserId(Long userId) {
+        if (Objects.isNull(userId)){
+            return null;
+        }
+        Object object = redisTemplate.opsForValue().get(RedisConstants.USER_DEPARTMENT+userId);
+        Long departmentId = null;
+        Department department = null;
+        if (Objects.nonNull(object)) {
+            if (!(object instanceof Long)){
+                redisTemplate.delete(RedisConstants.USER_DEPARTMENT+userId);
+            }else {
+                departmentId = (Long) object;
+            }
+        }
 
+        if (Objects.nonNull(departmentId)) {
+            department = getDepartment(departmentId);
+        }
+
+        if (Objects.isNull(department)){
+            department = departmentUserExposeService.findDepartment(userId);
+            if (Objects.nonNull(department)){
+                redisTemplate.opsForValue().set(RedisConstants.USER_DEPARTMENT+department.getId(),department.getId(),RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT+department.getId(),department,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            }
+        }
+        return department;
+
+    }
     public Department getDepartment(Long departmentId) {
         if (Objects.isNull(departmentId)){
             return null;
@@ -484,15 +517,16 @@ public class RedisUtil {
         return wash;
     }
 
-    public Alarm getAlarm(AlarmClassify alarmClassify,Integer level){
-        if (Objects.isNull(alarmClassify)){
+    public Alarm getAlarm(AlarmClassify alarmClassify, SystemAlarmType code, Integer level){
+        if (Objects.isNull(alarmClassify) || Objects.isNull(code)){
             return null;
         }
-        Object obj = redisTemplate.opsForValue().get(RedisConstants.ALARM_CLASSIFY+alarmClassify.toString()+(Objects.nonNull(level)?level:""));
+        final String key = RedisConstants.ALARM_CLASSIFY_CODE + alarmClassify.toString() + code.getKey() + (Objects.nonNull(level) ? level : "");
+        Object obj = redisTemplate.opsForValue().get(key);
         Long id =null;
         Alarm alarm = null;
         if (Objects.nonNull(obj) && !(obj instanceof Long )){
-            redisTemplate.delete(RedisConstants.ALARM_CLASSIFY+alarmClassify.toString()+(Objects.nonNull(level)?level:""));
+            redisTemplate.delete(key);
         }else if (Objects.nonNull(obj) ) {
             id = (Long) obj;
         }
@@ -511,9 +545,9 @@ public class RedisUtil {
             if (Objects.nonNull(alarm)){
                 redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 if (Objects.isNull(alarm.getLevel())){
-                    redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY+alarm.getClassify().toString(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }else {
-                    redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY+alarm.getClassify().toString()+alarm.getLevel(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey()+alarm.getLevel(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }
             }
         }

@@ -15,6 +15,11 @@ public class RedisConstants {
     public static final String USER = "user_";
 
     /**
+     * 用户(key:userId,value:departmentId)
+     */
+    public static final String USER_DEPARTMENT = "user_department_";
+
+    /**
      * 洗手规则(key:washId,value:wash)
      */
     public static final String WASH = "wash_";
@@ -55,9 +60,9 @@ public class RedisConstants {
     public static final String ALARM = "alarm_";
 
     /**
-     * 警报分类规则(key:alarmClassify,value:alarmId)
+     * 警报分类规则(key:alarmClassifyCode,value:alarmId)
      */
-    public static final String ALARM_CLASSIFY = "alarm_classify_";
+    public static final String ALARM_CLASSIFY_CODE = "alarm_classify_code";
 
     /**
      * 设备归属哪个区域(key:deviceId,value:regionId)

@@ -8,6 +8,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * @Description //TODO
  * @Date 2021/5/5 上午8:44
  **/
-public interface WashRecordRecordDao extends MongoRepository<WashRecord,String> , WashRecordDaoEx {
+public interface WashRecordDao extends MongoRepository<WashRecord,String> , WashRecordDaoEx {
 
 }

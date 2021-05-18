@@ -1,14 +1,11 @@
 package com.lion.event.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.common.dto.WashRecordDto;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
 
 /**
  * @Author Mr.Liu
@@ -18,79 +15,6 @@ import java.time.LocalDateTime;
 @Data
 @Document(value = "wash_record")
 @ApiModel(value = "洗手记录(为减少mongo存储空间字段采用缩写方式)")
-public class WashRecord implements Serializable {
-    @Id
-    private String _id;
+public class WashRecord extends WashRecordDto implements Serializable {
 
-    @ApiModelProperty(value = "用于与洗手事件唯一关联标识(区域洗手),定时洗手没有此关联")
-    private String ui;
-
-
-
-    @ApiModelProperty(value = "员工id/患者id/流动人员id")
-    private Long pi;
-
-    /**
-     * 员工类型(com.lion.upms.entity.enums.UserType)
-     */
-    @ApiModelProperty(value = "员工类型")
-    private int py;
-
-
-    @ApiModelProperty(value = "员工所在的科室id")
-    private Long pdi;
-
-    @ApiModelProperty(value = "员工所在的科室名称")
-    private String pdn;
-
-    @ApiModelProperty(value = "tag id")
-    private Long ti;
-
-    @ApiModelProperty(value = "tag名称")
-    private String tn;
-
-
-    @ApiModelProperty(value = "洗手的设备id")
-    private Long dvi;
-
-    @ApiModelProperty(value = "洗手的设备名称")
-    private String dvn;
-
-    @ApiModelProperty(value = "洗手的设备编码")
-    private String dvc;
-
-    @ApiModelProperty(value = "建筑id")
-    private Long bui;
-
-    @ApiModelProperty(value = "建筑名称")
-    private String bun;
-
-    @ApiModelProperty(value = "楼层id")
-    private Long bfi;
-
-    @ApiModelProperty(value = "楼层名称")
-    private String bfn;
-
-    @ApiModelProperty(value = "科室id")
-    private Long di;
-
-    @ApiModelProperty(value = "科室名称")
-    private String dn;
-
-    @ApiModelProperty(value = "区域id")
-    private Long ri;
-
-    @ApiModelProperty(value = "区域名称")
-    private String rn;
-
-    @ApiModelProperty(value = "洗手时长")
-    private Integer t;
-
-    @ApiModelProperty(value = "设备产生的洗手時間")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime ddt;
-
-    @ApiModelProperty(value = "系统接收到的时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime sdt;
 }

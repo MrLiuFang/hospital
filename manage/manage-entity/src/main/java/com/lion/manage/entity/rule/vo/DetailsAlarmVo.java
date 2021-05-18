@@ -1,5 +1,6 @@
 package com.lion.manage.entity.rule.vo;
 
+import com.lion.manage.entity.enums.AlarmWay;
 import com.lion.manage.entity.rule.Alarm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -20,6 +21,9 @@ public class DetailsAlarmVo extends Alarm {
 
     @ApiModelProperty(value = "管理员")
     private List<ManagerVo> managerVos;
+
+    @ApiModelProperty(value = "警报方式")
+    private List<AlarmWay> ways;
 
     @Data
     @ApiModel

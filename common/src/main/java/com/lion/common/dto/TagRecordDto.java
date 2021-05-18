@@ -2,6 +2,7 @@ package com.lion.common.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
  * @Date 2021/5/17 下午8:29
  **/
 @Data
-public class TagRecordDto {
+public class TagRecordDto implements Serializable {
 
     //类型 (com.lion.event.entity.enums.Type)
     private Integer typ;

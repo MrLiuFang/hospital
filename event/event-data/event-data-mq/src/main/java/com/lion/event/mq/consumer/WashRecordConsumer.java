@@ -51,8 +51,9 @@ public class WashRecordConsumer implements RocketMQListener<MessageExt> {
         try {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
-            Map<String,Object> map = jacksonObjectMapper.readValue(msg, Map.class);
-            washService.save(washCommonUtil.mapToBean(map));
+            WashRecord washRecord = jacksonObjectMapper.readValue(msg, WashRecord.class);
+            washRecord = (WashRecord) washCommonUtil.setInfo(washRecord);
+            washService.save(washRecord);
         }catch (Exception e){
             e.printStackTrace();
         }
