@@ -3,7 +3,6 @@ package com.lion.event.service.impl;
 import com.lion.event.dao.CurrentPositionDao;
 import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.Position;
-import com.lion.event.entity.SystemAlarm;
 import com.lion.event.service.CurrentPositionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +42,20 @@ public class CurrentPositionServiceImpl implements CurrentPositionService {
             currentPosition.set_id(oldCurrentPosition.get_id());
         }
         currentPositionDao.save(currentPosition);
+    }
+
+    @Override
+    public CurrentPosition find(Long userId) {
+        CurrentPosition exampleCurrentPosition = new CurrentPosition();
+        if (Objects.nonNull(userId)) {
+            exampleCurrentPosition.setPi(userId);
+        }
+        Example<CurrentPosition> example = Example.of(exampleCurrentPosition);
+        Optional<CurrentPosition> optional = currentPositionDao.findOne(example);
+        if (optional.isPresent()) {
+            CurrentPosition currentPosition = optional.get();
+            return currentPosition;
+        }
+        return null;
     }
 }

@@ -1,5 +1,6 @@
 package com.lion.event.service;
 
+import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.SystemAlarm;
 
@@ -15,5 +16,12 @@ public interface CurrentPositionService  {
      * @param position
      */
     public void save(Position position);
+
+    /**
+     * 查询用户当前位置
+     * @param userId
+     * @return
+     */
+    public CurrentPosition find(Long userId);
 
 }

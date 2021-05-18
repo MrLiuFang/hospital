@@ -9,15 +9,13 @@ import com.lion.core.LionPage;
 import com.lion.core.ResultData;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
+import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.DeviceData;
 import com.lion.event.entity.vo.UserWashDetailsVo;
 import com.lion.event.entity.vo.UserCurrentRegionVo;
 import com.lion.event.entity.vo.ListUserWashMonitorVo;
 import com.lion.event.entity.vo.ListWashMonitorVo;
-import com.lion.event.service.DeviceDataService;
-import com.lion.event.service.SystemAlarmService;
-import com.lion.event.service.WashEventService;
-import com.lion.event.service.WashRecordService;
+import com.lion.event.service.*;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
@@ -65,10 +63,22 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @Autowired
     private SystemAlarmService systemAlarmService;
 
+    @Autowired
+    private CurrentPositionService currentPositionService;
+
     @GetMapping("/user/current/region")
     @ApiOperation(value = "用户当前位置")
     public IResultData<UserCurrentRegionVo> userCurrentRegionVo(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId) {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION+userId);
+        if (Objects.isNull(userCurrentRegionDto)) {
+            CurrentPosition currentPosition = currentPositionService.find(userId);
+            if (Objects.nonNull(currentPosition)){
+                userCurrentRegionDto = new UserCurrentRegionDto();
+                userCurrentRegionDto.setUserId(userId);
+                userCurrentRegionDto.setRegionId(currentPosition.getRi());
+            }
+        }
+
         if (Objects.nonNull(userCurrentRegionDto)){
             UserCurrentRegionVo vo = new UserCurrentRegionVo();
             vo.setFirstEntryTime(userCurrentRegionDto.getFirstEntryTime());
