@@ -16,4 +16,10 @@ public interface SystemAlarmService {
      * @param uuid
      */
     public void updateSdt(String uuid);
+
+    /**
+     * 解除警告
+     * @param uuid
+     */
+    void unalarm(String uuid);
 }

@@ -2,6 +2,7 @@ package com.lion.event.mq.consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.enums.Type;
@@ -19,11 +20,15 @@ import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -47,6 +52,10 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+
 
     @Override
     public void onMessage(MessageExt messageExt) {
@@ -54,8 +63,15 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
             SystemAlarmDto systemAlarmDto = jacksonObjectMapper.readValue(msg, SystemAlarmDto.class);
-
-            if (systemAlarmDto.getDelayDateTime().isAfter(LocalDateTime.now())){
+            Boolean b = (Boolean) redisTemplate.opsForValue().get(RedisConstants.UNALARM+systemAlarmDto.getUuid());
+            if (Objects.equals(b,true)){
+                log.info("系统内解除警告");
+                systemAlarmService.unalarm(systemAlarmDto.getUuid());
+                redisTemplate.delete(RedisConstants.UNALARM+systemAlarmDto.getUuid());
+                return;
+            }
+            Duration duration = Duration.between(LocalDateTime.now(),systemAlarmDto.getDelayDateTime());
+            if (systemAlarmDto.getDelayDateTime().isAfter(LocalDateTime.now()) && duration.toMillis()>1000 ){
                 againAlarm(systemAlarmDto);
                 return;
             }else {
@@ -63,7 +79,9 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                 if (systemAlarmDto.getCount()>1){
                     systemAlarmDto.setCount(systemAlarmDto.getCount()+1);
                     systemAlarmService.updateSdt(systemAlarmDto.getUuid());
+                    log.info("系统内触发警告");
                 }else {
+                    log.info("系统内触发警告");
                     SystemAlarm systemAlarm = new SystemAlarm();
                     systemAlarm.setAi(systemAlarmDto.getAssetsId());
                     systemAlarm.setDi(systemAlarmDto.getDeviceId());
@@ -76,7 +94,7 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                         systemAlarm.setTy(systemAlarmDto.getType().getKey());
                     }
                     systemAlarm.setUa(false);
-                    systemAlarm.setUuid(systemAlarmDto.getUuid());
+                    systemAlarm.setUi(systemAlarmDto.getUuid());
                     systemAlarm.setDt(systemAlarmDto.getDateTime());
                     systemAlarm.setSdt(systemAlarmDto.getDateTime());
                     if (Objects.nonNull(alarm)) {
@@ -98,17 +116,17 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
 
     private Alarm getAlarm(SystemAlarmDto systemAlarmDto){
         Alarm alarm = null;
-        if (Objects.equals(systemAlarmDto.getType(), Type.STAFF.getKey())){
+        if (Objects.equals(systemAlarmDto.getType(), Type.STAFF)){
             alarm = redisUtil.getAlarm(AlarmClassify.STAFF, systemAlarmDto.getSystemAlarmType(),null);
-        }else if (Objects.equals(systemAlarmDto.getType(), Type.TEMPERATURE.getKey()) || Objects.equals(systemAlarmDto.getType(), Type.HUMIDITY.getKey())){
+        }else if (Objects.equals(systemAlarmDto.getType(), Type.TEMPERATURE) || Objects.equals(systemAlarmDto.getType(), Type.HUMIDITY)){
             alarm = redisUtil.getAlarm(AlarmClassify.TEMPERATURE_HUMIDITY_INSTRUMENT,systemAlarmDto.getSystemAlarmType(),null);
-        }else if (Objects.equals(systemAlarmDto.getType(), Type.ASSET.getKey())){
+        }else if (Objects.equals(systemAlarmDto.getType(), Type.ASSET)){
             alarm = redisUtil.getAlarm(AlarmClassify.ASSETS,systemAlarmDto.getSystemAlarmType(),null);
-        }else if (Objects.equals(systemAlarmDto.getType(), Type.PATIENT.getKey())){
+        }else if (Objects.equals(systemAlarmDto.getType(), Type.PATIENT)){
             // TODO: 2021/5/17 获取患者级别
             alarm = redisUtil.getAlarm(AlarmClassify.PATIENT,systemAlarmDto.getSystemAlarmType(),null);
         }
-        else if (Objects.equals(systemAlarmDto.getType(), Type.DEVICE.getKey())){
+        else if (Objects.equals(systemAlarmDto.getType(), Type.DEVICE)){
             alarm = redisUtil.getAlarm(AlarmClassify.DEVICE,systemAlarmDto.getSystemAlarmType(),null);
         }
         return alarm;

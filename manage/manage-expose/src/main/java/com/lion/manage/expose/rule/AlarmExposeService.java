@@ -2,6 +2,7 @@ package com.lion.manage.expose.rule;
 
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.enums.AlarmClassify;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.rule.Alarm;
 
 /**
@@ -11,5 +12,5 @@ import com.lion.manage.entity.rule.Alarm;
  **/
 public interface AlarmExposeService extends BaseService<Alarm> {
 
-    public Alarm find(AlarmClassify classify);
+    public Alarm find(AlarmClassify classify, SystemAlarmType systemAlarmType);
 }

@@ -541,7 +541,7 @@ public class RedisUtil {
         }
 
         if (Objects.isNull(alarm)){
-            alarm = alarmExposeService.find(alarmClassify);
+            alarm = alarmExposeService.find(alarmClassify, code);
             if (Objects.nonNull(alarm)){
                 redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 if (Objects.isNull(alarm.getLevel())){

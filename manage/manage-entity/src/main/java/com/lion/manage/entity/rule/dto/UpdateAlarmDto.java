@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"code","createDateTime","updateDateTime","createUserId","updateUserId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 public class UpdateAlarmDto extends Alarm {
 
     @ApiModelProperty(value = "警报方式(全量,先删后增)")

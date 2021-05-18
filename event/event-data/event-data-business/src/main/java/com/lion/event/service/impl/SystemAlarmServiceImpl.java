@@ -24,6 +24,11 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Override
     public void updateSdt(String uuid) {
+        alarmDao.updateSdt(uuid);
+    }
 
+    @Override
+    public void unalarm(String uuid) {
+        alarmDao.unalarm(uuid);
     }
 }

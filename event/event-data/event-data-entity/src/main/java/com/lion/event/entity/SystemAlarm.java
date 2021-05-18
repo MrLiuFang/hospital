@@ -22,7 +22,7 @@ public class SystemAlarm implements Serializable {
     /**
      * 唯一追踪标识
      */
-    private String uuid;
+    private String ui;
 
     /**
      * 警告类型(com.lion.common.enums.Type）)

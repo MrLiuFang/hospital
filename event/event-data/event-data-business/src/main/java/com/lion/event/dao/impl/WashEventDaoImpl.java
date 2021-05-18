@@ -62,18 +62,18 @@ public class WashEventDaoImpl implements WashEventDaoEx {
             group = BasicDBObjectUtil.put(group,"$group","_id","$pi"); //员工分组
         }
         group = BasicDBObjectUtil.put(group,"$group","allCount",new BasicDBObject("$sum",1));//全部
-        LocalDateTime wt = LocalDateTime.parse("9998-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        LocalDateTime wt = LocalDateTime.parse("9997-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         group = BasicDBObjectUtil.put(group,"$group","allNoAlarm",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",false})})).append("then",1).append("else",0))));//合规
         group = BasicDBObjectUtil.put(group,"$group","allViolation",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$lte",new Object[]{"$wt", wt}) })).append("then",1).append("else",0))));//违规
         group = BasicDBObjectUtil.put(group,"$group","allNoWash",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$gte",new Object[]{"$wt",wt}) })).append("then",1).append("else",0))));//错过洗手
 
         BasicDBObject match = new BasicDBObject();
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime)) {
-            match = BasicDBObjectUtil.put(match,"$match","sdt", new BasicDBObject("$gte",startDateTime).append("$lte",endDateTime));
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime).append("$lte",endDateTime));
         }else if (Objects.nonNull(startDateTime) && Objects.isNull(endDateTime)) {
-            match = BasicDBObjectUtil.put(match,"$match","sdt", new BasicDBObject("$gte",startDateTime));
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime));
         }else if (Objects.isNull(startDateTime) && Objects.nonNull(endDateTime)) {
-            match = BasicDBObjectUtil.put(match,"$match","sdt", new BasicDBObject("$lte",endDateTime));
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$lte",endDateTime));
         }
         if (Objects.nonNull(userType)){
             match = BasicDBObjectUtil.put(match,"$match","py",new BasicDBObject("$eq",userType.getKey()) );

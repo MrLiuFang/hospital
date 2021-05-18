@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     private RedisTemplate redisTemplate;
 
     @Override
+    @Transactional
     public void add(AddAlarmDto addAlarmDto) {
         Alarm alarm = new Alarm();
         BeanUtils.copyProperties(addAlarmDto,alarm);
@@ -72,6 +74,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     }
 
     @Override
+    @Transactional
     public void update(UpdateAlarmDto updateAlarmDto) {
         Alarm alarm = new Alarm();
         BeanUtils.copyProperties(updateAlarmDto,alarm);

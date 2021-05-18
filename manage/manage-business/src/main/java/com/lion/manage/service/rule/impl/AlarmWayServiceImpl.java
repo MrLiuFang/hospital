@@ -6,6 +6,7 @@ import com.lion.manage.entity.rule.AlarmWay;
 import com.lion.manage.service.rule.AlarmWayService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +24,7 @@ public class AlarmWayServiceImpl extends BaseServiceImpl<AlarmWay> implements Al
     private AlarmWayDao alarmWayDao;
 
     @Override
+    @Transactional
     public void add(Long alarmId, List<com.lion.manage.entity.enums.AlarmWay> ways) {
         if (Objects.nonNull(alarmId)){
             alarmWayDao.deleteByAlarmId(alarmId);

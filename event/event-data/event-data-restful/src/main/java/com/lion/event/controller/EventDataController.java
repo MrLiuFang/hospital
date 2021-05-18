@@ -15,6 +15,7 @@ import com.lion.event.entity.vo.UserCurrentRegionVo;
 import com.lion.event.entity.vo.ListUserWashMonitorVo;
 import com.lion.event.entity.vo.ListWashMonitorVo;
 import com.lion.event.service.DeviceDataService;
+import com.lion.event.service.SystemAlarmService;
 import com.lion.event.service.WashEventService;
 import com.lion.event.service.WashRecordService;
 import com.lion.manage.entity.build.Build;
@@ -22,20 +23,17 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.upms.entity.enums.UserType;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -63,6 +61,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @Autowired
     private WashEventService eventService;
+
+    @Autowired
+    private SystemAlarmService systemAlarmService;
 
     @GetMapping("/user/current/region")
     @ApiOperation(value = "用户当前位置")
@@ -146,5 +147,15 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                           @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                           LionPage lionPage) {
         return eventService.userWashConformanceRatio(userName,departmentId,userType,startDateTime,endDateTime,lionPage);
+    }
+
+    @PutMapping("/unalarm")
+    @ApiImplicitParams({@ApiImplicitParam(value = "uuid")})
+    @ApiOperation(value = "警告知熟(处理警告)")
+    public IResultData unalarm(@RequestBody Map<String,String> map) {
+        if (map.containsKey("uuid")) {
+            systemAlarmService.unalarm(map.get("uuid"));
+        }
+        return ResultData.instance();
     }
 }

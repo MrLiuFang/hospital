@@ -62,7 +62,7 @@ public class RedisConstants {
     /**
      * 警报分类规则(key:alarmClassifyCode,value:alarmId)
      */
-    public static final String ALARM_CLASSIFY_CODE = "alarm_classify_code";
+    public static final String ALARM_CLASSIFY_CODE = "alarm_classify_code_";
 
     /**
      * 设备归属哪个区域(key:deviceId,value:regionId)
@@ -163,6 +163,11 @@ public class RedisConstants {
      * 资产(key:tagId,value:assetsId)
      */
     public static final String TAG_ASSETS ="tag_assets_";
+
+    /**
+     * 解除警告
+     */
+    public static final String UNALARM = "unalarm_";
 
     /**
      * 缓存过期时间

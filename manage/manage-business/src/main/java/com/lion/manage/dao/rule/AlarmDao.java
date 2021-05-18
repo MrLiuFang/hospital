@@ -22,6 +22,15 @@ public interface AlarmDao extends BaseDao<Alarm> {
     /**
      * 根据警报分类查询
      * @param classify
+     * @param code
+     * @return
+     */
+    public Alarm findFirstByClassifyAndCode(AlarmClassify classify,SystemAlarmType code);
+
+
+    /**
+     * 根据警报分类查询
+     * @param classify
      * @param content
      * @return
      */

@@ -3,6 +3,7 @@ package com.lion.manage.expose.rule.impl;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.rule.AlarmDao;
 import com.lion.manage.entity.enums.AlarmClassify;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.expose.rule.AlarmExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -20,7 +21,7 @@ public class AlarmExposeServiceImpl extends BaseServiceImpl<Alarm> implements Al
     private AlarmDao alarmDao;
 
     @Override
-    public Alarm find(AlarmClassify classify) {
-        return alarmDao.findFirstByClassify(classify);
+    public Alarm find(AlarmClassify classify, SystemAlarmType code) {
+        return alarmDao.findFirstByClassifyAndCode(classify,code);
     }
 }
