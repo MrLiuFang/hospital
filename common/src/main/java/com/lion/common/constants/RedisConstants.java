@@ -165,9 +165,18 @@ public class RedisConstants {
     public static final String TAG_ASSETS ="tag_assets_";
 
     /**
-     * 解除警告
+     * 解除警告()
      */
     public static final String UNALARM = "unalarm_";
+
+    /**
+     * 员工上班状态(key:userId,value:start/end)
+     */
+    public static final String USER_WORK_STATE = "user_work_state_";
+
+    public static final String USER_WORK_STATE_START = "start";
+
+    public static final String USER_WORK_STATE_END = "end";
 
     /**
      * 缓存过期时间

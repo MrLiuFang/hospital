@@ -30,6 +30,7 @@ import com.lion.manage.expose.rule.WashDeviceExposeService;
 import com.lion.manage.expose.rule.WashExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.sun.xml.internal.ws.addressing.WsaActionUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -435,6 +436,30 @@ public class RedisUtil {
             }
         });
         return deviceList;
+    }
+
+    public List<Wash> getLoopWash(){
+        List<Long> objList = redisTemplate.opsForList().range(RedisConstants.ALL_USER_LOOP_WASH,0,-1);
+        if (Objects.nonNull(objList) && objList.size()>0){
+            objList.forEach(o -> {
+                if (!(o instanceof Long)){
+                    redisTemplate.delete(RedisConstants.ALL_USER_LOOP_WASH);
+                }
+            });
+        }
+        List<Long> list = redisTemplate.opsForList().range(RedisConstants.ALL_USER_LOOP_WASH,0,-1);
+        List<Wash> washList = new ArrayList<Wash>();
+        if (Objects.nonNull(list) && list.size()>0){
+            list.forEach(id ->{
+                Wash wash = getw
+            });
+        }
+    }
+
+    public Wash getWashById()
+
+    public List<Wash> getLoopWashByUserId(Long userId){
+
     }
 
     public List<Wash> getWash(Long regionId){
