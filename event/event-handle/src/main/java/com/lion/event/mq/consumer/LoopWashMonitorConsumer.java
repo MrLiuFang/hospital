@@ -6,6 +6,7 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.*;
 import com.lion.common.enums.Type;
+import com.lion.common.enums.WashEventType;
 import com.lion.common.utils.MessageDelayUtil;
 import com.lion.common.utils.RedisUtil;
 import com.lion.event.mq.consumer.common.WashCommon;
@@ -95,7 +96,7 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
                         if (Objects.isNull(userLastWashDto)) {
                             // 记录洗手事件 (错过洗手)
                             try {
-                                recordWashEvent(loopWashDto.getUserId());
+                                recordWashEvent(loopWashDto.getUserId(),null);
                             } catch (JsonProcessingException e) {
                                 e.printStackTrace();
                             }
@@ -104,10 +105,12 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
                             if (!(userLastWashDto.getDateTime().isAfter(loopWashDto.getStartWashDateTime()) && userLastWashDto.getDateTime().isBefore(loopWashDto.getEndWashDateTime()))) {
                                 // 记录洗手事件 (错过洗手)
                                 try {
-                                    recordWashEvent(loopWashDto.getUserId());
+                                    recordWashEvent(loopWashDto.getUserId(),null);
                                 } catch (JsonProcessingException e) {
                                     e.printStackTrace();
                                 }
+                            }else {
+
                             }
                         }
                     }else {
@@ -127,10 +130,16 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
         }
     }
 
-    private void recordWashEvent(Long userId) throws JsonProcessingException {
+    private void recordWashEvent(Long userId,LocalDateTime wt) throws JsonProcessingException {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + userId);
         WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null , null,null);
         WashEventDto washEventDto = new WashEventDto();
+        washEventDto.setIa(true);
+        washEventDto.setWet(WashEventType.LOOP.getKey());
+        washEventDto.setAt(SystemAlarmType.ZZDQYWJXXSCZ.getKey());
+        if (Objects.nonNull(wt)){
+            washEventDto.setWt(wt);
+        }
         BeanUtils.copyProperties(washRecordDto,washEventDto);
         rocketMQTemplate.syncSend(TopicConstants.WASH_EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washEventDto)).build());
         //系统内警告

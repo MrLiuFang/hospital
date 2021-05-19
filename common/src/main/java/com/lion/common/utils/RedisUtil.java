@@ -3,6 +3,7 @@ package com.lion.common.utils;
 import com.lion.common.constants.RedisConstants;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.DeviceGroupDevice;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagUser;
 import com.lion.device.expose.device.DeviceExposeService;
@@ -15,6 +16,7 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.enums.SystemAlarmType;
+import com.lion.manage.entity.enums.WashDeviceType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.entity.rule.Wash;
@@ -390,18 +392,9 @@ public class RedisUtil {
         return tag;
     }
 
-    //    private List<Wash> getLoopWash(Long userId){
-//        List<Wash> list = (List<Wash>) redisTemplate.opsForList().range(RedisConstants.USER_LOOP_WASH+userId,0,-1);
-//        if (Objects.isNull(list) || list.size() <=0 ){
-//            list = washExposeService.findLoopWash(userId);
-//            if (Objects.nonNull(list) && list.size()>0) {
-//                redisTemplate.opsForList().leftPushAll(RedisConstants.USER_LOOP_WASH + userId, list);
-//                redisTemplate.expire(RedisConstants.USER_LOOP_WASH + userId,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
-//            }
-//        }
-//        return list;
-//    }
-//
+    public List<WashDeviceType> getWashDeviceType(Long washId) {
+
+    }
 
     public List<Device> getWashDevice(Long washId) {
         if (Objects.isNull(washId)){
