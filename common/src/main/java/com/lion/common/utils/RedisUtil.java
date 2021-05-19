@@ -36,6 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
+import sun.awt.geom.AreaOp;
+import sun.util.resources.ga.LocaleNames_ga;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -450,16 +452,76 @@ public class RedisUtil {
         List<Long> list = redisTemplate.opsForList().range(RedisConstants.ALL_USER_LOOP_WASH,0,-1);
         List<Wash> washList = new ArrayList<Wash>();
         if (Objects.nonNull(list) && list.size()>0){
-            list.forEach(id ->{
-                Wash wash = getw
-            });
+            for (Long id  : list){
+                Wash wash = getWashById(id);
+                if (Objects.nonNull(wash)) {
+                    washList.add(wash);
+                }
+            };
         }
+        list.clear();
+        redisTemplate.delete(RedisConstants.ALL_USER_LOOP_WASH);
+        if (Objects.nonNull(washList) && washList.size()<=0){
+            washList = washExposeService.findLoopWash(true);
+            washList.forEach(wash -> {
+                list.add(wash.getId());
+                redisTemplate.opsForValue().set(RedisConstants.WASH + wash.getId(), wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            });
+            redisTemplate.opsForList().leftPushAll(RedisConstants.ALL_USER_LOOP_WASH,list);
+        }
+
+        return washList;
     }
 
-    public Wash getWashById()
+    public Wash getWashById(Long washId) {
+        Object object = redisTemplate.opsForValue().get(RedisConstants.WASH + washId);
+        Wash wash = null;
+        if (Objects.nonNull(object) && !(object instanceof Wash )){
+            redisTemplate.delete(RedisConstants.WASH + washId);
+        }else if (Objects.nonNull(object)){
+            wash = (Wash) object;
+        }
+        if (Objects.isNull(wash)) {
+            wash = washExposeService.findById(washId);
+            if (Objects.nonNull(wash)) {
+                redisTemplate.opsForValue().set(RedisConstants.WASH + washId, wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            }
+        }
+        return wash;
+    }
 
     public List<Wash> getLoopWashByUserId(Long userId){
+        List<Object> objList = redisTemplate.opsForList().range(RedisConstants.USER_LOOP_WASH+userId,0,-1);
+        if (Objects.nonNull(objList) && objList.size()>0){
+            objList.forEach(o -> {
+                if (!(o instanceof Long)){
+                    redisTemplate.delete(RedisConstants.USER_LOOP_WASH+userId);
+                }
+            });
+        }
 
+        List<Long> list = redisTemplate.opsForList().range(RedisConstants.USER_LOOP_WASH+userId,0,-1);
+        List<Wash> washList = new ArrayList<Wash>();
+        if (Objects.nonNull(list) || list.size() >0 ) {
+            for (Long id : list) {
+                Wash wash = getWashById(id);
+                if (Objects.nonNull(wash)) {
+                    washList.add(wash);
+                }
+            }
+        }
+        list.clear();
+        if (washList.size()<=0){
+            washList= washExposeService.findLoopWash(userId);
+            washList.forEach(wash -> {
+                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                list.add(wash.getId());
+            });
+            if (list.size()>0){
+                redisTemplate.opsForList().leftPushAll(RedisConstants.USER_LOOP_WASH+userId,list);
+            }
+        }
+        return washList;
     }
 
     public List<Wash> getWash(Long regionId){
@@ -478,32 +540,22 @@ public class RedisUtil {
         List<Wash> washList = new ArrayList<Wash>();
         if (Objects.nonNull(list) || list.size() >0 ) {
             for (Long id : list) {
-                Object object = redisTemplate.opsForValue().get(RedisConstants.WASH + id);
-                Wash wash = null;
-                if (Objects.nonNull(object) && !(object instanceof Wash )){
-                    redisTemplate.delete(RedisConstants.WASH + id);
-                }else if (Objects.nonNull(object)){
-                    wash = (Wash) object;
-                }
-                if (Objects.isNull(wash)) {
-                    wash = washExposeService.findById(id);
-                    if (Objects.nonNull(wash)) {
-                        redisTemplate.opsForValue().set(RedisConstants.WASH + id, wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                        washList.add(wash);
-                    }
+                Wash wash = getWashById(id);
+                if (Objects.nonNull(wash)) {
+                    washList.add(wash);
                 }
             }
         }
         list.clear();
         redisTemplate.delete(RedisConstants.REGION_WASH+regionId);
         if (washList.size()<=0){
-            List<Wash> washRegionList = washExposeService.find(regionId);
-            washList = washRegionList;
-            washRegionList.forEach(wash -> {
+            washList = washExposeService.find(regionId);
+            washList.forEach(wash -> {
+                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 list.add(wash.getId());
             });
             if (list.size()>0){
-                redisTemplate.opsForList().leftPushAll(RedisConstants.REGION_WASH+regionId,list,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForList().leftPushAll(RedisConstants.REGION_WASH+regionId,list);
             }
         }
         return washList;
@@ -523,13 +575,7 @@ public class RedisUtil {
 
         Wash wash = null;
         if (Objects.nonNull(washId)) {
-            wash = (Wash) redisTemplate.opsForValue().get(RedisConstants.WASH+washId);
-            if (Objects.isNull(wash)){
-                wash = washExposeService.findById(washId);
-                if (Objects.nonNull(wash)){
-                    redisTemplate.opsForValue().set(RedisConstants.WASH+washId,wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                }
-            }
+            wash = getWashById(washId);
         }
 
         if (Objects.isNull(wash)){

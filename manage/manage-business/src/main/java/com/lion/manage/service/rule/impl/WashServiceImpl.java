@@ -238,8 +238,8 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
 //                BusinessException.throwException("已有其他人员在非全员的定时洗手规则中,不能再设置针对全员的定时洗手规则,会造成洗手监控冲突");
 //            }
 //        }
-
-        Wash washLoppAllUser = washDao.findFirstByTypeAndIsAllUser(WashRuleType.LOOP, true);
+        List<Wash> list = washDao.findFirstByTypeAndIsAllUser(WashRuleType.LOOP, true);
+        Wash washLoppAllUser = list.size()>0?list.get(0):null;
         if ((Objects.isNull(id) && Objects.nonNull(washLoppAllUser) ) || (Objects.nonNull(id) && Objects.nonNull(washLoppAllUser) &&  !Objects.equals(washLoppAllUser.getId(),id)) ){
             BusinessException.throwException("针对全员的定时洗手规则已经存在,多个全员定时洗手规则会造成洗手监控冲突");
         }

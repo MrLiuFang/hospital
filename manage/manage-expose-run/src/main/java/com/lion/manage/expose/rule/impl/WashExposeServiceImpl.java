@@ -37,7 +37,7 @@ public class WashExposeServiceImpl extends BaseServiceImpl<Wash> implements Wash
     }
 
     @Override
-    public List<Wash> find(Boolean isAllUser) {
-        return null;
+    public List<Wash> findLoopWash(Boolean isAllUser) {
+        return washDao.findFirstByTypeAndIsAllUser(WashRuleType.LOOP,isAllUser);
     }
 }

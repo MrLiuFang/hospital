@@ -39,5 +39,5 @@ public interface WashExposeService extends BaseService<Wash> {
      * @param isAllUser
      * @return
      */
-    public List<Wash> find(Boolean isAllUser);
+    public List<Wash> findLoopWash(Boolean isAllUser);
 }

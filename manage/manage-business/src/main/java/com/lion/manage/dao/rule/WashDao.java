@@ -71,20 +71,7 @@ public interface WashDao extends BaseDao<Wash> {
      * 根据规则类型查询洗手规则
      * @param type
      * @return
-             */
-    public List<Wash> findByType(WashRuleType type);
-
-    /**
-     * 根据规则类型查询洗手规则
-     * @param type
-     * @return
      */
-    public Wash findFirstByTypeAndIsAllUser(WashRuleType type,Boolean isAllUser);
+    public List<Wash> findFirstByTypeAndIsAllUser(WashRuleType type,Boolean isAllUser);
 
-    /**
-     * 根据是否全员查询
-     * @param isAllUser
-     * @return
-     */
-    public List<Wash> findByIsAllUser(Boolean isAllUser);
 }
