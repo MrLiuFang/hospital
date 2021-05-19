@@ -94,28 +94,28 @@ public class DeviceServiceImpl implements DeviceService {
         if (Objects.equals(deviceDataDto.getTagType(), Type.HUMIDITY)) {//湿度仪
             if (Objects.nonNull(tag.getMaxHumidity())) {
                 if (deviceDataDto.getHumidity().compareTo(tag.getMaxHumidity()) == 1) {
-                    SystemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGG);
-                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.SDGG);
+                    SystemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGDG);
+                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.SDGDG);
                 }
             }
 
             if (Objects.nonNull(tag.getMinHumidity())) {
                 if (deviceDataDto.getHumidity().compareTo(tag.getMinHumidity()) == -1) {
-                    SystemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGD);
-                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.SDGD);
+                    SystemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGDG);
+                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.SDGDG);
                 }
             }
         }else if (Objects.equals(deviceDataDto.getTagType(), Type.TEMPERATURE)){//温度仪
             if (Objects.nonNull(tag.getMaxTemperature())) {
                 if (deviceDataDto.getTemperature().compareTo(tag.getMaxTemperature()) == 1) {
-                    SystemAlarm(Type.TEMPERATURE,tag,null,SystemAlarmType.WDGG);
-                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.WDGG);
+                    SystemAlarm(Type.TEMPERATURE,tag,null,SystemAlarmType.WDGDG);
+                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.WDGDG);
                 }
             }
             if (Objects.nonNull(tag.getMinTemperature())) {
                 if (deviceDataDto.getTemperature().compareTo(tag.getMinTemperature()) == -1) {
-                    SystemAlarm(Type.TEMPERATURE,tag,null,SystemAlarmType.WDGD);
-                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.WDGD);
+                    SystemAlarm(Type.TEMPERATURE,tag,null,SystemAlarmType.WDGDG);
+                    tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.WDGDG);
                 }
             }
         }

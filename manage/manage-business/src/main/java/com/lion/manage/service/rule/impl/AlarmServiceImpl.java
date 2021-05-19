@@ -66,7 +66,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         Alarm alarm = new Alarm();
         BeanUtils.copyProperties(addAlarmDto,alarm);
         alarmClassify(alarm);
-        assertCodeExist(addAlarmDto.getCode(),alarm.getClassify(),null);
+        assertCodeExist(addAlarmDto.getCode(),alarm.getClassify(), alarm.getLevel(), null);
         assertAlarmClassifytExist(alarm.getClassify(),alarm.getContent(),alarm.getLevel(),null);
         alarm = save(alarm);
         alarmWayService.add(alarm.getId(),addAlarmDto.getWays());
@@ -79,7 +79,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         Alarm alarm = new Alarm();
         BeanUtils.copyProperties(updateAlarmDto,alarm);
         alarmClassify(alarm);
-        assertCodeExist(alarm.getCode(),alarm.getClassify(),alarm.getId());
+        assertCodeExist(alarm.getCode(),alarm.getClassify(),alarm.getLevel() , alarm.getId());
         assertAlarmClassifytExist(alarm.getClassify(),alarm.getContent(),alarm.getLevel(),alarm.getId());
         update(alarm);
         alarmWayService.add(alarm.getId(),updateAlarmDto.getWays());
@@ -181,8 +181,13 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         }
     }
 
-    private void assertCodeExist(SystemAlarmType code,AlarmClassify classify, Long id) {
-        Alarm alarm = alarmDao.findFirstByCodeAndClassify(code,classify);
+    private void assertCodeExist(SystemAlarmType code,AlarmClassify classify,Integer level, Long id) {
+        Alarm alarm = null;
+        if (Objects.nonNull(level)) {
+            alarm = alarmDao.findFirstByCodeAndClassifyAndLevel(code,classify,level);
+        }else {
+            alarm = alarmDao.findFirstByCodeAndClassify(code,classify);
+        }
         if ((Objects.isNull(id) && Objects.nonNull(alarm)) || (Objects.nonNull(id) && Objects.nonNull(alarm) && !Objects.equals(alarm.getId(),id)) ){
             BusinessException.throwException("该分类已存在该编码");
         }

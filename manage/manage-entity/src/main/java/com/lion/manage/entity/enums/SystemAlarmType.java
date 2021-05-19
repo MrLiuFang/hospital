@@ -29,10 +29,10 @@ public enum SystemAlarmType implements IEnum {
     ZDHJ(12, "主动呼叫"),
     JRJQ(13, "进入禁区"),
     WSQCCSSQY(14, "未授权超出所属区域"),
-    WDGD(15, "温度过低"),
-    WDGG(16, "温度过高"),
-    SDGD(17, "湿度过低"),
-    SDGG(18, "湿度过高"),
+    WDGDG(15, "温度过低/高"),
+//    WDGG(16, "温度过高"),
+    SDGDG(17, "湿度过低/高"),
+//    SDGG(18, "湿度过高"),
     BQDCBZ(19, "标签电池不足"),
     SBGZ(20, "设备故障");
 

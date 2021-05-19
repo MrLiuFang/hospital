@@ -50,7 +50,7 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public void position(DeviceDataDto deviceDataDto, Tag tag, Long regionId) throws JsonProcessingException {
-        if (Objects.equals(deviceDataDto.getTagType(),Type.TEMPERATURE)) {
+        if (Objects.equals(deviceDataDto.getTagType(),Type.HUMIDITY)) {
             position(Type.HUMIDITY, null, regionId, null, tag.getId(), null, deviceDataDto.getTime(), deviceDataDto.getSystemDateTime());
         }else if (Objects.equals(deviceDataDto.getTagType(),Type.TEMPERATURE)) {
             position(Type.TEMPERATURE, null, regionId, null, null, tag.getId(), deviceDataDto.getTime(), deviceDataDto.getSystemDateTime());

@@ -60,4 +60,13 @@ public interface AlarmDao extends BaseDao<Alarm> {
      * @return
      */
     public Alarm findFirstByCodeAndClassify(SystemAlarmType code,AlarmClassify classify);
+
+    /**
+     *
+     * @param code
+     * @param classify
+     * @param level
+     * @return
+     */
+    public Alarm findFirstByCodeAndClassifyAndLevel(SystemAlarmType code,AlarmClassify classify,Integer level);
 }

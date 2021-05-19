@@ -94,7 +94,9 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
 //
 //            }
 
-            else if (Objects.nonNull(tag) && (Objects.equals(deviceDataDto.getTagType(), Type.ASSET) || Objects.equals(deviceDataDto.getTagType(), Type.DEVICE) || Objects.equals(deviceDataDto.getTagType(), Type.HUMIDITY) || Objects.equals(deviceDataDto.getTagType(), Type.TEMPERATURE) ) && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
+            else if (Objects.nonNull(tag)
+                    && (Objects.equals(deviceDataDto.getTagType(), Type.ASSET) || Objects.equals(deviceDataDto.getTagType(), Type.DEVICE) || Objects.equals(deviceDataDto.getTagType(), Type.HUMIDITY) || Objects.equals(deviceDataDto.getTagType(), Type.TEMPERATURE) )
+                    && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
                 deviceService.deviceEevent(deviceDataDto,monitor,star,tag);
             }
 
