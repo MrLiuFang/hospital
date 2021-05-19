@@ -93,6 +93,17 @@ public class TopicConstants {
     public static final String LOOP_WASH_CONSUMER_GROUP = "loop_wash_consumer_group";
 
     /**
+     * 定时洗手规则处理
+     */
+    public static final String LOOP_WASH_DEVICE_ALARM = "loop_wash_device_alarm";
+
+    /**
+     * 定时洗手规则处理消费组
+     */
+    public static final String LOOP_WASH_DEVICE_ALARM_CONSUMER_GROUP = "loop_wash_device_alarm_consumer_group";
+
+
+    /**
      * 警告处理消息延迟推送
      */
     public static final String REGION_WASH_ALARM_DELAY = "region_wash_alarm_delay";

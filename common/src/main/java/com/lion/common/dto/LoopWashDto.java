@@ -14,6 +14,8 @@ public class LoopWashDto {
 
     private Long userId;
 
+    private String uuid;
+
     private LocalDateTime startWorkDateTime = LocalDateTime.now();
 
     private LocalDateTime endWorkDateTime;
@@ -23,10 +25,6 @@ public class LoopWashDto {
     private LocalDateTime endWashDateTime;
 
     private LocalDateTime monitorDelayDateTime;
-
-    private LocalDateTime alarmDateTime;
-
-    private LocalDateTime deviceAlarmDateTime;
 
     private Integer count = 0;
 }

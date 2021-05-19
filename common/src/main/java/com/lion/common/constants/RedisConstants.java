@@ -174,6 +174,8 @@ public class RedisConstants {
      */
     public static final String USER_WORK_STATE = "user_work_state_";
 
+    public static final String USER_WORK_STATE_UUID = "user_work_state_uuid_";
+
     public static final String USER_WORK_STATE_START = "start";
 
     public static final String USER_WORK_STATE_END = "end";

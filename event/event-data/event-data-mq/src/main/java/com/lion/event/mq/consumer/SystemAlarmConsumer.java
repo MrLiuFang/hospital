@@ -63,6 +63,9 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
             SystemAlarmDto systemAlarmDto = jacksonObjectMapper.readValue(msg, SystemAlarmDto.class);
+            if (Objects.isNull(systemAlarmDto.getUuid())) {
+                return;
+            }
             Boolean b = (Boolean) redisTemplate.opsForValue().get(RedisConstants.UNALARM+systemAlarmDto.getUuid());
             if (Objects.equals(b,true)){
                 log.info("系统内解除警告");

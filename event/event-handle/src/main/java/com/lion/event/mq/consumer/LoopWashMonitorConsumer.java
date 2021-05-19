@@ -29,7 +29,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -66,7 +65,8 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
             String msg = new String(body);
             LoopWashDto loopWashDto = jacksonObjectMapper.readValue(msg, LoopWashDto.class);
             String state = (String) redisTemplate.opsForValue().get(RedisConstants.USER_WORK_STATE+loopWashDto.getUserId());
-            if (Objects.isNull(state) || Objects.equals(RedisConstants.USER_WORK_STATE_START,state)) {
+            String uuid = (String) redisTemplate.opsForValue().get(RedisConstants.USER_WORK_STATE_UUID+loopWashDto.getUserId());
+            if (Objects.isNull(state) || !Objects.equals(state,RedisConstants.USER_WORK_STATE_START) || !Objects.equals(uuid,loopWashDto.getUuid())) {
                 return;
             }
             List<Wash> list = redisUtil.getLoopWash();
@@ -79,24 +79,21 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
                 return;
             }
             list.forEach(wash -> {
-                if (Objects.equals(wash.getType(), WashRuleType.LOOP)) {
+                if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.nonNull(wash.getInterval()) && wash.getInterval()>1) {
                     if (Objects.isNull(loopWashDto.getMonitorDelayDateTime())) {
-                        loopWashDto.setMonitorDelayDateTime(loopWashDto.getStartWashDateTime().plusMinutes(wash.getInterval()));
-                        loopWashDto.setStartWashDateTime(loopWashDto.getStartWashDateTime().plusMinutes(wash.getInterval()-1));
-                        loopWashDto.setEndWashDateTime(loopWashDto.getStartWashDateTime().plusMinutes(wash.getInterval()));
-                    }else {
-                        loopWashDto.setMonitorDelayDateTime(loopWashDto.getMonitorDelayDateTime().plusMinutes(wash.getInterval()));
-                        loopWashDto.setStartWashDateTime(loopWashDto.getMonitorDelayDateTime().plusMinutes(wash.getInterval()-1));
-                        loopWashDto.setEndWashDateTime(loopWashDto.getMonitorDelayDateTime().plusMinutes(wash.getInterval()));
+                        loopWashDto.setMonitorDelayDateTime(loopWashDto.getStartWorkDateTime().plusMinutes(wash.getInterval()));
+                        loopWashDto.setStartWashDateTime(loopWashDto.getStartWorkDateTime().plusMinutes(wash.getInterval()-1));
+                        loopWashDto.setEndWashDateTime(loopWashDto.getStartWorkDateTime().plusMinutes(wash.getInterval()));
                     }
                     Duration duration = Duration.between(LocalDateTime.now(), loopWashDto.getMonitorDelayDateTime());
                     long millis = duration.toMillis();
                     if (millis<1000){
+                        loopWashDto.setCount(loopWashDto.getCount()+1);
                         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+loopWashDto.getUserId());
                         if (Objects.isNull(userLastWashDto)) {
                             // 记录洗手事件 (错过洗手)
                             try {
-                                recordWashEvent(loopWashDto.getUserId(),null);
+                                recordWashEvent(loopWashDto.getUserId(),null, SystemAlarmType.ZZDQYWJXXSCZ,loopWashDto, wash);
                             } catch (JsonProcessingException e) {
                                 e.printStackTrace();
                             }
@@ -105,24 +102,27 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
                             if (!(userLastWashDto.getDateTime().isAfter(loopWashDto.getStartWashDateTime()) && userLastWashDto.getDateTime().isBefore(loopWashDto.getEndWashDateTime()))) {
                                 // 记录洗手事件 (错过洗手)
                                 try {
-                                    recordWashEvent(loopWashDto.getUserId(),null);
+                                    recordWashEvent(loopWashDto.getUserId(),null, SystemAlarmType.ZZDQYWJXXSCZ,loopWashDto, wash);
                                 } catch (JsonProcessingException e) {
                                     e.printStackTrace();
                                 }
                             }else {
-
+                                //判断是否在规定的洗手设备类型洗手
+                                Boolean b = washRuleUtil.judgeDevideType(userLastWashDto.getMonitorId(),wash);
+                                if (!b){
+                                    try {
+                                        recordWashEvent(loopWashDto.getUserId(),userLastWashDto.getDateTime(), SystemAlarmType.WXYBZDXSSBXS,loopWashDto, wash);
+                                    } catch (JsonProcessingException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
                             }
                         }
-                    }else {
-                        Integer delayLevel = MessageDelayUtil.getDelayLevel(loopWashDto.getMonitorDelayDateTime());
-                        if (delayLevel > -1) {
-                            try {
-                                rocketMQTemplate.syncSend(TopicConstants.LOOP_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(loopWashDto)).build(), 1000, delayLevel);
-                            } catch (JsonProcessingException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        loopWashDto.setMonitorDelayDateTime(LocalDateTime.now().plusMinutes(wash.getInterval()));
+                        loopWashDto.setStartWashDateTime(loopWashDto.getMonitorDelayDateTime().plusMinutes(wash.getInterval()-1));
+                        loopWashDto.setEndWashDateTime(loopWashDto.getMonitorDelayDateTime().plusMinutes(wash.getInterval()));
                     }
+                    delay(loopWashDto);
                 }
             });
         }catch (Exception e){
@@ -130,25 +130,47 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
         }
     }
 
-    private void recordWashEvent(Long userId,LocalDateTime wt) throws JsonProcessingException {
+    private void delay(LoopWashDto loopWashDto){
+        Integer delayLevel = MessageDelayUtil.getDelayLevel(loopWashDto.getMonitorDelayDateTime());
+        if (delayLevel > -1) {
+            try {
+                rocketMQTemplate.syncSend(TopicConstants.LOOP_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(loopWashDto)).build(), 1000, delayLevel);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void recordWashEvent(Long userId,LocalDateTime wt,SystemAlarmType systemAlarmType,LoopWashDto loopWashDto,Wash wash) throws JsonProcessingException {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + userId);
         WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null , null,null);
         WashEventDto washEventDto = new WashEventDto();
         washEventDto.setIa(true);
         washEventDto.setWet(WashEventType.LOOP.getKey());
-        washEventDto.setAt(SystemAlarmType.ZZDQYWJXXSCZ.getKey());
+        washEventDto.setAt(systemAlarmType.getKey());
         if (Objects.nonNull(wt)){
             washEventDto.setWt(wt);
         }
         BeanUtils.copyProperties(washRecordDto,washEventDto);
         rocketMQTemplate.syncSend(TopicConstants.WASH_EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washEventDto)).build());
+
         //系统内警告
         SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
         systemAlarmDto.setDateTime(LocalDateTime.now());
         systemAlarmDto.setType(Type.STAFF);
         systemAlarmDto.setPeopleId(userId);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-        systemAlarmDto.setSystemAlarmType(SystemAlarmType.ZZDQYWJXXSCZ);
+        systemAlarmDto.setSystemAlarmType(systemAlarmType);
+        systemAlarmDto.setUuid(loopWashDto.getUuid());
         rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+
+        //给硬件发送数据
+        LoopWashDeviceAlarmDto loopWashDeviceAlarmDto = new LoopWashDeviceAlarmDto();
+        loopWashDeviceAlarmDto.setUserId(userId);
+        loopWashDeviceAlarmDto.setUuid(loopWashDto.getUuid());
+        loopWashDeviceAlarmDto.setDeviceDelayAlarmDateTime(LocalDateTime.now());
+        loopWashDeviceAlarmDto.setStartAlarmDateTime(loopWashDeviceAlarmDto.getDeviceDelayAlarmDateTime());
+        loopWashDeviceAlarmDto.setEndAlarmDateTime(loopWashDeviceAlarmDto.getDeviceDelayAlarmDateTime().plusMinutes(wash.getInterval()));
+        rocketMQTemplate.syncSend(TopicConstants.LOOP_WASH_DEVICE_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(loopWashDeviceAlarmDto)).build());
     }
 }

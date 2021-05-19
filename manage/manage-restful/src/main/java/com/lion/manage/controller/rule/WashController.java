@@ -9,6 +9,7 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.device.entity.device.Device;
 import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.region.dto.AddRegionDto;
@@ -72,11 +73,14 @@ public class WashController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/list")
     @ApiOperation(value = "洗手规则列表")
-    public IPageResultData<List<ListWashVo>> list(@ApiParam(value = "名称") String name, LionPage lionPage){
+    public IPageResultData<List<ListWashVo>> list(@ApiParam(value = "名称") String name,@ApiParam(value = "洗手规则类型") WashRuleType type, LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
+        }
+        if (Objects.nonNull(type)) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_type",type);
         }
         lionPage.setJpqlParameter(jpqlParameter);
         PageResultData page = (PageResultData) washService.findNavigator(lionPage);

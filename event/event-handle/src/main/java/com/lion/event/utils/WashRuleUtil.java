@@ -32,6 +32,37 @@ public class WashRuleUtil {
         };
         return false;
     }
+
+    public Boolean judgeDevideType(Long deviceId, Wash wash){
+        List<WashDeviceType> list = redisUtil.getWashDeviceType(wash.getId());
+        Device device = redisUtil.getDevice(deviceId);
+        if (Objects.nonNull(list) && list.size()>0 && Objects.nonNull(device)){
+            for(WashDeviceType washDeviceType : list) {
+                if (Objects.equals(washDeviceType,WashDeviceType.ALCOHOL)) {
+                    if (Objects.equals(device.getDeviceType(),DeviceType.ALCOHOL)){
+                        return true;
+                    }
+                }else if (Objects.equals(washDeviceType,WashDeviceType.DISINFECTION_GEL)) {
+                    if (Objects.equals(device.getDeviceType(),DeviceType.DISINFECTANT_GEL)){
+                        return true;
+                    }
+                }else if (Objects.equals(washDeviceType,WashDeviceType.LIQUID_SOAP)) {
+                    if (Objects.equals(device.getDeviceType(),DeviceType.LIQUID_SOAP)){
+                        return true;
+                    }
+                }else if (Objects.equals(washDeviceType,WashDeviceType.WASHING_FOAM)) {
+                    if (Objects.equals(device.getDeviceType(),DeviceType.WASHING_FOAM)){
+                        return true;
+                    }
+                }else if (Objects.equals(washDeviceType,WashDeviceType.WATER)) {
+                    if (Objects.equals(device.getDeviceType(),DeviceType.WATER)){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
 
 

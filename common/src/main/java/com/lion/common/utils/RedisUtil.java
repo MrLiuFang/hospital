@@ -29,6 +29,7 @@ import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.rule.AlarmExposeService;
 import com.lion.manage.expose.rule.WashDeviceExposeService;
+import com.lion.manage.expose.rule.WashDeviceTypeExposeService;
 import com.lion.manage.expose.rule.WashExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
@@ -98,6 +99,9 @@ public class RedisUtil {
 
     @DubboReference
     private AssetsExposeService assetsExposeService;
+
+    @DubboReference
+    private WashDeviceTypeExposeService washDeviceTypeExposeService;
 
     public Department getDepartmentByUserId(Long userId) {
         if (Objects.isNull(userId)){
@@ -393,7 +397,22 @@ public class RedisUtil {
     }
 
     public List<WashDeviceType> getWashDeviceType(Long washId) {
-
+        List<Object> list = redisTemplate.opsForList().range(RedisConstants.WASH_DEVICE_TYPE+washId,0,-1);
+        list.forEach(o -> {
+            if (!(o instanceof WashDeviceType)) {
+                redisTemplate.delete(RedisConstants.WASH_DEVICE_TYPE+washId);
+            }
+        });
+        List<WashDeviceType> washDeviceTypes = redisTemplate.opsForList().range(RedisConstants.WASH_DEVICE_TYPE+washId,0,-1);
+        if (Objects.isNull(washDeviceTypes) || washDeviceTypes.size()<=0){
+            washDeviceTypes = washDeviceTypeExposeService.find(washId);
+            if (Objects.nonNull(washDeviceTypes) && washDeviceTypes.size()>0) {
+                redisTemplate.delete(RedisConstants.WASH_DEVICE_TYPE+washId);
+                redisTemplate.opsForList().leftPushAll(RedisConstants.WASH_DEVICE_TYPE+washId,washDeviceTypes);
+                redisTemplate.expire(RedisConstants.WASH_DEVICE_TYPE+washId,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            }
+        }
+        return washDeviceTypes;
     }
 
     public List<Device> getWashDevice(Long washId) {

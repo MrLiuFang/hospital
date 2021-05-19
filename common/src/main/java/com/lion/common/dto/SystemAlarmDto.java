@@ -7,6 +7,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 /**
  * @Author Mr.Liu
@@ -20,7 +21,7 @@ public class SystemAlarmDto implements Serializable {
     /**
      * 唯一追踪标识
      */
-    private String uuid;
+    private String uuid = UUID.randomUUID().toString();
 
     /**
      * 警告类型（com.lion.common.enums.Type）

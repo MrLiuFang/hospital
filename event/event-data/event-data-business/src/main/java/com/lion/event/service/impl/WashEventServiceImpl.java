@@ -152,7 +152,7 @@ public class WashEventServiceImpl implements WashEventService {
                 }
                 List<WashUser> washUserList = washUserExposeService.find(work.getUserId());
                 if (Objects.isNull(washUserList) || washUserList.size() <= 0) {
-                    List<Wash> washList = washExposeService.find(true);
+                    List<Wash> washList = washExposeService.findLoopWash(true);
                     if (Objects.isNull(washList) || washList.size() <= 0) {
                         if (Objects.nonNull(vo)) {
                             vo.setIsExistWashRule(false);
