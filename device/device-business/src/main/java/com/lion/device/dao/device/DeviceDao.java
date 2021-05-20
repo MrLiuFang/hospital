@@ -42,4 +42,13 @@ public interface DeviceDao extends BaseDao<Device> {
      * @return
      */
     public Integer countByDeviceClassify(DeviceClassify classify);
+
+    /**
+     * 根据设备组统计电量设备
+     * @param deviceGroupIds
+     * @param battery
+     * @return
+     */
+    @Query(" select count(d) from Device d join DeviceGroupDevice dgd on d.id = dgd.deviceId where dgd.deviceGroupId in :deviceGroupIds and d.battery = :battery ")
+    public Integer countDevice(List<Long> deviceGroupIds, Integer battery);
 }

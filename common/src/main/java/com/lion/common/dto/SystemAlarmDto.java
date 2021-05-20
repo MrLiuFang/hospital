@@ -49,6 +49,11 @@ public class SystemAlarmDto implements Serializable {
     private Long tagId;
 
     /**
+     * 区域id
+     */
+    private Long regionId;
+
+    /**
      * 警告类型
      */
     private SystemAlarmType systemAlarmType;

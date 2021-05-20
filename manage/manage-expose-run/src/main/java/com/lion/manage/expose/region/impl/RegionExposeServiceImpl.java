@@ -8,6 +8,8 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @Author Mr.Liu
  * @Description //TODO
@@ -28,5 +30,15 @@ public class RegionExposeServiceImpl extends BaseServiceImpl<Region> implements 
     @Transactional
     public void deleteDeviceGroup(Long deviceGroupId) {
         regionDao.deleteDeviceGroup(deviceGroupId);
+    }
+
+    @Override
+    public List<Region> findByBuildFloorId(Long buildFloorId) {
+        return regionDao.findByBuildFloorId(buildFloorId);
+    }
+
+    @Override
+    public List<Region> findByDepartmentId(Long departmentId) {
+        return regionDao.findByDepartmentId(departmentId);
     }
 }

@@ -2,9 +2,12 @@ package com.lion.event.service.impl;
 
 import com.lion.event.dao.SystemAlarmDao;
 import com.lion.event.entity.SystemAlarm;
+import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.service.SystemAlarmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * @Author Mr.Liu
@@ -30,5 +33,15 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     @Override
     public void unalarm(String uuid) {
         alarmDao.unalarm(uuid);
+    }
+
+    @Override
+    public Map<Long, RegionStatisticsDetails> groupCount(Long buildFloorId, Map<Long, RegionStatisticsDetails> map) {
+        return alarmDao.groupCount(buildFloorId, map);
+    }
+
+    @Override
+    public Map<String, Integer> groupCount(Long departmentId) {
+        return alarmDao.groupCount(departmentId);
     }
 }

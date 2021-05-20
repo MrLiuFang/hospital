@@ -2,7 +2,9 @@ package com.lion.event.service;
 
 import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.Position;
-import com.lion.event.entity.SystemAlarm;
+import com.lion.event.entity.vo.RegionStatisticsDetails;
+
+import java.util.Map;
 
 /**
  * @Author Mr.Liu
@@ -23,5 +25,13 @@ public interface CurrentPositionService  {
      * @return
      */
     public CurrentPosition find(Long userId);
+
+    /**
+     * 根据区域统计区域的员工，患者，标签……数量
+     * @param buildFloorId
+     * @param map
+     * @return
+     */
+    public Map<Long, RegionStatisticsDetails> groupCount(Long buildFloorId,Map<Long, RegionStatisticsDetails> map);
 
 }

@@ -11,4 +11,5 @@ import java.util.List;
  * @date 2021/3/23下午2:27
  */
 public interface DepartmentExposeService extends BaseService<Department> {
+
 }

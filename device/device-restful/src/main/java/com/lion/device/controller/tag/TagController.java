@@ -120,14 +120,14 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @PostMapping("/rule/add")
     @ApiOperation(value = "新增标签规则")
-    public IResultData ruleAdd(@RequestBody @Validated({Validator.Insert.class}) AddTagRuleDto addTagRuleDto){
+    public IResultData ruleAdd(@RequestBody AddTagRuleDto addTagRuleDto){
         tagRuleService.add(addTagRuleDto);
         return ResultData.instance();
     }
 
     @PutMapping("/rule/update")
     @ApiOperation(value = "修改标签规则")
-    public IResultData ruleUpdate(@RequestBody @Validated({Validator.Update.class}) UpdateTagRuleDto updateTagRuleDto){
+    public IResultData ruleUpdate(@RequestBody UpdateTagRuleDto updateTagRuleDto){
         tagRuleService.update(updateTagRuleDto);
         return ResultData.instance();
     }
@@ -149,6 +149,12 @@ public class TagController extends BaseControllerImpl implements BaseController 
         }
         lionPage.setJpqlParameter(jpqlParameter);
         return (IPageResultData<List<TagRule>>) tagRuleService.findNavigator(lionPage);
+    }
+
+    @GetMapping("/rule/details")
+    @ApiOperation(value = "标签规则详情")
+    public IResultData<TagRule> ruleDetails(@ApiParam(value = "id") @NotNull(message = "id不能为空") Long id){
+        return ResultData.instance().setData(tagRuleService.findById(id));
     }
 
     @GetMapping("/rule/user/search")

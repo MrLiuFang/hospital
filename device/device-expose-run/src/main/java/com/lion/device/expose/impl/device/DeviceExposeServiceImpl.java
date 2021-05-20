@@ -51,4 +51,9 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
             redisTemplate.opsForValue().set(RedisConstants.DEVICE+device.getId(),device, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         }
     }
+
+    @Override
+    public Integer countDevice(List<Long> deviceGroupIds, Integer battery) {
+        return deviceDao.countDevice(deviceGroupIds, battery);
+    }
 }

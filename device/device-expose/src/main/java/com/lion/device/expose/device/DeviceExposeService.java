@@ -35,4 +35,12 @@ public interface DeviceExposeService extends BaseService<Device> {
      */
     public void updateBattery(Long deviceId, Integer battery);
 
+    /**
+     * 根据设备组统计电量设备
+     * @param deviceGroupIds
+     * @param battery
+     * @return
+     */
+    public Integer countDevice(List<Long> deviceGroupIds, Integer battery);
+
 }

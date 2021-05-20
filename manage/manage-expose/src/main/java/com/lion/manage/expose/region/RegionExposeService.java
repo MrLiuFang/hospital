@@ -3,6 +3,8 @@ package com.lion.manage.expose.region;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.region.Region;
 
+import java.util.List;
+
 /**
  * @Author Mr.Liu
  * @Description //TODO
@@ -22,4 +24,18 @@ public interface RegionExposeService extends BaseService<Region> {
      * @param deviceGroupId
      */
     public void deleteDeviceGroup(Long deviceGroupId);
+
+    /**
+     * 根据楼成查村区域
+     * @param buildFloorId
+     * @return
+     */
+    public List<Region> findByBuildFloorId(Long buildFloorId);
+
+    /**
+     * 根据科室查询区域
+     * @param departmentId
+     * @return
+     */
+    public List<Region> findByDepartmentId(Long departmentId);
 }

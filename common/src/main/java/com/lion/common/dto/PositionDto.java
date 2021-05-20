@@ -17,7 +17,7 @@ public class PositionDto implements Serializable {
     @Id
     private String _id;
 
-    //类型 (com.lion.event.entity.enums.Type)
+    //类型 (com.lion.common.enums.Type)
     private Integer typ;
 
     /**

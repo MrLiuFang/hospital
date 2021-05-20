@@ -42,7 +42,7 @@ public class SystemAlarm implements Serializable {
     /**
      * 设备id
      */
-    private Long di;
+    private Long dvi;
 
     /**
      * 标签id
@@ -63,6 +63,34 @@ public class SystemAlarm implements Serializable {
      * 是否已知熟（处理）
      */
     private Boolean ua = false;
+
+    //建筑id
+    private Long bui;
+
+    //建筑名称
+    private String bun;
+
+    //楼层id
+    private Long bfi;
+
+    //楼层名称
+    private String bfn;
+
+    /**
+     * 科室id
+     */
+    private Long di;
+
+    /**
+     * 科室名称
+     */
+    private String dn;
+
+    //区域id
+    private Long ri;
+
+    //区域名称
+    private String rn;
 
     /**
      * 警告发生时间

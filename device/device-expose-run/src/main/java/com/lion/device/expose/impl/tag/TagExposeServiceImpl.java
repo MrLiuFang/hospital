@@ -10,6 +10,8 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -49,5 +51,10 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
             redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         }
+    }
+
+    @Override
+    public Integer countTag(Long departmentId, Integer battery) {
+        return tagDao.countByDepartmentIdAndBattery(departmentId,battery);
     }
 }

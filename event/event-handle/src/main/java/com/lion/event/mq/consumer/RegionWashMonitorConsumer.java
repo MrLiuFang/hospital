@@ -7,7 +7,6 @@ import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.*;
 import com.lion.common.enums.Type;
 import com.lion.common.enums.WashEventType;
-import com.lion.common.utils.DateTimeFormatterUtil;
 import com.lion.common.utils.RedisUtil;
 import com.lion.event.mq.consumer.common.WashCommon;
 import com.lion.event.utils.WashRuleUtil;
@@ -28,10 +27,7 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -180,15 +176,16 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
             washEventDto.setWt(wt);
         }
         recordWashEvent(washEventDto);
-        sendAlarmToTag(userCurrentRegionDto.getUserId(),wash,userCurrentRegionDto.getUuid(),systemAlarmType);
+        sendAlarmToTag(userCurrentRegionDto.getUserId(),wash,userCurrentRegionDto.getUuid(),systemAlarmType, userCurrentRegionDto);
     }
 
     /**
      * 给员工发送警告(设备 tag)
      * @param userId
      * @param wash
+     * @param userCurrentRegionDto
      */
-    private void sendAlarmToTag(Long userId, Wash wash, String uuid, SystemAlarmType systemAlarmType) throws JsonProcessingException {
+    private void sendAlarmToTag(Long userId, Wash wash, String uuid, SystemAlarmType systemAlarmType,UserCurrentRegionDto userCurrentRegionDto) throws JsonProcessingException {
         if (Objects.equals(true,wash.getRemind())) {
             User user = redisUtil.getUserById(userId);
             if (Objects.nonNull(user)) {
@@ -199,6 +196,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
             SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
             systemAlarmDto.setDateTime(LocalDateTime.now());
             systemAlarmDto.setType(Type.STAFF);
+            systemAlarmDto.setRegionId(Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null);
             systemAlarmDto.setPeopleId(userId);
             systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
             systemAlarmDto.setUuid(uuid);

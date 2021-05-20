@@ -11,8 +11,12 @@ import com.lion.common.utils.RedisUtil;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.service.CurrentPositionService;
 import com.lion.event.service.SystemAlarmService;
+import com.lion.manage.entity.build.Build;
+import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.enums.SystemAlarmType;
+import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Alarm;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;
@@ -87,7 +91,7 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                     log.info("系统内触发警告");
                     SystemAlarm systemAlarm = new SystemAlarm();
                     systemAlarm.setAi(systemAlarmDto.getAssetsId());
-                    systemAlarm.setDi(systemAlarmDto.getDeviceId());
+                    systemAlarm.setDvi(systemAlarmDto.getDeviceId());
                     systemAlarm.setPi(systemAlarmDto.getPeopleId());
                     if (Objects.nonNull(systemAlarmDto.getSystemAlarmType())) {
                         systemAlarm.setSat(systemAlarmDto.getSystemAlarmType().getKey());
@@ -102,6 +106,26 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                     systemAlarm.setSdt(systemAlarmDto.getDateTime());
                     if (Objects.nonNull(alarm)) {
                         systemAlarm.setAli(alarm.getId());
+                    }
+                    Region region = redisUtil.getRegionById(systemAlarmDto.getRegionId());
+                    if (Objects.nonNull(region)) {
+                        systemAlarm.setRi(region.getId());
+                        systemAlarm.setRn(region.getName());
+                        Build build = redisUtil.getBuild(region.getBuildId());
+                        if (Objects.nonNull(build)) {
+                            systemAlarm.setBui(build.getId());
+                            systemAlarm.setBun(build.getName());
+                        }
+                        BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
+                        if (Objects.nonNull(buildFloor)) {
+                            systemAlarm.setBfi(buildFloor.getId());
+                            systemAlarm.setBfn(buildFloor.getName());
+                        }
+                        Department department = redisUtil.getDepartment(region.getDepartmentId());
+                        if (Objects.nonNull(department)) {
+                            systemAlarm.setDi(department.getId());
+                            systemAlarm.setDn(department.getName());
+                        }
                     }
                     systemAlarmService.save(systemAlarm);
                     systemAlarmDto.setCount(systemAlarmDto.getCount() + 1);

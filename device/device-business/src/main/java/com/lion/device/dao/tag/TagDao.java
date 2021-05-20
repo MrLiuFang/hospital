@@ -4,6 +4,9 @@ import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.tag.Tag;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -39,4 +42,13 @@ public interface TagDao extends BaseDao<Tag> {
      */
     @Query(" select t from Tag t join TagAssets ta on t.id = ta.tagId where ta.assetsId = :assetsId and ta.unbindingTime is null ")
     public Tag findByAssetsId(Long assetsId);
+
+    /**
+     * 根据科室统计电量标签
+     * @param departmentId
+     * @param battery
+     * @return
+     */
+    public Integer countByDepartmentIdAndBattery(Long departmentId,Integer battery);
+
 }

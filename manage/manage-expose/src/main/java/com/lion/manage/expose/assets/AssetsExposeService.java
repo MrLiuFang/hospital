@@ -3,6 +3,9 @@ package com.lion.manage.expose.assets;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.Assets;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @Author Mr.Liu
  * @Description //TODO
@@ -16,4 +19,11 @@ public interface AssetsExposeService extends BaseService<Assets> {
      * @return
      */
     public Assets find(Long tagId);
+
+    /**
+     * 根据楼层统计区域内的资产数量
+     * @param buildFloorId
+     * @return
+     */
+    public List<Map<String, Object>> count(Long buildFloorId);
 }

@@ -2,7 +2,6 @@ package com.lion.event.mq.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
-import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.utils.RedisUtil;
 import com.lion.event.entity.TagRecord;
 import com.lion.event.mq.consumer.utils.TagCommonUtil;
@@ -15,8 +14,6 @@ import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import javax.print.attribute.standard.OrientationRequested;
 
 /**
  * @Author Mr.Liu

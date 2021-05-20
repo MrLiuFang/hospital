@@ -3,12 +3,14 @@ package com.lion.event.service.impl;
 import com.lion.event.dao.CurrentPositionDao;
 import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.Position;
+import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.service.CurrentPositionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -57,5 +59,10 @@ public class CurrentPositionServiceImpl implements CurrentPositionService {
             return currentPosition;
         }
         return null;
+    }
+
+    @Override
+    public Map<Long, RegionStatisticsDetails> groupCount(Long buildFloorId, Map<Long, RegionStatisticsDetails> map) {
+        return currentPositionDao.groupCount(buildFloorId, map);
     }
 }

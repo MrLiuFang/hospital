@@ -158,6 +158,7 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
         SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
         systemAlarmDto.setDateTime(LocalDateTime.now());
         systemAlarmDto.setType(Type.STAFF);
+        systemAlarmDto.setRegionId(Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null);
         systemAlarmDto.setPeopleId(userId);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
         systemAlarmDto.setSystemAlarmType(systemAlarmType);

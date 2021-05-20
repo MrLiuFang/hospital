@@ -3,6 +3,9 @@ package com.lion.device.expose.tag;
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.tag.Tag;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -31,5 +34,12 @@ public interface TagExposeService extends BaseService<Tag> {
      */
     public void updateBattery(Long tagId, Integer battery);
 
+    /**
+     * 根据科室统计电量标签
+     * @param departmentId
+     * @param battery
+     * @return
+     */
+    public Integer countTag(Long departmentId,Integer battery);
 
 }

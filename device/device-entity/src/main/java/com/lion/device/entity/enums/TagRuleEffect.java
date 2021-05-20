@@ -15,7 +15,8 @@ import java.util.Objects;
 public enum TagRuleEffect implements IEnum {
     ALARM_KNOW(0, "警报知悉"),
     EMPLOYEE_CALL(1, "员工呼叫"),
-    RESET(2, "复位");
+    RESET(2, "复位"),
+    CANCEL(3, "取消呼叫");
 
     private final int key;
 

@@ -11,10 +11,8 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.DeviceData;
-import com.lion.event.entity.vo.UserWashDetailsVo;
-import com.lion.event.entity.vo.UserCurrentRegionVo;
-import com.lion.event.entity.vo.ListUserWashMonitorVo;
-import com.lion.event.entity.vo.ListWashMonitorVo;
+import com.lion.event.entity.WashRecord;
+import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -66,6 +64,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @Autowired
     private CurrentPositionService currentPositionService;
 
+    @Autowired
+    private MapStatisticsService mapStatisticsService;
+
     @GetMapping("/user/current/region")
     @ApiOperation(value = "用户当前位置")
     public IResultData<UserCurrentRegionVo> userCurrentRegionVo(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId) {
@@ -107,14 +108,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return ResultData.instance();
     }
 
-//    @GetMapping("/wash/list")
-//    @ApiOperation(value = "用户洗手记录(不返回总行数，数据量大查询总行数费时，不给时间范围默认查询一周内的数据，以提高性能)")
-//    public IPageResultData<List<Wash>> washList( @ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId,
-//                                                            @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
-//                                                            @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-//                                                            LionPage lionPage) {
-//        return washService.list(userId, startDateTime, endDateTime, lionPage);
-//    }
+    @GetMapping("/wash/list")
+    @ApiOperation(value = "用户洗手记录(不返回总行数，数据量大查询总行数费时，不给时间范围默认查询一周内的数据，以提高性能)")
+    public IPageResultData<List<WashRecord>> washList(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId,
+                                                      @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                      @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                      LionPage lionPage) {
+        return washService.list(userId, startDateTime, endDateTime, lionPage);
+    }
 
     @GetMapping("/star/data/list")
     @ApiOperation(value = "star记录(不返回总行数，数据量大查询总行数费时，不给时间范围默认查询一周内的数据，以提高性能)")
@@ -167,5 +168,17 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
             systemAlarmService.unalarm(map.get("uuid"));
         }
         return ResultData.instance();
+    }
+
+    @GetMapping("/region/statistics/details")
+    @ApiOperation(value = "地图监控地图统计（员工，患者，标签…………）")
+    public IResultData<List<RegionStatisticsDetails>> regionStatisticsDetails(@ApiParam("楼层ID") @NotNull(message = "楼层ID不能为空") Long buildFloorId){
+        return ResultData.instance().setData(mapStatisticsService.regionStatisticsDetails(buildFloorId));
+    }
+
+    @GetMapping("/department/statistics/details")
+    @ApiOperation(value = "地图监控科室统计")
+    public IResultData<List<DepartmentStatisticsDetails>> departmentStatisticsDetails() {
+
     }
 }

@@ -34,29 +34,24 @@ public class TagRule extends BaseEntity {
 
 
     @ApiModelProperty(value = "规则名称")
-    @NotBlank(message = "规则名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "name")
     private String name;
 
     @ApiModelProperty(value = "绿色按钮")
-    @NotNull(message = "绿色按钮不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "green_button")
     private TagRuleEffect greenButton;
 
     @ApiModelProperty(value = "红色按钮")
-    @NotNull(message = "红色按钮不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "red_button")
     private TagRuleEffect redButton;
 
     @ApiModelProperty(value = "黄色按钮")
-    @NotNull(message = "黄色按钮不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "yellow_button")
     private TagRuleEffect yellowButton;
 
-    @ApiModelProperty(value = "黑色按钮是否")
-    @NotNull(message = "黑色按钮不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "black_button")
-    private TagRuleEffect blackButton;
+    @ApiModelProperty(value = "下方按钮")
+    @Column(name = "bottom_button")
+    private TagRuleEffect bottomButton;
 
     @ApiModelProperty(value = "绿色按钮是否提示")
     @Column(name = "green_button_tip")
@@ -70,8 +65,8 @@ public class TagRule extends BaseEntity {
     @Column(name = "yellow_button_tip")
     private Boolean yellowButtonTip = false;
 
-    @ApiModelProperty(value = "黑色按钮是否提示")
-    @Column(name = "black_button_tip")
-    private Boolean blackButtonTip = false;
+    @ApiModelProperty(value = "下方按钮是否提示")
+    @Column(name = "bottom_button_tip")
+    private Boolean bottomButtonTip = false;
 
 }
