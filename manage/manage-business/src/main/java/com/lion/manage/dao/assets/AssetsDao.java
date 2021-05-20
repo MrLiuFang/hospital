@@ -37,4 +37,11 @@ public interface AssetsDao extends BaseDao<Assets> {
     @Query( "select new map(regionId as region_id, count(id) as count) from Assets where buildFloorId = :buildFloorId group by regionId " )
     public List<Map<String, Object>> groupRegionCount(Long buildFloorId);
 
+    /**
+     * 统计科室内的资产数量
+     * @param departmentId
+     * @return
+     */
+    public int countByDepartmentId(Long departmentId);
+
 }

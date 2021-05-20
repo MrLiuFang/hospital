@@ -104,7 +104,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         group = BasicDBObjectUtil.put(group,"$group","unalarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ua",false})})).append("then",1).append("else",0))));
         group = BasicDBObjectUtil.put(group,"$group","alarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ua",true})})).append("then",1).append("else",0))));
         pipeline.add(group);
-        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("wash_event").aggregate(pipeline);
+        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("system_alarm").aggregate(pipeline);
         Map<String, Integer> map = new HashMap<>();
         aggregateIterable.forEach(document -> {
             map.put("allAlarmCount",document.getInteger("allAlarmCount"));

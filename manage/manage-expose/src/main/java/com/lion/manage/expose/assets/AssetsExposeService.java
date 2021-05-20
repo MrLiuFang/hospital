@@ -26,4 +26,11 @@ public interface AssetsExposeService extends BaseService<Assets> {
      * @return
      */
     public List<Map<String, Object>> count(Long buildFloorId);
+
+    /**
+     * 统计科室内的资产数量
+     * @param departmentId
+     * @return
+     */
+    public Integer countByDepartmentId(Long departmentId);
 }

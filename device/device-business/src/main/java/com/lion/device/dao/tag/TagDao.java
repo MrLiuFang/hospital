@@ -51,4 +51,12 @@ public interface TagDao extends BaseDao<Tag> {
      */
     public Integer countByDepartmentIdAndBattery(Long departmentId,Integer battery);
 
+    /**
+     * 根据科室内标签数量
+     * @param departmentId
+     * @param battery
+     * @return
+     */
+    public Integer countByDepartmentId(Long departmentId);
+
 }

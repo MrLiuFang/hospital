@@ -19,4 +19,11 @@ public interface CctvDao extends BaseDao<Cctv> {
      */
     public List<Cctv> findByIdIn(List<Long> ids);
 
+    /**
+     * 统计科室内的cctv数量
+     * @param departmentId
+     * @return
+     */
+    public int countByDepartmentId(Long departmentId);
+
 }

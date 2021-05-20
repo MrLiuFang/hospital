@@ -29,4 +29,11 @@ public interface CctvExposeService extends BaseService<Cctv> {
      * @param departmentId
      */
     public void relationPosition(List<Long> oldCctvIds,List<Long> newCctvIds,Long buildId,Long buildFloorId,Long regionId,Long departmentId);
+
+    /**
+     * 根据科室统计cctv数量
+     * @param departmentId
+     * @return
+     */
+    public Integer count(Long departmentId);
 }

@@ -2,7 +2,6 @@ package com.lion.device.service.tag.impl;
 
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
-import com.lion.device.dao.tag.TagDao;
 import com.lion.device.dao.tag.TagRuleDao;
 import com.lion.device.dao.tag.TagRuleLogDao;
 import com.lion.device.dao.tag.TagRuleUserDao;
@@ -15,7 +14,6 @@ import com.lion.device.service.tag.TagRuleUserService;
 import com.lion.exception.BusinessException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -53,7 +51,7 @@ public class TagRuleServiceImpl extends BaseServiceImpl<TagRule> implements TagR
         assertNameExist(tagRule.getName(),null);
         BeanUtils.copyProperties(addTagRuleDto,tagRule);
         tagRule = save(tagRule);
-        tagRuleUserService.relationUser(addTagRuleDto.getUserIds(), Collections.EMPTY_LIST,tagRule.getId());
+        tagRuleUserService.relationUser(addTagRuleDto.getUserIds(), Collections.EMPTY_LIST,Collections.EMPTY_LIST , tagRule.getId());
         tagRuleLogService.add(tagRule.getId(),"新建规则");
     }
 
@@ -61,10 +59,10 @@ public class TagRuleServiceImpl extends BaseServiceImpl<TagRule> implements TagR
     @Transactional
     public void update(UpdateTagRuleDto updateTagRuleDto) {
         TagRule tagRule = new TagRule();
-        assertNameExist(tagRule.getName(),null);
         BeanUtils.copyProperties(updateTagRuleDto,tagRule);
+        assertNameExist(tagRule.getName(),tagRule.getId());
         update(tagRule);
-        tagRuleUserService.relationUser(updateTagRuleDto.getNewUserIds(), updateTagRuleDto.getDeleteUserIds(),tagRule.getId());
+        tagRuleUserService.relationUser(updateTagRuleDto.getNewUserIds(), updateTagRuleDto.getDeleteUserIds(),updateTagRuleDto.getAllUserIds() , tagRule.getId());
         tagRuleLogService.add(tagRule.getId(),"修改规则");
     }
 

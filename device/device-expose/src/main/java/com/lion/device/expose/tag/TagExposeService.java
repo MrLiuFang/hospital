@@ -42,4 +42,11 @@ public interface TagExposeService extends BaseService<Tag> {
      */
     public Integer countTag(Long departmentId,Integer battery);
 
+    /**
+     * 根据科室统计电量标签
+     * @param departmentId
+     * @return
+     */
+    public Integer countTag(Long departmentId);
+
 }

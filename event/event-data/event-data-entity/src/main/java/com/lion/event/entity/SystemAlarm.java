@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 /**
  * @Author Mr.Liu
@@ -102,4 +103,8 @@ public class SystemAlarm implements Serializable {
      */
     private LocalDateTime sdt;
 
+    public void setSdt(LocalDateTime sdt) {
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        this.sdt = LocalDateTime.parse(dtf.format(sdt),dtf);
+    }
 }

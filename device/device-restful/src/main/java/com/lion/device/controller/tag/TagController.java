@@ -13,17 +13,16 @@ import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagRule;
+import com.lion.device.entity.tag.TagUser;
 import com.lion.device.entity.tag.dto.*;
-import com.lion.device.entity.tag.vo.ListTagLogVo;
-import com.lion.device.entity.tag.vo.ListTagRuleLogVo;
-import com.lion.device.entity.tag.vo.ListTagRuleUserVo;
-import com.lion.device.entity.tag.vo.ListTagVo;
+import com.lion.device.entity.tag.vo.*;
 import com.lion.device.service.tag.*;
 import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
@@ -32,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -153,8 +153,20 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/rule/details")
     @ApiOperation(value = "标签规则详情")
-    public IResultData<TagRule> ruleDetails(@ApiParam(value = "id") @NotNull(message = "id不能为空") Long id){
-        return ResultData.instance().setData(tagRuleService.findById(id));
+    public IResultData<TagRuleDetailsVo> ruleDetails(@ApiParam(value = "id") @NotNull(message = "id不能为空") Long id){
+        TagRule tagRule = tagRuleService.findById(id);
+        if (Objects.nonNull(tagRule)) {
+            TagRuleDetailsVo vo = new TagRuleDetailsVo();
+            BeanUtils.copyProperties(tagRule,vo);
+            List<Long> userIds = new ArrayList<>();
+            List<TagUser> list =  tagRuleUserService.find(id);
+            list.forEach(tagUser -> {
+                userIds.add(tagUser.getUserId());
+            });
+            vo.setAllUserIds(userIds);
+            return ResultData.instance().setData(vo);
+        }
+        return ResultData.instance();
     }
 
     @GetMapping("/rule/user/search")

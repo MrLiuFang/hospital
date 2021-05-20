@@ -1,5 +1,6 @@
 package com.lion.event.service.impl;
 
+import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.entity.vo.DepartmentStatisticsDetails;
@@ -46,6 +47,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @DubboReference
     private DeviceExposeService deviceExposeService;
+
+    @DubboReference
+    private CctvExposeService cctvExposeService;
 
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
@@ -96,6 +100,18 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             departmentStatisticsDetails.setLowPowerDeviceCount(deviceExposeService.countDevice(deviceGroupIds,1));
             departmentStatisticsDetails.setLowPowerTagCount(tagExposeService.countTag(department.getId(),1));
             Map<String,Integer> map = systemAlarmService.groupCount(department.getId());
+            if (map.containsKey("allAlarmCount")) {
+                departmentStatisticsDetails.setAllAlarmCount(map.get("allAlarmCount"));
+            }
+            if (map.containsKey("unalarmCount")) {
+                departmentStatisticsDetails.setUnalarmCount(map.get("unalarmCount"));
+            }
+            if (map.containsKey("alarmCount")) {
+                departmentStatisticsDetails.setAlarmCount(map.get("alarmCount"));
+            }
+            departmentStatisticsDetails.setAssetsCount(assetsExposeService.countByDepartmentId(department.getId()));
+            departmentStatisticsDetails.setTagCount(tagExposeService.countTag(department.getId()));
+            departmentStatisticsDetails.setCctvCount(cctvExposeService.count(department.getId()));
             returnList.add(departmentStatisticsDetails);
         });
         return returnList;

@@ -2,6 +2,9 @@ package com.lion.device.dao.tag;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.tag.TagRuleUser;
+import com.lion.device.entity.tag.TagUser;
+
+import java.util.List;
 
 /**
  * @Author Mr.Liu
@@ -32,4 +35,11 @@ public interface TagRuleUserDao extends BaseDao<TagRuleUser> {
      * @return
      */
     public TagRuleUser findFirstByUserIdAndTagRuleIdNot(Long userId,Long tagRuleId);
+
+    /**
+     * 根据规则id查询关联用户
+     * @param tagRuleId
+     * @return
+     */
+    public List<TagUser> findByTagRuleId(Long tagRuleId);
 }

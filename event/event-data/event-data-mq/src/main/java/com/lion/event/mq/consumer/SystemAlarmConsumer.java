@@ -103,7 +103,7 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                     systemAlarm.setUa(false);
                     systemAlarm.setUi(systemAlarmDto.getUuid());
                     systemAlarm.setDt(systemAlarmDto.getDateTime());
-                    systemAlarm.setSdt(systemAlarmDto.getDateTime());
+                    systemAlarm.setSdt( systemAlarmDto.getDateTime() );
                     if (Objects.nonNull(alarm)) {
                         systemAlarm.setAli(alarm.getId());
                     }

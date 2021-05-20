@@ -34,4 +34,9 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
     public List<Map<String, Object>> count(Long buildFloorId) {
         return assetsDao.groupRegionCount(buildFloorId);
     }
+
+    @Override
+    public Integer countByDepartmentId(Long departmentId) {
+        return assetsDao.countByDepartmentId(departmentId);
+    }
 }

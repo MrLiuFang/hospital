@@ -9,8 +9,10 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagRuleUserDao;
 import com.lion.device.entity.tag.TagRuleUser;
+import com.lion.device.entity.tag.TagUser;
 import com.lion.device.entity.tag.vo.ListTagRuleUserVo;
 import com.lion.device.service.tag.TagRuleLogService;
+import com.lion.device.service.tag.TagRuleService;
 import com.lion.device.service.tag.TagRuleUserService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
@@ -49,7 +51,13 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
     private DepartmentUserExposeService departmentUserExposeService;
 
     @Override
-    public void relationUser(List<Long> newUser, List<Long> deleteUser, Long tagRuleId) {
+    public void relationUser(List<Long> newUser, List<Long> deleteUser,List<Long> allUser, Long tagRuleId) {
+        if (Objects.nonNull(allUser)){
+            tagRuleUserDao.deleteByTagRuleId(tagRuleId);
+            save(allUser,tagRuleId);
+            return;
+        }
+
         if (Objects.nonNull(deleteUser)) {
             deleteUser.forEach(id->{
                 tagRuleUserDao.deleteByUserIdAndAndTagRuleId(id,tagRuleId);
@@ -59,7 +67,11 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                 }
             });
         }
+        save(newUser,tagRuleId);
 
+    }
+
+    private void save(List<Long> newUser,Long tagRuleId){
         if (Objects.nonNull(newUser)) {
             newUser.forEach(id->{
                 TagRuleUser tagRuleUser = tagRuleUserDao.findFirstByUserIdAndTagRuleIdNot(id, tagRuleId);
@@ -122,5 +134,10 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
         });
         Map<String,Object> map = userExposeService.find(departmentId,name,userType,userList,lionPage.getPageNumber(),lionPage.getPageSize());
         return new PageResultData<List<User>>((List) map.get("list"),lionPage,(Long) map.get("totalElements"));
+    }
+
+    @Override
+    public List<TagUser> find(Long tagRuleId) {
+        return tagRuleUserDao.findByTagRuleId(tagRuleId);
     }
 }
