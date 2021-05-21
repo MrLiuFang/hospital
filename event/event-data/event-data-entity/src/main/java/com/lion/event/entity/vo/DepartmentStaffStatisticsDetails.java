@@ -20,14 +20,9 @@ import java.util.List;
 @ApiModel
 public class DepartmentStaffStatisticsDetails {
 
-    @ApiModelProperty(value = "科室id")
-    private Long departmentId;
-
-    @ApiModelProperty(value = "科室名称")
-    private String departmentName;
 
     @ApiModelProperty(value = "员工总数")
-    private Integer staffCount;
+    private Integer staffCount = 0;
 
     @ApiModelProperty(value = "正常员工总数")
     private Integer normalStaffCount;
@@ -35,8 +30,22 @@ public class DepartmentStaffStatisticsDetails {
     @ApiModelProperty(value = "异常员工总数")
     private Integer abnormalStaffCount;
 
-    @ApiModelProperty(value = "员工信息")
-    private List<DepartmentStaff> departmentStaffs;
+    @ApiModelProperty(value = "部门信息")
+    private List<DepartmentStaffStatisticsDetails.DepartmentVo> departmentVos;
+
+    @ApiModel
+    @Data
+    public static class DepartmentVo{
+
+        @ApiModelProperty(value = "科室id")
+        private Long departmentId;
+
+        @ApiModelProperty(value = "科室名称")
+        private String departmentName;
+
+        @ApiModelProperty(value = "科室员工信息")
+        private List<DepartmentStaff> departmentStaffs;
+    }
 
     @ApiModel
     @Data

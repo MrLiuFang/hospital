@@ -184,7 +184,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/department/staff/statistics/details")
     @ApiOperation(value = "地图监控科室员工统计")
-    public IResultData<List<DepartmentStaffStatisticsDetails>> departmentStaffStatisticsDetails(@ApiParam(value = "姓名") String name) {
+    public IResultData<DepartmentStaffStatisticsDetails> departmentStaffStatisticsDetails(@ApiParam(value = "姓名") String name) {
         return ResultData.instance().setData(mapStatisticsService.departmentStaffStatisticsDetails(name));
     }
 

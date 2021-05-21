@@ -17,14 +17,8 @@ import java.util.List;
 @ApiModel
 public class DepartmentAssetsStatisticsDetails {
 
-    @ApiModelProperty(value = "科室id")
-    private Long departmentId;
-
-    @ApiModelProperty(value = "科室名称")
-    private String departmentName;
-
     @ApiModelProperty(value = "资产总数")
-    private Integer assetsCount;
+    private Integer assetsCount = 0;
 
     @ApiModelProperty(value = "正常资产总数")
     private Integer normalAssetsCount;
@@ -32,8 +26,22 @@ public class DepartmentAssetsStatisticsDetails {
     @ApiModelProperty(value = "异常资产总数")
     private Integer abnormalAssetsCount;
 
-    @ApiModelProperty(value = "资产信息")
-    private List<AssetsVo> assets;
+    @ApiModelProperty(value = "部门信息")
+    private List<DepartmentAssetsStatisticsDetails.DepartmentVo> departmentVos;
+
+    @ApiModel
+    @Data
+    public static class DepartmentVo{
+
+        @ApiModelProperty(value = "科室id")
+        private Long departmentId;
+
+        @ApiModelProperty(value = "科室名称")
+        private String departmentName;
+
+        @ApiModelProperty(value = "资产信息")
+        private List<AssetsVo> assets;
+    }
 
     @ApiModel
     @Data

@@ -34,13 +34,13 @@ public interface MapStatisticsService {
      * @return
      * @param name
      */
-    public List<DepartmentStaffStatisticsDetails>  departmentStaffStatisticsDetails(String name);
+    public DepartmentStaffStatisticsDetails  departmentStaffStatisticsDetails(String name);
 
     /**
      * 科室资产统计
      * @return
      * @param keyword
      */
-    public List<DepartmentAssetsStatisticsDetails>  departmentAssetsStatisticsDetails(String keyword);
+    public DepartmentAssetsStatisticsDetails  departmentAssetsStatisticsDetails(String keyword);
 
 }

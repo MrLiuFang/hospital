@@ -144,15 +144,17 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public List<DepartmentStaffStatisticsDetails> departmentStaffStatisticsDetails(String name) {
+    public DepartmentStaffStatisticsDetails departmentStaffStatisticsDetails(String name) {
         Long userId = CurrentUserUtil.getCurrentUserId();
         List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
-        List<DepartmentStaffStatisticsDetails> returnList = new ArrayList<>();
+        DepartmentStaffStatisticsDetails departmentStaffStatisticsDetails = new DepartmentStaffStatisticsDetails();
+        List<DepartmentStaffStatisticsDetails.DepartmentVo> departmentVos = new ArrayList<>();
+        departmentStaffStatisticsDetails.setDepartmentVos(departmentVos);
         list.forEach(department -> {
-            DepartmentStaffStatisticsDetails departmentStaffStatisticsDetails = new DepartmentStaffStatisticsDetails();
-            departmentStaffStatisticsDetails.setDepartmentName(department.getName());
-            departmentStaffStatisticsDetails.setDepartmentId(department.getId());
-            departmentStaffStatisticsDetails.setStaffCount(departmentUserExposeService.count(department.getId()));
+            DepartmentStaffStatisticsDetails.DepartmentVo vo = new DepartmentStaffStatisticsDetails.DepartmentVo();
+            vo.setDepartmentName(department.getName());
+            vo.setDepartmentId(department.getId());
+            departmentStaffStatisticsDetails.setStaffCount(departmentStaffStatisticsDetails.getStaffCount() + departmentUserExposeService.count(department.getId()));
             List<Long> userIds = departmentUserExposeService.findAllUser(department.getId(),name);
             List<DepartmentStaffStatisticsDetails.DepartmentStaff> listStaff = new ArrayList<>();
             userIds.forEach(id->{
@@ -174,40 +176,41 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     listStaff.add(staff);
                 }
             });
-            departmentStaffStatisticsDetails.setDepartmentStaffs(listStaff);
-            returnList.add(departmentStaffStatisticsDetails);
+            vo.setDepartmentStaffs(listStaff);
+            departmentVos.add(vo);
         });
-
-        return returnList;
+        return departmentStaffStatisticsDetails;
     }
 
     @Override
-    public List<DepartmentAssetsStatisticsDetails> departmentAssetsStatisticsDetails(String keyword) {
+    public DepartmentAssetsStatisticsDetails departmentAssetsStatisticsDetails(String keyword) {
         Long userId = CurrentUserUtil.getCurrentUserId();
         List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
-        List<DepartmentAssetsStatisticsDetails> returnList = new ArrayList<>();
+        DepartmentAssetsStatisticsDetails departmentAssetsStatisticsDetails =new DepartmentAssetsStatisticsDetails();
+        List<DepartmentAssetsStatisticsDetails.DepartmentVo> departmentVos = new ArrayList<>();
+        departmentAssetsStatisticsDetails.setDepartmentVos(departmentVos);
         list.forEach(department -> {
-            DepartmentAssetsStatisticsDetails departmentAssetsStatisticsDetails = new DepartmentAssetsStatisticsDetails();
-            departmentAssetsStatisticsDetails.setDepartmentName(department.getName());
-            departmentAssetsStatisticsDetails.setDepartmentId(department.getId());
-            departmentAssetsStatisticsDetails.setAssetsCount(assetsExposeService.countByDepartmentId(department.getId()));
+            DepartmentAssetsStatisticsDetails.DepartmentVo vo = new DepartmentAssetsStatisticsDetails.DepartmentVo();
+            vo.setDepartmentName(department.getName());
+            vo.setDepartmentId(department.getId());
+            departmentAssetsStatisticsDetails.setAssetsCount(departmentAssetsStatisticsDetails.getAssetsCount() + assetsExposeService.countByDepartmentId(department.getId()));
             List<Assets> assets = assetsExposeService.findByDepartmentId(department.getId(),"%"+keyword+"%" ,"%"+keyword+"%");
             List<DepartmentAssetsStatisticsDetails.AssetsVo> assetsVos= new ArrayList<>();
             assets.forEach(a ->{
-                DepartmentAssetsStatisticsDetails.AssetsVo vo = new DepartmentAssetsStatisticsDetails.AssetsVo();
-                BeanUtils.copyProperties(a,vo);
+                DepartmentAssetsStatisticsDetails.AssetsVo assetsVo = new DepartmentAssetsStatisticsDetails.AssetsVo();
+                BeanUtils.copyProperties(a,assetsVo);
                 TagAssets tagAssets = tagAssetsExposeService.find(a.getId());
                 if (Objects.nonNull(tagAssets)) {
                     Tag tag = tagExposeService.findById(tagAssets.getTagId());
                     if (Objects.nonNull(tag)){
-                        vo.setBattery(tag.getBattery());
+                        assetsVo.setBattery(tag.getBattery());
                     }
                 }
-                assetsVos.add(vo);
+                assetsVos.add(assetsVo);
             });
-            departmentAssetsStatisticsDetails.setAssets(assetsVos);
-            returnList.add(departmentAssetsStatisticsDetails);
+            vo.setAssets(assetsVos);
+            departmentVos.add(vo);
         });
-        return returnList;
+        return departmentAssetsStatisticsDetails;
     }
 }
