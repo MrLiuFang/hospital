@@ -23,6 +23,13 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
     public User findFirstByUsername(String username);
 
     /**
+     * 根据姓名模糊查询
+     * @param name
+     * @return
+     */
+    public List<User> findByNameLike(String name);
+
+    /**
      * 根据邮箱查询用户
      * @param email
      * @return

@@ -44,4 +44,21 @@ public interface AssetsDao extends BaseDao<Assets> {
      */
     public int countByDepartmentId(Long departmentId);
 
+    /**
+     * 查询部门内的资产
+     * @param departmentId
+     * @return
+     */
+    public List<Assets> findByDepartmentId(Long departmentId);
+
+    /**
+     * 查询部门内的资产
+     * @param departmentId
+     * @param name
+     * @param code
+     * @return
+     */
+    @Query( " select a from Assets where departmentId =:departmentId and ( name like :name or code :code) " )
+    public List<Assets> findByDepartmentIdOrNameLikeOrCodeLike(Long departmentId,String name,String code);
+
 }

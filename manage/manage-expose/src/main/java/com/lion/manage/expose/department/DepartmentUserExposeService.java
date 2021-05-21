@@ -39,4 +39,19 @@ public interface DepartmentUserExposeService extends BaseService<DepartmentUser>
      * @return
      */
     public List<Long> findAllUser(Long departmentId);
+
+    /**
+     * 查询科室所有关联的员工
+     * @param departmentId
+     * @param name
+     * @return
+     */
+    public List<Long> findAllUser(Long departmentId,String name);
+
+    /**
+     * 统计科室下有多少员工
+     * @param departmentId
+     * @return
+     */
+    public Integer count(Long departmentId);
 }

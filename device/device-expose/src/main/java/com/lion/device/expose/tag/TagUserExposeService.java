@@ -31,4 +31,11 @@ public interface TagUserExposeService extends BaseService<TagUser> {
      * @return 根据标签查询未解绑的关联
      */
     public TagUser find(Long tagId);
+
+    /**
+     * 根据用户查询未解绑的tag
+     * @param userId
+     * @return
+     */
+    public TagUser findByUserId(Long userId);
 }

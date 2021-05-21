@@ -39,4 +39,16 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
     public Integer countByDepartmentId(Long departmentId) {
         return assetsDao.countByDepartmentId(departmentId);
     }
+
+    @Override
+    public List<Assets> findByDepartmentId(Long departmentId) {
+        return assetsDao.findByDepartmentId(departmentId);
+    }
+
+    @Override
+    public List<Assets> findByDepartmentId(Long departmentId, String name, String code) {
+        return assetsDao.findByDepartmentIdOrNameLikeOrCodeLike(departmentId, name, code);
+    }
+
+
 }

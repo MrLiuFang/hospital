@@ -181,4 +181,16 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IResultData<List<DepartmentStatisticsDetails>> departmentStatisticsDetails() {
         return ResultData.instance().setData(mapStatisticsService.departmentStatisticsDetails());
     }
+
+    @GetMapping("/department/staff/statistics/details")
+    @ApiOperation(value = "地图监控科室员工统计")
+    public IResultData<List<DepartmentStaffStatisticsDetails>> departmentStaffStatisticsDetails(@ApiParam(value = "姓名") String name) {
+        return ResultData.instance().setData(mapStatisticsService.departmentStaffStatisticsDetails(name));
+    }
+
+    @GetMapping("/department/assets/statistics/details")
+    @ApiOperation(value = "地图监控科室资产统计")
+    public IResultData<List<DepartmentAssetsStatisticsDetails>> departmentAssetsStatisticsDetails(@ApiParam(value = "名称/资产编码") String keyword) {
+        return ResultData.instance().setData(mapStatisticsService.departmentAssetsStatisticsDetails(keyword));
+    }
 }

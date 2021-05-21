@@ -51,6 +51,11 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
     }
 
     @Override
+    public List<User> findByName(String name) {
+        return userDao.findByNameLike(name);
+    }
+
+    @Override
     public Map<String,Object> find(Long departmentId, String name, UserType userType, List<Long> ontIn, int page, int size) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.nonNull(departmentId)){

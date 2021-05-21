@@ -33,4 +33,20 @@ public interface AssetsExposeService extends BaseService<Assets> {
      * @return
      */
     public Integer countByDepartmentId(Long departmentId);
+
+    /**
+     * 查询部门内的资产
+     * @param departmentId
+     * @return
+     */
+    public List<Assets> findByDepartmentId(Long departmentId);
+
+    /**
+     * 查询部门内的资产
+     * @param departmentId
+     * @param name
+     * @param code
+     * @return
+     */
+    public List<Assets> findByDepartmentId(Long departmentId,String name,String code);
 }

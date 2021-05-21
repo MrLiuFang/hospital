@@ -1,5 +1,7 @@
 package com.lion.event.service;
 
+import com.lion.event.entity.vo.DepartmentAssetsStatisticsDetails;
+import com.lion.event.entity.vo.DepartmentStaffStatisticsDetails;
 import com.lion.event.entity.vo.DepartmentStatisticsDetails;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 
@@ -23,6 +25,22 @@ public interface MapStatisticsService {
     /**
      * 科室统计
      * @return
+     * @param name
      */
     public List<DepartmentStatisticsDetails> departmentStatisticsDetails();
+
+    /**
+     * 科室员工统计
+     * @return
+     * @param name
+     */
+    public List<DepartmentStaffStatisticsDetails>  departmentStaffStatisticsDetails(String name);
+
+    /**
+     * 科室资产统计
+     * @return
+     * @param keyword
+     */
+    public List<DepartmentAssetsStatisticsDetails>  departmentAssetsStatisticsDetails(String keyword);
+
 }

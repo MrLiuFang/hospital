@@ -7,12 +7,15 @@ import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.DepartmentUser;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.service.department.DepartmentUserService;
+import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Mr.Liu
@@ -30,6 +33,9 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
 
     @Autowired
     private DepartmentDao departmentDao;
+
+    @Autowired
+    private UserExposeService userExposeService;
 
     @Override
     public void relationDepartment(Long userId, Long departmentId) {
@@ -54,5 +60,28 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
             returnList.add(departmentUser.getUserId());
         });
         return returnList;
+    }
+
+    @Override
+    public List<Long> findAllUser(Long departmentId, String name) {
+        List<User> userList = userExposeService.findByName(name);
+        List<Long> userIds = new ArrayList<>();
+        userList.forEach(user -> {
+            userIds.add(user.getId());
+        });
+        if (Objects.nonNull(userIds) && userIds.size()>0) {
+            List<DepartmentUser> list = departmentUserDao.findByDepartmentIdAndUserIdIn(departmentId,userIds);
+            List<Long> returnList = new ArrayList<Long>();
+            list.forEach(departmentUser -> {
+                returnList.add(departmentUser.getUserId());
+            });
+            return returnList;
+        }
+        return findAllUser(departmentId);
+    }
+
+    @Override
+    public Integer count(Long departmentId) {
+        return departmentUserDao.countByDepartmentId(departmentId);
     }
 }

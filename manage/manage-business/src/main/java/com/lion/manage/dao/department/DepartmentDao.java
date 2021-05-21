@@ -49,4 +49,5 @@ public interface DepartmentDao extends BaseDao<Department> {
      */
     @Query(" select d from Department d join DepartmentResponsibleUser dru on d.id = dru.departmentId where dru.userId = :userId ")
     public List<Department> findResponsibleDepartmentByUserId(Long userId);
+
 }

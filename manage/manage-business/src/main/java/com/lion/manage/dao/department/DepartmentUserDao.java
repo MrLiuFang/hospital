@@ -34,4 +34,19 @@ public interface DepartmentUserDao extends BaseDao<DepartmentUser> {
      * @return
      */
     public List<DepartmentUser> findByDepartmentId(Long departmentId);
+
+    /**
+     * 查询科室关联的所有员工
+     * @param departmentId
+     * @param userIds
+     * @return
+     */
+    public List<DepartmentUser> findByDepartmentIdAndUserIdIn(Long departmentId,List<Long> userIds);
+
+    /**
+     * 统计部门下面有多少员工
+     * @param departmentId
+     * @return
+     */
+    public Integer countByDepartmentId(Long departmentId);
 }
