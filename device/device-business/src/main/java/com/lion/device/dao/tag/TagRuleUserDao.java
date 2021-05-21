@@ -41,5 +41,5 @@ public interface TagRuleUserDao extends BaseDao<TagRuleUser> {
      * @param tagRuleId
      * @return
      */
-    public List<TagUser> findByTagRuleId(Long tagRuleId);
+    public List<TagRuleUser> findByTagRuleId(Long tagRuleId);
 }

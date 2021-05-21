@@ -25,6 +25,9 @@ public class DeviceStatisticsVo {
         @ApiModelProperty(value = "统计名称")
         private String name;
 
+        @ApiModelProperty(value = "编码")
+        private String code;
+
         @ApiModelProperty(value = "统计数量")
         private long count;
     }

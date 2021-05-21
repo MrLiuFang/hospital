@@ -113,12 +113,14 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         list.add(count(DeviceClassify.VIRTUAL_WALL));
         DeviceStatisticsVo.DeviceStatisticsData dataCctv = new DeviceStatisticsVo.DeviceStatisticsData();
         dataCctv.setName("cctv");
+        dataCctv.setCode("CCTV");
         dataCctv.setCount(cctvDao.count());
         list.add(dataCctv);
-        DeviceStatisticsVo.DeviceStatisticsData dataTag = new DeviceStatisticsVo.DeviceStatisticsData();
-        dataTag.setName("tag");
-        dataTag.setCount(tagDao.count());
-        list.add(dataTag);
+//        DeviceStatisticsVo.DeviceStatisticsData dataTag = new DeviceStatisticsVo.DeviceStatisticsData();
+//        dataTag.setName("tag");
+//        dataTag.setName("TAG");
+//        dataTag.setCount(tagDao.count());
+//        list.add(dataTag);
         ov.setList(list);
         return ov;
     }
@@ -126,6 +128,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     private DeviceStatisticsVo.DeviceStatisticsData count(DeviceClassify classify){
         DeviceStatisticsVo.DeviceStatisticsData data = new DeviceStatisticsVo.DeviceStatisticsData();
         data.setName(DeviceClassify.HAND_WASHING.getName());
+        data.setCode(classify.getName());
         data.setCount(deviceDao.countByDeviceClassify(classify));
         return data;
     }

@@ -137,7 +137,7 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
     }
 
     @Override
-    public List<TagUser> find(Long tagRuleId) {
+    public List<TagRuleUser> find(Long tagRuleId) {
         return tagRuleUserDao.findByTagRuleId(tagRuleId);
     }
 }

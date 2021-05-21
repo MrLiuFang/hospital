@@ -13,6 +13,7 @@ import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagRule;
+import com.lion.device.entity.tag.TagRuleUser;
 import com.lion.device.entity.tag.TagUser;
 import com.lion.device.entity.tag.dto.*;
 import com.lion.device.entity.tag.vo.*;
@@ -159,7 +160,7 @@ public class TagController extends BaseControllerImpl implements BaseController 
             TagRuleDetailsVo vo = new TagRuleDetailsVo();
             BeanUtils.copyProperties(tagRule,vo);
             List<Long> userIds = new ArrayList<>();
-            List<TagUser> list =  tagRuleUserService.find(id);
+            List<TagRuleUser> list =  tagRuleUserService.find(id);
             list.forEach(tagUser -> {
                 userIds.add(tagUser.getUserId());
             });

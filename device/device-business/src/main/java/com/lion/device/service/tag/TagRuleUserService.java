@@ -50,5 +50,5 @@ public interface TagRuleUserService extends BaseService<TagRuleUser> {
      * @param tagRuleId
      * @return
      */
-    public List<TagUser> find(Long tagRuleId);
+    public List<TagRuleUser> find(Long tagRuleId);
 }
