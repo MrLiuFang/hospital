@@ -199,8 +199,8 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         }
         query.addCriteria(criteria);
         long count = mongoTemplate.count(query, SystemAlarm.class);
-        PageRequest pageRequest = PageRequest.of(lionPage.getPageNumber(),lionPage.getPageSize(), Sort.by(Sort.Order.desc("sdt")));
-        query.with(pageRequest);
+        query.with(lionPage);
+        query.with(Sort.by(Sort.Order.desc("sdt")));
         List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
         List<SystemAlarmVo> list = new ArrayList<>();
         if (Objects.nonNull(items) && items.size()>0){
@@ -254,7 +254,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                 list.add(vo);
             });
         }
-        return new PageResultData<>(list,pageRequest,count);
+        return new PageResultData<>(list,lionPage,count);
     }
 
     private SystemAlarm find(String uuid){
