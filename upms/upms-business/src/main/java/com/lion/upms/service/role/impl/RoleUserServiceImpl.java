@@ -29,6 +29,7 @@ public class RoleUserServiceImpl extends BaseServiceImpl<RoleUser> implements Ro
     }
 
     @Override
+    @Transactional
     public void deleteByUserId(Long userId) {
         roleUserDao.deleteByUserId(userId);
     }

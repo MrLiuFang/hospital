@@ -11,6 +11,7 @@ import com.lion.manage.service.department.DepartmentResponsibleUserService;
 import com.lion.utils.BeanToMapUtil;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class DepartmentResponsibleUserExposeServiceImpl extends BaseServiceImpl<
     private DepartmentResponsibleUserDao departmentResponsibleUserDao;
 
     @Override
+    @Transactional
     public void relationDepartment(Long userId, List<Long> departmentIds) {
         departmentResponsibleUserService.relationDepartment(userId,departmentIds);
     }
@@ -54,6 +56,7 @@ public class DepartmentResponsibleUserExposeServiceImpl extends BaseServiceImpl<
     }
 
     @Override
+    @Transactional
     public void deleteByUserId(Long userId) {
         departmentResponsibleUserDao.deleteByUserId(userId);
     }

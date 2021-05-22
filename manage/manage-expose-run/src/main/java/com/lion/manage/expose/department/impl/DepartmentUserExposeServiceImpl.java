@@ -52,6 +52,7 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
     }
 
     @Override
+    @Transactional
     public void deleteByUserId(Long userId) {
         departmentUserDao.deleteByUserId(userId);
     }

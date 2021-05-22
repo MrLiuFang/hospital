@@ -52,6 +52,7 @@ public class DepartmentResponsibleUserServiceImpl extends BaseServiceImpl<Depart
     }
 
     @Override
+    @Transactional
     public void relationDepartment(Long userId, List<Long> departmentIds) {
         departmentResponsibleUserDao.deleteByUserId(userId);
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
