@@ -1,10 +1,9 @@
 package com.lion.event.service;
 
-import com.lion.event.entity.vo.DepartmentAssetsStatisticsDetails;
-import com.lion.event.entity.vo.DepartmentStaffStatisticsDetails;
-import com.lion.event.entity.vo.DepartmentStatisticsDetails;
-import com.lion.event.entity.vo.RegionStatisticsDetails;
+import com.lion.core.IResultData;
+import com.lion.event.entity.vo.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -27,20 +26,41 @@ public interface MapStatisticsService {
      * @return
      * @param name
      */
-    public List<DepartmentStatisticsDetails> departmentStatisticsDetails();
+    public List<DepartmentStatisticsDetailsVo> departmentStatisticsDetails();
 
     /**
      * 科室员工统计
      * @return
      * @param name
      */
-    public DepartmentStaffStatisticsDetails  departmentStaffStatisticsDetails(String name);
+    public DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetails(String name);
 
     /**
      * 科室资产统计
      * @return
      * @param keyword
      */
-    public DepartmentAssetsStatisticsDetails  departmentAssetsStatisticsDetails(String keyword);
+    public DepartmentAssetsStatisticsDetailsVo departmentAssetsStatisticsDetails(String keyword);
+
+    /**
+     * 科室标签统计
+     * @param keyword
+     * @return
+     */
+    public DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetails(String keyword);
+
+    /**
+     * 员工详情
+     * @param userId
+     * @return
+     */
+    public StaffDetailsVo staffDetails(Long userId);
+
+    /**
+     * 获取员工当前位置
+     * @param userId
+     * @return
+     */
+    public UserCurrentRegionVo userCurrentRegion(Long userId);
 
 }

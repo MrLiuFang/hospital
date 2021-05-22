@@ -1,7 +1,10 @@
 package com.lion.event.dao;
 
+import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -38,4 +41,14 @@ public interface SystemAlarmDaoEx {
      * @return
      */
     public Map<String, Integer> groupCount(Long departmentId);
+
+    /**
+     * 获取员工指定时间内的警告
+     * @param userId
+     * @param ua
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public List<SystemAlarm> find(Long userId, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

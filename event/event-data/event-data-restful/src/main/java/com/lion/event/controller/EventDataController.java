@@ -69,43 +69,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/user/current/region")
     @ApiOperation(value = "用户当前位置")
-    public IResultData<UserCurrentRegionVo> userCurrentRegionVo(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId) {
-        UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION+userId);
-        if (Objects.isNull(userCurrentRegionDto)) {
-            CurrentPosition currentPosition = currentPositionService.find(userId);
-            if (Objects.nonNull(currentPosition)){
-                userCurrentRegionDto = new UserCurrentRegionDto();
-                userCurrentRegionDto.setUserId(userId);
-                userCurrentRegionDto.setRegionId(currentPosition.getRi());
-            }
-        }
+    public IResultData<UserCurrentRegionVo> userCurrentRegion(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId) {
+        return ResultData.instance().setData(mapStatisticsService.userCurrentRegion(userId));
+    }
 
-        if (Objects.nonNull(userCurrentRegionDto)){
-            UserCurrentRegionVo vo = new UserCurrentRegionVo();
-            vo.setFirstEntryTime(userCurrentRegionDto.getFirstEntryTime());
-            Region region = redisUtil.getRegionById(userCurrentRegionDto.getRegionId());
-            if (Objects.nonNull(region)) {
-                vo.setRegionId(region.getId());
-                vo.setRegionName(region.getName());
-                Build build = redisUtil.getBuild(region.getBuildId());
-                if (Objects.nonNull(build)) {
-                    vo.setBuildId(build.getId());
-                    vo.setBuildName(build.getName());
-                }
-                BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)) {
-                    vo.setBuildFloorId(buildFloor.getId());
-                    vo.setBuildFloorName(buildFloor.getName());
-                }
-                Department department = redisUtil.getDepartment(region.getDepartmentId());
-                if (Objects.nonNull(department)) {
-                    vo.setDepartmentId(department.getId());
-                    vo.setDepartmentName(department.getName());
-                }
-            }
-            return ResultData.instance().setData(vo);
-        }
-        return ResultData.instance();
+    @GetMapping("/tag/current/region")
+    @ApiOperation(value = "标签当前位置")
+    public IResultData<CurrentPosition> tagCurrentPosition(@ApiParam(value = "标签id") @NotNull(message = "标签id不能为空") Long tagId) {
+        return ResultData.instance().setData(currentPositionService.findByTagId(tagId));
     }
 
     @GetMapping("/wash/list")
@@ -178,19 +149,32 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/department/statistics/details")
     @ApiOperation(value = "地图监控科室统计")
-    public IResultData<List<DepartmentStatisticsDetails>> departmentStatisticsDetails() {
+    public IResultData<List<DepartmentStatisticsDetailsVo>> departmentStatisticsDetails() {
         return ResultData.instance().setData(mapStatisticsService.departmentStatisticsDetails());
     }
 
     @GetMapping("/department/staff/statistics/details")
     @ApiOperation(value = "地图监控科室员工统计")
-    public IResultData<DepartmentStaffStatisticsDetails> departmentStaffStatisticsDetails(@ApiParam(value = "姓名") String name) {
+    public IResultData<DepartmentStaffStatisticsDetailsVo> departmentStaffStatisticsDetails(@ApiParam(value = "姓名") String name) {
         return ResultData.instance().setData(mapStatisticsService.departmentStaffStatisticsDetails(name));
     }
 
     @GetMapping("/department/assets/statistics/details")
     @ApiOperation(value = "地图监控科室资产统计")
-    public IResultData<List<DepartmentAssetsStatisticsDetails>> departmentAssetsStatisticsDetails(@ApiParam(value = "名称/资产编码") String keyword) {
+    public IResultData<List<DepartmentAssetsStatisticsDetailsVo>> departmentAssetsStatisticsDetails(@ApiParam(value = "名称/资产编码") String keyword) {
         return ResultData.instance().setData(mapStatisticsService.departmentAssetsStatisticsDetails(keyword));
+    }
+
+    @GetMapping("/department/tag/statistics/details")
+    @ApiOperation(value = "地图监控科室温标签统计")
+    public IResultData<List<DepartmentTagStatisticsDetailsVo>> departmentTagStatisticsDetails(@ApiParam(value = "名称/标签编码") String keyword) {
+        return ResultData.instance().setData(mapStatisticsService.departmentTagStatisticsDetails(keyword));
+    }
+
+    @GetMapping("/staff/details")
+    @ApiOperation(value = "地图监控科室温标签统计")
+    public IResultData staffDetails(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId) {
+
+        return ResultData.instance();
     }
 }

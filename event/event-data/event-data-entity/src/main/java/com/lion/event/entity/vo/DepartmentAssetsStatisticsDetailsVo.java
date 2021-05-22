@@ -15,7 +15,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class DepartmentAssetsStatisticsDetails {
+public class DepartmentAssetsStatisticsDetailsVo {
 
     @ApiModelProperty(value = "资产总数")
     private Integer assetsCount = 0;
@@ -27,7 +27,7 @@ public class DepartmentAssetsStatisticsDetails {
     private Integer abnormalAssetsCount;
 
     @ApiModelProperty(value = "部门信息")
-    private List<DepartmentAssetsStatisticsDetails.DepartmentVo> departmentVos;
+    private List<DepartmentAssetsStatisticsDetailsVo.DepartmentVo> departmentVos;
 
     @ApiModel
     @Data
@@ -40,7 +40,7 @@ public class DepartmentAssetsStatisticsDetails {
         private String departmentName;
 
         @ApiModelProperty(value = "资产信息")
-        private List<AssetsVo> assets;
+        private List<AssetsVo> assetsVos;
     }
 
     @ApiModel

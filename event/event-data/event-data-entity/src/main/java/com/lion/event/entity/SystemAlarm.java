@@ -63,7 +63,7 @@ public class SystemAlarm implements Serializable {
     /**
      * 是否已知熟（处理）
      */
-    private Boolean ua = false;
+    private Integer ua = false ? 1 : 0;
 
     //建筑id
     private Long bui;
@@ -106,5 +106,9 @@ public class SystemAlarm implements Serializable {
     public void setSdt(LocalDateTime sdt) {
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         this.sdt = LocalDateTime.parse(dtf.format(sdt),dtf);
+    }
+
+    public void setUa(Boolean ua) {
+        this.ua = ua ? 1 : 0;
     }
 }

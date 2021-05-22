@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel
-public class DepartmentStatisticsDetails {
+public class DepartmentStatisticsDetailsVo {
 
     @ApiModelProperty(value = "科室id")
     private Long departmentId;

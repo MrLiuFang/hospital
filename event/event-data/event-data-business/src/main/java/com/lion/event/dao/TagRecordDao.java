@@ -8,5 +8,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * @Description //TODO
  * @Date 2021/5/17 下午9:18
  **/
-public interface TagRecordDao extends MongoRepository<TagRecord,String> {
+public interface TagRecordDao extends MongoRepository<TagRecord,String> ,TagRecordDaoEx {
+
 }

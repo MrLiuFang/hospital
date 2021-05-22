@@ -1,4 +1,4 @@
-package com.lion.event.service;
+package com.lion.event.dao;
 
 import com.lion.event.entity.Position;
 
@@ -6,13 +6,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * @Author Mr.Liu
- * @Description //TODO
- * @Date 2021/5/1 下午6:12
- **/
-public interface PositionService {
-
-    public void save(Position position);
+ * @description:
+ * @author: Mr.Liu
+ * @time: 2021/5/22 下午5:10
+ */
+public interface PositionDaoEx {
 
     /**
      * 获取员工指定时间内的行动轨迹

@@ -27,6 +27,13 @@ public interface CurrentPositionService  {
     public CurrentPosition find(Long userId);
 
     /**
+     * 获取标签当前位置
+     * @param tagId
+     * @return
+     */
+    public CurrentPosition findByTagId(Long tagId);
+
+    /**
      * 根据区域统计区域的员工，患者，标签……数量
      * @param buildFloorId
      * @param map

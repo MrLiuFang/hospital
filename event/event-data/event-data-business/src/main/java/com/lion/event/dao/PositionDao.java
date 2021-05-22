@@ -8,5 +8,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * @Description //TODO
  * @Date 2021/5/1 下午6:02
  **/
-public interface PositionDao extends MongoRepository<Position,String> {
+public interface PositionDao extends MongoRepository<Position,String>,PositionDaoEx {
 }

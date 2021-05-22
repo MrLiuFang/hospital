@@ -7,6 +7,9 @@ import com.lion.event.service.PositionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * @Author Mr.Liu
  * @Description //TODO
@@ -25,5 +28,11 @@ public class PositionServiceImpl implements PositionService {
     public void save(Position position) {
         positionDao.save(position);
         currentPositionService.save(position);
+    }
+
+    @Override
+    public List<Position> find(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+
+        return null;
     }
 }

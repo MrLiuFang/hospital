@@ -58,7 +58,7 @@ public interface AssetsDao extends BaseDao<Assets> {
      * @param code
      * @return
      */
-    @Query( " select a from Assets where departmentId =:departmentId and ( name like :name or code :code) " )
+    @Query( " select a from Assets a where a.departmentId =:departmentId and ( a.name like :name or a.code like :code) " )
     public List<Assets> findByDepartmentIdOrNameLikeOrCodeLike(Long departmentId,String name,String code);
 
 }

@@ -10,6 +10,7 @@ import com.lion.manage.service.department.DepartmentUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sun.management.counter.perf.PerfInstrumentation;
 
 import java.util.Objects;
@@ -38,6 +39,7 @@ public class DepartmentUserServiceImpl extends BaseServiceImpl<DepartmentUser> i
     }
 
     @Override
+    @Transactional
     public void relationDepartment(Long userId, Long departmentId) {
         departmentUserDao.deleteByUserId(userId);
         redisTemplate.delete(RedisConstants.USER_DEPARTMENT+userId);

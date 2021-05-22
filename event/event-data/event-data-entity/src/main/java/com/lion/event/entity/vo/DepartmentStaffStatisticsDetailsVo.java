@@ -7,7 +7,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,7 +17,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-public class DepartmentStaffStatisticsDetails {
+public class DepartmentStaffStatisticsDetailsVo {
 
 
     @ApiModelProperty(value = "员工总数")
@@ -31,7 +30,7 @@ public class DepartmentStaffStatisticsDetails {
     private Integer abnormalStaffCount;
 
     @ApiModelProperty(value = "部门信息")
-    private List<DepartmentStaffStatisticsDetails.DepartmentVo> departmentVos;
+    private List<DepartmentStaffStatisticsDetailsVo.DepartmentVo> departmentVos;
 
     @ApiModel
     @Data
@@ -44,12 +43,12 @@ public class DepartmentStaffStatisticsDetails {
         private String departmentName;
 
         @ApiModelProperty(value = "科室员工信息")
-        private List<DepartmentStaff> departmentStaffs;
+        private List<DepartmentStaffVo> departmentStaffVos;
     }
 
     @ApiModel
     @Data
-    public static class DepartmentStaff{
+    public static class DepartmentStaffVo{
 
         @ApiModelProperty(value = "员工ID")
         private Long userId;

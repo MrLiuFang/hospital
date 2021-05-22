@@ -12,6 +12,9 @@ import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
+import sun.swing.StringUIClientPropertyKey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +41,7 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
     private UserExposeService userExposeService;
 
     @Override
+    @Transactional
     public void relationDepartment(Long userId, Long departmentId) {
         departmentUserService.relationDepartment(userId,departmentId);
     }
@@ -64,18 +68,20 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
 
     @Override
     public List<Long> findAllUser(Long departmentId, String name) {
-        List<User> userList = userExposeService.findByName(name);
-        List<Long> userIds = new ArrayList<>();
-        userList.forEach(user -> {
-            userIds.add(user.getId());
-        });
-        if (Objects.nonNull(userIds) && userIds.size()>0) {
-            List<DepartmentUser> list = departmentUserDao.findByDepartmentIdAndUserIdIn(departmentId,userIds);
-            List<Long> returnList = new ArrayList<Long>();
-            list.forEach(departmentUser -> {
-                returnList.add(departmentUser.getUserId());
+        if (StringUtils.hasText(name)) {
+            List<User> userList = userExposeService.findByName(name);
+            List<Long> userIds = new ArrayList<>();
+            userList.forEach(user -> {
+                userIds.add(user.getId());
             });
-            return returnList;
+            if (Objects.nonNull(userIds) && userIds.size()>0) {
+                List<DepartmentUser> list = departmentUserDao.findByDepartmentIdAndUserIdIn(departmentId,userIds);
+                List<Long> returnList = new ArrayList<Long>();
+                list.forEach(departmentUser -> {
+                    returnList.add(departmentUser.getUserId());
+                });
+                return returnList;
+            }
         }
         return findAllUser(departmentId);
     }

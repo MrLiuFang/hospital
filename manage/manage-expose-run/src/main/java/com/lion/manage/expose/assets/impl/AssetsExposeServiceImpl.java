@@ -7,6 +7,7 @@ import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.service.assets.AssetsService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,10 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
 
     @Override
     public List<Assets> findByDepartmentId(Long departmentId, String name, String code) {
-        return assetsDao.findByDepartmentIdOrNameLikeOrCodeLike(departmentId, name, code);
+        if (StringUtils.hasText(name) && StringUtils.hasText(code)) {
+            return assetsDao.findByDepartmentIdOrNameLikeOrCodeLike(departmentId, "%"+name+"%", "%"+code+"%");
+        }
+        return assetsDao.findByDepartmentId(departmentId);
     }
 
 

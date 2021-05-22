@@ -4,7 +4,9 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.BasicDBObjectUtil;
 import com.lion.event.dao.SystemAlarmDaoEx;
+import com.lion.event.entity.Position;
 import com.lion.event.entity.SystemAlarm;
+import com.lion.event.entity.TagRecord;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
@@ -12,6 +14,8 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.checkerframework.checker.units.qual.Time;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -112,6 +116,38 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             map.put("alarmCount",document.getInteger("alarmCount"));
         });
         return map;
+    }
+
+    @Override
+    public List<SystemAlarm> find(Long userId, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.nonNull(userId)) {
+            criteria.and("pi").is(userId);
+        }else {
+            return null;
+        }
+        if (Objects.nonNull(ua)) {
+            criteria.and("ua").is(ua?1:0);
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            criteria.andOperator(Criteria.where("ddt").gte(startDateTime), Criteria.where("ddt").lte(endDateTime));
+        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
+            criteria.and("ddt").gte(startDateTime);
+        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
+            criteria.and("ddt").lte(endDateTime);
+        }
+        query.addCriteria(criteria);
+        PageRequest pageRequest = PageRequest.of(0,99999, Sort.by(Sort.Order.desc("ddt")));
+        query.with(pageRequest);
+        List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
+        List<SystemAlarm> list = new ArrayList<>();
+        if (Objects.nonNull(items) && items.size()>0){
+            items.forEach(systemAlarm -> {
+                list.add(systemAlarm);
+            });
+        }
+        return list;
     }
 
     private SystemAlarm find(String uuid){

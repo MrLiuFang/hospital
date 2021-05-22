@@ -136,6 +136,8 @@ public class DeviceServiceImpl implements DeviceService {
         TagRecordDto tagRecordDto = new TagRecordDto();
         tagRecordDto.setRi(currentRegionDto.getRegionId());
         tagRecordDto.setTyp(deviceDataDto.getTagType().getKey());
+        tagRecordDto.setDdt(deviceDataDto.getTime());
+        tagRecordDto.setSdt(deviceDataDto.getSystemDateTime());
         tagRecordDto.setTi(tag.getId());
         if (Objects.nonNull(deviceDataDto.getTemperature())) {
             tagRecordDto.setT(deviceDataDto.getTemperature());

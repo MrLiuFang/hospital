@@ -1,6 +1,7 @@
 package com.lion.device.dao.tag;
 
 import com.lion.core.persistence.curd.BaseDao;
+import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 import org.springframework.data.jpa.repository.Query;
 
@@ -54,9 +55,33 @@ public interface TagDao extends BaseDao<Tag> {
     /**
      * 根据科室内标签数量
      * @param departmentId
-     * @param battery
      * @return
      */
     public Integer countByDepartmentId(Long departmentId);
+
+    /**
+     * 根据科室查询标签
+     * @param departmentId
+     * @param purpose
+     * @return
+     */
+    public List<Tag> findByDepartmentIdAndPurpose(Long departmentId,TagPurpose purpose);
+
+    /**
+     * 根据科室查询标签
+     * @param departmentId
+     * @param purpose
+     * @param tagCode
+     * @return
+     */
+    public List<Tag> findByDepartmentIdAndPurposeAndTagCodeLike(Long departmentId,TagPurpose purpose,String tagCode);
+
+    /**
+     * 根据科室内标签数量
+     * @param departmentId
+     * @param purpose
+     * @return
+     */
+    public Integer countByDepartmentIdAndPurpose(Long departmentId, TagPurpose purpose);
 
 }

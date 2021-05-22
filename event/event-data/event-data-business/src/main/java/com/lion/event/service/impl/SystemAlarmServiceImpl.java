@@ -7,6 +7,8 @@ import com.lion.event.service.SystemAlarmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -43,5 +45,10 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     @Override
     public Map<String, Integer> groupCount(Long departmentId) {
         return alarmDao.groupCount(departmentId);
+    }
+
+    @Override
+    public List<SystemAlarm> find(Long userId, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return null;
     }
 }

@@ -3,12 +3,14 @@ package com.lion.device.expose.impl.tag;
 import com.lion.common.constants.RedisConstants;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagDao;
+import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.service.tag.TagService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -59,7 +61,20 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     }
 
     @Override
+    public List<Tag> find(Long departmentId,TagPurpose purpose, String tagCode) {
+        if (StringUtils.hasText(tagCode)) {
+            return tagDao.findByDepartmentIdAndPurposeAndTagCodeLike(departmentId, purpose, "%"+tagCode+"%");
+        }
+        return tagDao.findByDepartmentIdAndPurpose(departmentId, purpose);
+    }
+
+    @Override
     public Integer countTag(Long departmentId) {
         return tagDao.countByDepartmentId(departmentId);
+    }
+
+    @Override
+    public Integer countTag(Long departmentId, TagPurpose purpose) {
+        return tagDao.countByDepartmentIdAndPurpose(departmentId, purpose);
     }
 }

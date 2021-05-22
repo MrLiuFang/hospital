@@ -62,6 +62,21 @@ public class CurrentPositionServiceImpl implements CurrentPositionService {
     }
 
     @Override
+    public CurrentPosition findByTagId(Long tagId) {
+        CurrentPosition exampleCurrentPosition = new CurrentPosition();
+        if (Objects.nonNull(tagId)) {
+            exampleCurrentPosition.setTi(tagId);
+        }
+        Example<CurrentPosition> example = Example.of(exampleCurrentPosition);
+        Optional<CurrentPosition> optional = currentPositionDao.findOne(example);
+        if (optional.isPresent()) {
+            CurrentPosition currentPosition = optional.get();
+            return currentPosition;
+        }
+        return null;
+    }
+
+    @Override
     public Map<Long, RegionStatisticsDetails> groupCount(Long buildFloorId, Map<Long, RegionStatisticsDetails> map) {
         return currentPositionDao.groupCount(buildFloorId, map);
     }

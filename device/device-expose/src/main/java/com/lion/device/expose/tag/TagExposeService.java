@@ -1,6 +1,7 @@
 package com.lion.device.expose.tag;
 
 import com.lion.core.service.BaseService;
+import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 
 import java.util.List;
@@ -43,10 +44,28 @@ public interface TagExposeService extends BaseService<Tag> {
     public Integer countTag(Long departmentId,Integer battery);
 
     /**
+     * 根据科室和标签编码查询
+     * @param departmentId
+     * @param purpose
+     * @param tagCode
+     * @return
+     */
+    public List<Tag> find(Long departmentId, TagPurpose purpose, String tagCode );
+
+
+    /**
      * 根据科室统计电量标签
      * @param departmentId
      * @return
      */
     public Integer countTag(Long departmentId);
+
+    /**
+     * 根据科室统计标签
+     * @param departmentId
+     * @param purpose
+     * @return
+     */
+    public Integer countTag(Long departmentId, TagPurpose purpose);
 
 }
