@@ -161,14 +161,14 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             criteria.and("ua").is(ua?1:0);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
-            criteria.andOperator(Criteria.where("ddt").gte(startDateTime), Criteria.where("ddt").lte(endDateTime));
+            criteria.andOperator(Criteria.where("dt").gte(startDateTime), Criteria.where("dt").lte(endDateTime));
         }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
-            criteria.and("ddt").gte(startDateTime);
+            criteria.and("dt").gte(startDateTime);
         }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
-            criteria.and("ddt").lte(endDateTime);
+            criteria.and("dt").lte(endDateTime);
         }
         query.addCriteria(criteria);
-        PageRequest pageRequest = PageRequest.of(0,99999, Sort.by(Sort.Order.desc("ddt")));
+        PageRequest pageRequest = PageRequest.of(0,99999, Sort.by(Sort.Order.desc("dt")));
         query.with(pageRequest);
         List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
         List<SystemAlarm> list = new ArrayList<>();
@@ -191,15 +191,15 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             criteria.and("ua").is(ua?1:0);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
-            criteria.andOperator(Criteria.where("ddt").gte(startDateTime), Criteria.where("ddt").lte(endDateTime));
+            criteria.andOperator(Criteria.where("dt").gte(startDateTime), Criteria.where("dt").lte(endDateTime));
         }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
-            criteria.and("ddt").gte(startDateTime);
+            criteria.and("dt").gte(startDateTime);
         }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
-            criteria.and("ddt").lte(endDateTime);
+            criteria.and("dt").lte(endDateTime);
         }
         query.addCriteria(criteria);
         long count = mongoTemplate.count(query, SystemAlarm.class);
-        PageRequest pageRequest = PageRequest.of(lionPage.getPageNumber()-1,lionPage.getPageSize(), Sort.by(Sort.Order.desc("sdt")));
+        PageRequest pageRequest = PageRequest.of(lionPage.getPageNumber(),lionPage.getPageSize(), Sort.by(Sort.Order.desc("sdt")));
         query.with(pageRequest);
         List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
         List<SystemAlarmVo> list = new ArrayList<>();
