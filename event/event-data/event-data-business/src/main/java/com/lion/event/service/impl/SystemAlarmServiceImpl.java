@@ -1,8 +1,11 @@
 package com.lion.event.service.impl;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.event.dao.SystemAlarmDao;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
+import com.lion.event.entity.vo.SystemAlarmVo;
 import com.lion.event.service.SystemAlarmService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,5 +53,10 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     @Override
     public List<SystemAlarm> find(Long userId, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return alarmDao.find(userId, ua, startDateTime, endDateTime);
+    }
+
+    @Override
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return alarmDao.list(lionPage,departmentIds,ua,startDateTime,endDateTime);
     }
 }

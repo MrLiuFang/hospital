@@ -157,3 +157,11 @@ db.washEvent.aggregate( [
     },
     { $match: { allNoAlarmRatio: {$lt:80}} },
  ] )
+
+
+
+ db.getCollection('system_alarm').find().forEach(
+    function(item){
+        db.getCollection('system_alarm').update({"_id":item._id},{$set:{"ua":0,dt:ISODate("2021-05-22T13:47:16.339Z")}})
+    }
+ )

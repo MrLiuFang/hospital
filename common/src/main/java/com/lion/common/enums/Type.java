@@ -89,13 +89,4 @@ public enum Type implements IEnum {
         }
         return null;
     }
-
-    public static Type valueOf(Integer key) {
-        for(Type item : values()){
-            if(Objects.equals(key,item.getKey())){
-                return item;
-            }
-        }
-        return null;
-    }
 }

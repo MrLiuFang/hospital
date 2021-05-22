@@ -2,14 +2,29 @@ package com.lion.event.dao.impl;
 
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.enums.Type;
+import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.BasicDBObjectUtil;
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
+import com.lion.device.entity.device.Device;
+import com.lion.device.entity.tag.Tag;
+import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.SystemAlarmDaoEx;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.TagRecord;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
+import com.lion.event.entity.vo.SystemAlarmVo;
+import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.enums.SystemAlarmType;
+import com.lion.manage.expose.assets.AssetsExposeService;
+import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.user.UserExposeService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.checkerframework.checker.units.qual.Time;
@@ -41,6 +56,21 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @DubboReference
+    private UserExposeService userExposeService;
+
+    @DubboReference
+    private FileExposeService fileExposeService;
+
+    @DubboReference
+    private AssetsExposeService assetsExposeService;
+
+    @DubboReference
+    private TagExposeService tagExposeService;
+
+    @DubboReference
+    private DeviceExposeService deviceExposeService;
+
     @Override
     public void updateSdt(String uuid) {
         SystemAlarm systemAlarm = find(uuid);
@@ -60,7 +90,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             Query query = new Query();
             query.addCriteria(Criteria.where("_id").is(systemAlarm.get_id()));
             Update update = new Update();
-            update.set("ua", true);
+            update.set("ua", true?1:0);
             mongoTemplate.updateFirst(query, update, "system_alarm");
         }
         redisTemplate.opsForValue().set(RedisConstants.UNALARM+uuid,true,24, TimeUnit.DAYS);
@@ -105,8 +135,8 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         BasicDBObject group = new BasicDBObject();
         group = BasicDBObjectUtil.put(group,"$group","_id","$di");
         group = BasicDBObjectUtil.put(group,"$group","allAlarmCount",new BasicDBObject("$sum",1));
-        group = BasicDBObjectUtil.put(group,"$group","unalarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ua",false})})).append("then",1).append("else",0))));
-        group = BasicDBObjectUtil.put(group,"$group","alarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ua",true})})).append("then",1).append("else",0))));
+        group = BasicDBObjectUtil.put(group,"$group","unalarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ua",false?1:0})})).append("then",1).append("else",0))));
+        group = BasicDBObjectUtil.put(group,"$group","alarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ua",true?1:0})})).append("then",1).append("else",0))));
         pipeline.add(group);
         AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("system_alarm").aggregate(pipeline);
         Map<String, Integer> map = new HashMap<>();
@@ -148,6 +178,83 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             });
         }
         return list;
+    }
+
+    @Override
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
+            criteria.and("di").in(departmentIds);
+        }
+        if (Objects.nonNull(ua)) {
+            criteria.and("ua").is(ua?1:0);
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            criteria.andOperator(Criteria.where("ddt").gte(startDateTime), Criteria.where("ddt").lte(endDateTime));
+        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
+            criteria.and("ddt").gte(startDateTime);
+        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
+            criteria.and("ddt").lte(endDateTime);
+        }
+        query.addCriteria(criteria);
+        long count = mongoTemplate.count(query, SystemAlarm.class);
+        PageRequest pageRequest = PageRequest.of(lionPage.getPageNumber()-1,lionPage.getPageSize(), Sort.by(Sort.Order.desc("sdt")));
+        query.with(pageRequest);
+        List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
+        List<SystemAlarmVo> list = new ArrayList<>();
+        if (Objects.nonNull(items) && items.size()>0){
+            items.forEach(systemAlarm -> {
+                SystemAlarmVo vo = new SystemAlarmVo();
+                vo.setId(systemAlarm.get_id());
+                if (Objects.nonNull(systemAlarm.getSat())) {
+                    SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
+                    vo.setAlarmContent(systemAlarmType.getDesc());
+                    vo.setAlarmCode(systemAlarmType.getName());
+                }
+                if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.STAFF)) {
+                    if (Objects.nonNull(systemAlarm.getPi())) {
+                        User user = userExposeService.findById(systemAlarm.getPi());
+                        if (Objects.nonNull(user)) {
+                            vo.setTitle(user.getName());
+                            vo.setImgId(user.getHeadPortrait());
+                            vo.setImgUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                        }
+                    }
+                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.ASSET)) {
+                    if (Objects.nonNull(systemAlarm.getAi())) {
+                        Assets assets = assetsExposeService.findById(systemAlarm.getAi());
+                        if (Objects.nonNull(assets)) {
+                            vo.setTitle(assets.getName());
+                            vo.setImgId(assets.getImg());
+                            vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
+                        }
+                    }
+                }else if (Objects.nonNull(systemAlarm.getTy()) &&( Objects.equals(systemAlarm.getTy(),Type.TEMPERATURE) ||Objects.equals(systemAlarm.getTy(),Type.HUMIDITY) )) {
+                    if (Objects.nonNull(systemAlarm.getTi())) {
+                        Tag tag = tagExposeService.findById(systemAlarm.getTi());
+                        if (Objects.nonNull(tag)) {
+                            vo.setTitle(tag.getTagCode());
+                        }
+                    }
+                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.MIGRANT)) {
+
+                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.PATIENT)) {
+
+                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.DEVICE)) {
+                    if (Objects.nonNull(systemAlarm.getDvi())) {
+                        Device device = deviceExposeService.findById(systemAlarm.getDvi());
+                        if (Objects.nonNull(device)) {
+                            vo.setTitle(device.getName());
+                            vo.setImgId(device.getImg());
+                            vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
+                        }
+                    }
+                }
+                list.add(vo);
+            });
+        }
+        return new PageResultData<>(list,pageRequest,count);
     }
 
     private SystemAlarm find(String uuid){

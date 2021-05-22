@@ -4,7 +4,8 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.common.dto.UserCurrentRegionDto;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.RedisUtil;
-import com.lion.core.ResultData;
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagAssets;
@@ -28,6 +29,9 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.assets.AssetsExposeService;
+import com.lion.manage.expose.build.BuildExposeService;
+import com.lion.manage.expose.build.BuildFloorExposeService;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
@@ -102,6 +106,15 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private BuildExposeService buildExposeService;
+
+    @DubboReference
+    private BuildFloorExposeService buildFloorExposeService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
 
     @Override
     public List<RegionStatisticsDetails> regionStatisticsDetails(Long buildFloorId) {
@@ -345,5 +358,55 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             return vo;
         }
         return null;
+    }
+
+    @Override
+    public AssetsDetailsVo assetsDetails(Long assetsId) {
+        Assets assets = assetsExposeService.findById(assetsId);
+        if (Objects.isNull(assets)){
+            return null;
+        }
+        AssetsDetailsVo assetsDetailsVo = new AssetsDetailsVo();
+        BeanUtils.copyProperties(assets,assetsDetailsVo);
+        Region region = regionExposeService.findById(assetsDetailsVo.getRegionId());
+        if (Objects.nonNull(region)) {
+            assetsDetailsVo.setRegionId(region.getId());
+            assetsDetailsVo.setRegionName(region.getName());
+            Build build = buildExposeService.findById(region.getBuildId());
+            if (Objects.nonNull(build)) {
+                assetsDetailsVo.setBuildId(build.getId());
+                assetsDetailsVo.setBuildName(build.getName());
+            }
+            BuildFloor buildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
+            if (Objects.nonNull(buildFloor)) {
+                assetsDetailsVo.setBuildFloorId(buildFloor.getId());
+                assetsDetailsVo.setBuildFloorName(buildFloor.getName());
+            }
+            Department department =  departmentExposeService.findById(region.getDepartmentId());
+            if (Objects.nonNull(department)) {
+                assetsDetailsVo.setDepartmentId(department.getId());
+                assetsDetailsVo.setDepartmentName(department.getName());
+            }
+        }
+        TagAssets tagAssets = tagAssetsExposeService.find(assetsId);
+        if (Objects.nonNull(tagAssets)) {
+            Tag tag = tagExposeService.findById(tagAssets.getTagId());
+            if (Objects.nonNull(tag)){
+                assetsDetailsVo.setBattery(tag.getBattery());
+            }
+        }
+        return assetsDetailsVo;
+    }
+
+    @Override
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(LionPage lionPage) {
+        LocalDateTime now = LocalDateTime.now();
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+        List<Long> departmentIds = new ArrayList<>();
+        list.forEach(department -> {
+            departmentIds.add(department.getId());
+        });
+        return systemAlarmService.list(lionPage,departmentIds,false,LocalDateTime.of(now.toLocalDate(), LocalTime.MIN),now);
     }
 }

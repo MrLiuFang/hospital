@@ -30,9 +30,7 @@ public class SystemAlarm implements Serializable {
     @ApiModelProperty(value = "唯一追踪标识")
     private String ui;
 
-    /**
-     * 警告类型(com.lion.common.enums.Type）)
-     */
+    @ApiModelProperty(value = "警告类型(com.lion.common.enums.Type)")
     private Integer ty;
 
     @ApiModelProperty(value = "员工/患者/流动人员id")
@@ -84,7 +82,7 @@ public class SystemAlarm implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dt;
 
-    @ApiModelProperty(value = "排序时间（用户多次警报时置顶显示）")
+    @ApiModelProperty(value = "排序时间（用户多次警报时置顶显示）前端可判断该时间是否发生变化来进行声音/闪耀提醒")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sdt;
 

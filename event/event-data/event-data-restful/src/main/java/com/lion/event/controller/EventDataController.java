@@ -40,7 +40,7 @@ import java.util.Objects;
 @RestController
 @RequestMapping()
 @Validated
-@Api(tags = {"事件数据"})
+@Api(tags = {"事件数据(工作台/地图监控)"})
 public class EventDataController extends BaseControllerImpl implements BaseController {
 
     @Autowired
@@ -172,9 +172,20 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     }
 
     @GetMapping("/staff/details")
-    @ApiOperation(value = "地图监控科室温标签统计")
-    public IResultData staffDetails(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId) {
-
+    @ApiOperation(value = "地图监控员工详情")
+    public IResultData<StaffDetailsVo> staffDetails(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId) {
         return ResultData.instance().setData(mapStatisticsService.staffDetails(userId));
+    }
+
+    @GetMapping("/assets/details")
+    @ApiOperation(value = "地图监控资产详情")
+    public IResultData<AssetsDetailsVo> assetsDetails(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long assetsId) {
+        return ResultData.instance().setData(mapStatisticsService.staffDetails(assetsId));
+    }
+
+    @GetMapping("/alarm/list")
+    @ApiOperation(value = "地图监控警告列表")
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(LionPage lionPage){
+        return mapStatisticsService.systemAlarmList(lionPage);
     }
 }

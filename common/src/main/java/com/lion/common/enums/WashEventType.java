@@ -65,7 +65,7 @@ public enum WashEventType implements IEnum {
         return instance(String.valueOf(value));
     }
 
-    private static WashEventType instance(Integer key){
+    public static WashEventType instance(Integer key){
         for(WashEventType item : values()){
             if (item.getKey()==key){
                 return item;

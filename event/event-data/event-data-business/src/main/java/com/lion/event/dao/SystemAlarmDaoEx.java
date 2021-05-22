@@ -1,7 +1,10 @@
 package com.lion.event.dao;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
+import com.lion.event.entity.vo.SystemAlarmVo;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -51,4 +54,15 @@ public interface SystemAlarmDaoEx {
      * @return
      */
     public List<SystemAlarm> find(Long userId, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    /**
+     *
+     * @param lionPage
+     * @param departmentIds
+     * @param ua
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }
