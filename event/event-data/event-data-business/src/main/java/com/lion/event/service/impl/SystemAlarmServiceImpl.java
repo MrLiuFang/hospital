@@ -49,6 +49,6 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Override
     public List<SystemAlarm> find(Long userId, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return null;
+        return alarmDao.find(userId, ua, startDateTime, endDateTime);
     }
 }

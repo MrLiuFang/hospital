@@ -175,6 +175,6 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @ApiOperation(value = "地图监控科室温标签统计")
     public IResultData staffDetails(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId) {
 
-        return ResultData.instance();
+        return ResultData.instance().setData(mapStatisticsService.staffDetails(userId));
     }
 }

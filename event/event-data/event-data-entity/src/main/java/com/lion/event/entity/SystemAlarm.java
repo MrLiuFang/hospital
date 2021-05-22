@@ -1,5 +1,8 @@
 package com.lion.event.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -15,6 +18,7 @@ import java.time.format.DateTimeFormatter;
  **/
 @Data
 @Document(value = "system_alarm")
+@ApiModel
 public class SystemAlarm implements Serializable {
 
     @Id
@@ -23,6 +27,7 @@ public class SystemAlarm implements Serializable {
     /**
      * 唯一追踪标识
      */
+    @ApiModelProperty(value = "唯一追踪标识")
     private String ui;
 
     /**
@@ -30,77 +35,57 @@ public class SystemAlarm implements Serializable {
      */
     private Integer ty;
 
-    /**
-     * 员工/患者/流动人员id
-     */
+    @ApiModelProperty(value = "员工/患者/流动人员id")
     private Long pi;
 
-    /**
-     * 资产id
-     */
+    @ApiModelProperty(value = "资产id")
     private Long ai;
 
-    /**
-     * 设备id
-     */
+    @ApiModelProperty(value = "设备id")
     private Long dvi;
 
-    /**
-     * 标签id
-     */
+    @ApiModelProperty(value = "标签id")
     private Long ti;
 
-    /**
-     * 警告id
-     */
+    @ApiModelProperty(value = "警告id")
     private Long ali;
 
-    /**
-     * 警告类型(com.lion.manage.entity.enums.SystemAlarmType)
-     */
+    @ApiModelProperty(value = "警告类型(com.lion.manage.entity.enums.SystemAlarmType)")
     private Integer sat;
 
-    /**
-     * 是否已知熟（处理）
-     */
+    @ApiModelProperty(value = "是否已知熟（处理）(1=已处理,0=未处理)")
     private Integer ua = false ? 1 : 0;
 
-    //建筑id
+    @ApiModelProperty(value = "建筑id")
     private Long bui;
 
-    //建筑名称
+    @ApiModelProperty(value = "建筑名称")
     private String bun;
 
-    //楼层id
+    @ApiModelProperty(value = "楼层id")
     private Long bfi;
 
-    //楼层名称
+    @ApiModelProperty(value = "楼层名称")
     private String bfn;
 
-    /**
-     * 科室id
-     */
+    @ApiModelProperty(value = "科室id")
     private Long di;
 
-    /**
-     * 科室名称
-     */
+    @ApiModelProperty(value = "科室名称")
     private String dn;
 
-    //区域id
+    @ApiModelProperty(value = "区域id")
     private Long ri;
 
-    //区域名称
+    @ApiModelProperty(value = "区域名称")
     private String rn;
 
-    /**
-     * 警告发生时间
-     */
+    @ApiModelProperty(value = "警告发生时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dt;
 
-    /**
-     * 排序时间（用户多次警报时置顶显示）
-     */
+    @ApiModelProperty(value = "排序时间（用户多次警报时置顶显示）")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sdt;
 
     public void setSdt(LocalDateTime sdt) {

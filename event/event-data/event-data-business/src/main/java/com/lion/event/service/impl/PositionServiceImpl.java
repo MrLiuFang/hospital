@@ -32,7 +32,6 @@ public class PositionServiceImpl implements PositionService {
 
     @Override
     public List<Position> find(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-
-        return null;
+        return positionDao.find(userId, startDateTime, endDateTime);
     }
 }

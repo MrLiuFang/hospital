@@ -1,5 +1,6 @@
 package com.lion.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -58,8 +59,10 @@ public class PositionDto implements Serializable {
     private String rn;
 
     @ApiModelProperty(value = "设备产生時間")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ddt;
 
     @ApiModelProperty(value = "系统接受到时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sdt;
 }
