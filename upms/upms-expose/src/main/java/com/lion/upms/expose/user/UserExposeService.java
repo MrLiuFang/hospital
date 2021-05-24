@@ -32,6 +32,13 @@ public interface UserExposeService extends BaseService<User> {
     public User find(String username);
 
     /**
+     * 根据员工编号查询
+     * @param number
+     * @return
+     */
+    public User find(Integer number);
+
+    /**
      * 根据姓名模糊查询
      * @param name
      * @return

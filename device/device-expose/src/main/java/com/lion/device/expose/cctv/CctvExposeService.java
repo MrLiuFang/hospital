@@ -20,6 +20,13 @@ public interface CctvExposeService extends BaseService<Cctv> {
     public List<Cctv> find(List<Long> ids);
 
     /**
+     * 根据编码查询
+     * @param code
+     * @return
+     */
+    public Cctv find(String code);
+
+    /**
      * 关联cctv所在的位置
      * @param oldCctvIds 用于清除已经关联位置(清空buildId,buildFloorId,regionId)
      * @param newCctvIds

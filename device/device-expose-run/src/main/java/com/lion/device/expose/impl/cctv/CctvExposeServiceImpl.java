@@ -6,6 +6,7 @@ import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.expose.cctv.CctvExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +29,12 @@ public class CctvExposeServiceImpl extends BaseServiceImpl<Cctv> implements Cctv
     }
 
     @Override
+    public Cctv find(String code) {
+        return cctvDao.findFirstByCode(code);
+    }
+
+    @Override
+    @Transactional
     public void relationPosition(List<Long> oldCctvIds, List<Long> newCctvIds, Long buildId, Long buildFloorId, Long regionId, Long departmentId) {
         if(Objects.nonNull(oldCctvIds)) {
             oldCctvIds.forEach(id -> {

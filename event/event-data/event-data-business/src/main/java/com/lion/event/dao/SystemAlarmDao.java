@@ -9,4 +9,5 @@ import org.springframework.data.mongodb.repository.MongoRepository;
  * @Date 2021/5/1 下午6:00
  **/
 public interface SystemAlarmDao extends MongoRepository<SystemAlarm,String> ,SystemAlarmDaoEx {
+
 }

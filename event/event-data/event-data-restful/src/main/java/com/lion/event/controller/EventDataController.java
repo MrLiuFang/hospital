@@ -1,5 +1,6 @@
 package com.lion.event.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.dto.UserCurrentRegionDto;
 import com.lion.common.utils.RedisUtil;
@@ -12,6 +13,7 @@ import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.DeviceData;
 import com.lion.event.entity.WashRecord;
+import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
 import com.lion.manage.entity.build.Build;
@@ -132,12 +134,37 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     }
 
     @PutMapping("/unalarm")
-    @ApiImplicitParams({@ApiImplicitParam(value = "uuid")})
+    @ApiImplicitParams({@ApiImplicitParam(value = "id",name="id")})
     @ApiOperation(value = "警告知熟(处理警告)")
     public IResultData unalarm(@RequestBody Map<String,String> map) {
+        String id = null;
+        String uuid=null;
         if (map.containsKey("uuid")) {
-            systemAlarmService.unalarm(map.get("uuid"));
+            uuid =map.get("uuid");
         }
+        if (map.containsKey("id")) {
+            id =map.get("id");
+        }
+        systemAlarmService.unalarm(uuid,id);
+        return ResultData.instance();
+    }
+
+    @PutMapping("/alarm/report")
+    @ApiOperation(value = "添加汇报")
+    public IResultData alarmReport(@RequestBody @Validated AlarmReportDto alarmReportDto) {
+        systemAlarmService.alarmReport(alarmReportDto);
+        return ResultData.instance();
+    }
+
+    @PutMapping("/oldAlarm/to/new")
+    @ApiImplicitParams({@ApiImplicitParam(value = "id",name="id")})
+    @ApiOperation(value = "历史警告添加为新的警告")
+    public IResultData oldAlarmToNewAlarm(@RequestBody Map<String,String> map) throws JsonProcessingException {
+        String id = null;
+        if (map.containsKey("id")) {
+            id =map.get("id");
+        }
+        systemAlarmService.oldAlarmToNewAlarm(id);
         return ResultData.instance();
     }
 
@@ -180,7 +207,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @GetMapping("/assets/details")
     @ApiOperation(value = "地图监控资产详情")
     public IResultData<AssetsDetailsVo> assetsDetails(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long assetsId) {
-        return ResultData.instance().setData(mapStatisticsService.staffDetails(assetsId));
+        return ResultData.instance().setData(mapStatisticsService.assetsDetails(assetsId));
     }
 
     @GetMapping("/alarm/list")

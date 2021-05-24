@@ -10,6 +10,7 @@ import com.lion.core.ResultData;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.exception.BusinessException;
+import com.lion.manage.entity.work.dto.WorkDto;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -51,36 +52,24 @@ public class WorkController extends BaseControllerImpl implements BaseController
 
     @PutMapping("/start")
     @ApiOperation(value = "上班")
-    @ApiImplicitParams({@ApiImplicitParam(value = "userId")})
-    public IResultData startWork(@RequestBody Map<String,Long> map) throws JsonProcessingException {
-        if (map.containsKey("userId")){
-            Long userId = map.get("userId");
-            String uuid = UUID.randomUUID().toString();
-            LoopWashDto loopWashDto = new LoopWashDto();
-            loopWashDto.setUserId(map.get("userId"));
-            loopWashDto.setStartWashDateTime(LocalDateTime.now());
-            loopWashDto.setUuid(uuid);
-            rocketMQTemplate.syncSend(TopicConstants.LOOP_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(loopWashDto)).build());
-            redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE+userId,RedisConstants.USER_WORK_STATE_START,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-            redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE_UUID+userId,uuid,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        }else {
-            BusinessException.throwException("userId不能为空");
-        }
+    public IResultData startWork(@RequestBody @Validated WorkDto workDto) throws JsonProcessingException {
+        String uuid = UUID.randomUUID().toString();
+        LoopWashDto loopWashDto = new LoopWashDto();
+        loopWashDto.setUserId(workDto.getUserId());
+        loopWashDto.setStartWashDateTime(LocalDateTime.now());
+        loopWashDto.setUuid(uuid);
+        rocketMQTemplate.syncSend(TopicConstants.LOOP_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(loopWashDto)).build());
+        redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE+workDto.getUserId(),RedisConstants.USER_WORK_STATE_START,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE_UUID+workDto.getUserId(),uuid,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
 
         return ResultData.instance();
     }
 
     @PutMapping("/end")
     @ApiOperation(value = "下班")
-    @ApiImplicitParams({@ApiImplicitParam(value = "userId")})
-    public IResultData endWork(@RequestBody Map<String,Long> map){
-        if (map.containsKey("userId")){
-            Long userId = map.get("userId");
-            redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE+userId,RedisConstants.USER_WORK_STATE_END,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-            redisTemplate.delete(RedisConstants.USER_WORK_STATE_UUID+userId);
-        }else {
-            BusinessException.throwException("userId不能为空");
-        }
+    public IResultData endWork(@RequestBody @Validated WorkDto workDto){
+        redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE+workDto.getUserId(),RedisConstants.USER_WORK_STATE_END,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.delete(RedisConstants.USER_WORK_STATE_UUID+workDto.getUserId());
         return ResultData.instance();
     }
 }

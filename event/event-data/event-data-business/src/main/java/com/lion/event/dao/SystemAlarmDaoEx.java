@@ -3,6 +3,7 @@ package com.lion.event.dao;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.SystemAlarm;
+import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.entity.vo.SystemAlarmVo;
 
@@ -23,12 +24,37 @@ public interface SystemAlarmDaoEx {
      */
     public void updateSdt(String uuid);
 
+    /**
+     * 根据UUID 查询
+     * @param uuid
+     * @return
+     */
+    public SystemAlarm findUuid(String uuid);
+
+    /**
+     * 根就id查询
+     * @param id
+     * @return
+     */
+    public SystemAlarm findId(String id);
+
 
     /**
      * 解除警告
      * @param uuid
+     * @param id
+     * @param userId
+     * @param userName
      */
-    void unalarm(String uuid);
+    void unalarm(String uuid,String id,Long userId,String userName);
+
+    /**
+     * 添加汇报
+     * @param alarmReportDto
+     * @param userId
+     * @param userName
+     */
+    public void alarmReport(AlarmReportDto alarmReportDto,Long userId, String userName);
 
     /**
      * 根据区域统计区域的有没有发生警告（24小时内）

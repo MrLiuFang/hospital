@@ -21,6 +21,13 @@ public interface AssetsExposeService extends BaseService<Assets> {
     public Assets find(Long tagId);
 
     /**
+     * 根据编码查询
+     * @param code
+     * @return
+     */
+    public Assets find(String code);
+
+    /**
      * 根据楼层统计区域内的资产数量
      * @param buildFloorId
      * @return

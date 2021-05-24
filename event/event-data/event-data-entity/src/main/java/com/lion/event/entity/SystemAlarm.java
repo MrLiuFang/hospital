@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 /**
  * @Author Mr.Liu
@@ -86,12 +88,33 @@ public class SystemAlarm implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sdt;
 
-    public void setSdt(LocalDateTime sdt) {
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        this.sdt = LocalDateTime.parse(dtf.format(sdt),dtf);
-    }
+    @ApiModelProperty(value = "处理人id")
+    private Long uui;
+
+    @ApiModelProperty(value = "处理人姓名")
+    private String uun;
+
+    @ApiModelProperty(value = "处理时间")
+    private LocalDateTime udt;
+
+
+    @ApiModelProperty(value = "汇报人id")
+    private Long rui;
+
+    @ApiModelProperty(value = "汇报人姓名")
+    private String run;
+
+    @ApiModelProperty(value = "汇报员工编号")
+    private Integer rnu;
+
+    @ApiModelProperty(value = "员工汇报内容")
+    private String re="";
+
+    @ApiModelProperty(value = "汇报时间")
+    private LocalDateTime rdt;
 
     public void setUa(Boolean ua) {
         this.ua = ua ? 1 : 0;
     }
+
 }

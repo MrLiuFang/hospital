@@ -12,9 +12,8 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.SystemAlarmDaoEx;
-import com.lion.event.entity.Position;
 import com.lion.event.entity.SystemAlarm;
-import com.lion.event.entity.TagRecord;
+import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.entity.vo.SystemAlarmVo;
 import com.lion.manage.entity.assets.Assets;
@@ -24,10 +23,10 @@ import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
+import lombok.extern.java.Log;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.checkerframework.checker.units.qual.Time;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -36,8 +35,8 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
@@ -48,6 +47,7 @@ import java.util.concurrent.TimeUnit;
  * @Description //TODO
  * @Date 2021/5/17 下午3:22
  **/
+@Log
 public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
 
     @Autowired
@@ -73,7 +73,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
 
     @Override
     public void updateSdt(String uuid) {
-        SystemAlarm systemAlarm = find(uuid);
+        SystemAlarm systemAlarm = findUuid(uuid);
         if (Objects.nonNull(systemAlarm)) {
             Query query = new Query();
             query.addCriteria(Criteria.where("_id").is(systemAlarm.get_id()));
@@ -84,16 +84,38 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
-    public void unalarm(String uuid) {
-        SystemAlarm systemAlarm = find(uuid);
-        if (Objects.nonNull(systemAlarm)) {
+    public void unalarm(String uuid, String id, Long userId, String userName) {
+        SystemAlarm systemAlarm =null;
+        if (!StringUtils.hasText(id) && StringUtils.hasText(uuid)) {
+            systemAlarm = findUuid(uuid);
+            id = systemAlarm.get_id();
+        }
+        if (StringUtils.hasText(id)) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("_id").is(systemAlarm.get_id()));
+            query.addCriteria(Criteria.where("_id").is(id));
             Update update = new Update();
             update.set("ua", true?1:0);
+            update.set("uui",userId);
+            update.set("uun",userName);
+            update.set("udt",LocalDateTime.now());
             mongoTemplate.updateFirst(query, update, "system_alarm");
         }
         redisTemplate.opsForValue().set(RedisConstants.UNALARM+uuid,true,24, TimeUnit.DAYS);
+    }
+
+    @Override
+    public void alarmReport(AlarmReportDto alarmReportDto, Long userId, String userName) {
+        if (Objects.nonNull(alarmReportDto) && StringUtils.hasText(alarmReportDto.getId())) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("_id").is(alarmReportDto.getId()));
+            Update update = new Update();
+            update.set("re",alarmReportDto.getReport());
+            update.set("rnu",alarmReportDto.getNumber());
+            update.set("rui",userId);
+            update.set("run",userName);
+            update.set("rdt",LocalDateTime.now());
+            mongoTemplate.updateFirst(query, update, "system_alarm");
+        }
     }
 
     @Override
@@ -125,6 +147,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         return map;
     }
 
+    @Override
     public Map<String, Integer> groupCount(Long departmentId) {
         List<Bson> pipeline = new ArrayList<Bson>();
         BasicDBObject match = new BasicDBObject();
@@ -257,7 +280,8 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         return new PageResultData<>(list,lionPage,count);
     }
 
-    private SystemAlarm find(String uuid){
+    @Override
+    public SystemAlarm findUuid(String uuid){
         Query query = new Query();
         Criteria criteria = new Criteria();
         criteria.and("ui").is(uuid);
@@ -266,6 +290,16 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         return systemAlarm;
     }
 
+    @Override
+    public SystemAlarm findId(String id) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        criteria.and("_id").is(id);
+        query.addCriteria(criteria);
+//        query.with(Sort.by(Sort.Order.desc("sdt")));
+        SystemAlarm systemAlarm = mongoTemplate.findOne(query, SystemAlarm.class);
+        return systemAlarm;
+    }
 
 
 }

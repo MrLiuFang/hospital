@@ -1,5 +1,6 @@
 package com.lion.event.service.impl;
 
+import com.lion.common.enums.Type;
 import com.lion.event.dao.PositionDao;
 import com.lion.event.entity.Position;
 import com.lion.event.service.CurrentPositionService;
@@ -31,7 +32,12 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public List<Position> find(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return positionDao.find(userId, startDateTime, endDateTime);
+    public List<Position> findUserId(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return positionDao.find(userId, Type.STAFF , startDateTime, endDateTime);
+    }
+
+    @Override
+    public List<Position> findByAssetsId(Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return positionDao.find(assetsId, Type.ASSET , startDateTime, endDateTime);
     }
 }

@@ -19,6 +19,7 @@
 		<module>device</module>
 		<module>event</module>
 		<module>common</module>
+		<module>person</module>
     </modules>
 
 	<dependencyManagement>

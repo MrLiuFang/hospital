@@ -26,4 +26,11 @@ public interface CctvDao extends BaseDao<Cctv> {
      */
     public int countByDepartmentId(Long departmentId);
 
+    /**
+     * 根据编码查询
+     * @param code
+     * @return
+     */
+    public Cctv findFirstByCode(String code);
+
 }

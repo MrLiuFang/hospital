@@ -1,8 +1,8 @@
 package com.lion.event.dao.impl;
 
+import com.lion.common.enums.Type;
 import com.lion.event.dao.PositionDaoEx;
 import com.lion.event.entity.Position;
-import com.lion.event.entity.TagRecord;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -26,11 +26,15 @@ public class PositionDaoImpl implements PositionDaoEx {
     private MongoTemplate mongoTemplate;
 
     @Override
-    public List<Position> find(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public List<Position> find(Long id, Type type, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         Query query = new Query();
         Criteria criteria = new Criteria();
-        if (Objects.nonNull(userId)) {
-            criteria.and("pi").is(userId);
+        if ((Objects.equals(type,Type.STAFF) ||Objects.equals(type,Type.PATIENT) || Objects.equals(type,Type.MIGRANT)) && Objects.nonNull(id)) {
+            criteria.and("pi").is(id);
+        }else if (Objects.equals(type,Type.ASSET) && Objects.nonNull(id)) {
+            criteria.and("adi").is(id);
+        }else if (( Objects.equals(type,Type.TEMPERATURE) || Objects.equals(type,Type.HUMIDITY) )  && Objects.nonNull(id)) {
+            criteria.and("ti").is(id);
         }else {
             return null;
         }

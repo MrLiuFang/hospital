@@ -1,6 +1,7 @@
 package com.lion.event.entity.vo;
 
 import com.lion.core.persistence.Validator;
+import com.lion.device.entity.fault.vo.FaultDetailsVo;
 import com.lion.event.entity.Position;
 import com.lion.manage.entity.assets.Assets;
 import io.swagger.annotations.ApiModel;
@@ -26,8 +27,8 @@ public class AssetsDetailsVo extends Assets {
     @ApiModelProperty(value = "使用登记(无数据-使用登记功能木有)")
     private List<Object> useRecord;
 
-    @ApiModelProperty(value = "故障申报记录(无数据-故障申报功能木有)")
-    private List<Object> faultRecord;
+    @ApiModelProperty(value = "故障申报记录")
+    private FaultDetailsVo faultRecord;
 
     @ApiModelProperty(value = "区域名称")
     private String regionName;

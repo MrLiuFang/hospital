@@ -21,5 +21,14 @@ public interface PositionService {
      * @param endDateTime
      * @return
      */
-    public List<Position> find(Long userId , LocalDateTime startDateTime, LocalDateTime endDateTime);
+    public List<Position> findUserId(Long userId , LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    /**
+     * 获取资产指定时间内的行动轨迹
+     * @param assetsId
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public List<Position> findByAssetsId(Long assetsId , LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

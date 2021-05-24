@@ -9,13 +9,11 @@ import com.lion.common.enums.Type;
 import com.lion.common.utils.MessageDelayUtil;
 import com.lion.common.utils.RedisUtil;
 import com.lion.event.entity.SystemAlarm;
-import com.lion.event.service.CurrentPositionService;
 import com.lion.event.service.SystemAlarmService;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AlarmClassify;
-import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Alarm;
 import lombok.extern.java.Log;
@@ -31,8 +29,6 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -73,9 +69,16 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
             Boolean b = (Boolean) redisTemplate.opsForValue().get(RedisConstants.UNALARM+systemAlarmDto.getUuid());
             if (Objects.equals(b,true)){
                 log.info("系统内解除警告");
-                systemAlarmService.unalarm(systemAlarmDto.getUuid());
+                systemAlarmService.unalarm(systemAlarmDto.getUuid(), null);
                 redisTemplate.delete(RedisConstants.UNALARM+systemAlarmDto.getUuid());
                 return;
+            }
+            SystemAlarm systemAlarm = systemAlarmService.find(systemAlarmDto.getUuid());
+            if (Objects.nonNull(systemAlarm)) {
+                if (Objects.equals(true?1:0,systemAlarm.getUa())){
+                    log.info("系统内解除警告");
+                    return;
+                }
             }
             Duration duration = Duration.between(LocalDateTime.now(),systemAlarmDto.getDelayDateTime());
             if (systemAlarmDto.getDelayDateTime().isAfter(LocalDateTime.now()) && duration.toMillis()>1000 ){
@@ -89,45 +92,45 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                     log.info("系统内触发警告");
                 }else {
                     log.info("系统内触发警告");
-                    SystemAlarm systemAlarm = new SystemAlarm();
-                    systemAlarm.setAi(systemAlarmDto.getAssetsId());
-                    systemAlarm.setDvi(systemAlarmDto.getDeviceId());
-                    systemAlarm.setPi(systemAlarmDto.getPeopleId());
+                    SystemAlarm newSystemAlarm = new SystemAlarm();
+                    newSystemAlarm.setAi(systemAlarmDto.getAssetsId());
+                    newSystemAlarm.setDvi(systemAlarmDto.getDeviceId());
+                    newSystemAlarm.setPi(systemAlarmDto.getPeopleId());
                     if (Objects.nonNull(systemAlarmDto.getSystemAlarmType())) {
-                        systemAlarm.setSat(systemAlarmDto.getSystemAlarmType().getKey());
+                        newSystemAlarm.setSat(systemAlarmDto.getSystemAlarmType().getKey());
                     }
-                    systemAlarm.setTi(systemAlarmDto.getTagId());
+                    newSystemAlarm.setTi(systemAlarmDto.getTagId());
                     if (Objects.nonNull(systemAlarmDto.getType())) {
-                        systemAlarm.setTy(systemAlarmDto.getType().getKey());
+                        newSystemAlarm.setTy(systemAlarmDto.getType().getKey());
                     }
-                    systemAlarm.setUa(false);
-                    systemAlarm.setUi(systemAlarmDto.getUuid());
-                    systemAlarm.setDt(systemAlarmDto.getDateTime());
-                    systemAlarm.setSdt( systemAlarmDto.getDateTime() );
+                    newSystemAlarm.setUa(false);
+                    newSystemAlarm.setUi(systemAlarmDto.getUuid());
+                    newSystemAlarm.setDt(systemAlarmDto.getDateTime());
+                    newSystemAlarm.setSdt( systemAlarmDto.getDateTime() );
                     if (Objects.nonNull(alarm)) {
-                        systemAlarm.setAli(alarm.getId());
+                        newSystemAlarm.setAli(alarm.getId());
                     }
                     Region region = redisUtil.getRegionById(systemAlarmDto.getRegionId());
                     if (Objects.nonNull(region)) {
-                        systemAlarm.setRi(region.getId());
-                        systemAlarm.setRn(region.getName());
+                        newSystemAlarm.setRi(region.getId());
+                        newSystemAlarm.setRn(region.getName());
                         Build build = redisUtil.getBuild(region.getBuildId());
                         if (Objects.nonNull(build)) {
-                            systemAlarm.setBui(build.getId());
-                            systemAlarm.setBun(build.getName());
+                            newSystemAlarm.setBui(build.getId());
+                            newSystemAlarm.setBun(build.getName());
                         }
                         BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
                         if (Objects.nonNull(buildFloor)) {
-                            systemAlarm.setBfi(buildFloor.getId());
-                            systemAlarm.setBfn(buildFloor.getName());
+                            newSystemAlarm.setBfi(buildFloor.getId());
+                            newSystemAlarm.setBfn(buildFloor.getName());
                         }
                         Department department = redisUtil.getDepartment(region.getDepartmentId());
                         if (Objects.nonNull(department)) {
-                            systemAlarm.setDi(department.getId());
-                            systemAlarm.setDn(department.getName());
+                            newSystemAlarm.setDi(department.getId());
+                            newSystemAlarm.setDn(department.getName());
                         }
                     }
-                    systemAlarmService.save(systemAlarm);
+                    systemAlarmService.save(newSystemAlarm);
                     systemAlarmDto.setCount(systemAlarmDto.getCount() + 1);
                 }
                 if (Objects.nonNull(alarm) && Objects.equals(true, alarm.getAgain())) {

@@ -30,6 +30,7 @@ import java.time.LocalDateTime;
 @ApiModel(description = "员工上下班")
 public class Work extends BaseEntity {
 
+    @ApiModelProperty(value = "员工id")
     @Column(name = "user_id")
     private Long userId;
 

@@ -32,6 +32,11 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
     }
 
     @Override
+    public Assets find(String code) {
+        return assetsDao.findFirstByCode(code);
+    }
+
+    @Override
     public List<Map<String, Object>> count(Long buildFloorId) {
         return assetsDao.groupRegionCount(buildFloorId);
     }

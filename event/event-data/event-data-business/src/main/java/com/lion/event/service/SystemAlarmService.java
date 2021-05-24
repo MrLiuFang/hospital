@@ -1,8 +1,10 @@
 package com.lion.event.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.SystemAlarm;
+import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.entity.vo.SystemAlarmVo;
 
@@ -26,10 +28,30 @@ public interface SystemAlarmService {
     public void updateSdt(String uuid);
 
     /**
+     * 跟据uuid查询
+     * @param uuid
+     * @return
+     */
+    public SystemAlarm find(String uuid);
+
+    /**
      * 解除警告
      * @param uuid
+     * @param id
      */
-    void unalarm(String uuid);
+    void unalarm(String uuid,String id);
+
+    /**
+     * 添加汇报
+     * @param alarmReportDto
+     */
+    public void  alarmReport(AlarmReportDto alarmReportDto);
+
+    /**
+     * 旧的汇报添加为新的警告
+     * @param id
+     */
+    public void oldAlarmToNewAlarm(String id) throws JsonProcessingException;
 
     /**
      * 根据区域统计区域的有没有发生警告（24小时内）

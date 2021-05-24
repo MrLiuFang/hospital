@@ -12,6 +12,7 @@ import com.lion.device.entity.tag.TagAssets;
 import com.lion.device.entity.tag.TagUser;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.device.expose.fault.FaultExposeService;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
@@ -115,6 +116,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @DubboReference
     private DepartmentExposeService departmentExposeService;
+
+    @DubboReference
+    private FaultExposeService faultExposeService;
 
     @Override
     public List<RegionStatisticsDetails> regionStatisticsDetails(Long buildFloorId) {
@@ -315,7 +319,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         });
         staffDetailsVo.setDepartmentResponsibleVos(departmentResponsibleVos);
         LocalDateTime now = LocalDateTime.now();
-        staffDetailsVo.setPositions(positionService.find(userId,LocalDateTime.of(now.toLocalDate(), LocalTime.MIN),now));
+        staffDetailsVo.setPositions(positionService.findUserId(userId,LocalDateTime.of(now.toLocalDate(), LocalTime.MIN),now));
         staffDetailsVo.setUserCurrentRegionVo(userCurrentRegion(userId));
         staffDetailsVo.setSystemAlarms(systemAlarmService.find(userId,false,LocalDateTime.of(now.toLocalDate(), LocalTime.MIN),now));
         return staffDetailsVo;
@@ -395,6 +399,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 assetsDetailsVo.setBattery(tag.getBattery());
             }
         }
+        LocalDateTime now = LocalDateTime.now();
+        assetsDetailsVo.setPositions(positionService.findByAssetsId(assets.getId(),now.minusDays(30),now));
+        assetsDetailsVo.setFaultRecord(faultExposeService.findLast(assets.getId()));
         return assetsDetailsVo;
     }
 

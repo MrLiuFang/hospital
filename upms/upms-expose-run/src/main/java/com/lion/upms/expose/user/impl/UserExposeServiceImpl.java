@@ -51,6 +51,11 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
     }
 
     @Override
+    public User find(Integer number) {
+        return userDao.findFirstByNumber(number);
+    }
+
+    @Override
     public List<User> findByName(String name) {
         return userDao.findByNameLike(name);
     }
