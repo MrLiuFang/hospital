@@ -4,6 +4,7 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
+import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.dto.AddPatientDto;
 import com.lion.person.entity.person.dto.PatientLeaveDto;
@@ -43,10 +44,11 @@ public interface PatientService extends BaseService<Patient> {
      * 列表
      * @param name
      * @param isLeave
+     * @param transferState
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListPatientVo>> list(String name,Boolean isLeave, LionPage lionPage);
+    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, TransferState transferState,LionPage lionPage);
 
     /**
      * 详情

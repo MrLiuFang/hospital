@@ -26,6 +26,12 @@ public class PatientDetailsVo extends Patient {
     @ApiModelProperty(value = "科室名称")
     private String departmentName;
 
+    @ApiModelProperty(value = "转移新科室Id")
+    private Long newDepartmentId;
+
+    @ApiModelProperty(value = "转移新科室名称")
+    private String newDepartmentName;
+
     @ApiModelProperty(value = "患者头像")
     private String headPortraitUrl;
 
@@ -49,6 +55,8 @@ public class PatientDetailsVo extends Patient {
 
     @ApiModelProperty(value = "限制区域")
     private List<RestrictedAreaVo> restrictedAreaVoList;
+
+
 
     @Data
     @ApiModel

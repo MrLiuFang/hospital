@@ -8,6 +8,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 /**
  * @description:
@@ -18,4 +19,9 @@ import javax.validation.constraints.NotNull;
 @ApiModel
 public class ListPatientVo extends PatientDetailsVo {
 
+    @ApiModelProperty(value = "离开时间")
+    private LocalDateTime leaveDateTime;
+
+    @ApiModelProperty(value = "转移触发时间")
+    private LocalDateTime triggerDateTime;
 }

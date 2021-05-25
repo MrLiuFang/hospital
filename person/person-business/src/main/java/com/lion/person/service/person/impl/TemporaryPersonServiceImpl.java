@@ -10,9 +10,18 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.expose.tag.TagPatientExposeService;
 import com.lion.device.expose.tag.TagPostdocsExposeService;
+import com.lion.exception.BusinessException;
+import com.lion.manage.entity.build.Build;
+import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.build.BuildExposeService;
+import com.lion.manage.expose.build.BuildFloorExposeService;
+import com.lion.manage.expose.department.DepartmentExposeService;
+import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.person.dao.person.TemporaryPersonDao;
 import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.RestrictedArea;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.entity.person.dto.AddTemporaryPersonDto;
 import com.lion.person.entity.person.dto.TemporaryPersonLeaveDto;
@@ -21,8 +30,11 @@ import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.ListTemporaryPersonVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.entity.person.vo.TemporaryPersonDetailsVo;
+import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.RestrictedAreaService;
 import com.lion.person.service.person.TemporaryPersonService;
+import com.lion.upms.entity.enums.UserType;
+import com.lion.upms.entity.user.User;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,11 +67,27 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     @DubboReference
     private FileExposeService fileExposeService;
 
+    @Autowired
+    private PatientService patientService;
+
+    @DubboReference
+    private RegionExposeService regionExposeService;
+
+    @DubboReference
+    private BuildFloorExposeService buildFloorExposeService;
+
+    @DubboReference
+    private BuildExposeService buildExposeService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
     @Override
     @Transactional
     public void add(AddTemporaryPersonDto addTemporaryPersonDto) {
         TemporaryPerson temporaryPerson = new TemporaryPerson();
         BeanUtils.copyProperties(addTemporaryPersonDto,temporaryPerson);
+        assertPatientExist(temporaryPerson.getPatientId());
         temporaryPerson = save(temporaryPerson);
         restrictedAreaService.add(addTemporaryPersonDto.getRegionId(), PersonType.TEMPORARY_PERSON,temporaryPerson.getId());
         tagPostdocsExposeService.binding(temporaryPerson.getId(),addTemporaryPersonDto.getTagCode());
@@ -70,6 +98,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     public void update(UpdateTemporaryPersonDto updateTemporaryPersonDto) {
         TemporaryPerson temporaryPerson = new TemporaryPerson();
         BeanUtils.copyProperties(updateTemporaryPersonDto,temporaryPerson);
+        assertPatientExist(temporaryPerson.getPatientId());
         update(temporaryPerson);
         restrictedAreaService.add(updateTemporaryPersonDto.getRegionId(), PersonType.TEMPORARY_PERSON,temporaryPerson.getId());
         tagPostdocsExposeService.binding(temporaryPerson.getId(),updateTemporaryPersonDto.getTagCode());
@@ -100,11 +129,13 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         Page<TemporaryPerson> page = this.findNavigator(lionPage);
         List<TemporaryPerson> list = page.getContent();
         List<ListTemporaryPersonVo> returnList = new ArrayList<>();
-        list.forEach(patient -> {
+        list.forEach(temporaryPerson -> {
             ListTemporaryPersonVo vo = new ListTemporaryPersonVo();
-            TemporaryPersonDetailsVo temporaryPersonDetailsVo = details(patient.getId());
-            BeanUtils.copyProperties(temporaryPersonDetailsVo,vo);
-            returnList.add(vo);
+            TemporaryPersonDetailsVo temporaryPersonDetailsVo = details(temporaryPerson.getId());
+            if (Objects.nonNull(temporaryPersonDetailsVo)) {
+                BeanUtils.copyProperties(temporaryPersonDetailsVo, vo);
+                returnList.add(vo);
+            }
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
     }
@@ -112,12 +143,35 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     @Override
     public TemporaryPersonDetailsVo details(Long id) {
         TemporaryPerson temporaryPerson = this.findById(id);
-        if (Objects.nonNull(temporaryPerson)) {
+        if (Objects.isNull(temporaryPerson)) {
             return null;
         }
         TemporaryPersonDetailsVo temporaryPersonDetailsVo= new TemporaryPersonDetailsVo();
         BeanUtils.copyProperties(temporaryPerson,temporaryPersonDetailsVo);
         temporaryPersonDetailsVo.setHeadPortraitUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
+
+        List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(temporaryPerson.getId());
+        List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
+        restrictedAreaList.forEach(restrictedArea -> {
+            TemporaryPersonDetailsVo.RestrictedAreaVo restrictedAreaVo = new TemporaryPersonDetailsVo.RestrictedAreaVo();
+            Region region = regionExposeService.findById(restrictedArea.getRegionId());
+            if (Objects.nonNull(region)){
+                restrictedAreaVo.setRegionName(region.getName());
+                restrictedAreaVo.setRegionId(region.getId());
+                restrictedAreaVo.setRemark(region.getRemarks());
+                Build build = buildExposeService.findById(region.getBuildId());
+                if (Objects.nonNull(build)){
+                    restrictedAreaVo.setBuildName(build.getName());
+                }
+                BuildFloor buildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
+                if (Objects.nonNull(buildFloor)) {
+                    restrictedAreaVo.setBuildFloorName(buildFloor.getName());
+                }
+                restrictedAreaVoList.add(restrictedAreaVo);
+            }
+        });
+        temporaryPersonDetailsVo.setRestrictedAreaVoList(restrictedAreaVoList);
+
         return temporaryPersonDetailsVo;
     }
 
@@ -128,5 +182,15 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         temporaryPerson.setIsLeave(true);
         temporaryPerson.setLeaveRemarks(temporaryPersonLeaveDto.getLeaveRemarks());
         update(temporaryPerson);
+    }
+
+    private void assertPatientExist(Long patientId) {
+        Patient patient = patientService.findById(patientId);
+        if (Objects.isNull(patient)){
+            BusinessException.throwException("该患者不存在");
+        }
+        if (!Objects.equals(patient.getIsLeave(), false)) {
+            BusinessException.throwException("该患者已登出");
+        }
     }
 }

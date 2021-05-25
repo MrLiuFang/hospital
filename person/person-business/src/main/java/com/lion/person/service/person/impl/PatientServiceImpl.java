@@ -25,8 +25,11 @@ import com.lion.manage.expose.ward.WardExposeService;
 import com.lion.manage.expose.ward.WardRoomExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.dao.person.PatientDao;
+import com.lion.person.dao.person.PatientTransferDao;
 import com.lion.person.entity.enums.PersonType;
+import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.RestrictedArea;
 import com.lion.person.entity.person.dto.AddPatientDto;
 import com.lion.person.entity.person.dto.PatientLeaveDto;
@@ -94,6 +97,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @DubboReference
     private DepartmentExposeService departmentExposeService;
 
+    @Autowired
+    private PatientTransferDao patientTransferDao;
+
     @Override
     @Transactional
 //    @GlobalTransactional
@@ -144,8 +150,20 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     @Override
-    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, LionPage lionPage) {
+    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, TransferState transferState, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
+        if (Objects.nonNull(transferState)) {
+            List<PatientTransfer> list =patientTransferDao.findByState(transferState);
+            if (Objects.nonNull(list) && list.size()>0) {
+                List<Long> ids = new ArrayList<>();
+                list.forEach(patientTransfer -> {
+                    ids.add(patientTransfer.getPatientId());
+                });
+                if (ids.size()>0) {
+                    jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
+                }
+            }
+        }
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }
@@ -159,8 +177,15 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         list.forEach(patient -> {
             ListPatientVo vo = new ListPatientVo();
             PatientDetailsVo patientDetailsVo = details(patient.getId());
-            BeanUtils.copyProperties(patientDetailsVo,vo);
-            returnList.add(vo);
+            if (Objects.nonNull(patientDetailsVo)) {
+                BeanUtils.copyProperties(patientDetailsVo, vo);
+                PatientTransfer  patientTransfer = patientTransferDao.findFirstByPatientIdAndState(patient.getId(),transferState);
+                if (Objects.nonNull(patientTransfer)){
+                    vo.setLeaveDateTime(patientTransfer.getLeaveDateTime());
+                    vo.setTriggerDateTime(vo.getTriggerDateTime());
+                }
+                returnList.add(vo);
+            }
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
     }
@@ -221,6 +246,17 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             }
         });
         vo.setRestrictedAreaVoList(restrictedAreaVoList);
+        List<TransferState> state = new ArrayList<>();
+        state.add(TransferState.CANCEL);
+        state.add(TransferState.FINISH);
+        PatientTransfer  patientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(patient.getId(),state);
+        if (Objects.nonNull(patientTransfer)){
+            vo.setNewDepartmentId(patientTransfer.getNewDepartmentId());
+            Department department = departmentExposeService.findById(patientTransfer.getNewDepartmentId());
+            if (Objects.nonNull(department)){
+                vo.setNewDepartmentName(department.getName());
+            }
+        }
         if (Objects.nonNull(patient.getBindPatientId())){
             vo.setBindPatient(details(patient.getBindPatientId()));
         }

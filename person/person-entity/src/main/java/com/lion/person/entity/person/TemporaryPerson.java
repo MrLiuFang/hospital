@@ -40,8 +40,8 @@ public class TemporaryPerson extends Person {
 
     @ApiModelProperty(value = "拜访人ID")
     @NotNull(message = "拜访人不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "visit_Id")
-    private Long visitId;
+    @Column(name = "patient_Id")
+    private Long patientId;
 
     @ApiModelProperty(value = "拜访原因")
     @Column(name = "remarks")

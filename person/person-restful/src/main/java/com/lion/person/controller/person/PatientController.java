@@ -8,6 +8,7 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
+import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.dto.AddPatientDto;
 import com.lion.person.entity.person.dto.PatientLeaveDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
@@ -48,8 +49,8 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @GetMapping("/list")
     @ApiOperation(value = "患者列表")
-    public IPageResultData<List<ListPatientVo>> list(@ApiParam(value = "姓名")String name,@ApiParam(value = "是否登出") Boolean isLeave, LionPage lionPage){
-        return patientService.list(name, isLeave , lionPage);
+    public IPageResultData<List<ListPatientVo>> list(@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出") Boolean isLeave,@ApiParam(value = "转移状态") TransferState transferState, LionPage lionPage){
+        return patientService.list(name, isLeave, transferState , lionPage);
     }
 
     @GetMapping("/details")
@@ -82,4 +83,6 @@ public class PatientController extends BaseControllerImpl implements BaseControl
         ResultData resultData = ResultData.instance();
         return resultData;
     }
+
+
 }
