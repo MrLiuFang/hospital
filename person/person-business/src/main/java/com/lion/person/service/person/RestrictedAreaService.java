@@ -5,6 +5,7 @@ import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.person.RestrictedArea;
 
 import java.util.List;
+import java.util.PrimitiveIterator;
 
 /**
  * @description:
@@ -26,4 +27,11 @@ public interface RestrictedAreaService extends BaseService<RestrictedArea> {
      * @param personId
      */
     public void delete(Long personId);
+
+    /**
+     * 查询人员限制区域
+     * @param personId
+     * @return
+     */
+    public List<RestrictedArea> find(Long personId);
 }

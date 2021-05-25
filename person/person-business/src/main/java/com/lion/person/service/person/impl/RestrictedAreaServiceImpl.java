@@ -45,4 +45,9 @@ public class RestrictedAreaServiceImpl extends BaseServiceImpl<RestrictedArea> i
     public void delete(Long personId) {
         restrictedAreaDao.deleteByPersonId(personId);
     }
+
+    @Override
+    public List<RestrictedArea> find(Long personId) {
+        return restrictedAreaDao.findByPersonId(personId);
+    }
 }

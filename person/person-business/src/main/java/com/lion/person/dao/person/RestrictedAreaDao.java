@@ -3,6 +3,8 @@ package com.lion.person.dao.person;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.person.entity.person.RestrictedArea;
 
+import java.util.List;
+
 /**
  * @description:
  * @author: Mr.Liu
@@ -16,4 +18,11 @@ public interface RestrictedAreaDao extends BaseDao<RestrictedArea> {
      * @return
      */
     public int deleteByPersonId(Long personId);
+
+    /**
+     * 查询人员限制区域
+     * @param personId
+     * @return
+     */
+    public List<RestrictedArea> findByPersonId(Long personId);
 }

@@ -12,4 +12,5 @@ import org.apache.dubbo.config.annotation.DubboService;
  */
 @DubboService(interfaceClass = WardRoomSickbedExposeService.class)
 public class WardRoomSickbedExposeServiceImpl extends BaseServiceImpl<WardRoomSickbed> implements WardRoomSickbedExposeService {
+
 }

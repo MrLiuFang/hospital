@@ -9,4 +9,5 @@ import com.lion.manage.entity.ward.WardRoomSickbed;
  * @time: 2021/5/25 上午11:48
  */
 public interface WardRoomSickbedExposeService extends BaseService<WardRoomSickbed> {
+
 }

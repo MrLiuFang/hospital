@@ -9,20 +9,20 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
 import com.lion.person.entity.person.dto.AddPatientDto;
+import com.lion.person.entity.person.dto.PatientLeaveDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
+import com.lion.person.entity.person.vo.ListPatientVo;
+import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.service.person.PatientService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @description:
@@ -46,19 +46,19 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     }
 
 
-//    @GetMapping("/list")
-//    @ApiOperation(value = "患者列表")
-//    public IPageResultData<List<ListTagVo>> list(@ApiParam(value = "使用状态")TagUseState useState, @ApiParam(value = "电量(0=正常,1=少於90 天,2=少於30天)")Integer battery, @ApiParam(value = "标签编码") String tagCode, @ApiParam(value = "标签分类") TagType type, @ApiParam(value = "用途") TagPurpose purpose, LionPage lionPage){
-//        return patientService.list(useState, battery, tagCode, type, purpose, lionPage);
-//    }
-//
-//    @GetMapping("/details")
-//    @ApiOperation(value = "患者详情")
-//    public IResultData<Tag> details(@NotNull(message = "id不能为空") Long id){
-//        ResultData resultData = ResultData.instance();
-//        resultData.setData(patientService.findById(id));
-//        return resultData;
-//    }
+    @GetMapping("/list")
+    @ApiOperation(value = "患者列表")
+    public IPageResultData<List<ListPatientVo>> list(@ApiParam(value = "姓名")String name,@ApiParam(value = "是否登出") Boolean isLeave, LionPage lionPage){
+        return patientService.list(name, isLeave , lionPage);
+    }
+
+    @GetMapping("/details")
+    @ApiOperation(value = "患者详情")
+    public IResultData<PatientDetailsVo> details(@NotNull(message = "id不能为空") Long id){
+        ResultData resultData = ResultData.instance();
+        resultData.setData(patientService.details(id));
+        return resultData;
+    }
 
     @PutMapping("/update")
     @ApiOperation(value = "修改患者")
@@ -71,6 +71,14 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
         patientService.delete(deleteDtoList);
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @PutMapping("/leave")
+    @ApiOperation(value = "患者登出")
+    public IResultData leave(@RequestBody @Validated PatientLeaveDto patientLeaveDto){
+        patientService.leave(patientLeaveDto);
         ResultData resultData = ResultData.instance();
         return resultData;
     }

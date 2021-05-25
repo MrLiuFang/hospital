@@ -29,5 +29,16 @@
 			<artifactId>device-expose</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.lion</groupId>
+			<artifactId>manage-expose</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.lion</groupId>
+			<artifactId>lion-common-expose</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
+	</dependencies>
 </project>

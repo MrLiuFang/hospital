@@ -1,22 +1,25 @@
 package com.lion.person.controller.person;
 
+import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
+import com.lion.core.LionPage;
 import com.lion.core.ResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
-import com.lion.person.entity.person.dto.AddPatientDto;
-import com.lion.person.entity.person.dto.AddTemporaryPersonDto;
-import com.lion.person.entity.person.dto.UpdatePatientDto;
-import com.lion.person.entity.person.dto.UpdateTemporaryPersonDto;
+import com.lion.person.entity.person.dto.*;
+import com.lion.person.entity.person.vo.ListTemporaryPersonVo;
+import com.lion.person.entity.person.vo.TemporaryPersonDetailsVo;
 import com.lion.person.service.person.TemporaryPersonService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -41,19 +44,19 @@ public class TemporaryPersonController extends BaseControllerImpl implements Bas
     }
 
 
-//    @GetMapping("/list")
-//    @ApiOperation(value = "流动人员列表")
-//    public IPageResultData<List<ListTagVo>> list(@ApiParam(value = "使用状态")TagUseState useState, @ApiParam(value = "电量(0=正常,1=少於90 天,2=少於30天)")Integer battery, @ApiParam(value = "标签编码") String tagCode, @ApiParam(value = "标签分类") TagType type, @ApiParam(value = "用途") TagPurpose purpose, LionPage lionPage){
-//        return patientService.list(useState, battery, tagCode, type, purpose, lionPage);
-//    }
-//
-//    @GetMapping("/details")
-//    @ApiOperation(value = "流动人员详情")
-//    public IResultData<Tag> details(@NotNull(message = "id不能为空") Long id){
-//        ResultData resultData = ResultData.instance();
-//        resultData.setData(patientService.findById(id));
-//        return resultData;
-//    }
+    @GetMapping("/list")
+    @ApiOperation(value = "流动人员列表")
+    public IPageResultData<List<ListTemporaryPersonVo>> list(@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出") Boolean isLeave, LionPage lionPage){
+        return temporaryPersonService.list(name, isLeave, lionPage);
+    }
+
+    @GetMapping("/details")
+    @ApiOperation(value = "流动人员详情")
+    public IResultData<TemporaryPersonDetailsVo> details(@NotNull(message = "id不能为空") Long id){
+        ResultData resultData = ResultData.instance();
+        resultData.setData(temporaryPersonService.details(id));
+        return resultData;
+    }
 
     @PutMapping("/update")
     @ApiOperation(value = "修改流动人员")
@@ -66,6 +69,14 @@ public class TemporaryPersonController extends BaseControllerImpl implements Bas
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
         temporaryPersonService.delete(deleteDtoList);
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @PutMapping("/leave")
+    @ApiOperation(value = "患者登出")
+    public IResultData leave(@RequestBody @Validated TemporaryPersonLeaveDto temporaryPersonLeaveDto){
+        temporaryPersonService.leave(temporaryPersonLeaveDto);
         ResultData resultData = ResultData.instance();
         return resultData;
     }

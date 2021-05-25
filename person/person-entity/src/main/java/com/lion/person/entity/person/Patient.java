@@ -46,14 +46,6 @@ public class Patient extends Person {
     @NotBlank(message = "病历号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String medicalRecordNo;
 
-    @ApiModelProperty(value = "建筑id")
-    @Column(name = "build_id")
-    private Long buildId;
-
-    @ApiModelProperty(value = "建筑楼层id")
-    @Column(name = "build_floor_id")
-    private Long buildFloorId;
-
     @ApiModelProperty(value = "科室ID")
     @Column(name = "department_id")
     private Long departmentId;
@@ -97,6 +89,6 @@ public class Patient extends Person {
     private Long doctorId;
 
     @ApiModelProperty(value = "绑定患者")
-    @Column(name = "patient_id")
-    private Long patientId;
+    @Column(name = "bind_patient_id")
+    private Long bindPatientId;
 }
