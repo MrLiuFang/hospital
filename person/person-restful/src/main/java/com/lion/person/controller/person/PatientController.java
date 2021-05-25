@@ -9,12 +9,12 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
 import com.lion.person.entity.enums.TransferState;
-import com.lion.person.entity.person.dto.AddPatientDto;
-import com.lion.person.entity.person.dto.PatientLeaveDto;
-import com.lion.person.entity.person.dto.UpdatePatientDto;
+import com.lion.person.entity.person.dto.*;
 import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.service.person.PatientService;
+import com.lion.person.service.person.PatientTransferService;
+import com.lion.person.service.person.TempLeaveService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -38,6 +38,12 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @Autowired
     private PatientService patientService;
+
+    @Autowired
+    private PatientTransferService patientTransferService;
+
+    @Autowired
+    private TempLeaveService tempLeaveService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增患者")
@@ -84,5 +90,27 @@ public class PatientController extends BaseControllerImpl implements BaseControl
         return resultData;
     }
 
+    @PostMapping("/transfer")
+    @ApiOperation(value = "患者转移")
+    public IResultData transfer(@RequestBody @Validated TransferDto transferDto){
+        patientTransferService.transfer(transferDto);
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @PostMapping("/receiveOrCancel")
+    @ApiOperation(value = "接收/取消传其患者(本接口修改患者转移状态,其它数据调患者修改接口)")
+    public IResultData receiveOrCancel(@RequestBody @Validated ReceivePatientDto receivePatientDto) {
+        patientTransferService.receiveOrCancel(receivePatientDto);
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @PostMapping("/add/temp/leave")
+    @ApiOperation(value = "新增临时离开")
+    public IResultData addTempLeave(@RequestBody @Validated AddTempLeaveDto addTempLeaveDto){
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.lion.person.service.person;
 
 import com.lion.core.IPageResultData;
+import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
@@ -8,9 +9,12 @@ import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.dto.AddPatientDto;
 import com.lion.person.entity.person.dto.PatientLeaveDto;
+import com.lion.person.entity.person.dto.TransferDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
 import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -62,4 +66,6 @@ public interface PatientService extends BaseService<Patient> {
      * @param patientLeaveDto
      */
     public void leave(PatientLeaveDto patientLeaveDto);
+
+
 }

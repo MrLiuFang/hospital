@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.Column;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -56,6 +57,8 @@ public class PatientDetailsVo extends Patient {
     @ApiModelProperty(value = "限制区域")
     private List<RestrictedAreaVo> restrictedAreaVoList;
 
+    @ApiModelProperty(value = "临时离开权限")
+    private TempRestrictedAreaVo tempRestrictedAreaVo;
 
 
     @Data
@@ -76,5 +79,23 @@ public class PatientDetailsVo extends Patient {
 
         @ApiModelProperty(value = "备注")
         private String remark;
+    }
+
+    @Data
+    @ApiModel
+    public static class TempRestrictedAreaVo{
+
+        @ApiModelProperty(value = "登记人id")
+        private Long userId;
+
+        @ApiModelProperty(value = "登记人姓名")
+        private Long userName;
+
+        @ApiModelProperty(value = "离开开始时间")
+        private LocalDateTime startDateTime;
+
+        @ApiModelProperty(value = "离开结束时间")
+        private LocalDateTime endDateTime;
+
     }
 }
