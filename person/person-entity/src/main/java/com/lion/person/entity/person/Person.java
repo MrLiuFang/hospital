@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
  * @time: 2021/5/24 下午2:57
  */
 @MappedSuperclass
+@Data
 public abstract class Person extends BaseEntity {
 
     @ApiModelProperty(value = "头像（文件id）")
@@ -40,17 +41,6 @@ public abstract class Person extends BaseEntity {
     @NotBlank(message = "姓名不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
-    @ApiModelProperty(value = "证件类型")
-    @Column(name = "identity_document_type")
-    @Convert(converter = IdentityDocumentType.IdentityDocumentTypeConverter.class)
-    @NotNull(message = "证件类型不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private IdentityDocumentType identityDocumentType;
-
-    @ApiModelProperty(value = "证件号码")
-    @Column(name = "id_no")
-    @NotBlank(message = "证件号码不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private String idNo;
-
     @ApiModelProperty(value = "联系电话")
     @Column(name = "phone_number")
     @NotBlank(message = "联系电话不能为空", groups = {Validator.Insert.class, Validator.Update.class})
@@ -58,16 +48,26 @@ public abstract class Person extends BaseEntity {
 
     @ApiModelProperty(value = "紧急联络人")
     @Column(name = "emergency_contact")
-    @NotBlank(message = "紧急联络人不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String emergencyContact;
 
     @ApiModelProperty(value = "紧急联络人电话")
     @Column(name = "emergency_contact_phone_number")
-    @NotBlank(message = "紧急联络人电话不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String emergencyContactPhoneNumber;
 
     @ApiModelProperty(value = "标签码")
-    @Column(name = "emergency_contact_phone_number")
+    @Column(name = "tag_code")
     @NotBlank(message = "标签码不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String tagCode;
+
+    @ApiModelProperty(value = "住址")
+    @Column(name = "address")
+    private String address;
+
+    @ApiModelProperty(value = "是否登出")
+    @Column(name = "is_leave")
+    private Boolean isLeave =false;
+
+    @ApiModelProperty(value = "登出原因")
+    @Column(name = "leave_emarks")
+    private String leaveRemarks;
 }

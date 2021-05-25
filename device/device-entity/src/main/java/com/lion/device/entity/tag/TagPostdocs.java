@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "t_tag_postdocs" ,indexes = {@Index(columnList = "tag_id")})
+@Table(name = "t_tag_postdocs" ,indexes = {@Index(columnList = "tag_id"),@Index(columnList = "postdocs_id")})
 @DynamicUpdate
 @DynamicInsert
 @Data
@@ -37,15 +37,15 @@ public class TagPostdocs extends BaseEntity {
     @Column(name = "tag_id")
     private Long tagId;
 
-    @ApiModelProperty(value = "流动人员姓名")
-    @NotNull(message = "流动人员姓名不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Column(name = "name")
-    private String name;
+    @ApiModelProperty(value = "流动人员id")
+    @NotNull(message = "流动人员id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @Column(name = "postdocs_id")
+    private Long postdocsId;
 
     @ApiModelProperty(value = "绑定时间")
     @NotNull(message = "绑定时间不能为空", groups = {Validator.Insert.class})
     @Column(name = "binding_time")
-    private LocalDateTime bindingTime;
+    private LocalDateTime bindingTime = LocalDateTime.now();
 
     @ApiModelProperty(value = "解绑时间")
     @NotNull(message = "时间不能为空", groups = { Validator.Update.class})

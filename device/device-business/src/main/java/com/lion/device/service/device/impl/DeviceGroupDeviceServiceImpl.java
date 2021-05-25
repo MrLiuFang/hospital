@@ -55,12 +55,9 @@ public class DeviceGroupDeviceServiceImpl extends BaseServiceImpl<DeviceGroupDev
                 DeviceGroupDevice deviceGroupDevice = new DeviceGroupDevice();
                 deviceGroupDevice.setDeviceGroupId(deviceGroupId);
                 deviceGroupDevice.setDeviceId(id);
-                list.add(deviceGroupDevice);
+                save(deviceGroupDevice);
 
             });
-            if (list.size() > 0) {
-                return deviceGroupDeviceDao.saveAll(list).size();
-            }
         }
         return 0;
     }

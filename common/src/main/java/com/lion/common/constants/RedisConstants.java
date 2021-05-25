@@ -100,14 +100,36 @@ public class RedisConstants {
     public static final String TAG_CODE = "tag_code_";
 
     /**
-     * 用户与的标签关联(key:userId,value:tagId)
+     * 用户与标签关联(key:userId,value:tagId)
      */
     public static final String USER_TAG = "user_tag_";
 
     /**
-     * 用户与的标签关联(key:tagId,value:userId)
+     * 用户与标签关联(key:tagId,value:userId)
      */
     public static final String TAG_USER = "tag_user_";
+
+    /**
+     * 患者与标签关联(key:patientId,value:tagId)
+     */
+    public static final String PATIENT_TAG = "patient_tag_";
+
+    /**
+     * 患者与标签关联(key:tagId,value:patientId)
+     */
+    public static final String TAG_PATIENT = "tag_patient_";
+
+    /**
+     * 流动人员与标签关联(key:postdocsId,value:tagId)
+     */
+    public static final String POSTDOCS_TAG = "postdocs_tag_";
+
+    /**
+     * 流动人员与标签关联(key:tagId,value:postdocsId)
+     */
+    public static final String TAG_POSTDOCS = "tag_postdocs_";
+
+
 
     /**
      * 用户最后的洗手(key:userId,value:lastUserWashDto)

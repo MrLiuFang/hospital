@@ -50,11 +50,8 @@ public class RegionCctvServiceImpl extends BaseServiceImpl<RegionCctv> implement
                 RegionCctv regionCctv = new RegionCctv();
                 regionCctv.setCctvId(id);
                 regionCctv.setRegionId(regionId);
-                list.add(regionCctv);
+                save(regionCctv);
             });
-            if (list.size() > 0) {
-                saveAll(list);
-            }
         }
         Region region = regionService.findById(regionId);
         if (Objects.nonNull(region)) {

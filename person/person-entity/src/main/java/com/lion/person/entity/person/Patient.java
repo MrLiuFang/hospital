@@ -1,5 +1,6 @@
 package com.lion.person.entity.person;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.core.LionObjectMapper;
 import com.lion.core.persistence.Validator;
 import io.swagger.annotations.ApiModel;
@@ -16,6 +17,8 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import java.time.LocalDate;
 
 /**
  * @description:
@@ -24,17 +27,32 @@ import javax.validation.constraints.NotNull;
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "t_patient",indexes = {@Index(columnList = "type"),@Index(columnList = "name"),@Index(columnList = "id_no"),@Index(columnList = "phone_number")})
+@Table(name = "t_patient",indexes = {@Index(columnList = "name"),@Index(columnList = "phone_number")})
 @DynamicUpdate
 @DynamicInsert
 @Data
 @ApiModel(description = "患者")
 public class Patient extends Person {
 
+    @ApiModelProperty(value = "出生日期")
+    @Column(name = "birthday")
+    @Past(message = "出生日期不能大于/等于当前日期", groups = {Validator.Insert.class, Validator.Update.class})
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @NotNull(message = "出生日期不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private LocalDate birthday;
+
     @ApiModelProperty(value = "病历号")
     @Column(name = "medical_record_no")
     @NotBlank(message = "病历号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private String medicalRecordNo;
+
+    @ApiModelProperty(value = "建筑id")
+    @Column(name = "build_id")
+    private Long buildId;
+
+    @ApiModelProperty(value = "建筑楼层id")
+    @Column(name = "build_floor_id")
+    private Long buildFloorId;
 
     @ApiModelProperty(value = "科室ID")
     @Column(name = "department_id")

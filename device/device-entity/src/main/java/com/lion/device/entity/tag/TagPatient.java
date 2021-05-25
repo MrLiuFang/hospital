@@ -40,12 +40,12 @@ public class TagPatient extends BaseEntity {
     @ApiModelProperty(value = "患者id")
     @NotNull(message = "患者id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "patient_id")
-    private Long userId;
+    private Long patientId;
 
     @ApiModelProperty(value = "绑定时间")
     @NotNull(message = "绑定时间不能为空", groups = {Validator.Insert.class})
     @Column(name = "binding_time")
-    private LocalDateTime bindingTime;
+    private LocalDateTime bindingTime = LocalDateTime.now();
 
     @ApiModelProperty(value = "解绑时间")
     @NotNull(message = "时间不能为空", groups = { Validator.Update.class})

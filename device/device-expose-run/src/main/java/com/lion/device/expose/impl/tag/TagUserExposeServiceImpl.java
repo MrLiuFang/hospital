@@ -6,10 +6,12 @@ import com.lion.device.dao.tag.TagDao;
 import com.lion.device.dao.tag.TagUserDao;
 import com.lion.device.entity.enums.TagLogContent;
 import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagUser;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.device.service.tag.TagLogService;
+import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
 import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -41,6 +43,9 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
     private TagLogService tagLogService;
 
     @Autowired
+    private TagService tagService;
+
+    @Autowired
     private TagDao tagDao;
 
     @Autowired
@@ -53,22 +58,21 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
             unbinding(userId,false);
         }
         Tag tag = tagDao.findFirstByTagCode(tagCode);
+        if (Objects.isNull(tag)){
+            BusinessException.throwException("该标签不存在");
+        }
         if (!Objects.equals(tag.getPurpose(),TagPurpose.STAFF)) {
             BusinessException.throwException("此标签不能绑定员工");
         }
         if (!Objects.equals(departmentId,tag.getDepartmentId())) {
             BusinessException.throwException("该表标签与员工不在同一科室不能绑定");
         }
-        if (Objects.isNull(tag)){
-            BusinessException.throwException("该标签不存在");
-        }
-        if (!Objects.equals(tag.getPurpose(), TagPurpose.STAFF)){
-            BusinessException.throwException("该标签不能员工绑定");
-        }
         TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
         if (Objects.nonNull(tagUser)){
             if (!Objects.equals( tagUser.getUserId(),userId)){
                 BusinessException.throwException("该标签已被其它用户绑定");
+            }else {
+                return;
             }
         }
         TagUser newTagUser = new TagUser();
@@ -76,6 +80,8 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         newTagUser.setUserId(userId);
         save(newTagUser);
         tagLogService.add( TagLogContent.binding,tag.getId());
+        tag.setUseState(TagUseState.USEING);
+        tagService.update(tag);
         redisTemplate.opsForValue().set(RedisConstants.TAG_USER+tag.getId(),userId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.USER_TAG+userId,tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
@@ -94,6 +100,9 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
             }
         }
         if (Objects.nonNull(tagUser)) {
+            Tag tag = tagService.findById(tagUser.getTagId());
+            tag.setUseState(TagUseState.NOT_USED);
+            tagService.update(tag);
             redisTemplate.delete(RedisConstants.TAG_USER + tagUser.getTagId());
             redisTemplate.delete(RedisConstants.USER_TAG + tagUser.getUserId());
         }

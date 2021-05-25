@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "t_restricted_area",indexes = {@Index(columnList = "type"),@Index(columnList = "name"),@Index(columnList = "id_no"),@Index(columnList = "phone_number")})
+@Table(name = "t_restricted_area",indexes = {@Index(columnList = "person_id")})
 @DynamicUpdate
 @DynamicInsert
 @Data
@@ -37,6 +37,11 @@ public class RestrictedArea extends BaseEntity {
     @NotNull(message = "人员id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "person_id")
     private Long personId;
+
+    @ApiModelProperty(value = "限制区域")
+    @NotNull(message = "限制区域不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @Column(name = "region_id")
+    private Long regionId;
 
 
 }

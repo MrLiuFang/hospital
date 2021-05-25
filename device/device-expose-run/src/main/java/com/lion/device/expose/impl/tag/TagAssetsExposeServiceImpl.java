@@ -57,17 +57,16 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
         TagAssets tagAssets = tagAssetsDao.findFirstByAssetsIdAndUnbindingTimeIsNull(assetsId);
         if (Objects.nonNull(tagAssets)){
             if (!Objects.equals( tagAssets.getAssetsId(), assetsId)){
-                if (Objects.equals(tag.getUseState(), TagUseState.USEING)){
-                    BusinessException.throwException("该标签正在使用中");
-                }
+                BusinessException.throwException("该标签正在使用中");
             }else {
                 return true;
             }
-        }else {
-            if (Objects.equals(tag.getUseState(), TagUseState.USEING)){
-                BusinessException.throwException("该标签正在使用中");
-            }
         }
+//        else {
+//            if (Objects.equals(tag.getUseState(), TagUseState.USEING)){
+//                BusinessException.throwException("该标签正在使用中");
+//            }
+//        }
         TagAssets newTagAssets = new TagAssets();
         newTagAssets.setAssetsId(assetsId);
         newTagAssets.setTagId(tag.getId());

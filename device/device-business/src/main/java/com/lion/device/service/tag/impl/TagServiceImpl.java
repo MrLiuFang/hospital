@@ -115,22 +115,22 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagUser)) {
                 Tag tag = findById(tagUser.getTagId());
-                BusinessException.throwException(tag.getDeviceName() + "与用户绑定不能删除");
+                BusinessException.throwException(tag.getTagCode() + "与用户绑定不能删除");
             }
             TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagUser)) {
                 Tag tag = findById(tagAssets.getTagId());
-                BusinessException.throwException(tag.getDeviceName() + "与资产绑定不能删除");
+                BusinessException.throwException(tag.getTagCode() + "与资产绑定不能删除");
             }
             TagPatient tagPatient = tagPatientDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagPatient)) {
                 Tag tag = findById(tagPatient.getTagId());
-                BusinessException.throwException(tag.getDeviceName() + "与患者绑定不能删除");
+                BusinessException.throwException(tag.getTagCode() + "与患者绑定不能删除");
             }
             TagPostdocs tagPostdocs = tagPostdocsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagPostdocs)) {
                 Tag tag = findById(tagPostdocs.getTagId());
-                BusinessException.throwException(tag.getDeviceName() + "与流动人员绑定不能删除");
+                BusinessException.throwException(tag.getTagCode() + "与流动人员绑定不能删除");
             }
         });
 

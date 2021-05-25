@@ -37,11 +37,8 @@ public class RegionExposeObjectServiceImpl extends BaseServiceImpl<RegionExposeO
             RegionExposeObject regionExposeObject = new RegionExposeObject();
             regionExposeObject.setRegionId(regionId);
             regionExposeObject.setExposeObject(exposeObject);
-            regionExposeObjects.add(regionExposeObject);
+            save(regionExposeObject);
         });
-        if (regionExposeObjects.size()>0){
-            saveAll(regionExposeObjects);
-        }
     }
 
     @Override

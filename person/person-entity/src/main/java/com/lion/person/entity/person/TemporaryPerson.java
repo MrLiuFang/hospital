@@ -1,6 +1,7 @@
 package com.lion.person.entity.person;
 
 import com.lion.core.persistence.Validator;
+import com.lion.person.entity.enums.IdentityDocumentType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -8,10 +9,8 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -21,16 +20,23 @@ import javax.validation.constraints.NotNull;
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "t_temporary_person",indexes = {@Index(columnList = "type"),@Index(columnList = "name"),@Index(columnList = "id_no"),@Index(columnList = "phone_number")})
+@Table(name = "t_temporary_person",indexes = {@Index(columnList = "name"),@Index(columnList = "id_no"),@Index(columnList = "phone_number")})
 @DynamicUpdate
 @DynamicInsert
 @Data
 @ApiModel(description = "临时人员")
 public class TemporaryPerson extends Person {
 
-    @ApiModelProperty(value = "住址")
-    @Column(name = "address")
-    private String address;
+    @ApiModelProperty(value = "证件类型")
+    @Column(name = "identity_document_type")
+    @Convert(converter = IdentityDocumentType.IdentityDocumentTypeConverter.class)
+    @NotNull(message = "证件类型不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private IdentityDocumentType identityDocumentType;
+
+    @ApiModelProperty(value = "证件号码")
+    @Column(name = "id_no")
+    @NotBlank(message = "证件号码不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    private String idNo;
 
     @ApiModelProperty(value = "拜访人ID")
     @NotNull(message = "拜访人不能为空", groups = {Validator.Insert.class, Validator.Update.class})
