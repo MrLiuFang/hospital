@@ -58,7 +58,7 @@ public class PatientDetailsVo extends Patient {
     private List<RestrictedAreaVo> restrictedAreaVoList;
 
     @ApiModelProperty(value = "临时离开权限")
-    private TempRestrictedAreaVo tempRestrictedAreaVo;
+    private TempLeaveVo tempLeaveVo;
 
 
     @Data
@@ -83,13 +83,19 @@ public class PatientDetailsVo extends Patient {
 
     @Data
     @ApiModel
-    public static class TempRestrictedAreaVo{
+    public static class TempLeaveVo {
 
         @ApiModelProperty(value = "登记人id")
         private Long userId;
 
         @ApiModelProperty(value = "登记人姓名")
-        private Long userName;
+        private String userName;
+
+        @ApiModelProperty(value = "头像（文件id）")
+        private Long headPortrait;
+
+        @ApiModelProperty(value = "头像（文件id）")
+        private String headPortraitUrl;
 
         @ApiModelProperty(value = "离开开始时间")
         private LocalDateTime startDateTime;

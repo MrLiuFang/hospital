@@ -109,6 +109,7 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     @PostMapping("/add/temp/leave")
     @ApiOperation(value = "新增临时离开")
     public IResultData addTempLeave(@RequestBody @Validated AddTempLeaveDto addTempLeaveDto){
+        tempLeaveService.addTempLeave(addTempLeaveDto);
         ResultData resultData = ResultData.instance();
         return resultData;
     }
