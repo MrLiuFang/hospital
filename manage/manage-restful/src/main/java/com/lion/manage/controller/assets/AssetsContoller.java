@@ -1,6 +1,5 @@
 package com.lion.manage.controller.assets;
 
-import com.alibaba.druid.sql.visitor.functions.If;
 import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.common.dto.DeleteDto;
@@ -9,7 +8,6 @@ import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.assets.AssetsBorrow;
 import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.dto.*;
 import com.lion.manage.entity.assets.vo.*;
@@ -18,8 +16,6 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsType;
 import com.lion.manage.entity.enums.AssetsUseState;
-import com.lion.manage.entity.ward.vo.DetailsWardVo;
-import com.lion.manage.entity.ward.vo.ListWardVo;
 import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
@@ -28,7 +24,6 @@ import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
-import com.sun.imageio.spi.RAFImageInputStreamSpi;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -36,11 +31,13 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -166,65 +163,40 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/borrw/list")
     @ApiOperation(value = "资产借用列表")
-    public IPageResultData<List<ListAssetsBorrowVo>> listBorrw(@ApiParam(value = "资产id") Long assetsId,  LionPage lionPage){
-        ResultData resultData = ResultData.instance();
-        JpqlParameter jpqlParameter = new JpqlParameter();
-        if (Objects.nonNull(assetsId)) {
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsId",assetsId);
-        }
-        lionPage.setJpqlParameter(jpqlParameter);
-        Page<AssetsBorrow> page = assetsBorrowService.findNavigator(lionPage);
-        List<AssetsBorrow> list = page.getContent();
-        List<ListAssetsBorrowVo> listAssetsBorrowVos = new ArrayList<ListAssetsBorrowVo>();
-        list.forEach(assetsBorrow -> {
-            ListAssetsBorrowVo vo = new ListAssetsBorrowVo();
-            BeanUtils.copyProperties(assetsBorrow,vo);
-            if (Objects.nonNull(assetsBorrow.getBorrowUserId())){
-                User user = userExposeService.findById(assetsBorrow.getBorrowUserId());
-                if (Objects.nonNull(user)){
-                    vo.setBorrowUserName(user.getName());
-                }
-            }
-            if (Objects.nonNull(assetsBorrow.getReturnUserId())){
-                User user = userExposeService.findById(assetsBorrow.getReturnUserId());
-                if (Objects.nonNull(user)){
-                    vo.setReturnUserName(user.getName());
-                }
-            }
-            listAssetsBorrowVos.add(vo);
-        });
-        return new PageResultData(listAssetsBorrowVos, page.getPageable(), page.getTotalElements());
+    public IPageResultData<List<ListAssetsBorrowVo>> listBorrw(@ApiParam(value = "资产id") Long assetsId, @ApiParam(value = "借用开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "借用结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                               @ApiParam(value = "是否已归还(null值 查所有)") Boolean isReturn, LionPage lionPage){
+        return assetsBorrowService.list(assetsId,startDateTime ,endDateTime ,isReturn, lionPage);
     }
 
-    @GetMapping("/borrw/details")
-    @ApiOperation(value = "资产借用详情")
-    public IResultData<DetailsAssetsBorrowVo> detailsBorrw(@NotNull(message = "id不能为空") Long id){
-        ResultData resultData = ResultData.instance();
-        AssetsBorrow assetsBorrow = this.assetsBorrowService.findById(id);
-        if (Objects.nonNull(assetsBorrow)){
-            DetailsAssetsBorrowVo vo = new DetailsAssetsBorrowVo();
-            BeanUtils.copyProperties(assetsBorrow,vo);
-            if (Objects.nonNull(assetsBorrow.getBorrowUserId())){
-                User user = userExposeService.findById(assetsBorrow.getBorrowUserId());
-                if (Objects.nonNull(user)){
-                    vo.setBorrowUserName(user.getName());
-                }
-            }
-            if (Objects.nonNull(assetsBorrow.getReturnUserId())){
-                User user = userExposeService.findById(assetsBorrow.getReturnUserId());
-                if (Objects.nonNull(user)){
-                    vo.setReturnUserName(user.getName());
-                }
-            }
-            resultData.setData(vo);
-        }
-        return resultData;
-    }
+//    @GetMapping("/borrw/details")
+//    @ApiOperation(value = "资产借用详情")
+//    public IResultData<DetailsAssetsBorrowVo> detailsBorrw(@NotNull(message = "id不能为空") Long id){
+//        ResultData resultData = ResultData.instance();
+//        AssetsBorrow assetsBorrow = this.assetsBorrowService.findById(id);
+//        if (Objects.nonNull(assetsBorrow)){
+//            DetailsAssetsBorrowVo vo = new DetailsAssetsBorrowVo();
+//            BeanUtils.copyProperties(assetsBorrow,vo);
+//            if (Objects.nonNull(assetsBorrow.getBorrowUserId())){
+//                User user = userExposeService.findById(assetsBorrow.getBorrowUserId());
+//                if (Objects.nonNull(user)){
+//                    vo.setBorrowUserName(user.getName());
+//                }
+//            }
+//            if (Objects.nonNull(assetsBorrow.getReturnUserId())){
+//                User user = userExposeService.findById(assetsBorrow.getReturnUserId());
+//                if (Objects.nonNull(user)){
+//                    vo.setReturnUserName(user.getName());
+//                }
+//            }
+//            resultData.setData(vo);
+//        }
+//        return resultData;
+//    }
 
-    @PutMapping("/borrw/update")
-    @ApiOperation(value = "修改资产借用")
-    public IResultData updateBorrw(@RequestBody @Validated({Validator.Update.class}) UpdateAssetsBorrowDto updateAssetsBorrowDto){
-        assetsBorrowService.update(updateAssetsBorrowDto);
+    @PutMapping("/borrw/return")
+    @ApiOperation(value = "归还资产")
+    public IResultData returnBorrw(@RequestBody @Validated({Validator.Update.class}) ReturnAssetsBorrowDto returnAssetsBorrowDto){
+        assetsBorrowService.returnAssetsBorrow(returnAssetsBorrowDto);
         return ResultData.instance();
     }
 

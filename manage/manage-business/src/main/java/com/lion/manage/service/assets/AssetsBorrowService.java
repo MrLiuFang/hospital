@@ -1,9 +1,16 @@
 package com.lion.manage.service.assets;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.AssetsBorrow;
 import com.lion.manage.entity.assets.dto.AddAssetsBorrowDto;
-import com.lion.manage.entity.assets.dto.UpdateAssetsBorrowDto;
+import com.lion.manage.entity.assets.dto.ReturnAssetsBorrowDto;
+import com.lion.manage.entity.assets.vo.ListAssetsBorrowVo;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author Mr.Liu
@@ -19,8 +26,19 @@ public interface AssetsBorrowService extends BaseService<AssetsBorrow> {
     public void add(AddAssetsBorrowDto addAssetsBorrowDto);
 
     /**
-     * 修改资产借用
-     * @param updateAssetsBorrowDto
+     * 列表
+     * @param assetsId
+     * @param startDateTime
+     * @param endDateTime
+     * @param isReturn
+     * @param lionPage
+     * @return
      */
-    public void update(UpdateAssetsBorrowDto updateAssetsBorrowDto);
+    IPageResultData<List<ListAssetsBorrowVo>> list(Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime,Boolean isReturn, LionPage lionPage);
+
+    /**
+     * 修改资产借用(归还)
+     * @param returnAssetsBorrowDto
+     */
+    public void returnAssetsBorrow(ReturnAssetsBorrowDto returnAssetsBorrowDto);
 }

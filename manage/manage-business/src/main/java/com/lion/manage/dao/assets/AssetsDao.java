@@ -13,7 +13,7 @@ import java.util.Map;
  * @Description:
  * @date 2021/4/6下午3:12
  */
-public interface AssetsDao extends BaseDao<Assets> {
+public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
 
     /**
      * 根据名称查询资产

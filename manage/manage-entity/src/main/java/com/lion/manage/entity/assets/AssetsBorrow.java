@@ -38,28 +38,43 @@ public class AssetsBorrow extends BaseEntity {
 
     @ApiModelProperty(value = "资产Id")
     @Column(name = "assets_id")
-    @NotNull(message = "资产id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "资产id不能为空", groups = {Validator.Insert.class})
     private Long assetsId;
 
-    @ApiModelProperty(value = "借用时间(yyyy-MM-dd HH:mm:ss)")
-    @Column(name = "borrow_time",updatable = false)
-    @NotNull(message = "借用时间不能为空", groups = {Validator.Insert.class})
-    @Past(message = "借用时间不能大于/等于当前时间", groups = {Validator.Insert.class})
+    @ApiModelProperty(value = "借用科室Id")
+    @Column(name = "borrow_department_id")
+    @NotNull(message = "资产id不能为空", groups = {Validator.Insert.class})
+    private Long borrowDepartmentId;
+
+    @ApiModelProperty(value = "借用床位Id")
+    @Column(name = "borrow_ward_room_sickbed_id")
+    @NotNull(message = "借用床位id不能为空", groups = {Validator.Insert.class})
+    private Long borrowWardRoomSickbedId;
+
+    @ApiModelProperty(value = "借用开始时间(yyyy-MM-dd HH:mm:ss)")
+    @Column(name = "start_date_time")
+    @NotNull(message = "借用开始时间不能为空", groups = {Validator.Insert.class})
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime borrowTime;
+    private LocalDateTime startDateTime;
+
+    @ApiModelProperty(value = "借用结束时间(yyyy-MM-dd HH:mm:ss)")
+    @Column(name = "end_date_time")
+    @NotNull(message = "借用结束时间不能为空", groups = {Validator.Insert.class})
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime endDateTime;
 
     @ApiModelProperty(value = "借用人")
-    @Column(name = "borrow_user_id",updatable = false)
+    @Column(name = "borrow_user_id")
     @NotNull(message = "借用人不能为空", groups = {Validator.Insert.class})
     private Long borrowUserId;
 
     @ApiModelProperty(value = "归还时间")
-    @Column(name = "return_time",insertable = false)
+    @Column(name = "return_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime returnTime;
 
     @ApiModelProperty(value = "归还人")
-    @Column(name = "return_user_id",insertable = false)
+    @Column(name = "return_user_id")
     @NotNull(message = "归还时间不能为空", groups = {Validator.Update.class})
     private Long returnUserId;
 }

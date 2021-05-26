@@ -25,4 +25,11 @@ public interface AssetsBorrowDao extends BaseDao<AssetsBorrow> {
      * @return
      */
     public Integer countByAssetsId(Long assetsId);
+
+    /**
+     * 查询资产借用是否未归还
+     * @param assetsId
+     * @return
+     */
+    public AssetsBorrow findFirstByAssetsIdAndReturnUserIdIsNull(Long assetsId);
 }

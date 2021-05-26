@@ -5,9 +5,7 @@ import com.lion.exception.BusinessException;
 import com.lion.manage.dao.assets.AssetsFaultDao;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.AssetsFault;
-import com.lion.manage.entity.assets.dto.AddAssetsBorrowDto;
 import com.lion.manage.entity.assets.dto.AddAssetsFaultDto;
-import com.lion.manage.entity.assets.dto.UpdateAssetsBorrowDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsFaultDto;
 import com.lion.manage.entity.enums.AssetsFaultState;
 import com.lion.manage.service.assets.AssetsFaultService;
@@ -17,7 +15,6 @@ import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
