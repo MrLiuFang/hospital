@@ -11,18 +11,22 @@ import com.lion.core.persistence.Validator;
 import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.dto.*;
 import com.lion.person.entity.person.vo.ListPatientVo;
+import com.lion.person.entity.person.vo.ListTempLeaveVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.PatientTransferService;
 import com.lion.person.service.person.TempLeaveService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -112,6 +116,20 @@ public class PatientController extends BaseControllerImpl implements BaseControl
         tempLeaveService.addTempLeave(addTempLeaveDto);
         ResultData resultData = ResultData.instance();
         return resultData;
+    }
+
+    @PutMapping("/advance/over/temp/leave")
+    @ApiOperation(value = "提前结束临时离开权限")
+    public IResultData advanceOverTempLeave(@RequestBody @Validated AdvanceOverTempLeaveDto advanceOverTempLeaveDto) {
+        tempLeaveService.advanceOverTempLeave(advanceOverTempLeaveDto);
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @GetMapping("/temp/leave/list")
+    @ApiOperation(value = "临时离开列表")
+    public IPageResultData<List<ListTempLeaveVo>> tempLeaveList(@ApiParam(value = "患者id") Long patientId, @ApiParam(value = "登记人id") Long userId, @ApiParam(value = "开始离开时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "结束离开时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
+        return tempLeaveService.list(patientId, userId, startDateTime, endDateTime, lionPage);
     }
 
 }

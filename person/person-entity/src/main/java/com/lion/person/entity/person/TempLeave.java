@@ -1,5 +1,6 @@
 package com.lion.person.entity.person;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.core.service.BaseService;
@@ -42,13 +43,15 @@ public class TempLeave extends BaseEntity {
 
     @ApiModelProperty(value = "离开开始时间")
     @Column(name = "start_date_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDateTime;
 
     @ApiModelProperty(value = "离开结束时间")
     @Column(name = "end_date_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endDateTime;
 
-    @ApiModelProperty(value = "是否结束临时权限放开")
+    @ApiModelProperty(value = "是否提前结束临时权限放开")
     @Column(name = "is_closure")
     private Boolean isClosure = false;
 

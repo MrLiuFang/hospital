@@ -1,5 +1,6 @@
 package com.lion.person.entity.person.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -28,12 +29,14 @@ public class AddTempLeaveDto {
     @NotNull(message = "请输入员工编号")
     private Integer number;
 
-    @ApiModelProperty(value = "离开开始时间")
-    @Column(name = "start_date_time")
+    @ApiModelProperty(value = "离开开始时间(yyyy-MM-dd HH:mm:ss)")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @NotNull(message = "请输入离开开始时间")
     private LocalDateTime startDateTime;
 
-    @ApiModelProperty(value = "离开结束时间")
-    @Column(name = "end_date_time")
+    @ApiModelProperty(value = "离开结束时间(yyyy-MM-dd HH:mm:ss)")
+    @NotNull(message = "请输入离开结束时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endDateTime;
 
     @ApiModelProperty(value = "离开原因")

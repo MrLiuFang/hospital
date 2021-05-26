@@ -13,16 +13,6 @@ import java.time.LocalDateTime;
 public interface TempLeaveDao extends BaseDao<TempLeave> {
 
     /**
-     * 查询患者临时离开的权限
-     * @param isClosure
-     * @param patientId
-     * @param startDateTime
-     * @param endDateTime
-     * @return
-     */
-    public TempLeave findFirstByIsClosureAndOrPatientIdAndStartDateTimeGreaterThanEqualAndEndDateTimeLessThanEqualOrderByCreateDateTimeDesc(Boolean isClosure, Long patientId, LocalDateTime startDateTime, LocalDateTime endDateTime);
-
-    /**
      *
      * @param patientId
      * @return
