@@ -43,8 +43,6 @@ public interface FaultService extends BaseService<Fault> {
     /**
      * 设置vo信息
      * @param vo
-     * @param code
-     * @param lionPage
      * @return
      */
     public FaultDetailsVo setInfoVo(FaultDetailsVo vo);
@@ -57,4 +55,10 @@ public interface FaultService extends BaseService<Fault> {
      * @return
      */
     public IPageResultData<List<ListFaultVo>> list(FaultType type, String code, LionPage lionPage);
+
+    /**
+     * 统计未处理的故障数量
+     * @return
+     */
+    public int countNotSolve();
 }

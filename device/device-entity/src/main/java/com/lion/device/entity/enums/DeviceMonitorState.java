@@ -10,19 +10,19 @@ import java.util.Objects;
 /**
  * @description:
  * @author: Mr.Liu
- * @time: 2021/5/24 上午8:22
+ * @time: 2021/5/27 上午11:14
  */
-public enum FaultType implements IEnum {
+public enum DeviceMonitorState implements IEnum {
 
-    CCTV(0, "CCTV"),
-    ASSETS(1, "资产"),
-    DEVICE(2, "设备");
+    normal(0, "正常"),
+    offline(1, "离线"),
+    fault(2, "故障");
 
     private final int key;
 
     private final String desc;
 
-    private FaultType(int key, String desc) {
+    private DeviceMonitorState(int key, String desc) {
         this.key = key;
         this.desc = desc;
     }
@@ -57,7 +57,7 @@ public enum FaultType implements IEnum {
     }
 
     @JsonCreator
-    public static FaultType instance(Object value){
+    public static DeviceMonitorState instance(Object value){
         if (Objects.isNull(value)){
             return null;
         }
@@ -67,8 +67,8 @@ public enum FaultType implements IEnum {
         return instance(String.valueOf(value));
     }
 
-    private static FaultType instance(Integer key){
-        for(FaultType item : values()){
+    private static DeviceMonitorState instance(Integer key){
+        for(DeviceMonitorState item : values()){
             if (item.getKey()==key){
                 return item;
             }
@@ -76,8 +76,8 @@ public enum FaultType implements IEnum {
         return null;
     }
 
-    private static FaultType instance(String name){
-        for(FaultType item : values()){
+    private static DeviceMonitorState instance(String name){
+        for(DeviceMonitorState item : values()){
             if(Objects.equals(item.getName(),name)){
                 return item;
             }
@@ -85,6 +85,6 @@ public enum FaultType implements IEnum {
         return null;
     }
 
-    public static class FaultTypeConverter extends EnumConverter<FaultType,Integer> {
+    public static class DeviceMonitorStateConverter extends EnumConverter<DeviceMonitorState,Integer> {
     }
 }

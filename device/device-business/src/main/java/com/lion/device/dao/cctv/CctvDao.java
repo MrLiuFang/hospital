@@ -2,6 +2,7 @@ package com.lion.device.dao.cctv;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.cctv.Cctv;
+import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
@@ -32,5 +33,8 @@ public interface CctvDao extends BaseDao<Cctv> {
      * @return
      */
     public Cctv findFirstByCode(String code);
+
+    @Query( " select t.id from Cctv t ")
+    public List<Long> allId();
 
 }

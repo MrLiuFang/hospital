@@ -1,9 +1,13 @@
 package com.lion.device.service.device;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
+import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
+import com.lion.device.entity.enums.DeviceMonitorState;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
@@ -26,4 +30,12 @@ public interface DeviceService extends BaseService<Device> {
      * @return
      */
    public DeviceStatisticsVo statistics();
+
+    /**
+     * 获取所有数据的id
+     * @return
+     */
+   public List<Long> allId();
+
+   public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, DeviceMonitorState state, LionPage lionPage);
 }

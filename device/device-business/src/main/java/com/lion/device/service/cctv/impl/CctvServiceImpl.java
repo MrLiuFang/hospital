@@ -7,6 +7,8 @@ import com.lion.device.service.cctv.CctvService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -17,4 +19,9 @@ public class CctvServiceImpl extends BaseServiceImpl<Cctv> implements CctvServic
 
     @Autowired
     private CctvDao cctvDao;
+
+    @Override
+    public List<Long> allId() {
+        return cctvDao.allId();
+    }
 }

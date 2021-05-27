@@ -1,18 +1,30 @@
 package com.lion.device.service.device.impl;
 
 import com.lion.common.constants.RedisConstants;
+import com.lion.common.expose.file.FileExposeService;
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.cctv.CctvDao;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.dao.tag.TagDao;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
+import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
 import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceMonitorState;
 import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.service.device.DeviceService;
 import com.lion.device.entity.device.Device;
 import com.lion.exception.BusinessException;
+import com.lion.manage.entity.build.Build;
+import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.expose.build.BuildExposeService;
+import com.lion.manage.expose.build.BuildFloorExposeService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,6 +56,15 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private BuildExposeService buildExposeService;
+
+    @DubboReference
+    private BuildFloorExposeService buildFloorExposeService;
+
+    @DubboReference
+    private FileExposeService fileExposeService;
 
     @Override
     public void update(Device entity) {
@@ -125,6 +146,34 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 //        list.add(dataTag);
         ov.setList(list);
         return ov;
+    }
+
+    @Override
+    public List<Long> allId() {
+        return deviceDao.allId();
+    }
+
+    @Override
+    public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, DeviceMonitorState state, LionPage lionPage) {
+        Page<Device> page = deviceDao.deviceMonitorList(buildId, buildFloorId, state, lionPage);
+        List<ListDeviceMonitorVo> returnList = new ArrayList<>();
+        List<Device> list = page.getContent();
+        list.forEach(device -> {
+            ListDeviceMonitorVo vo = new ListDeviceMonitorVo();
+            vo.setBattery(device.getBattery());
+            Build build = buildExposeService.findById(device.getBuildId());
+            vo.setBuildName(Objects.isNull(build)?"":build.getName());
+            BuildFloor buildFloor = buildFloorExposeService.findById(device.getBuildFloorId());
+            vo.setBuildFloorName(Objects.isNull(buildFloor)?"":buildFloor.getName());
+            vo.setClassify(device.getDeviceClassify());
+            vo.setCode(device.getCode());
+            vo.setDepartmentName("");
+            vo.setImg(device.getImg());
+            vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
+            vo.setMonitorState(device.getMonitorState());
+            returnList.add(vo);
+        });
+        return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
     }
 
     private DeviceStatisticsVo.DeviceStatisticsData count(DeviceClassify classify){

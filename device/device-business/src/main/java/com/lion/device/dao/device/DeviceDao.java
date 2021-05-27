@@ -1,8 +1,11 @@
 package com.lion.device.dao.device;
 
+import com.lion.core.LionPage;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceMonitorState;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
@@ -12,7 +15,7 @@ import java.util.List;
  * @Description:
  * @date 2021/3/31下午1:32
  */
-public interface DeviceDao extends BaseDao<Device> {
+public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
 
     /**
      * 根据名称查询设备
@@ -51,4 +54,17 @@ public interface DeviceDao extends BaseDao<Device> {
      */
     @Query(" select count(d) from Device d join DeviceGroupDevice dgd on d.id = dgd.deviceId where dgd.deviceGroupId in :deviceGroupIds and d.battery = :battery ")
     public Integer countDevice(List<Long> deviceGroupIds, Integer battery);
+
+    @Query( " select d.id from Device d ")
+    public List<Long> allId();
+
+    /**
+     * 设备统计
+     * @param buildId
+     * @param buildFloorId
+     * @param state
+     * @param lionPage
+     * @return
+     */
+    public Page<Device> findByBuildIdAndBuildFloorIdAndMonitorState(Long buildId, Long buildFloorId, DeviceMonitorState state, LionPage lionPage);
 }

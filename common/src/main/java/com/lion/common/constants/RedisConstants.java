@@ -9,6 +9,8 @@ import javax.print.attribute.standard.PrinterURI;
  **/
 public class RedisConstants {
 
+    public static String LAST_DATA = "last_data_";
+
     /**
      * 用户(key:userId,value:user)
      */

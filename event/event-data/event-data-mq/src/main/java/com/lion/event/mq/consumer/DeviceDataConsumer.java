@@ -1,6 +1,7 @@
 package com.lion.event.mq.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
@@ -22,10 +23,12 @@ import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -53,6 +56,9 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
     @DubboReference
     private TagExposeService tagExposeService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     public void onMessage(MessageExt messageExt) {
         try {
@@ -70,12 +76,21 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             DeviceData deviceData = new DeviceData();
             if (Objects.nonNull(deviceDataDto.getMonitorId())) {
                 monitor = redisUtil.getDevice(deviceDataDto.getMonitorId());
+                if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getId())) {
+                    redisTemplate.opsForValue().set(RedisConstants.LAST_DATA+String.valueOf(monitor.getId()),LocalDateTime.now(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                }
             }
             if (Objects.nonNull(deviceDataDto.getStarId())) {
                 star = redisUtil.getDevice(deviceDataDto.getStarId());
+                if (Objects.nonNull(star) && Objects.nonNull(star.getId())) {
+                    redisTemplate.opsForValue().set(RedisConstants.LAST_DATA+String.valueOf(star.getId()),LocalDateTime.now(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                }
             }
             if (Objects.nonNull(deviceDataDto.getTagId())) {
                 tag = redisUtil.getTag(deviceDataDto.getTagId());
+                if (Objects.nonNull(tag) && Objects.nonNull(tag.getId())) {
+                    redisTemplate.opsForValue().set(RedisConstants.LAST_DATA+String.valueOf(tag.getId()),LocalDateTime.now(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                }
             }
             if (Objects.nonNull(tag)){
                 user = redisUtil.getUser(tag.getId());
@@ -149,6 +164,8 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             // 更新设备的电量
             updateDeviceBattery(monitor,deviceDataDto.getMonitorBattery());
             updateTagBattery(tag,deviceDataDto.getTagBattery());
+
+
 
         }catch (Exception exception){
             exception.printStackTrace();

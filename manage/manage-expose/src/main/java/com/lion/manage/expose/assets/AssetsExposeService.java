@@ -56,4 +56,10 @@ public interface AssetsExposeService extends BaseService<Assets> {
      * @return
      */
     public List<Assets> findByDepartmentId(Long departmentId,String name,String code);
+
+    /**
+     * 获取所有数据的id
+     * @return
+     */
+    public List<Long> allId();
 }

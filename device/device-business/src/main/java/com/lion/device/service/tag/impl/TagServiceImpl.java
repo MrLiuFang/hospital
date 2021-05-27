@@ -209,6 +209,11 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         return new PageResultData<List<ListTagVo>>(returnList,page.getPageable(),page.getTotalElements());
     }
 
+    @Override
+    public List<Long> allId() {
+        return tagDao.allId();
+    }
+
     private void assertDeviceCodeExist(String deviceCode, Long id) {
         if (StringUtils.hasText(deviceCode)) {
             Tag tag = tagDao.findFirstByDeviceCode(deviceCode);

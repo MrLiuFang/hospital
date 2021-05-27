@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceMonitorState;
 import com.lion.device.entity.enums.DeviceType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -96,4 +97,8 @@ public class Device extends BaseEntity {
     @ApiModelProperty(value = "地图Y坐标(安装位置)")
     @Column(name = "y")
     private String y;
+
+    @ApiModelProperty(value = "监控状态（做统计用）")
+    @Column(name = "monitor_state")
+    private DeviceMonitorState monitorState;
 }

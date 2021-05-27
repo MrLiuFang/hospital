@@ -51,4 +51,10 @@ public interface TagService extends BaseService<Tag> {
      * @return
      */
     IPageResultData<List<ListTagVo>> list(TagUseState useState,Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage);
+
+    /**
+     * 获取所有数据的id
+     * @return
+     */
+    public List<Long> allId();
 }

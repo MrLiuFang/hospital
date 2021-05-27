@@ -59,5 +59,10 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
         return assetsDao.findByDepartmentId(departmentId);
     }
 
+    @Override
+    public List<Long> allId() {
+        return assetsDao.allId();
+    }
+
 
 }

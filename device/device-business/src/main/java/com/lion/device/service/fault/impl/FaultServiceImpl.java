@@ -126,6 +126,11 @@ public class FaultServiceImpl extends BaseServiceImpl<Fault> implements FaultSer
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
     }
 
+    @Override
+    public int countNotSolve() {
+        return faultDao.countByIsSolveAndType(false,FaultType.DEVICE);
+    }
+
     public FaultDetailsVo setInfoVo(FaultDetailsVo vo) {
         Region region = regionExposeService.findById(vo.getRegionId());
         if (Objects.nonNull(region)) {
