@@ -36,4 +36,11 @@ public interface PatientTransferDao extends BaseDao<PatientTransfer> {
      * @return
      */
     public List<PatientTransfer> findByState(TransferState state);
+
+    /**
+     * 根据患者查询
+     * @param patientId
+     * @return
+     */
+    public List<PatientTransfer> findByPatientIdOrderByCreateDateTimeDesc(Long patientId);
 }

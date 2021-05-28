@@ -47,10 +47,6 @@ public class PatientTransfer extends BaseEntity {
     @Column(name = "new_sickbed_id")
     private Long newSickbedId;
 
-    @ApiModelProperty(value = "转移员工")
-    @Column(name = "ransfer_user_id")
-    private Long ransferUserId;
-
     @ApiModelProperty(value = "接收员工")
     @Column(name = "receive_user_id")
     private Long receiveUserId;

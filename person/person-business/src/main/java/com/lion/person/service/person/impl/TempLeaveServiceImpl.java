@@ -17,6 +17,7 @@ import com.lion.person.entity.person.dto.AdvanceOverTempLeaveDto;
 import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.ListTempLeaveVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
+import com.lion.person.service.person.PatientLogService;
 import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.TempLeaveService;
 import com.lion.upms.entity.user.User;
@@ -51,6 +52,9 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
     @Autowired
     private FileExposeService fileExposeService;
 
+    @Autowired
+    private PatientLogService patientLogService;
+
     @Override
     public void addTempLeave(AddTempLeaveDto addTempLeaveDto) {
         User user = userExposeService.find(addTempLeaveDto.getNumber());
@@ -75,6 +79,7 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
                 tempLeave.setEndDateTime(addTempLeaveDto.getEndDateTime());
                 tempLeave.setRemarks(addTempLeaveDto.getRemarks());
                 save(tempLeave);
+                patientLogService.add("新增临时离开权限",id);
             });
 
         }

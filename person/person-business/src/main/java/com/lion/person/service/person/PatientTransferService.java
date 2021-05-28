@@ -5,8 +5,11 @@ import com.lion.core.service.BaseService;
 import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.dto.ReceivePatientDto;
 import com.lion.person.entity.person.dto.TransferDto;
+import com.lion.person.entity.person.vo.ListPatientTransferVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 /**
  * @description:
@@ -27,4 +30,11 @@ public interface PatientTransferService extends BaseService<PatientTransfer> {
      * @param receivePatientDto
      */
     public void receiveOrCancel(ReceivePatientDto receivePatientDto);
+
+    /**
+     * 转移记录
+     * @param patientId
+     * @return
+     */
+    public List<ListPatientTransferVo> list( Long patientId );
 }

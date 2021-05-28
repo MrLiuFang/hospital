@@ -40,6 +40,7 @@ import com.lion.person.entity.person.dto.PatientLeaveDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
 import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
+import com.lion.person.service.person.PatientLogService;
 import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.RestrictedAreaService;
 import com.lion.upms.entity.enums.UserType;
@@ -115,6 +116,8 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
 
+    @Autowired
+    private PatientLogService patientLogService;
 
     @Override
     @Transactional
@@ -132,12 +135,14 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         if (Objects.nonNull(patient.getTagCode())) {
             tagPatientExposeService.binding(patient.getId(),patient.getTagCode(),patient.getDepartmentId());
         }
+        patientLogService.add("添加患者",patient.getId());
     }
 
     @Override
     @Transactional
     //    @GlobalTransactional
     public void update(UpdatePatientDto updatePatientDto) {
+        Patient oldPatient = findById(updatePatientDto.getId());
         Patient patient = new Patient();
         BeanUtils.copyProperties(updatePatientDto,patient);
         sickbedIsCanUse(patient.getSickbedId(),patient.getId());
@@ -149,6 +154,39 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         restrictedAreaService.add(updatePatientDto.getRegionId(), PersonType.PATIENT,patient.getId());
         if (Objects.nonNull(patient.getTagCode())) {
             tagPatientExposeService.binding(patient.getId(),patient.getTagCode(),patient.getDepartmentId());
+        }
+        if (Objects.nonNull(patient.getBindPatientId()) && !Objects.equals(oldPatient.getBindPatientId(),patient.getBindPatientId())) {
+            patientLogService.add("修改绑定患者",patient.getId());
+        }
+        if (Objects.nonNull(patient.getDoctorId()) && !Objects.equals(oldPatient.getDoctorId(),patient.getDoctorId())) {
+            patientLogService.add("修改负责医生",patient.getId());
+        }
+        if (Objects.nonNull(patient.getTagCode()) && !Objects.equals(oldPatient.getTagCode(),patient.getTagCode())) {
+            patientLogService.add("修改标签码",patient.getId());
+        }
+        if (Objects.nonNull(patient.getDepartmentId()) && !Objects.equals(oldPatient.getDepartmentId(),patient.getDepartmentId())) {
+            patientLogService.add("修改科室",patient.getId());
+        }
+        if (Objects.nonNull(patient.getNurseId()) && !Objects.equals(oldPatient.getNurseId(),patient.getNurseId())) {
+            patientLogService.add("修改负责护士",patient.getId());
+        }
+        if (Objects.nonNull(patient.getSickbedId()) && !Objects.equals(oldPatient.getSickbedId(),patient.getSickbedId())) {
+            patientLogService.add("修改床位",patient.getId());
+        }
+        if (Objects.nonNull(patient.getBirthday()) && !Objects.equals(oldPatient.getBirthday(),patient.getBirthday())) {
+            patientLogService.add("修改出生日期",patient.getId());
+        }
+        if (Objects.nonNull(patient.getMedicalRecordNo()) && !Objects.equals(oldPatient.getMedicalRecordNo(),patient.getMedicalRecordNo())) {
+            patientLogService.add("修改病历号",patient.getId());
+        }
+        if (Objects.nonNull(patient.getDisease()) && !Objects.equals(oldPatient.getDisease(),patient.getDisease())) {
+            patientLogService.add("修改疾病",patient.getId());
+        }
+        if (Objects.nonNull(patient.getRemarks()) && !Objects.equals(oldPatient.getRemarks(),patient.getRemarks())) {
+            patientLogService.add("修改备注",patient.getId());
+        }
+        if (Objects.nonNull(patient.getAddress()) && !Objects.equals(oldPatient.getAddress(),patient.getAddress())) {
+            patientLogService.add("修改地址",patient.getId());
         }
     }
 

@@ -9,13 +9,11 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
 import com.lion.person.entity.enums.TransferState;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.PatientReport;
 import com.lion.person.entity.person.dto.*;
-import com.lion.person.entity.person.vo.ListPatientVo;
-import com.lion.person.entity.person.vo.ListTempLeaveVo;
-import com.lion.person.entity.person.vo.PatientDetailsVo;
-import com.lion.person.service.person.PatientService;
-import com.lion.person.service.person.PatientTransferService;
-import com.lion.person.service.person.TempLeaveService;
+import com.lion.person.entity.person.vo.*;
+import com.lion.person.service.person.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -47,6 +45,12 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @Autowired
     private TempLeaveService tempLeaveService;
+
+    @Autowired
+    private PatientReportService patientReportService;
+
+    @Autowired
+    private PatientLogService patientLogService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增患者")
@@ -106,8 +110,9 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @GetMapping("/transfer/list")
     @ApiOperation(value = "患者转移")
-    public IResultData<List<>> transferList(@ApiParam(value = "患者id") Long patientId ){
+    public IResultData<List<ListPatientTransferVo>> transferList(@ApiParam(value = "患者id") Long patientId ){
         ResultData resultData = ResultData.instance();
+        resultData.setData(patientTransferService.list(patientId));
         return resultData;
     }
 
@@ -141,4 +146,29 @@ public class PatientController extends BaseControllerImpl implements BaseControl
         return tempLeaveService.list(patientId, userId, startDateTime, endDateTime, lionPage);
     }
 
+    @PostMapping("/report/add")
+    @ApiOperation(value = "添加医护汇报")
+    public IResultData addReport(@RequestBody @Validated({Validator.Insert.class}) AddPatientReportDto addPatientReportDto) {
+        patientReportService.add(addPatientReportDto);
+        return ResultData.instance();
+    }
+
+    @GetMapping("/report/list")
+    @ApiOperation(value = "医护汇报列表")
+    public IPageResultData<List<ListPatientReportVo>> listReport(@ApiParam(value = "患者id") @NotNull(message = "患者不能为空") Long patientId,LionPage lionPage) {
+        return patientReportService.list(patientId, lionPage);
+    }
+
+    @GetMapping("/report/delete")
+    @ApiOperation(value = "删除医护汇报")
+    public IResultData deleteReport(@RequestBody List<DeleteDto> deleteDtoList) {
+        patientReportService.delete(deleteDtoList);
+        return ResultData.instance();
+    }
+
+    @GetMapping("/log/list")
+    @ApiOperation(value = "医护汇报列表")
+    public IPageResultData<List<ListPatientLogVo>> listLog(@ApiParam(value = "患者id") @NotNull(message = "患者不能为空") Long patientId,LionPage lionPage) {
+        return patientLogService.list(patientId, lionPage);
+    }
 }
