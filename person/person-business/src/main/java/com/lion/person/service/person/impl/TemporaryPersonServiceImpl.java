@@ -43,6 +43,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -181,6 +182,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         temporaryPerson.setId(temporaryPersonLeaveDto.getTemporaryPersonId());
         temporaryPerson.setIsLeave(true);
         temporaryPerson.setLeaveRemarks(temporaryPersonLeaveDto.getLeaveRemarks());
+        temporaryPerson.setLeaveDateTime(LocalDateTime.now());
         update(temporaryPerson);
     }
 

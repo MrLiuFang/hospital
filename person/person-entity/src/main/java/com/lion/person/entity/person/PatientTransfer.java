@@ -39,12 +39,32 @@ public class PatientTransfer extends BaseEntity {
     @Column(name = "new_department_id")
     private Long newDepartmentId;
 
+    @ApiModelProperty(value = "转移前床位")
+    @Column(name = "old_sickbed_id")
+    private Long oldSickbedId;
+
+    @ApiModelProperty(value = "转移新床位")
+    @Column(name = "new_sickbed_id")
+    private Long newSickbedId;
+
+    @ApiModelProperty(value = "转移员工")
+    @Column(name = "ransfer_user_id")
+    private Long ransferUserId;
+
+    @ApiModelProperty(value = "接收员工")
+    @Column(name = "receive_user_id")
+    private Long receiveUserId;
+
+    @ApiModelProperty(value = "接收时间")
+    @Column(name = "receive_date_time")
+    private LocalDateTime receiveDateTime;
+
     @ApiModelProperty(value = "转移状态")
     @Convert(converter = TransferState.TransferStateConverter.class)
     @Column(name = "state")
     private TransferState state;
 
-    @ApiModelProperty(value = "离开时间")
+    @ApiModelProperty(value = "离开时间（转移时间)")
     @Column(name = "leave_date_time")
     private LocalDateTime leaveDateTime;
 

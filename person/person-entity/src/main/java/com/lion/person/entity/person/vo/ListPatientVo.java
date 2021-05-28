@@ -24,4 +24,6 @@ public class ListPatientVo extends PatientDetailsVo {
 
     @ApiModelProperty(value = "转移触发时间")
     private LocalDateTime triggerDateTime;
+
+
 }

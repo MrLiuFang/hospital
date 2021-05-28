@@ -1,6 +1,7 @@
 package com.lion.person.entity.person;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.LionObjectMapper;
 import com.lion.core.persistence.Validator;
 import io.swagger.annotations.ApiModel;
@@ -32,6 +33,10 @@ import java.time.LocalDate;
 @DynamicInsert
 @Data
 @ApiModel(description = "患者")
+@JsonIgnoreProperties(
+        ignoreUnknown = true,
+        value = {"updateDateTime", "createUserId", "updateUserId"}
+)
 public class Patient extends Person {
 
     @ApiModelProperty(value = "出生日期")

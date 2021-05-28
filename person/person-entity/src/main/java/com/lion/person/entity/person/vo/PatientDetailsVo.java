@@ -1,5 +1,6 @@
 package com.lion.person.entity.person.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.person.entity.person.Patient;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -20,6 +21,9 @@ public class PatientDetailsVo extends Patient {
 
     @ApiModelProperty(value = "绑定患者")
     private PatientDetailsVo bindPatient;
+
+    @ApiModelProperty(value = "年龄")
+    private int age;
 
     @ApiModelProperty(value = "病床编码")
     private String bedCode;
@@ -91,16 +95,18 @@ public class PatientDetailsVo extends Patient {
         @ApiModelProperty(value = "登记人姓名")
         private String userName;
 
-        @ApiModelProperty(value = "头像（文件id）")
+        @ApiModelProperty(value = "登记人头像（文件id）")
         private Long headPortrait;
 
-        @ApiModelProperty(value = "头像（文件id）")
+        @ApiModelProperty(value = "登记人头像（文件id）")
         private String headPortraitUrl;
 
         @ApiModelProperty(value = "离开开始时间")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime startDateTime;
 
         @ApiModelProperty(value = "离开结束时间")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime endDateTime;
 
     }

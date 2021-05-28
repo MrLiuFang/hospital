@@ -16,6 +16,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 /**
  * @description:
@@ -67,7 +68,15 @@ public abstract class Person extends BaseEntity {
     @Column(name = "is_leave")
     private Boolean isLeave =false;
 
+    @ApiModelProperty(value = "登出时间（离开时间）")
+    @Column(name = "leave_date_time")
+    private LocalDateTime leaveDateTime;
+
     @ApiModelProperty(value = "登出原因")
     @Column(name = "leave_emarks")
     private String leaveRemarks;
+
+    @ApiModelProperty(value = "是否正常")
+    @Column(name = "is_normal")
+    private Boolean isNormal;
 }

@@ -14,10 +14,12 @@ import com.lion.person.entity.person.dto.ReceivePatientDto;
 import com.lion.person.entity.person.dto.TransferDto;
 import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.PatientTransferService;
+import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -63,8 +65,11 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
         if (Objects.equals(transferDto.getDepartmentId(),patient.getDepartmentId())) {
             BusinessException.throwException("不能从当前科室转移至当前科室");
         }
+        Long userId = CurrentUserUtil.getCurrentUserId();
         patientTransfer.setNewDepartmentId(transferDto.getDepartmentId());
         patientTransfer.setPatientId(transferDto.getPatientId());
+        patientTransfer.setOldSickbedId(patient.getSickbedId());
+        patientTransfer.setRansferUserId(userId);
         patientTransfer.setOldDepartmentId(patient.getDepartmentId());
         patientTransfer.setState(TransferState.PENDING_TRANSFER);
         save(patientTransfer);
@@ -80,6 +85,10 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
         state.add(TransferState.FINISH);
         PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(receivePatientDto.getPatientId(),state);
         patientTransfer.setState(receivePatientDto.getState());
+        patientTransfer.setNewSickbedId(receivePatientDto.getNewSickbedId());
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        patientTransfer.setReceiveUserId(userId);
+        patientTransfer.setReceiveDateTime(LocalDateTime.now());
         update(patientTransfer);
     }
 }

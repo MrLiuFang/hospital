@@ -13,9 +13,11 @@ import com.lion.person.entity.person.dto.TransferDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
 import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -48,11 +50,18 @@ public interface PatientService extends BaseService<Patient> {
      * 列表
      * @param name
      * @param isLeave
+     * @param birthday
      * @param transferState
+     * @param isNormal
+     * @param tagCode
+     * @param medicalRecordNo
+     * @param sickbedId
+     * @param startDateTime
+     * @param endDateTime
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, TransferState transferState,LionPage lionPage);
+    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, LocalDateTime birthday,TransferState transferState,Boolean isNormal,String tagCode,String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      * 详情

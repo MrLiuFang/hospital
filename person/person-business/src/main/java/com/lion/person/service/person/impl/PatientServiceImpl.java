@@ -8,6 +8,7 @@ import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagPatientExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.build.Build;
@@ -20,6 +21,7 @@ import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
+import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.ward.WardExposeService;
 import com.lion.manage.expose.ward.WardRoomExposeService;
@@ -43,6 +45,7 @@ import com.lion.person.service.person.RestrictedAreaService;
 import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +54,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -105,6 +112,10 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @Autowired
     private TempLeaveDao tempLeaveDao;
 
+    @DubboReference
+    private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
+
+
     @Override
     @Transactional
 //    @GlobalTransactional
@@ -155,8 +166,16 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     @Override
-    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, TransferState transferState, LionPage lionPage) {
+    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, LocalDateTime birthday, TransferState transferState, Boolean isNormal, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        List<Department> departmentList = departmentResponsibleUserExposeService.findDepartment(userId);
+        List<Long> departmentIds = new ArrayList<>();
+        departmentIds.add(Long.MAX_VALUE);
+        departmentList.forEach(department -> {
+            departmentIds.add(department.getId());
+        });
+        jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         if (Objects.nonNull(transferState)) {
             List<PatientTransfer> list =patientTransferDao.findByState(transferState);
             if (Objects.nonNull(list) && list.size()>0) {
@@ -174,6 +193,27 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         }
         if (Objects.nonNull(isLeave)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_isLeave",isLeave);
+        }
+        if (Objects.nonNull(birthday)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_birthday",birthday);
+        }
+        if (Objects.nonNull(isNormal)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_isNormal",isNormal);
+        }
+        if (StringUtils.hasText(tagCode)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_tagCode",tagCode);
+        }
+        if (StringUtils.hasText(medicalRecordNo)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_medicalRecordNo",medicalRecordNo);
+        }
+        if (Objects.nonNull(sickbedId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_sickbedId",sickbedId);
+        }
+        if (Objects.nonNull(startDateTime)){
+            jpqlParameter.setSearchParameter(SearchConstant.GREATER_THAN_OR_EQUAL_TO+"_createDateTime",startDateTime);
+        }
+        if (Objects.nonNull(endDateTime)){
+            jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_createDateTime",endDateTime);
         }
         lionPage.setJpqlParameter(jpqlParameter);
         Page<Patient> page = this.findNavigator(lionPage);
@@ -203,6 +243,10 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         }
         PatientDetailsVo vo = new PatientDetailsVo();
         BeanUtils.copyProperties(patient,vo);
+        if (Objects.nonNull(patient.getBirthday())) {
+            Period period = Period.between(patient.getBirthday(), LocalDate.now());
+            vo.setAge(period.getYears());
+        }
         if (Objects.nonNull(vo.getSickbedId())) {
             WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(vo.getSickbedId());
             if (Objects.nonNull(wardRoomSickbed)) {
