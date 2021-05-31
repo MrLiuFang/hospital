@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.upms.entity.enums.Gender;
+import com.lion.upms.entity.enums.State;
 import com.lion.upms.entity.enums.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -100,7 +101,6 @@ public class User extends BaseEntity {
     @NotBlank(message = "联系电话不能为空", groups = {Validator.Insert.class,Validator.Update.class})
     private String phoneNumber;
 
-
     @ApiModelProperty(value = "住址")
     @Column(name = "address")
     private String address;
@@ -124,5 +124,10 @@ public class User extends BaseEntity {
     @JsonIgnore
     @Column(name = "is_nabled")
     private Boolean isEnabled = true;
+
+    @ApiModelProperty(value = "设备状态")
+    @Column(name = "device_sate")
+    @Convert(converter = State.StateConverter.class)
+    private State deviceSate = State.NORMAL;
 
 }

@@ -1,12 +1,10 @@
 package com.lion.device.entity.device.vo;
 
 import com.lion.device.entity.enums.DeviceClassify;
-import com.lion.device.entity.enums.DeviceMonitorState;
+import com.lion.device.entity.enums.State;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import javax.persistence.Column;
 
 /**
  * @description:
@@ -42,7 +40,7 @@ public class ListDeviceMonitorVo {
     private String buildFloorName;
 
     @ApiModelProperty(value = "状态")
-    private DeviceMonitorState monitorState;
+    private State state;
 
     @ApiModelProperty(value = "电量")
     private Integer battery;

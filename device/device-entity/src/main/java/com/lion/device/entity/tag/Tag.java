@@ -1,7 +1,6 @@
 package com.lion.device.entity.tag;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.lion.core.common.enums.State;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.device.entity.enums.*;
@@ -93,5 +92,10 @@ public class Tag extends BaseEntity {
     @Column(name = "state")
     @Convert(converter = TagState.TagStateConverter.class)
     private TagState state = TagState.NORMAL;
+
+    @ApiModelProperty(value = "设备状态")
+    @Column(name = "device_sate")
+    @Convert(converter = com.lion.device.entity.enums.State.StateConverter.class)
+    private com.lion.device.entity.enums.State deviceSate = State.NORMAL;
 
 }

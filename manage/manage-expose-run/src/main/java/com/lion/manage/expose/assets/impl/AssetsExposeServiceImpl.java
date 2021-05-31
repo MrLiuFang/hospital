@@ -64,5 +64,10 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
         return assetsDao.allId();
     }
 
+    @Override
+    public void updateState(Long id, Integer state) {
+        assetsDao.update(id,state);
+    }
+
 
 }

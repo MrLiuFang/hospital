@@ -6,6 +6,7 @@ import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.person.entity.enums.Gender;
 import com.lion.person.entity.enums.IdentityDocumentType;
 import com.lion.person.entity.enums.PersonType;
+import com.lion.person.entity.enums.State;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -76,7 +77,8 @@ public abstract class Person extends BaseEntity {
     @Column(name = "leave_emarks")
     private String leaveRemarks;
 
-    @ApiModelProperty(value = "是否正常")
-    @Column(name = "is_normal")
-    private Boolean isNormal;
+    @ApiModelProperty(value = "设备状态")
+    @Column(name = "device_sate")
+    @Convert(converter = State.StateConverter.class)
+    private State deviceSate = State.NORMAL;
 }

@@ -62,4 +62,11 @@ public interface AssetsExposeService extends BaseService<Assets> {
      * @return
      */
     public List<Long> allId();
+
+    /**
+     * 修改状态
+     * @param id
+     * @param state
+     */
+    public void updateState(Long id,Integer state);
 }

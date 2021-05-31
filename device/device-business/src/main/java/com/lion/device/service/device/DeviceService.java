@@ -7,8 +7,7 @@ import com.lion.core.service.BaseService;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
-import com.lion.device.entity.enums.DeviceMonitorState;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.lion.device.entity.enums.State;
 
 import java.util.List;
 
@@ -37,5 +36,5 @@ public interface DeviceService extends BaseService<Device> {
      */
    public List<Long> allId();
 
-   public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, DeviceMonitorState state, LionPage lionPage);
+   public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceSate, LionPage lionPage);
 }

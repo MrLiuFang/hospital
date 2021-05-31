@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Data
 @ApiModel
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"id","username","password","createDateTime","updateDateTime","createUserId","updateUserId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"deviceSate","id","username","password","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class AddUserDto extends User {
 
     @ApiModelProperty(value = "是否创建账号")

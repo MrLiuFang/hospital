@@ -3,6 +3,7 @@ package com.lion.device.entity.cctv;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
+import com.lion.device.entity.enums.State;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,10 +11,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -75,4 +73,9 @@ public class Cctv extends BaseEntity {
     @ApiModelProperty(value = "科室Id（关联区域自动更新该值）")
     @Column(name = "department_id")
     private Long departmentId;
+
+    @ApiModelProperty(value = "设备状态")
+    @Column(name = "device_sate")
+    @Convert(converter = State.StateConverter.class)
+    private State deviceSate = State.NORMAL;
 }

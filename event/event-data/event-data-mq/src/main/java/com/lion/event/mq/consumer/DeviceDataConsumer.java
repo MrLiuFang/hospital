@@ -105,6 +105,9 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             if (Objects.nonNull(user)){
                 deviceData.setTyp(Type.STAFF.getKey());
                 deviceData.setPi(user.getId());
+                if (Objects.nonNull(user) && Objects.nonNull(user.getId())) {
+                    redisTemplate.opsForValue().set(RedisConstants.LAST_DATA+String.valueOf(user.getId()),LocalDateTime.now(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                }
             }
 //            else if (){ //患者设备发出的数据
 //                deviceData.setTyp(Type.PATIENT.getKey());

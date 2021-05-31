@@ -7,14 +7,13 @@ import com.lion.core.LionPage;
 import com.lion.core.ResultData;
 import com.lion.device.entity.device.vo.DeviceMonitorTopVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
-import com.lion.device.entity.enums.DeviceMonitorState;
+import com.lion.device.entity.enums.State;
 import com.lion.device.service.cctv.CctvService;
 import com.lion.device.service.device.DeviceService;
 import com.lion.device.service.fault.FaultService;
 import com.lion.device.service.tag.TagService;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -75,7 +74,7 @@ public class MonitorController {
 
     @GetMapping("/list")
     @ApiOperation(value = "设备监控列表")
-    public IPageResultData<List<ListDeviceMonitorVo>> list(@ApiParam(value = "建筑ID") Long buildId,@ApiParam(value = "建筑楼层ID") Long buildFloorId,@ApiParam(value = "状态") DeviceMonitorState state, LionPage lionPage){
+    public IPageResultData<List<ListDeviceMonitorVo>> list(@ApiParam(value = "建筑ID") Long buildId, @ApiParam(value = "建筑楼层ID") Long buildFloorId, @ApiParam(value = "状态") State state, LionPage lionPage){
         return deviceService.deviceMonitorList(buildId, buildFloorId, state, lionPage);
     }
 

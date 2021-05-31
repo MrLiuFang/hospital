@@ -2,7 +2,9 @@ package com.lion.upms.dao.user;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.upms.entity.user.User;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.util.List;
@@ -53,6 +55,11 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
      */
     @Query(" select u from User u join RoleUser ru on u.id = ru.userId where ru.roleId = :roleId ")
     public List<User> findUserByRoleId(Long roleId);
+
+    @Modifying
+    @Transactional
+    @Query(" update User  set deviceSate =:state where id = :id ")
+    public void update(Long id,Integer state);
 
 
 }

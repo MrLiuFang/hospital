@@ -1,18 +1,14 @@
 package com.lion.device.dao.device.impl;
 
-import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.dao.device.DeviceDaoEx;
 import com.lion.device.entity.device.Device;
-import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
-import com.lion.device.entity.enums.DeviceMonitorState;
+import com.lion.device.entity.enums.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -27,7 +23,7 @@ public class DeviceDaoImpl implements DeviceDaoEx {
     private BaseDao<Device> baseDao;
 
     @Override
-    public Page deviceMonitorList(Long buildId, Long buildFloorId, DeviceMonitorState state, LionPage lionPage) {
+    public Page deviceMonitorList(Long buildId, Long buildFloorId, State deviceSate, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> searchParameter = new HashMap<>();
         sb.append(" select d from Device d where 1=1 ");
@@ -38,9 +34,9 @@ public class DeviceDaoImpl implements DeviceDaoEx {
         if (Objects.nonNull(buildFloorId)){
             sb.append(" and d.buildFloorId =:buildFloorId ");
             searchParameter.put("buildFloorId",buildFloorId);
-        }if (Objects.nonNull(state)){
-            sb.append(" and d.monitorState =:state ");
-            searchParameter.put("state",state);
+        }if (Objects.nonNull(deviceSate)){
+            sb.append(" and d.deviceSate =:deviceSate ");
+            searchParameter.put("deviceSate",deviceSate);
         }
         return baseDao.findNavigator(lionPage,sb.toString(),searchParameter);
     }

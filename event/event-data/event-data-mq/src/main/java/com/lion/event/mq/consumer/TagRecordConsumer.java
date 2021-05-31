@@ -54,6 +54,5 @@ public class TagRecordConsumer implements RocketMQListener<MessageExt> {
         }catch (Exception e){
             e.printStackTrace();
         }
-
     }
 }

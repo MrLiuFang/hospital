@@ -5,6 +5,7 @@ import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.manage.entity.enums.AssetsType;
 import com.lion.manage.entity.enums.AssetsUseState;
+import com.lion.upms.entity.enums.State;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -81,4 +82,9 @@ public class Assets extends BaseEntity {
     @ApiModelProperty(value = "图片")
     @Column(name = "img")
     private Long img;
+
+    @ApiModelProperty(value = "设备状态")
+    @Column(name = "device_sate")
+    @Convert(converter = State.StateConverter.class)
+    private State deviceSate = State.NORMAL;
 }

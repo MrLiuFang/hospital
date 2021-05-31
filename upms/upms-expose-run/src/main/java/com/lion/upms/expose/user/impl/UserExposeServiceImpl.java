@@ -86,4 +86,9 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
         map.put("list",p.getContent());
         return map;
     }
+
+    @Override
+    public void updateState(Long id, Integer state) {
+        userDao.update(id,state);
+    }
 }

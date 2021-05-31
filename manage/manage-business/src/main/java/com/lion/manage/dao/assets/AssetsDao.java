@@ -3,7 +3,9 @@ package com.lion.manage.dao.assets;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.Assets;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -63,5 +65,10 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
 
     @Query( " select a.id from Assets a ")
     public List<Long> allId();
+
+    @Modifying
+    @Query(" update Assets  set deviceSate =:state where id = :id ")
+    @Transactional
+    public void update(Long id,Integer state);
 
 }

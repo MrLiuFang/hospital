@@ -5,21 +5,19 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.device.entity.enums.DeviceClassify;
-import com.lion.device.entity.enums.DeviceMonitorState;
 import com.lion.device.entity.enums.DeviceType;
+import com.lion.device.entity.enums.State;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -98,7 +96,8 @@ public class Device extends BaseEntity {
     @Column(name = "y")
     private String y;
 
-    @ApiModelProperty(value = "监控状态（做统计用）")
-    @Column(name = "monitor_state")
-    private DeviceMonitorState monitorState;
+    @ApiModelProperty(value = "设备状态")
+    @Column(name = "device_sate")
+    @Convert(converter = State.StateConverter.class)
+    private State deviceSate = State.NORMAL;
 }

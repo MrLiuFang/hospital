@@ -57,4 +57,11 @@ public interface UserExposeService extends BaseService<User> {
      */
     public Map<String,Object> find(Long departmentId, String name, UserType userType, List<Long> ontIn, int page, int size);
 
+    /**
+     * 修改状态
+     * @param id
+     * @param state
+     */
+    public void updateState(Long id,Integer state);
+
 }

@@ -2,6 +2,9 @@ package com.lion.person.dao.person;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.person.entity.person.Patient;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @description:
@@ -24,4 +27,9 @@ public interface PatientDao extends BaseDao<Patient> {
      * @return
      */
     public Patient findFirstByMedicalRecordNo(String medicalRecordNo);
+
+    @Modifying
+    @Transactional
+    @Query(" update Patient  set deviceSate =:state where id = :id ")
+    public void update(Long id,Integer state);
 }

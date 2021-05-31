@@ -1,4 +1,4 @@
-package com.lion.device.entity.enums;
+package com.lion.upms.entity.enums;
 
 import cn.hutool.core.util.NumberUtil;
 import com.fasterxml.jackson.annotation.JsonCreator;
@@ -10,19 +10,19 @@ import java.util.Objects;
 /**
  * @description:
  * @author: Mr.Liu
- * @time: 2021/5/27 上午11:14
+ * @time: 2021/5/31 上午10:26
  */
-public enum DeviceMonitorState implements IEnum {
+public enum State implements IEnum {
 
-    normal(0, "正常"),
-    offline(1, "离线"),
-    fault(2, "故障");
+    NORMAL(1, "正常"),
+    ALARM(2, "警报"),
+    OFFLINE(3,"离线");
 
     private final int key;
 
     private final String desc;
 
-    private DeviceMonitorState(int key, String desc) {
+    private State(int key, String desc) {
         this.key = key;
         this.desc = desc;
     }
@@ -57,7 +57,7 @@ public enum DeviceMonitorState implements IEnum {
     }
 
     @JsonCreator
-    public static DeviceMonitorState instance(Object value){
+    public static State instance(Object value){
         if (Objects.isNull(value)){
             return null;
         }
@@ -67,8 +67,8 @@ public enum DeviceMonitorState implements IEnum {
         return instance(String.valueOf(value));
     }
 
-    private static DeviceMonitorState instance(Integer key){
-        for(DeviceMonitorState item : values()){
+    private static State instance(Integer key){
+        for(State item : values()){
             if (item.getKey()==key){
                 return item;
             }
@@ -76,8 +76,8 @@ public enum DeviceMonitorState implements IEnum {
         return null;
     }
 
-    private static DeviceMonitorState instance(String name){
-        for(DeviceMonitorState item : values()){
+    private static State instance(String name){
+        for(State item : values()){
             if(Objects.equals(item.getName(),name)){
                 return item;
             }
@@ -85,6 +85,6 @@ public enum DeviceMonitorState implements IEnum {
         return null;
     }
 
-    public static class DeviceMonitorStateConverter extends EnumConverter<DeviceMonitorState,Integer> {
+    public static class StateConverter extends EnumConverter<State,Integer> {
     }
 }

@@ -1,5 +1,7 @@
 package com.lion.common.constants;
 
+import javax.print.DocFlavor;
+
 /**
  * @Author Mr.Liu
  * @Description //TODO
@@ -143,5 +145,14 @@ public class TopicConstants {
      */
     public static final String TAG_EVENT_CONSUMER_GROUP = "tag_event_consumer_group";
 
+    /**
+     * 更新状态
+     */
+    public static final String UPDATE_STATE = "update_state";
+
+    /**
+     * 更新状态
+     */
+    public static final String UPDATE_STATE_CONSUMER_GROUP = "update_state_consumer_group";
 
 }

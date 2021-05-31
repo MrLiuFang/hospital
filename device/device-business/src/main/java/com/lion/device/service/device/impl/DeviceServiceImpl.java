@@ -13,7 +13,7 @@ import com.lion.device.dao.tag.TagDao;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
 import com.lion.device.entity.enums.DeviceClassify;
-import com.lion.device.entity.enums.DeviceMonitorState;
+import com.lion.device.entity.enums.State;
 import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.service.device.DeviceService;
 import com.lion.device.entity.device.Device;
@@ -154,8 +154,8 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     }
 
     @Override
-    public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, DeviceMonitorState state, LionPage lionPage) {
-        Page<Device> page = deviceDao.deviceMonitorList(buildId, buildFloorId, state, lionPage);
+    public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceSate, LionPage lionPage) {
+        Page<Device> page = deviceDao.deviceMonitorList(buildId, buildFloorId, deviceSate, lionPage);
         List<ListDeviceMonitorVo> returnList = new ArrayList<>();
         List<Device> list = page.getContent();
         list.forEach(device -> {
@@ -170,7 +170,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
             vo.setDepartmentName("");
             vo.setImg(device.getImg());
             vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
-            vo.setMonitorState(device.getMonitorState());
+            vo.setState(device.getDeviceSate());
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());

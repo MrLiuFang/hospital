@@ -4,7 +4,7 @@ import com.lion.core.LionPage;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceClassify;
-import com.lion.device.entity.enums.DeviceMonitorState;
+import com.lion.device.entity.enums.State;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Query;
 
@@ -62,9 +62,9 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
      * 设备统计
      * @param buildId
      * @param buildFloorId
-     * @param state
+     * @param deviceSate
      * @param lionPage
      * @return
      */
-    public Page<Device> findByBuildIdAndBuildFloorIdAndMonitorState(Long buildId, Long buildFloorId, DeviceMonitorState state, LionPage lionPage);
+    public Page<Device> findByBuildIdAndBuildFloorIdAndDeviceSate(Long buildId, Long buildFloorId, State deviceSate, LionPage lionPage);
 }
