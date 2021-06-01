@@ -47,6 +47,10 @@
             <artifactId>mongodb-driver-core</artifactId>
 			<scope>provided</scope>
         </dependency>
-
+		<dependency>
+			<groupId>com.lion</groupId>
+			<artifactId>person-expose</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
     </dependencies>
 </project>

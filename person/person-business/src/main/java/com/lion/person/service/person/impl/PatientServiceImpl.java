@@ -1,5 +1,6 @@
 package com.lion.person.service.person.impl;
 
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -51,6 +52,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -62,6 +64,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @description:
@@ -119,6 +122,8 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @Autowired
     private PatientLogService patientLogService;
 
+    private RedisTemplate redisTemplate;
+
     @Override
     @Transactional
 //    @GlobalTransactional
@@ -136,6 +141,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             tagPatientExposeService.binding(patient.getId(),patient.getTagCode(),patient.getDepartmentId());
         }
         patientLogService.add("添加患者",patient.getId());
+        redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -188,6 +194,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         if (Objects.nonNull(patient.getAddress()) && !Objects.equals(oldPatient.getAddress(),patient.getAddress())) {
             patientLogService.add("修改地址",patient.getId());
         }
+        redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -199,6 +206,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
                 this.deleteById(deleteDto.getId());
                 restrictedAreaService.delete(deleteDto.getId());
                 tagPatientExposeService.unbinding(deleteDto.getId(),true);
+                redisTemplate.delete(RedisConstants.PATIENT+deleteDto.getId());
             });
         }
     }

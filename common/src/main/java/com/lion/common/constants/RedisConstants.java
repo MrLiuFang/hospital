@@ -179,6 +179,11 @@ public class RedisConstants {
     public static final String DEPARTMENT = "department_";
 
     /**
+     * 患者(key:patientId,value:patient)
+     */
+    public static final String PATIENT = "patient_";
+
+    /**
      * 资产(key:assetsId,value:assets)
      */
     public static final String ASSETS ="assets_";

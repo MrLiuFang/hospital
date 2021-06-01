@@ -30,6 +30,8 @@ import com.lion.manage.expose.rule.AlarmExposeService;
 import com.lion.manage.expose.rule.WashDeviceExposeService;
 import com.lion.manage.expose.rule.WashDeviceTypeExposeService;
 import com.lion.manage.expose.rule.WashExposeService;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.expose.person.PatientExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -98,6 +100,32 @@ public class RedisUtil {
 
     @DubboReference
     private WashDeviceTypeExposeService washDeviceTypeExposeService;
+
+    @DubboReference
+    private PatientExposeService patientExposeService;
+
+    public Patient getPatient(Long id){
+        if (Objects.isNull(id)){
+            return null;
+        }
+        Object object = redisTemplate.opsForValue().get(RedisConstants.PATIENT+id);
+        Patient patient = null;
+        if (Objects.nonNull(object)) {
+            if (!(object instanceof Patient)){
+                redisTemplate.delete(RedisConstants.PATIENT+id);
+            }else {
+                patient = (Patient) object;
+            }
+        }
+
+        if (Objects.isNull(patient)){
+            patient = patientExposeService.findById(id);
+            if (Objects.nonNull(patient)){
+                redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            }
+        }
+        return patient;
+    }
 
     public Department getDepartmentByUserId(Long userId) {
         if (Objects.isNull(userId)){

@@ -12,6 +12,8 @@ import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.service.DeviceService;
 import com.lion.event.service.UserWashService;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
 import lombok.extern.java.Log;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -72,6 +74,8 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             Device star = null;
             Tag tag = null;
             User user = null;
+            Patient patient = null;
+            TemporaryPerson temporaryPerson = null;
             if (Objects.nonNull(deviceDataDto.getMonitorId())) {
                 monitor = redisUtil.getDevice(deviceDataDto.getMonitorId());
             }
@@ -87,14 +91,11 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
 
             if (Objects.nonNull(user) && Objects.equals(deviceDataDto.getTagType(), Type.STAFF) ){ //如果根据标签查出员工，进行洗手事件处理
                 userWashService.userWashEevent(deviceDataDto,monitor,star,tag,user);
-            }
-//            else  if (Objects.isNull()) { //处理患者数据
-//
-//            }else  if (Objects.isNull()) { //处理流动人员数据
-//
-//            }
+            }else if (Objects.nonNull(patient)  ) { //处理患者数据
 
-            else if (Objects.nonNull(tag)
+            }else if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
+
+            }else if (Objects.nonNull(tag)
                     && (Objects.equals(deviceDataDto.getTagType(), Type.ASSET) || Objects.equals(deviceDataDto.getTagType(), Type.DEVICE) || Objects.equals(deviceDataDto.getTagType(), Type.HUMIDITY) || Objects.equals(deviceDataDto.getTagType(), Type.TEMPERATURE) )
                     && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
                 deviceService.deviceEevent(deviceDataDto,monitor,star,tag);

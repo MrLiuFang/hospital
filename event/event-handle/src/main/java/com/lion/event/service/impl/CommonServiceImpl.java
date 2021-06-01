@@ -10,6 +10,8 @@ import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.tag.Tag;
 import com.lion.event.service.CommonService;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,16 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void position(DeviceDataDto deviceDataDto, User user, Long regionId) throws JsonProcessingException {
         position(Type.STAFF,user.getId(), regionId,null,null,null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+    }
+
+    @Override
+    public void position(DeviceDataDto deviceDataDto, Patient patient, Long regionId) throws JsonProcessingException {
+        position(Type.PATIENT,patient.getId(), regionId,null,null,null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+    }
+
+    @Override
+    public void position(DeviceDataDto deviceDataDto, TemporaryPerson temporaryPerson, Long regionId) throws JsonProcessingException {
+        position(Type.MIGRANT,temporaryPerson.getId(), regionId,null,null,null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
     }
 
     @Override

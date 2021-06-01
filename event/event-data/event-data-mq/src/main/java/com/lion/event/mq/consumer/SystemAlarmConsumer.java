@@ -17,6 +17,7 @@ import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Alarm;
+import com.lion.person.entity.person.Patient;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
@@ -70,17 +71,16 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
             Boolean b = (Boolean) redisTemplate.opsForValue().get(RedisConstants.UNALARM+systemAlarmDto.getUuid());
             if (Objects.equals(b,true)){
                 log.info("系统内解除警告");
-//                systemAlarmService.unalarm(systemAlarmDto.getUuid(), null);
                 redisTemplate.delete(RedisConstants.UNALARM+systemAlarmDto.getUuid());
                 return;
             }
-            SystemAlarm systemAlarm = systemAlarmService.find(systemAlarmDto.getUuid());
-            if (Objects.nonNull(systemAlarm)) {
-                if (Objects.equals(true?1:0,systemAlarm.getUa())){
-                    log.info("系统内解除警告");
-                    return;
-                }
-            }
+//            SystemAlarm systemAlarm = systemAlarmService.find(systemAlarmDto.getUuid());
+//            if (Objects.nonNull(systemAlarm)) {
+//                if (Objects.equals(true?1:0,systemAlarm.getUa())){
+//                    log.info("系统内解除警告");
+//                    return;
+//                }
+//            }
             Duration duration = Duration.between(LocalDateTime.now(),systemAlarmDto.getDelayDateTime());
             if (systemAlarmDto.getDelayDateTime().isAfter(LocalDateTime.now()) && duration.toMillis()>1000 ){
                 againAlarm(systemAlarmDto);
@@ -166,8 +166,8 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
         }else if (Objects.equals(systemAlarmDto.getType(), Type.ASSET)){
             alarm = redisUtil.getAlarm(AlarmClassify.ASSETS,systemAlarmDto.getSystemAlarmType(),null);
         }else if (Objects.equals(systemAlarmDto.getType(), Type.PATIENT)){
-            // TODO: 2021/5/17 获取患者级别
-            alarm = redisUtil.getAlarm(AlarmClassify.PATIENT,systemAlarmDto.getSystemAlarmType(),null);
+            Patient patient = redisUtil.getPatient(systemAlarmDto.getPeopleId());
+            alarm = redisUtil.getAlarm(AlarmClassify.PATIENT,systemAlarmDto.getSystemAlarmType(),patient.getLevel());
         }
         else if (Objects.equals(systemAlarmDto.getType(), Type.DEVICE)){
             alarm = redisUtil.getAlarm(AlarmClassify.DEVICE,systemAlarmDto.getSystemAlarmType(),null);

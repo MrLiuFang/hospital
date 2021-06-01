@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.device.entity.tag.Tag;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
 
 /**
@@ -21,6 +23,10 @@ public interface CommonService {
      * @throws JsonProcessingException
      */
     public void position(DeviceDataDto deviceDataDto, User user, Long regionId) throws JsonProcessingException;
+
+    public void position(DeviceDataDto deviceDataDto, Patient patient, Long regionId) throws JsonProcessingException;
+
+    public void position(DeviceDataDto deviceDataDto, TemporaryPerson temporaryPerson, Long regionId) throws JsonProcessingException;
 
     /**
      * 记录位置
