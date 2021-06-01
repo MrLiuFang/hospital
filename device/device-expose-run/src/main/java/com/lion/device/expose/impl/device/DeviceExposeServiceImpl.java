@@ -4,6 +4,7 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.State;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.service.device.DeviceService;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -60,7 +61,12 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
 
     @Override
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime) {
-        deviceDao.update(id,dateTime);
+        deviceDao.updateLastDataTime(id,dateTime);
+    }
+
+    @Override
+    public void updateState(Long id, Integer state) {
+        deviceDao.updateState(id, State.instance(state));
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.lion.device.entity.enums.State;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -74,5 +75,11 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
     @Modifying
     @Transactional
     @Query(" update Device  set lastDataTime =:dateTime where id = :id ")
-    public void update(Long id, LocalDateTime dateTime);
+    public void updateLastDataTime(@Param("id")Long id, @Param("dateTime")LocalDateTime dateTime);
+
+    @Modifying
+    @Transactional
+    @Query(" update Device set deviceSate =:state where id = :id ")
+    public void updateState(@Param("id")Long id,@Param("state") State state);
+
 }

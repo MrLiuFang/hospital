@@ -135,14 +135,14 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                     systemAlarmDto.setCount(systemAlarmDto.getCount() + 1);
 
                     UpdateStateDto updateStateDto = new UpdateStateDto();
-                    updateStateDto.setType(Type.instance(systemAlarm.getTy()));
+                    updateStateDto.setType(systemAlarmDto.getType());
                     updateStateDto.setState(2);
                     if (Objects.equals(Type.STAFF,updateStateDto.getType()) || Objects.equals(Type.PATIENT,updateStateDto.getType()) || Objects.equals(Type.MIGRANT,updateStateDto.getType())) {
-                        updateStateDto.setId(systemAlarm.getPi());
+                        updateStateDto.setId(newSystemAlarm.getPi());
                     }else if (Objects.equals(Type.ASSET,updateStateDto.getType())) {
-                        updateStateDto.setId(systemAlarm.getAi());
+                        updateStateDto.setId(newSystemAlarm.getAi());
                     }else if (Objects.equals(Type.HUMIDITY,updateStateDto.getType()) || Objects.equals(Type.TEMPERATURE,updateStateDto.getType())) {
-                        updateStateDto.setId(systemAlarm.getTi());
+                        updateStateDto.setId(newSystemAlarm.getTi());
                     }
                     rocketMQTemplate.syncSend(TopicConstants.UPDATE_STATE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(updateStateDto)).build());
                 }

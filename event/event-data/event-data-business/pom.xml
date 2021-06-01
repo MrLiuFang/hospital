@@ -52,5 +52,10 @@
 			<groupId>org.apache.rocketmq</groupId>
 			<artifactId>rocketmq-spring-boot-starter</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.lion</groupId>
+			<artifactId>person-expose</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+		</dependency>
     </dependencies>
 </project>

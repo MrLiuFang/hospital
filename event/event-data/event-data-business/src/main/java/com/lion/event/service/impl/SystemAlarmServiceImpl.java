@@ -70,7 +70,6 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         if (Objects.nonNull(userId)) {
             User user = userExposeService.findById(userId);
             if (Objects.nonNull(user)) {
-                alarmDao.unalarm(uuid, id, userId, user.getName());
                 SystemAlarm exampleSystemAlarm = new SystemAlarm();
                 if (Objects.nonNull(uuid)) {
                     exampleSystemAlarm.setUi(uuid);
@@ -93,6 +92,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                     }else if (Objects.equals(Type.HUMIDITY,updateStateDto.getType()) || Objects.equals(Type.TEMPERATURE,updateStateDto.getType())) {
                         updateStateDto.setId(systemAlarm.getTi());
                     }
+                    alarmDao.unalarm(uuid, id, userId, user.getName());
                     rocketMQTemplate.syncSend(TopicConstants.UPDATE_STATE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(updateStateDto)).build());
                 }
             }

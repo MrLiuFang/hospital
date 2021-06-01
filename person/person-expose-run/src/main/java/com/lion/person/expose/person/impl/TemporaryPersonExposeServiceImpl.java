@@ -2,6 +2,7 @@ package com.lion.person.expose.person.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.person.dao.person.TemporaryPersonDao;
+import com.lion.person.entity.enums.State;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.TemporaryPersonExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -22,11 +23,11 @@ public class TemporaryPersonExposeServiceImpl extends BaseServiceImpl<TemporaryP
 
     @Override
     public void updateState(Long id, Integer state) {
-        temporaryPersonDao.update(id,state);
+        temporaryPersonDao.updateState(id, State.instance(state));
     }
 
     @Override
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime) {
-        temporaryPersonDao.update(id,dateTime);
+        temporaryPersonDao.updateLastDataTime(id,dateTime);
     }
 }

@@ -51,6 +51,13 @@ public interface DeviceExposeService extends BaseService<Device> {
      */
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime);
 
+    /**
+     * 修改状态
+     * @param id
+     * @param state
+     */
+    public void updateState(Long id,Integer state);
+
     public List<Long> allId();
 
 }

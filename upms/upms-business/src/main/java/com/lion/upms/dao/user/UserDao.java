@@ -1,10 +1,12 @@
 package com.lion.upms.dao.user;
 
 import com.lion.core.persistence.curd.BaseDao;
+import com.lion.upms.entity.enums.State;
 import com.lion.upms.entity.user.User;
 import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
@@ -61,12 +63,12 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
     @Modifying
     @Transactional
     @Query(" update User  set deviceSate =:state where id = :id ")
-    public void update(Long id,Integer state);
+    public void updateSate(@Param("id") Long id, @Param("state") State state);
 
     @Modifying
     @Transactional
     @Query(" update User  set lastDataTime =:dateTime where id = :id ")
-    public void update(Long id, LocalDateTime dateTime);
+    public void updateLastDataTime(@Param("id") Long id, @Param("dateTime") LocalDateTime dateTime);
 
     @Query( " select id from User " )
     public List<Long> findAllId();

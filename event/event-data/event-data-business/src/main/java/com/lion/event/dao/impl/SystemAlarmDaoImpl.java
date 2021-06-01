@@ -19,6 +19,10 @@ import com.lion.event.entity.vo.SystemAlarmVo;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.expose.assets.AssetsExposeService;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.TemporaryPerson;
+import com.lion.person.expose.person.PatientExposeService;
+import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.mongodb.BasicDBObject;
@@ -36,6 +40,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
+import sun.plugin.navig.motif.OJIPlugin;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -70,6 +75,12 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
 
     @DubboReference
     private DeviceExposeService deviceExposeService;
+
+    @DubboReference
+    private PatientExposeService patientExposeService;
+
+    @DubboReference
+    private TemporaryPersonExposeService temporaryPersonExposeService;
 
     @Override
     public void updateSdt(String uuid) {
@@ -230,12 +241,14 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             items.forEach(systemAlarm -> {
                 SystemAlarmVo vo = new SystemAlarmVo();
                 vo.setId(systemAlarm.get_id());
+                vo.setDeviceDateTime(systemAlarm.getDt());
+                vo.setSortDateTime(systemAlarm.getSdt());
                 if (Objects.nonNull(systemAlarm.getSat())) {
                     SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
                     vo.setAlarmContent(systemAlarmType.getDesc());
                     vo.setAlarmCode(systemAlarmType.getName());
                 }
-                if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.STAFF)) {
+                if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.STAFF.getKey())) {
                     if (Objects.nonNull(systemAlarm.getPi())) {
                         User user = userExposeService.findById(systemAlarm.getPi());
                         if (Objects.nonNull(user)) {
@@ -244,7 +257,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                             vo.setImgUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                         }
                     }
-                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.ASSET)) {
+                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.ASSET.getKey())) {
                     if (Objects.nonNull(systemAlarm.getAi())) {
                         Assets assets = assetsExposeService.findById(systemAlarm.getAi());
                         if (Objects.nonNull(assets)) {
@@ -253,18 +266,32 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                             vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
                         }
                     }
-                }else if (Objects.nonNull(systemAlarm.getTy()) &&( Objects.equals(systemAlarm.getTy(),Type.TEMPERATURE) ||Objects.equals(systemAlarm.getTy(),Type.HUMIDITY) )) {
+                }else if (Objects.nonNull(systemAlarm.getTy()) &&( Objects.equals(systemAlarm.getTy(),Type.TEMPERATURE.getKey()) ||Objects.equals(systemAlarm.getTy(),Type.HUMIDITY.getKey()) )) {
                     if (Objects.nonNull(systemAlarm.getTi())) {
                         Tag tag = tagExposeService.findById(systemAlarm.getTi());
                         if (Objects.nonNull(tag)) {
                             vo.setTitle(tag.getTagCode());
                         }
                     }
-                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.MIGRANT)) {
-
-                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.PATIENT)) {
-
-                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.DEVICE)) {
+                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.MIGRANT.getKey())) {
+                    if (Objects.nonNull(systemAlarm.getPi())) {
+                        Patient patient = patientExposeService.findById(systemAlarm.getPi());
+                        if (Objects.nonNull(patient)){
+                            vo.setTitle(patient.getName());
+                            vo.setImgId(patient.getHeadPortrait());
+                            vo.setImgUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
+                        }
+                    }
+                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.PATIENT.getKey())) {
+                    if (Objects.nonNull(systemAlarm.getPi())) {
+                        TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());
+                        if (Objects.nonNull(temporaryPerson)){
+                            vo.setTitle(temporaryPerson.getName());
+                            vo.setImgId(temporaryPerson.getHeadPortrait());
+                            vo.setImgUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
+                        }
+                    }
+                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.DEVICE.getKey())) {
                     if (Objects.nonNull(systemAlarm.getDvi())) {
                         Device device = deviceExposeService.findById(systemAlarm.getDvi());
                         if (Objects.nonNull(device)) {

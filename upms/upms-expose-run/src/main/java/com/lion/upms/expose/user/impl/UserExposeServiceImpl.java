@@ -1,12 +1,12 @@
 package com.lion.upms.expose.user.impl;
 
 import com.lion.constant.SearchConstant;
-import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.upms.dao.user.UserDao;
+import com.lion.upms.entity.enums.State;
 import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
@@ -15,7 +15,6 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -90,7 +89,7 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
 
     @Override
     public void updateState(Long id, Integer state) {
-        userDao.update(id,state);
+        userDao.updateSate(id, State.instance(state));
     }
 
     @Override
@@ -100,7 +99,7 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
 
     @Override
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime) {
-        userDao.update(id,dateTime);
+        userDao.updateLastDataTime(id,dateTime);
     }
 
 }

@@ -3,6 +3,7 @@ package com.lion.manage.expose.assets.impl;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.assets.AssetsDao;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.enums.State;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.service.assets.AssetsService;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -67,12 +68,12 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
 
     @Override
     public void updateState(Long id, Integer state) {
-        assetsDao.update(id,state);
+        assetsDao.updateSate(id, State.instance(state));
     }
 
     @Override
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime) {
-        assetsDao.update(id,dateTime);
+        assetsDao.updateLastDataTime(id,dateTime);
     }
 
 

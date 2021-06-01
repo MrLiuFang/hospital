@@ -3,8 +3,10 @@ package com.lion.manage.dao.assets;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.enums.State;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -70,11 +72,11 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
     @Modifying
     @Query(" update Assets  set deviceSate =:state where id = :id ")
     @Transactional
-    public void update(Long id,Integer state);
+    public void updateSate(@Param("id")Long id, @Param("state") State state);
 
     @Modifying
     @Transactional
     @Query(" update Assets  set lastDataTime =:dateTime where id = :id ")
-    public void update(Long id, LocalDateTime dateTime);
+    public void updateLastDataTime(@Param("id")Long id, @Param("dateTime")LocalDateTime dateTime);
 
 }

@@ -3,6 +3,7 @@ package com.lion.device.expose.impl.tag;
 import com.lion.common.constants.RedisConstants;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagDao;
+import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
@@ -14,7 +15,6 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -81,12 +81,12 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
 
     @Override
     public void updateState(Long id, Integer state) {
-        tagDao.update(id,state);
+        tagDao.updateState(id, State.instance(state));
     }
 
     @Override
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime) {
-        tagDao.update(id,dateTime);
+        tagDao.updateLastDataTime(id,dateTime);
     }
 
     @Override

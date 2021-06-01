@@ -90,6 +90,12 @@ public class UpdateStateConsumer implements RocketMQListener<MessageExt> {
                 }
                 assetsExposeService.updateState(updateStateDto.getId(),updateStateDto.getState());
             }
+            else if (Objects.equals(updateStateDto.getType(), Type.DEVICE)){
+                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(null,updateStateDto.getId(),null,null)){
+                    return;
+                }
+                deviceExposeService.updateState(updateStateDto.getId(),updateStateDto.getState());
+            }
         }catch (Exception e){
             e.printStackTrace();
         }
