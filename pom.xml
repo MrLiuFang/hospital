@@ -20,6 +20,7 @@
 		<module>event</module>
 		<module>common</module>
 		<module>person</module>
+		<module>job</module>
     </modules>
 
 	<dependencyManagement>

@@ -18,4 +18,6 @@ public interface TempLeaveDao extends BaseDao<TempLeave> {
      * @return
      */
     public TempLeave findFirstByPatientIdOrderByCreateDateTimeDesc(Long patientId);
+
+
 }

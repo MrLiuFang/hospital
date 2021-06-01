@@ -7,6 +7,7 @@ import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -63,5 +64,18 @@ public interface UserExposeService extends BaseService<User> {
      * @param state
      */
     public void updateState(Long id,Integer state);
+
+    /**
+     * 获取所有id
+     * @return
+     */
+    public List<Long> allId();
+
+    /**
+     * 更新设备数据上传时间
+     * @param id
+     * @param dateTime
+     */
+    public void updateDeviceDataTime(Long id, LocalDateTime dateTime);
 
 }

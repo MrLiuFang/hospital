@@ -9,6 +9,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -67,6 +68,11 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
     @Override
     public void updateState(Long id, Integer state) {
         assetsDao.update(id,state);
+    }
+
+    @Override
+    public void updateDeviceDataTime(Long id, LocalDateTime dateTime) {
+        assetsDao.update(id,dateTime);
     }
 
 

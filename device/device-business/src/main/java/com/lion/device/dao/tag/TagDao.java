@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -91,6 +92,11 @@ public interface TagDao extends BaseDao<Tag> {
 
     @Modifying
     @Transactional
-    @Query(" update User  set deviceSate =:state where id = :id ")
+    @Query(" update Tag set deviceSate =:state where id = :id ")
     public void update(Long id,Integer state);
+
+    @Modifying
+    @Transactional
+    @Query(" update Tag  set lastDataTime =:dateTime where id = :id ")
+    public void update(Long id, LocalDateTime dateTime);
 }

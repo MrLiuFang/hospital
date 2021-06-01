@@ -5,6 +5,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.device.Device;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -42,5 +43,14 @@ public interface DeviceExposeService extends BaseService<Device> {
      * @return
      */
     public Integer countDevice(List<Long> deviceGroupIds, Integer battery);
+
+    /**
+     * 更新设备数据上传时间
+     * @param id
+     * @param dateTime
+     */
+    public void updateDeviceDataTime(Long id, LocalDateTime dateTime);
+
+    public List<Long> allId();
 
 }

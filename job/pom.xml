@@ -5,10 +5,10 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.lion</groupId>
-		<artifactId>event</artifactId>
+		<artifactId>hospital</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
-	<artifactId>event-data-mq</artifactId>
+	<artifactId>job</artifactId>
 	<packaging>jar</packaging>
 
 	<dependencies>
@@ -17,21 +17,12 @@
 			<artifactId>lion-restful-starter</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.apache.rocketmq</groupId>
-			<artifactId>rocketmq-spring-boot-starter</artifactId>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-redis</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-pool2</artifactId>
-		</dependency>
-        <dependency>
-            <groupId>com.lion</groupId>
-            <artifactId>common</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
 		<dependency>
 			<groupId>com.lion</groupId>
-			<artifactId>device-expose</artifactId>
+			<artifactId>upms-expose</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>
@@ -41,22 +32,24 @@
 		</dependency>
 		<dependency>
 			<groupId>com.lion</groupId>
-			<artifactId>event-data-business</artifactId>
+			<artifactId>device-expose</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 		</dependency>
-        <dependency>
-            <groupId>com.lion</groupId>
-            <artifactId>person-expose</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.lion</groupId>
+			<artifactId>common</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>compile</scope>
+		</dependency>
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
+
 				</configuration>
 			</plugin>
 		</plugins>

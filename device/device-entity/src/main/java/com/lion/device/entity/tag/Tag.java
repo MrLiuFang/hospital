@@ -18,6 +18,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * @author Mr.Liu
@@ -97,5 +98,9 @@ public class Tag extends BaseEntity {
     @Column(name = "device_sate")
     @Convert(converter = com.lion.device.entity.enums.State.StateConverter.class)
     private com.lion.device.entity.enums.State deviceSate = State.NORMAL;
+
+    @ApiModelProperty(value = "最后的设备数据时间")
+    @Column(name = "last_data_time")
+    private LocalDateTime lastDataTime;
 
 }

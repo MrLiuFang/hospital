@@ -19,6 +19,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author Mr.Liu
@@ -100,4 +101,8 @@ public class Device extends BaseEntity {
     @Column(name = "device_sate")
     @Convert(converter = State.StateConverter.class)
     private State deviceSate = State.NORMAL;
+
+    @ApiModelProperty(value = "最后的设备数据时间")
+    @Column(name = "last_data_time")
+    private LocalDateTime lastDataTime;
 }

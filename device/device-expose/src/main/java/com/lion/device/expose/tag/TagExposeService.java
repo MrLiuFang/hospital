@@ -4,6 +4,7 @@ import com.lion.core.service.BaseService;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -74,5 +75,14 @@ public interface TagExposeService extends BaseService<Tag> {
      * @param state
      */
     public void updateState(Long id,Integer state);
+
+    /**
+     * 更新设备数据上传时间
+     * @param id
+     * @param dateTime
+     */
+    public void updateDeviceDataTime(Long id, LocalDateTime dateTime);
+
+    public List<Long> allId();
 
 }

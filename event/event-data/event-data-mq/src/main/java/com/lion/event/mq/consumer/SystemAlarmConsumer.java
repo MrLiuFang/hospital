@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.SystemAlarmDto;
+import com.lion.common.dto.UpdateStateDto;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.MessageDelayUtil;
 import com.lion.common.utils.RedisUtil;
@@ -69,7 +70,7 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
             Boolean b = (Boolean) redisTemplate.opsForValue().get(RedisConstants.UNALARM+systemAlarmDto.getUuid());
             if (Objects.equals(b,true)){
                 log.info("系统内解除警告");
-                systemAlarmService.unalarm(systemAlarmDto.getUuid(), null);
+//                systemAlarmService.unalarm(systemAlarmDto.getUuid(), null);
                 redisTemplate.delete(RedisConstants.UNALARM+systemAlarmDto.getUuid());
                 return;
             }
@@ -132,6 +133,18 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                     }
                     systemAlarmService.save(newSystemAlarm);
                     systemAlarmDto.setCount(systemAlarmDto.getCount() + 1);
+
+                    UpdateStateDto updateStateDto = new UpdateStateDto();
+                    updateStateDto.setType(Type.instance(systemAlarm.getTy()));
+                    updateStateDto.setState(2);
+                    if (Objects.equals(Type.STAFF,updateStateDto.getType()) || Objects.equals(Type.PATIENT,updateStateDto.getType()) || Objects.equals(Type.MIGRANT,updateStateDto.getType())) {
+                        updateStateDto.setId(systemAlarm.getPi());
+                    }else if (Objects.equals(Type.ASSET,updateStateDto.getType())) {
+                        updateStateDto.setId(systemAlarm.getAi());
+                    }else if (Objects.equals(Type.HUMIDITY,updateStateDto.getType()) || Objects.equals(Type.TEMPERATURE,updateStateDto.getType())) {
+                        updateStateDto.setId(systemAlarm.getTi());
+                    }
+                    rocketMQTemplate.syncSend(TopicConstants.UPDATE_STATE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(updateStateDto)).build());
                 }
                 if (Objects.nonNull(alarm) && Objects.equals(true, alarm.getAgain())) {
                     systemAlarmDto.setDelayDateTime(LocalDateTime.now().plusMinutes(alarm.getInterval()));

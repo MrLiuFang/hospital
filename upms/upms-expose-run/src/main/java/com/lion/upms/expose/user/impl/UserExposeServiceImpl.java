@@ -18,6 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -91,4 +92,15 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
     public void updateState(Long id, Integer state) {
         userDao.update(id,state);
     }
+
+    @Override
+    public List<Long> allId() {
+        return userDao.findAllId();
+    }
+
+    @Override
+    public void updateDeviceDataTime(Long id, LocalDateTime dateTime) {
+        userDao.update(id,dateTime);
+    }
+
 }

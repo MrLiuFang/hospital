@@ -15,8 +15,7 @@ import java.util.Objects;
 public enum State implements IEnum {
 
     NORMAL(1, "正常"),
-    ALARM(2, "警报"),
-    OFFLINE(3,"离线");
+    ALARM(2, "警报");
 
     private final int key;
 

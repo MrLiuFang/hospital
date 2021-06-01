@@ -8,6 +8,7 @@ import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.entity.vo.SystemAlarmVo;
 
+import javax.xml.crypto.KeySelector;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +40,7 @@ public interface SystemAlarmService {
      * @param uuid
      * @param id
      */
-    void unalarm(String uuid,String id);
+    void unalarm(String uuid,String id) throws JsonProcessingException;
 
     /**
      * 添加汇报
@@ -88,4 +89,14 @@ public interface SystemAlarmService {
      * @return
      */
     public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    /**
+     * 查询未处理的告警
+     * @param pi
+     * @param ai
+     * @param dvi
+     * @param ti
+     * @return
+     */
+    public SystemAlarm findOne(Long pi, Long ai, Long dvi,Long ti);
 }

@@ -10,6 +10,7 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -55,5 +56,15 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     @Override
     public Integer countDevice(List<Long> deviceGroupIds, Integer battery) {
         return deviceDao.countDevice(deviceGroupIds, battery);
+    }
+
+    @Override
+    public void updateDeviceDataTime(Long id, LocalDateTime dateTime) {
+        deviceDao.update(id,dateTime);
+    }
+
+    @Override
+    public List<Long> allId() {
+        return deviceDao.allId();
     }
 }

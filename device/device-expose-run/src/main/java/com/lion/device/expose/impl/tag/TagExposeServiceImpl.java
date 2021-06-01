@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -81,5 +82,15 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     @Override
     public void updateState(Long id, Integer state) {
         tagDao.update(id,state);
+    }
+
+    @Override
+    public void updateDeviceDataTime(Long id, LocalDateTime dateTime) {
+        tagDao.update(id,dateTime);
+    }
+
+    @Override
+    public List<Long> allId() {
+        return tagDao.allId();
     }
 }

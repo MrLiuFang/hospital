@@ -136,7 +136,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @PutMapping("/unalarm")
     @ApiOperation(value = "警告知熟(处理警告)")
-    public IResultData unalarm(@RequestBody UnalarmDto unalarmDto) {
+    public IResultData unalarm(@RequestBody UnalarmDto unalarmDto) throws JsonProcessingException {
         systemAlarmService.unalarm(unalarmDto.getUuid(),unalarmDto.getId());
         return ResultData.instance();
     }

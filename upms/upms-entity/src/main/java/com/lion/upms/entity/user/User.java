@@ -22,6 +22,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @author Mr.Liu
@@ -129,5 +130,10 @@ public class User extends BaseEntity {
     @Column(name = "device_sate")
     @Convert(converter = State.StateConverter.class)
     private State deviceSate = State.NORMAL;
+
+    @ApiModelProperty(value = "最后的设备数据时间")
+    @Column(name = "last_data_time")
+    private LocalDateTime lastDataTime;
+
 
 }

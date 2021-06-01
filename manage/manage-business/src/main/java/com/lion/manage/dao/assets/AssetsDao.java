@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -70,5 +71,10 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
     @Query(" update Assets  set deviceSate =:state where id = :id ")
     @Transactional
     public void update(Long id,Integer state);
+
+    @Modifying
+    @Transactional
+    @Query(" update Assets  set lastDataTime =:dateTime where id = :id ")
+    public void update(Long id, LocalDateTime dateTime);
 
 }

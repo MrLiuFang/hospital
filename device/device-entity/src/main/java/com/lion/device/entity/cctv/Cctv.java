@@ -14,6 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 
 /**
  * @author Mr.Liu
@@ -78,4 +79,8 @@ public class Cctv extends BaseEntity {
     @Column(name = "device_sate")
     @Convert(converter = State.StateConverter.class)
     private State deviceSate = State.NORMAL;
+
+    @ApiModelProperty(value = "最后的设备数据时间")
+    @Column(name = "last_data_time")
+    private LocalDateTime lastDataTime;
 }

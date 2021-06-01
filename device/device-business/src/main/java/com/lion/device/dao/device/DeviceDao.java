@@ -6,8 +6,11 @@ import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.State;
 import org.springframework.data.domain.Page;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -67,4 +70,9 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
      * @return
      */
     public Page<Device> findByBuildIdAndBuildFloorIdAndDeviceSate(Long buildId, Long buildFloorId, State deviceSate, LionPage lionPage);
+
+    @Modifying
+    @Transactional
+    @Query(" update Device  set lastDataTime =:dateTime where id = :id ")
+    public void update(Long id, LocalDateTime dateTime);
 }

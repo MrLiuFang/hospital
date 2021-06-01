@@ -3,6 +3,7 @@ package com.lion.manage.expose.assets;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.Assets;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -69,4 +70,11 @@ public interface AssetsExposeService extends BaseService<Assets> {
      * @param state
      */
     public void updateState(Long id,Integer state);
+
+    /**
+     * 更新设备数据上传时间
+     * @param id
+     * @param dateTime
+     */
+    public void updateDeviceDataTime(Long id, LocalDateTime dateTime);
 }

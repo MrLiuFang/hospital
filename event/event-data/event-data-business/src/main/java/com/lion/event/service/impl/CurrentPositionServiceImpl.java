@@ -32,9 +32,11 @@ public class CurrentPositionServiceImpl implements CurrentPositionService {
         CurrentPosition exampleCurrentPosition = new CurrentPosition();
         if (Objects.nonNull(position.getPi())) {
             exampleCurrentPosition.setPi(position.getPi());
-        }else if (Objects.nonNull(position.getAdi())) {
+        }
+        if (Objects.nonNull(position.getAdi())) {
             exampleCurrentPosition.setAdi(position.getAdi());
-        }else if (Objects.nonNull(position.getTi())) {
+        }
+        if (Objects.nonNull(position.getTi())) {
             exampleCurrentPosition.setTi(position.getTi());
         }
         Example<CurrentPosition> example = Example.of(exampleCurrentPosition);

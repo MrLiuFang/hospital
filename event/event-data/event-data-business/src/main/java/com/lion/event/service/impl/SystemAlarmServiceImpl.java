@@ -4,10 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.SystemAlarmDto;
+import com.lion.common.dto.UpdateStateDto;
 import com.lion.common.enums.Type;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.dao.SystemAlarmDao;
+import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
@@ -20,14 +22,12 @@ import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @Author Mr.Liu
@@ -65,12 +65,36 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     }
 
     @Override
-    public void unalarm(String uuid, String id) {
+    public void unalarm(String uuid, String id) throws JsonProcessingException {
         Long userId = CurrentUserUtil.getCurrentUserId();
         if (Objects.nonNull(userId)) {
             User user = userExposeService.findById(userId);
             if (Objects.nonNull(user)) {
                 alarmDao.unalarm(uuid, id, userId, user.getName());
+                SystemAlarm exampleSystemAlarm = new SystemAlarm();
+                if (Objects.nonNull(uuid)) {
+                    exampleSystemAlarm.setUi(uuid);
+                }
+                if (Objects.nonNull(id)) {
+                    exampleSystemAlarm.set_id(id);
+                }
+                exampleSystemAlarm.setUa(false);
+                Example<SystemAlarm> example = Example.of(exampleSystemAlarm);
+                Optional<SystemAlarm> optional = alarmDao.findOne(example);
+                if (optional.isPresent()) {
+                    SystemAlarm systemAlarm = optional.get();
+                    UpdateStateDto updateStateDto = new UpdateStateDto();
+                    updateStateDto.setType(Type.instance(systemAlarm.getTy()));
+                    updateStateDto.setState(1);
+                    if (Objects.equals(Type.STAFF,updateStateDto.getType()) || Objects.equals(Type.PATIENT,updateStateDto.getType()) || Objects.equals(Type.MIGRANT,updateStateDto.getType())) {
+                        updateStateDto.setId(systemAlarm.getPi());
+                    }else if (Objects.equals(Type.ASSET,updateStateDto.getType())) {
+                        updateStateDto.setId(systemAlarm.getAi());
+                    }else if (Objects.equals(Type.HUMIDITY,updateStateDto.getType()) || Objects.equals(Type.TEMPERATURE,updateStateDto.getType())) {
+                        updateStateDto.setId(systemAlarm.getTi());
+                    }
+                    rocketMQTemplate.syncSend(TopicConstants.UPDATE_STATE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(updateStateDto)).build());
+                }
             }
         }
     }
@@ -132,5 +156,29 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     @Override
     public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return alarmDao.list(lionPage,departmentIds,ua,startDateTime,endDateTime);
+    }
+
+    @Override
+    public SystemAlarm findOne(Long pi, Long ai, Long dvi, Long ti) {
+        SystemAlarm exampleSystemAlarm = new SystemAlarm();
+        if (Objects.nonNull(pi)) {
+            exampleSystemAlarm.setPi(pi);
+        }
+        if (Objects.nonNull(ai)) {
+            exampleSystemAlarm.setAi(ai);
+        }
+        if (Objects.nonNull(dvi)) {
+            exampleSystemAlarm.setDvi(dvi);
+        }
+        if (Objects.nonNull(ti)) {
+            exampleSystemAlarm.setTi(ti);
+        }
+        exampleSystemAlarm.setUa(false);
+        Example<SystemAlarm> example = Example.of(exampleSystemAlarm);
+        Optional<SystemAlarm> optional = alarmDao.findOne(example);
+        if (optional.isPresent()){
+            return optional.get();
+        }
+        return null;
     }
 }
