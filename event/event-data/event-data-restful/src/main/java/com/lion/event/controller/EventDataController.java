@@ -14,6 +14,8 @@ import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.DeviceData;
 import com.lion.event.entity.WashRecord;
 import com.lion.event.entity.dto.AlarmReportDto;
+import com.lion.event.entity.dto.OldAlarmToNewAlarm;
+import com.lion.event.entity.dto.UnalarmDto;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
 import com.lion.manage.entity.build.Build;
@@ -40,9 +42,8 @@ import java.util.Objects;
  * @Date 2021/5/5 上午10:19
  **/
 @RestController
-@RequestMapping()
 @Validated
-@Api(tags = {"事件数据(工作台/地图监控)"})
+@Api(tags = {"地图监控"})
 public class EventDataController extends BaseControllerImpl implements BaseController {
 
     @Autowired
@@ -134,18 +135,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     }
 
     @PutMapping("/unalarm")
-    @ApiImplicitParams({@ApiImplicitParam(value = "id",name="id")})
     @ApiOperation(value = "警告知熟(处理警告)")
-    public IResultData unalarm(@RequestBody Map<String,String> map) {
-        String id = null;
-        String uuid=null;
-        if (map.containsKey("uuid")) {
-            uuid =map.get("uuid");
-        }
-        if (map.containsKey("id")) {
-            id =map.get("id");
-        }
-        systemAlarmService.unalarm(uuid,id);
+    public IResultData unalarm(@RequestBody UnalarmDto unalarmDto) {
+        systemAlarmService.unalarm(unalarmDto.getUuid(),unalarmDto.getId());
         return ResultData.instance();
     }
 
@@ -157,14 +149,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     }
 
     @PutMapping("/oldAlarm/to/new")
-    @ApiImplicitParams({@ApiImplicitParam(value = "id",name="id")})
     @ApiOperation(value = "历史警告添加为新的警告")
-    public IResultData oldAlarmToNewAlarm(@RequestBody Map<String,String> map) throws JsonProcessingException {
-        String id = null;
-        if (map.containsKey("id")) {
-            id =map.get("id");
-        }
-        systemAlarmService.oldAlarmToNewAlarm(id);
+    public IResultData oldAlarmToNewAlarm(@RequestBody OldAlarmToNewAlarm oldAlarmToNewAlarm) throws JsonProcessingException {
+        systemAlarmService.oldAlarmToNewAlarm(oldAlarmToNewAlarm.getId());
         return ResultData.instance();
     }
 

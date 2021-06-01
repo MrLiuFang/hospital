@@ -68,4 +68,11 @@ public interface TagExposeService extends BaseService<Tag> {
      */
     public Integer countTag(Long departmentId, TagPurpose purpose);
 
+    /**
+     * 修改状态
+     * @param id
+     * @param state
+     */
+    public void updateState(Long id,Integer state);
+
 }

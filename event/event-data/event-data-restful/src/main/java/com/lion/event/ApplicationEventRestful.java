@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import springfox.documentation.oas.annotations.EnableOpenApi;
 
 @SpringBootApplication (scanBasePackages = "com.lion.**",exclude = {DataSourceAutoConfiguration.class,
         DataSourceTransactionManagerAutoConfiguration.class,
@@ -15,6 +16,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
         HibernateJpaAutoConfiguration.class})
 @EnableDiscoveryClient
 @DubboComponentScan(basePackages = {"com.lion.**"})
+@EnableOpenApi
 public class ApplicationEventRestful {
 
     public static void main ( String args[] ) throws Exception {

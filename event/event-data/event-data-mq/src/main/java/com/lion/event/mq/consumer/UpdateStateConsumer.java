@@ -54,7 +54,7 @@ public class UpdateStateConsumer implements RocketMQListener<MessageExt> {
             if (Objects.equals(updateStateDto.getType(), Type.STAFF)){
                 userExposeService.updateState(updateStateDto.getId(),updateStateDto.getState());
             }else if (Objects.equals(updateStateDto.getType(), Type.TEMPERATURE) || Objects.equals(updateStateDto.getType(), Type.HUMIDITY)){
-
+                tagExposeService.updateState(updateStateDto.getId(),updateStateDto.getState());
             }else if (Objects.equals(updateStateDto.getType(), Type.PATIENT)){
 
             }else if (Objects.equals(updateStateDto.getType(), Type.MIGRANT)){
