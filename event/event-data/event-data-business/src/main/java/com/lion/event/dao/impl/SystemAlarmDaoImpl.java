@@ -273,7 +273,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                             vo.setTitle(tag.getTagCode());
                         }
                     }
-                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.MIGRANT.getKey())) {
+                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.PATIENT.getKey())) {
                     if (Objects.nonNull(systemAlarm.getPi())) {
                         Patient patient = patientExposeService.findById(systemAlarm.getPi());
                         if (Objects.nonNull(patient)){
@@ -282,7 +282,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                             vo.setImgUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
                         }
                     }
-                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.PATIENT.getKey())) {
+                }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.MIGRANT.getKey())) {
                     if (Objects.nonNull(systemAlarm.getPi())) {
                         TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());
                         if (Objects.nonNull(temporaryPerson)){
