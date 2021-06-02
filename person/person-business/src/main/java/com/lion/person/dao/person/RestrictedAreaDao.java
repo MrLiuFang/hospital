@@ -1,6 +1,7 @@
 package com.lion.person.dao.person;
 
 import com.lion.core.persistence.curd.BaseDao;
+import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.person.RestrictedArea;
 
 import java.util.List;
@@ -22,7 +23,8 @@ public interface RestrictedAreaDao extends BaseDao<RestrictedArea> {
     /**
      * 查询人员限制区域
      * @param personId
+     * @param type
      * @return
      */
-    public List<RestrictedArea> findByPersonId(Long personId);
+    public List<RestrictedArea> findByPersonIdAndType(Long personId, PersonType type);
 }

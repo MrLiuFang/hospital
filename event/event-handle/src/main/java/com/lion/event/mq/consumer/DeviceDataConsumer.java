@@ -11,6 +11,7 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.service.DeviceService;
+import com.lion.event.service.PatientService;
 import com.lion.event.service.UserWashService;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
@@ -63,6 +64,9 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private DeviceService deviceService;
 
+    @Autowired
+    private PatientService patientService;
+
     @Override
     public void onMessage(MessageExt messageExt) {
         try {
@@ -97,7 +101,7 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             if (Objects.nonNull(user) && Objects.equals(deviceDataDto.getTagType(), Type.STAFF) ){ //如果根据标签查出员工，进行洗手事件处理
                 userWashService.userWashEevent(deviceDataDto,monitor,star,tag,user);
             }else if (Objects.nonNull(patient)  ) { //处理患者数据
-
+                patientService.patientEvent(deviceDataDto,monitor,star,tag,patient);
             }else if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
 
             }else if (Objects.nonNull(tag)

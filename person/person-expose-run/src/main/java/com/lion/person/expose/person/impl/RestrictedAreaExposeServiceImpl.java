@@ -2,6 +2,7 @@ package com.lion.person.expose.person.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.person.dao.person.RestrictedAreaDao;
+import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.person.RestrictedArea;
 import com.lion.person.expose.person.RestrictedAreaExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
@@ -21,7 +22,7 @@ public class RestrictedAreaExposeServiceImpl extends BaseServiceImpl<RestrictedA
     private RestrictedAreaDao restrictedAreaDao;
 
     @Override
-    public List<RestrictedArea> find(Long personId) {
-        return restrictedAreaDao.findByPersonId(personId);
+    public List<RestrictedArea> find(Long personId, PersonType type) {
+        return restrictedAreaDao.findByPersonIdAndType(personId, type);
     }
 }

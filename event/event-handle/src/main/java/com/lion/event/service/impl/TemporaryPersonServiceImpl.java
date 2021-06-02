@@ -10,18 +10,12 @@ import com.lion.common.enums.Type;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.tag.Tag;
 import com.lion.event.service.CommonService;
-import com.lion.event.service.PatientService;
+import com.lion.event.service.TemporaryPersonService;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.person.entity.enums.PersonType;
-import com.lion.person.entity.enums.TransferState;
-import com.lion.person.entity.person.Patient;
-import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.RestrictedArea;
-import com.lion.person.entity.person.TempLeave;
-import com.lion.person.expose.person.PatientExposeService;
-import com.lion.person.expose.person.PatientTransferExposeService;
+import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.RestrictedAreaExposeService;
-import com.lion.person.expose.person.TempLeaveExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,19 +30,13 @@ import java.util.UUID;
 /**
  * @description:
  * @author: Mr.Liu
- * @time: 2021/6/2 上午11:34
+ * @time: 2021/6/2 下午2:59
  */
 @Service
-public class PatientServiceImpl implements PatientService {
+public class TemporaryPersonServiceImpl implements TemporaryPersonService {
 
-    @DubboReference
-    private PatientExposeService patientExposeService;
-
-    @DubboReference
-    private PatientTransferExposeService patientTransferExposeService;
-
-    @DubboReference
-    private TempLeaveExposeService tempLeaveExposeService;
+    @Autowired
+    private CommonService commonService;
 
     @DubboReference
     private RestrictedAreaExposeService restrictedAreaExposeService;
@@ -59,16 +47,11 @@ public class PatientServiceImpl implements PatientService {
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
 
-    @Autowired
-    private CommonService commonService;
-
     @Override
-    public void patientEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient) throws JsonProcessingException {
+    public void TemporaryPersonEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, TemporaryPerson temporaryPerson) throws JsonProcessingException {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
-        commonService.position(deviceDataDto,patient,currentRegionDto.getRegionId());
-        PatientTransfer patientTransfer = patientTransferExposeService.find(patient.getId());
-        List<TempLeave> tempLeaves =tempLeaveExposeService.find(patient.getId());
-        List<RestrictedArea> restrictedAreas = restrictedAreaExposeService.find(patient.getId(), PersonType.PATIENT );
+        commonService.position(deviceDataDto,temporaryPerson,currentRegionDto.getRegionId());
+        List<RestrictedArea> restrictedAreas = restrictedAreaExposeService.find(temporaryPerson.getId(), PersonType.TEMPORARY_PERSON);
         Boolean isLeaveRestrictedArea = true;
         if (Objects.nonNull(restrictedAreas) && restrictedAreas.size()<=0){
             return;
@@ -78,33 +61,17 @@ public class PatientServiceImpl implements PatientService {
                 isLeaveRestrictedArea = false;
             }
         }
-        if (Objects.nonNull(patientTransfer) && isLeaveRestrictedArea){
-            patientTransferExposeService.updateSate(patient.getId(), TransferState.TRANSFERRING);
-            return;
-        }
-
-        if (Objects.nonNull(tempLeaves) && tempLeaves.size()>0 && isLeaveRestrictedArea) {
-            for (TempLeave tempLeave :tempLeaves) {
-                LocalDateTime now = LocalDateTime.now();
-                if ( now.isAfter(tempLeave.getStartDateTime()) && now.isBefore(tempLeave.getEndDateTime()) ){
-                    return;
-                }
-            }
-        }
 
         if (isLeaveRestrictedArea){
             SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
             systemAlarmDto.setDateTime(LocalDateTime.now());
-            systemAlarmDto.setType(Type.PATIENT);
-            systemAlarmDto.setPeopleId(patient.getId());
+            systemAlarmDto.setType(Type.MIGRANT);
+            systemAlarmDto.setPeopleId(temporaryPerson.getId());
             systemAlarmDto.setSystemAlarmType(SystemAlarmType.CCXDFW);
             systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
             systemAlarmDto.setUuid(UUID.randomUUID().toString());
             systemAlarmDto.setRegionId(currentRegionDto.getRegionId());
             rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
         }
-
     }
-
-
 }

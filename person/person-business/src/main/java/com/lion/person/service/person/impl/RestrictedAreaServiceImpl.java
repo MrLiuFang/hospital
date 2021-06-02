@@ -47,7 +47,7 @@ public class RestrictedAreaServiceImpl extends BaseServiceImpl<RestrictedArea> i
     }
 
     @Override
-    public List<RestrictedArea> find(Long personId) {
-        return restrictedAreaDao.findByPersonId(personId);
+    public List<RestrictedArea> find(Long personId, PersonType type) {
+        return restrictedAreaDao.findByPersonIdAndType(personId, type);
     }
 }

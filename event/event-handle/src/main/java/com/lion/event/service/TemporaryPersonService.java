@@ -4,22 +4,22 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.tag.Tag;
-import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.TemporaryPerson;
 
 /**
  * @description:
  * @author: Mr.Liu
- * @time: 2021/6/2 上午11:34
+ * @time: 2021/6/2 下午2:59
  */
-public interface PatientService {
+public interface TemporaryPersonService {
 
     /**
-     * 处理患者事件
+     * 流动人员事件处理
      * @param deviceDataDto
      * @param monitor
      * @param star
      * @param tag
-     * @param patient
+     * @param temporaryPerson
      */
-    public void patientEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient) throws JsonProcessingException;
+    public void  TemporaryPersonEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, TemporaryPerson temporaryPerson) throws JsonProcessingException;
 }

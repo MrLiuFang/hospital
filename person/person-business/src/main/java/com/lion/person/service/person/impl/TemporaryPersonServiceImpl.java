@@ -9,7 +9,6 @@ import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
-import com.lion.device.expose.tag.TagPatientExposeService;
 import com.lion.device.expose.tag.TagPostdocsExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.build.Build;
@@ -27,15 +26,11 @@ import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.entity.person.dto.AddTemporaryPersonDto;
 import com.lion.person.entity.person.dto.TemporaryPersonLeaveDto;
 import com.lion.person.entity.person.dto.UpdateTemporaryPersonDto;
-import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.ListTemporaryPersonVo;
-import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.entity.person.vo.TemporaryPersonDetailsVo;
 import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.RestrictedAreaService;
 import com.lion.person.service.person.TemporaryPersonService;
-import com.lion.upms.entity.enums.UserType;
-import com.lion.upms.entity.user.User;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,7 +155,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         BeanUtils.copyProperties(temporaryPerson,temporaryPersonDetailsVo);
         temporaryPersonDetailsVo.setHeadPortraitUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
 
-        List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(temporaryPerson.getId());
+        List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(temporaryPerson.getId(), PersonType.TEMPORARY_PERSON);
         List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
         restrictedAreaList.forEach(restrictedArea -> {
             TemporaryPersonDetailsVo.RestrictedAreaVo restrictedAreaVo = new TemporaryPersonDetailsVo.RestrictedAreaVo();

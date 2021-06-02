@@ -37,13 +37,13 @@ public class DeviceServiceImpl implements DeviceService {
     private ObjectMapper jacksonObjectMapper;
 
     @Autowired
+    private RocketMQTemplate rocketMQTemplate;
+
+    @Autowired
     private RedisUtil redisUtil;
 
     @Autowired
     private RedisTemplate redisTemplate;
-
-    @Autowired
-    private RocketMQTemplate rocketMQTemplate;
 
     @Autowired
     private CommonService commonService;
@@ -65,12 +65,9 @@ public class DeviceServiceImpl implements DeviceService {
      * @param tag
      */
     private void assets(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag) throws JsonProcessingException {
-        AssetsCurrentRegionDto assetsCurrentRegionDto = new AssetsCurrentRegionDto();
-        CurrentRegionDto currentRegionDto = currentRegion(monitor,star);
+        CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
         if (Objects.nonNull(currentRegionDto)) {
-            BeanUtils.copyProperties(currentRegionDto,assetsCurrentRegionDto);
             Assets assets = redisUtil.getAssets(tag.getId());
-            assetsCurrentRegionDto.setAssetsId(assets.getId());
             commonService.position(deviceDataDto,assets,currentRegionDto.getRegionId());
         }
     }
@@ -83,11 +80,8 @@ public class DeviceServiceImpl implements DeviceService {
      * @param tag
      */
     private void thermohygrograph(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag) throws JsonProcessingException {
-        TagCurrentRegionDto tagCurrentRegionDto = new TagCurrentRegionDto();
-        CurrentRegionDto currentRegionDto = currentRegion(monitor,star);
+        CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor, star);
         if (Objects.nonNull(currentRegionDto)) {
-            BeanUtils.copyProperties(currentRegionDto,tagCurrentRegionDto);
-            tagCurrentRegionDto.setTagId(tag.getId());
             commonService.position(deviceDataDto,tag,currentRegionDto.getRegionId());
         }
         TagRecordDto tagRecordDto = tagRecord(tag,currentRegionDto,deviceDataDto);
@@ -165,31 +159,6 @@ public class DeviceServiceImpl implements DeviceService {
         systemAlarmDto.setUuid(UUID.randomUUID().toString());
         systemAlarmDto.setRegionId(Objects.isNull(systemAlarmDto)?null:currentRegionDto.getRegionId());
         rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-    }
-
-    /**
-     * 获取当前位置
-     * @param monitor
-     * @param star
-     * @return
-     * @throws JsonProcessingException
-     */
-    private CurrentRegionDto currentRegion(Device monitor, Device star) {
-        Region monitorRegion = null;
-        Region starRegion = null;
-        if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getId())) {
-            monitorRegion = redisUtil.getRegion(monitor.getId());
-        }
-        if (Objects.nonNull(star) && Objects.nonNull(star.getId())) {
-            starRegion = redisUtil.getRegion(star.getId());
-        }
-        Region region = Objects.isNull(monitorRegion)?starRegion:monitorRegion;
-        if (Objects.isNull(region)){
-            return null;
-        }
-        CurrentRegionDto currentRegionDto = new UserCurrentRegionDto();
-        currentRegionDto.setRegionId(region.getId());
-        return currentRegionDto;
     }
 
 }

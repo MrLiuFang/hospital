@@ -9,7 +9,6 @@ import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
-import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagPatientExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.build.Build;
@@ -57,7 +56,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -320,7 +318,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
                 vo.setDoctorHeadPortraitUrl(fileExposeService.getUrl(doctor.getHeadPortrait()));
             }
         }
-        List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(patient.getId());
+        List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(patient.getId(), PersonType.PATIENT);
         List<PatientDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
         restrictedAreaList.forEach(restrictedArea -> {
             PatientDetailsVo.RestrictedAreaVo restrictedAreaVo = new PatientDetailsVo.RestrictedAreaVo();

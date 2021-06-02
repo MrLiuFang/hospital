@@ -3,13 +3,17 @@ package com.lion.event.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
+import com.lion.common.dto.CurrentRegionDto;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.common.dto.PositionDto;
+import com.lion.common.dto.UserCurrentRegionDto;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
+import com.lion.device.entity.device.Device;
 import com.lion.device.entity.tag.Tag;
 import com.lion.event.service.CommonService;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.region.Region;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
@@ -72,6 +76,25 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void position(DeviceDataDto deviceDataDto, Assets assets, Long regionId) throws JsonProcessingException {
         position(Type.ASSET,null,regionId,assets.getId(),null,null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+    }
+
+    @Override
+    public CurrentRegionDto currentRegion(Device monitor, Device star) {
+        Region monitorRegion = null;
+        Region starRegion = null;
+        if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getId())) {
+            monitorRegion = redisUtil.getRegion(monitor.getId());
+        }
+        if (Objects.nonNull(star) && Objects.nonNull(star.getId())) {
+            starRegion = redisUtil.getRegion(star.getId());
+        }
+        Region region = Objects.isNull(monitorRegion)?starRegion:monitorRegion;
+        if (Objects.isNull(region)){
+            return null;
+        }
+        CurrentRegionDto currentRegionDto = new CurrentRegionDto();
+        currentRegionDto.setRegionId(region.getId());
+        return currentRegionDto;
     }
 
     /**

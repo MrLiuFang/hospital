@@ -1,9 +1,14 @@
 package com.lion.person.expose.person.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.person.dao.person.PatientTransferDao;
+import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.expose.person.PatientTransferExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Objects;
 
 /**
  * @description:
@@ -12,4 +17,21 @@ import org.apache.dubbo.config.annotation.DubboService;
  */
 @DubboService
 public class PatientTransferExposeServiceImpl extends BaseServiceImpl<PatientTransfer> implements PatientTransferExposeService {
+
+    @Autowired
+    private PatientTransferDao patientTransferDao;
+
+    @Override
+    public PatientTransfer find(Long patientId) {
+        return patientTransferDao.findFirstByPatientIdAndState(patientId, TransferState.PENDING_TRANSFER);
+    }
+
+    @Override
+    public void updateSate(Long patientId, TransferState state) {
+        PatientTransfer patientTransfer = findById(patientId);
+        if (Objects.nonNull(patientTransfer)){
+            patientTransfer.setState(state);
+            update(patientTransfer);
+        }
+    }
 }

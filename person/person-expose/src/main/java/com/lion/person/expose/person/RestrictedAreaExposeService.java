@@ -1,6 +1,7 @@
 package com.lion.person.expose.person;
 
 import com.lion.core.service.BaseService;
+import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.person.RestrictedArea;
 
 import java.util.List;
@@ -15,7 +16,8 @@ public interface RestrictedAreaExposeService extends BaseService<RestrictedArea>
     /**
      * 查询患者限制区域
      * @param personId
+     * @param type
      * @return
      */
-    public List<RestrictedArea> find(Long personId);
+    public List<RestrictedArea> find(Long personId, PersonType type);
 }
