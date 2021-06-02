@@ -23,4 +23,11 @@ public interface TagPatientExposeService extends BaseService<TagPatient> {
      * @param isDelete
      */
     public void unbinding(Long patientId,Boolean isDelete);
+
+    /**
+     * 根据标签ID查询关联关系
+     * @param tagId
+     * @return
+     */
+    public TagPatient find(Long tagId);
 }

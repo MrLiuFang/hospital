@@ -1,5 +1,7 @@
 package com.lion.common.constants;
 
+import com.lion.person.entity.person.TemporaryPerson;
+
 import javax.print.attribute.standard.PrinterURI;
 
 /**
@@ -120,6 +122,23 @@ public class RedisConstants {
      * 患者与标签关联(key:tagId,value:patientId)
      */
     public static final String TAG_PATIENT = "tag_patient_";
+
+    /**
+     * 流动人员(key:temporaryPersonId,value:temporaryPerson)
+     */
+    public static final String TEMPORARY_PERSON = "temporary_person_";
+
+    /**
+     * 流动人员与标签关联(key:temporaryPersonId,value:tagId)
+     */
+    public static final String TEMPORARY_PERSON_TAG = "temporary_person_tag_";
+
+    /**
+     * 流动人员与标签关联(key:tagId,value:temporaryPersonId)
+     */
+    public static final String TAG_TEMPORARY_PERSON = "tag_temporary_person_";
+
+
 
     /**
      * 流动人员与标签关联(key:postdocsId,value:tagId)

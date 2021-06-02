@@ -89,6 +89,7 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
         patientTransfer.setOldDepartmentId(patient.getDepartmentId());
         patientTransfer.setState(TransferState.PENDING_TRANSFER);
         save(patientTransfer);
+
     }
 
     @Override

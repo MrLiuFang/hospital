@@ -1,5 +1,6 @@
 package com.lion.person.service.person.impl;
 
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -39,6 +40,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -47,6 +49,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @description:
@@ -83,6 +86,9 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     @DubboReference
     private DepartmentExposeService departmentExposeService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     @Transactional
     public void add(AddTemporaryPersonDto addTemporaryPersonDto) {
@@ -92,6 +98,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         temporaryPerson = save(temporaryPerson);
         restrictedAreaService.add(addTemporaryPersonDto.getRegionId(), PersonType.TEMPORARY_PERSON,temporaryPerson.getId());
         tagPostdocsExposeService.binding(temporaryPerson.getId(),addTemporaryPersonDto.getTagCode());
+        redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON+temporaryPerson.getId(),temporaryPerson, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -103,6 +110,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         update(temporaryPerson);
         restrictedAreaService.add(updateTemporaryPersonDto.getRegionId(), PersonType.TEMPORARY_PERSON,temporaryPerson.getId());
         tagPostdocsExposeService.binding(temporaryPerson.getId(),updateTemporaryPersonDto.getTagCode());
+        redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON+temporaryPerson.getId(),temporaryPerson, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -113,6 +121,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
                 this.deleteById(deleteDto.getId());
                 restrictedAreaService.delete(deleteDto.getId());
                 tagPostdocsExposeService.unbinding(deleteDto.getId(),true);
+                redisTemplate.delete(RedisConstants.TEMPORARY_PERSON+deleteDto.getId());
             });
         }
     }
@@ -184,6 +193,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         temporaryPerson.setLeaveRemarks(temporaryPersonLeaveDto.getLeaveRemarks());
         temporaryPerson.setLeaveDateTime(LocalDateTime.now());
         update(temporaryPerson);
+        tagPostdocsExposeService.unbinding(temporaryPerson.getId(),false);
     }
 
     private void assertPatientExist(Long patientId) {

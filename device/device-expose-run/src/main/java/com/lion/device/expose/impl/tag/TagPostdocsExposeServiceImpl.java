@@ -73,8 +73,8 @@ public class TagPostdocsExposeServiceImpl extends BaseServiceImpl<TagPostdocs> i
         tagLogService.add( TagLogContent.binding,tag.getId());
         tag.setUseState(TagUseState.USEING);
         tagService.update(tag);
-        redisTemplate.opsForValue().set(RedisConstants.TAG_POSTDOCS+tag.getId(),postdocsId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.POSTDOCS_TAG+postdocsId,tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_TEMPORARY_PERSON+tag.getId(),postdocsId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON_TAG+postdocsId,tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -93,8 +93,13 @@ public class TagPostdocsExposeServiceImpl extends BaseServiceImpl<TagPostdocs> i
             Tag tag = tagService.findById(tagPostdocs.getTagId());
             tag.setUseState(TagUseState.NOT_USED);
             tagService.update(tag);
-            redisTemplate.delete(RedisConstants.TAG_POSTDOCS + tagPostdocs.getTagId());
-            redisTemplate.delete(RedisConstants.POSTDOCS_TAG + tagPostdocs.getPostdocsId());
         }
+        redisTemplate.delete(RedisConstants.TAG_TEMPORARY_PERSON + tagPostdocs.getTagId());
+        redisTemplate.delete(RedisConstants.TEMPORARY_PERSON_TAG + tagPostdocs.getPostdocsId());
+    }
+
+    @Override
+    public TagPostdocs find(Long tagId) {
+        return tagPostdocsDao.findFirstByTagIdAndUnbindingTimeIsNull(tagId);
     }
 }

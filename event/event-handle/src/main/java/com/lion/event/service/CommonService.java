@@ -24,8 +24,22 @@ public interface CommonService {
      */
     public void position(DeviceDataDto deviceDataDto, User user, Long regionId) throws JsonProcessingException;
 
+    /**
+     * 记录位置
+     * @param deviceDataDto
+     * @param patient
+     * @param regionId
+     * @throws JsonProcessingException
+     */
     public void position(DeviceDataDto deviceDataDto, Patient patient, Long regionId) throws JsonProcessingException;
 
+    /**
+     * 记录位置
+     * @param deviceDataDto
+     * @param temporaryPerson
+     * @param regionId
+     * @throws JsonProcessingException
+     */
     public void position(DeviceDataDto deviceDataDto, TemporaryPerson temporaryPerson, Long regionId) throws JsonProcessingException;
 
     /**

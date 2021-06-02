@@ -97,8 +97,14 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
             Tag tag = tagService.findById(tagPatient.getTagId());
             tag.setUseState(TagUseState.NOT_USED);
             tagService.update(tag);
-            redisTemplate.delete(RedisConstants.TAG_PATIENT + tagPatient.getTagId());
-            redisTemplate.delete(RedisConstants.PATIENT_TAG + tagPatient.getPatientId());
         }
+        redisTemplate.delete(RedisConstants.TAG_PATIENT + tagPatient.getTagId());
+        redisTemplate.delete(RedisConstants.PATIENT_TAG + tagPatient.getPatientId());
+    }
+
+    @Override
+    public TagPatient find(Long tagId) {
+        TagPatient tagPatient = tagPatientDao.findFirstByTagIdAndUnbindingTimeIsNull(tagId);
+        return tagPatient;
     }
 }

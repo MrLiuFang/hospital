@@ -380,6 +380,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         patient.setIsLeave(true);
         patient.setLeaveRemarks(patientLeaveDto.getLeaveRemarks());
         update(patient);
+        tagPatientExposeService.unbinding(patient.getId(),false);
     }
 
     private Patient setOtherInfo(Patient patient) {
@@ -435,4 +436,5 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             BusinessException.throwException("该病历号已被使用");
         }
     }
+
 }

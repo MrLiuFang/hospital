@@ -22,4 +22,11 @@ public interface TagPostdocsExposeService extends BaseService<TagPostdocs> {
      * @param isDelete
      */
     public void unbinding(Long postdocsId,Boolean isDelete);
+
+    /**
+     * 根据标签查询关联关系
+     * @param tagId
+     * @return
+     */
+    public TagPostdocs find(Long tagId);
 }

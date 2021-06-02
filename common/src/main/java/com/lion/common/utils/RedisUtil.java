@@ -4,10 +4,14 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.entity.tag.Tag;
+import com.lion.device.entity.tag.TagPatient;
+import com.lion.device.entity.tag.TagPostdocs;
 import com.lion.device.entity.tag.TagUser;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
+import com.lion.device.expose.tag.TagPatientExposeService;
+import com.lion.device.expose.tag.TagPostdocsExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.build.Build;
@@ -31,7 +35,9 @@ import com.lion.manage.expose.rule.WashDeviceExposeService;
 import com.lion.manage.expose.rule.WashDeviceTypeExposeService;
 import com.lion.manage.expose.rule.WashExposeService;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.PatientExposeService;
+import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -104,6 +110,134 @@ public class RedisUtil {
     @DubboReference
     private PatientExposeService patientExposeService;
 
+    @DubboReference
+    private TagPatientExposeService tagPatientExposeService;
+
+    @DubboReference
+    private TemporaryPersonExposeService temporaryPersonExposeService;
+
+    @DubboReference
+    private TagPostdocsExposeService tagPostdocsExposeService;
+
+    public TemporaryPerson getTemporaryPerson(Long temporaryPersonId) {
+        if (Objects.isNull(temporaryPersonId)){
+            return null;
+        }
+        Object object = redisTemplate.opsForValue().get(RedisConstants.TEMPORARY_PERSON+temporaryPersonId);
+        TemporaryPerson temporaryPerson = null;
+        if (Objects.nonNull(object)) {
+            if (!(object instanceof TemporaryPerson)){
+                redisTemplate.delete(RedisConstants.TEMPORARY_PERSON+temporaryPersonId);
+            }else {
+                temporaryPerson = (TemporaryPerson) object;
+            }
+        }
+
+        if (Objects.isNull(temporaryPerson)){
+            temporaryPerson = temporaryPersonExposeService.findById(temporaryPersonId);
+            if (Objects.nonNull(temporaryPerson)){
+                redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON+temporaryPerson.getId(),temporaryPerson,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            }
+        }
+        return temporaryPerson;
+    }
+
+    public TemporaryPerson getTemporaryPersonByTagId(Long tagId) {
+        if (Objects.isNull(tagId)){
+            return null;
+        }
+        Object obj = redisTemplate.opsForValue().get(RedisConstants.TAG_TEMPORARY_PERSON+tagId);
+        Long temporaryPersonId = null;
+        TemporaryPerson temporaryPerson = null;
+
+        if (Objects.nonNull(obj) && !(obj instanceof Long)){
+            redisTemplate.delete(RedisConstants.TAG_TEMPORARY_PERSON + tagId);
+        }else if (Objects.nonNull(obj)){
+            temporaryPersonId = (Long) obj;
+        }
+
+        if (Objects.nonNull(temporaryPersonId)){
+            Object object = redisTemplate.opsForValue().get(RedisConstants.TEMPORARY_PERSON+temporaryPersonId);
+            if (Objects.nonNull(object) && !(object instanceof  TemporaryPerson)){
+                redisTemplate.delete(RedisConstants.TEMPORARY_PERSON+temporaryPersonId);
+            }else if (Objects.nonNull(object)){
+                temporaryPerson = (TemporaryPerson) object;
+            }
+
+            if (Objects.isNull(temporaryPerson)){
+                temporaryPerson =temporaryPersonExposeService.findById(temporaryPersonId);
+                if (Objects.nonNull(temporaryPerson)){
+                    redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON+temporaryPersonId,temporaryPerson, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                }
+            }
+        }
+
+        if (Objects.isNull(temporaryPerson)){
+            TagPostdocs tagPostdocs = tagPostdocsExposeService.find(tagId);
+            if (Objects.nonNull(tagPostdocs)){
+                temporaryPerson = temporaryPersonExposeService.findById(tagPostdocs.getPostdocsId());
+                if (Objects.nonNull(temporaryPerson)) {
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_TEMPORARY_PERSON + tagId, temporaryPerson.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON_TAG + temporaryPerson.getId(), tagId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON + temporaryPerson.getId(), temporaryPerson, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                }else {
+                    redisTemplate.delete(RedisConstants.TAG_TEMPORARY_PERSON + tagId);
+                    redisTemplate.delete(RedisConstants.TEMPORARY_PERSON_TAG +  temporaryPerson.getId());
+                    redisTemplate.delete(RedisConstants.TEMPORARY_PERSON + temporaryPerson.getId());
+                }
+            }
+        }
+        return temporaryPerson;
+    }
+
+    public Patient getPatientByTagId(Long tagId){
+        if (Objects.isNull(tagId)){
+            return null;
+        }
+        Object obj = redisTemplate.opsForValue().get(RedisConstants.TAG_PATIENT+tagId);
+        Long patientId = null;
+        Patient patient = null;
+
+        if (Objects.nonNull(obj) && !(obj instanceof Long)){
+            redisTemplate.delete(RedisConstants.TAG_PATIENT + tagId);
+        }else if (Objects.nonNull(obj)){
+            patientId = (Long) obj;
+        }
+
+        if (Objects.nonNull(patientId)){
+            Object object = redisTemplate.opsForValue().get(RedisConstants.PATIENT+patientId);
+            if (Objects.nonNull(object) && !(object instanceof  Patient)){
+                redisTemplate.delete(RedisConstants.PATIENT+patientId);
+            }else if (Objects.nonNull(object)){
+                patient = (Patient) object;
+            }
+
+            if (Objects.isNull(patient)){
+                patient = patientExposeService.findById(patientId);
+                if (Objects.nonNull(patient)){
+                    redisTemplate.opsForValue().set(RedisConstants.PATIENT+patientId,patient, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                }
+            }
+        }
+
+        if (Objects.isNull(patient)){
+            TagPatient tagPatient = tagPatientExposeService.find(tagId);
+            if (Objects.nonNull(tagPatient)){
+                patient = patientExposeService.findById(tagPatient.getPatientId());
+                if (Objects.nonNull(patient)) {
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_PATIENT + tagId, patient.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.PATIENT_TAG + patient.getId(), tagId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.PATIENT + patient.getId(), patient, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                }else {
+                    redisTemplate.delete(RedisConstants.TAG_PATIENT + tagId);
+                    redisTemplate.delete(RedisConstants.PATIENT_TAG +  patient.getId());
+                    redisTemplate.delete(RedisConstants.PATIENT + patient.getId());
+                }
+            }
+        }
+        return patient;
+    }
+
     public Patient getPatient(Long id){
         if (Objects.isNull(id)){
             return null;
@@ -149,7 +283,7 @@ public class RedisUtil {
         if (Objects.isNull(department)){
             department = departmentUserExposeService.findDepartment(userId);
             if (Objects.nonNull(department)){
-                redisTemplate.opsForValue().set(RedisConstants.USER_DEPARTMENT+department.getId(),department.getId(),RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.USER_DEPARTMENT+userId,department.getId(),RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
                 redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT+department.getId(),department,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
             }
         }
@@ -345,10 +479,12 @@ public class RedisUtil {
                 user = userExposeService.findById(tagUser.getUserId());
                 if (Objects.nonNull(user)) {
                     redisTemplate.opsForValue().set(RedisConstants.TAG_USER + tagId, user.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.USER_TAG + user.getId(), tagId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                     redisTemplate.opsForValue().set(RedisConstants.USER + user.getId(), user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }else {
                     redisTemplate.delete(RedisConstants.TAG_USER + tagId);
-//                    redisTemplate.delete(RedisConstants.USER + userId);
+                    redisTemplate.delete(RedisConstants.USER_TAG + userId);
+                    redisTemplate.delete(RedisConstants.USER + userId);
                 }
             }
         }

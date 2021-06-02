@@ -87,6 +87,11 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             }
             if (Objects.nonNull(tag)){
                 user = redisUtil.getUser(tag.getId());
+                if (Objects.isNull(user)) {
+                    patient = redisUtil.getPatientByTagId(tag.getId());
+                }else if (Objects.isNull(patient)) {
+                    temporaryPerson = redisUtil.getTemporaryPersonByTagId(tag.getId());
+                }
             }
 
             if (Objects.nonNull(user) && Objects.equals(deviceDataDto.getTagType(), Type.STAFF) ){ //如果根据标签查出员工，进行洗手事件处理

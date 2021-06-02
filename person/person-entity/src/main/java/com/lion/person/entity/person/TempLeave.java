@@ -29,7 +29,7 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 @DynamicInsert
 @Data
-@ApiModel(description = "限制区域")
+@ApiModel(description = "临时离开权限")
 public class TempLeave extends BaseEntity {
 
     @ApiModelProperty(value = "患者id")
