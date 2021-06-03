@@ -1,8 +1,6 @@
 package com.lion.event.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.lion.common.constants.RedisConstants;
-import com.lion.common.dto.UserCurrentRegionDto;
 import com.lion.common.utils.RedisUtil;
 import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
@@ -10,18 +8,12 @@ import com.lion.core.LionPage;
 import com.lion.core.ResultData;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
-import com.lion.event.entity.CurrentPosition;
-import com.lion.event.entity.DeviceData;
-import com.lion.event.entity.WashRecord;
+import com.lion.event.entity.*;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.dto.OldAlarmToNewAlarm;
 import com.lion.event.entity.dto.UnalarmDto;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
-import com.lion.manage.entity.build.Build;
-import com.lion.manage.entity.build.BuildFloor;
-import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.region.Region;
 import com.lion.upms.entity.enums.UserType;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +25,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * @Author Mr.Liu
@@ -72,7 +62,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/user/current/region")
     @ApiOperation(value = "用户当前位置")
-    public IResultData<UserCurrentRegionVo> userCurrentRegion(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId) {
+    public IResultData<CurrentRegionVo> userCurrentRegion(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId) {
         return ResultData.instance().setData(mapStatisticsService.userCurrentRegion(userId));
     }
 
@@ -191,10 +181,30 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return ResultData.instance().setData(mapStatisticsService.departmentPatientStatisticsDetails(name));
     }
 
+    @GetMapping("/patient/details")
+    @ApiOperation(value = "地图监控患者详情")
+    public IResultData<PatientDetailsVo> patientDetails(@ApiParam("患者id") @NotNull(message = "患者id不能为空") Long patientId) {
+        return ResultData.instance().setData(mapStatisticsService.staffDetails(patientId));
+    }
+
     @GetMapping("/staff/details")
     @ApiOperation(value = "地图监控员工详情")
     public IResultData<StaffDetailsVo> staffDetails(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId) {
         return ResultData.instance().setData(mapStatisticsService.staffDetails(userId));
+    }
+
+    @GetMapping("/staff/position")
+    @ApiOperation(value = "地图监控员工轨迹")
+    public IPageResultData<List<Position>> staffPosition(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId) {
+        return null;
+//        return ResultData.instance().setData(mapStatisticsService.staffDetails(userId));
+    }
+
+    @GetMapping("/staff/system/alarm")
+    @ApiOperation(value = "地图监控员工警告")
+    public IPageResultData<List<SystemAlarm>> staffSystemAlarm(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId) {
+        return null;
+//        return ResultData.instance().setData(mapStatisticsService.staffDetails(userId));
     }
 
     @GetMapping("/assets/details")

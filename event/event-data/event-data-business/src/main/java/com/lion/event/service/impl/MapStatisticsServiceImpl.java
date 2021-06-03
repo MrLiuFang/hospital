@@ -381,14 +381,14 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         });
         staffDetailsVo.setDepartmentResponsibleVos(departmentResponsibleVos);
         LocalDateTime now = LocalDateTime.now();
-        staffDetailsVo.setPositions(positionService.findUserId(userId,LocalDateTime.of(now.toLocalDate(), LocalTime.MIN),now));
-        staffDetailsVo.setUserCurrentRegionVo(userCurrentRegion(userId));
-        staffDetailsVo.setSystemAlarms(systemAlarmService.find(userId,false,LocalDateTime.of(now.toLocalDate(), LocalTime.MIN),now));
+//        staffDetailsVo.setPositions(positionService.findUserId(userId,LocalDateTime.of(now.toLocalDate(), LocalTime.MIN),now));
+        staffDetailsVo.setCurrentRegionVo(userCurrentRegion(userId));
+//        staffDetailsVo.setSystemAlarms(systemAlarmService.find(userId,false,LocalDateTime.of(now.toLocalDate(), LocalTime.MIN),now));
         return staffDetailsVo;
     }
 
     @Override
-    public UserCurrentRegionVo userCurrentRegion(Long userId) {
+    public CurrentRegionVo userCurrentRegion(Long userId) {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION+userId);
         if (Objects.isNull(userCurrentRegionDto)) {
             CurrentPosition currentPosition = currentPositionService.find(userId);
@@ -399,7 +399,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             }
         }
         if (Objects.nonNull(userCurrentRegionDto)){
-            UserCurrentRegionVo vo = new UserCurrentRegionVo();
+            CurrentRegionVo vo = new CurrentRegionVo();
             vo.setFirstEntryTime(userCurrentRegionDto.getFirstEntryTime());
             Region region = redisUtil.getRegionById(userCurrentRegionDto.getRegionId());
             if (Objects.nonNull(region)) {

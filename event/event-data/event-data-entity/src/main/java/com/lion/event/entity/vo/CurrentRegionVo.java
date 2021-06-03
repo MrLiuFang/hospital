@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
  **/
 @Data
 @ApiModel
-public class UserCurrentRegionVo {
+public class CurrentRegionVo {
 
     @ApiModelProperty(value = "区域id")
     private Long regionId;

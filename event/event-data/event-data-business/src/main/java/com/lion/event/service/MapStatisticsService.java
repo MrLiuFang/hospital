@@ -1,11 +1,9 @@
 package com.lion.event.service;
 
 import com.lion.core.IPageResultData;
-import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.vo.*;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -70,7 +68,7 @@ public interface MapStatisticsService {
      * @param userId
      * @return
      */
-    public UserCurrentRegionVo userCurrentRegion(Long userId);
+    public CurrentRegionVo userCurrentRegion(Long userId);
 
     /**
      * 获取资产详情
