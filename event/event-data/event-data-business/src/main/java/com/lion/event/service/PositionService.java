@@ -37,8 +37,9 @@ public interface PositionService {
     /**
      * 查询轨迹
      * @param pi
+     * @param ai
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<Position>> list(Long pi, LionPage lionPage);
+    public IPageResultData<List<Position>> list(Long pi,Long ai, LionPage lionPage);
 }

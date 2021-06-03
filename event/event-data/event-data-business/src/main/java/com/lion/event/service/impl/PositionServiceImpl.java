@@ -5,7 +5,6 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.event.dao.PositionDao;
-import com.lion.event.entity.DeviceData;
 import com.lion.event.entity.Position;
 import com.lion.event.service.CurrentPositionService;
 import com.lion.event.service.PositionService;
@@ -54,11 +53,14 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public IPageResultData<List<Position>> list(Long pi, LionPage lionPage) {
+    public IPageResultData<List<Position>> list(Long pi, Long ai, LionPage lionPage) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(pi)) {
             criteria.and("pi").is(pi);
+        }
+        if (Objects.nonNull(ai)) {
+            criteria.and("ai").is(ai);
         }
         query.addCriteria(criteria);
         query.with(lionPage);

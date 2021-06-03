@@ -209,10 +209,16 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return ResultData.instance().setData(mapStatisticsService.staffDetails(userId));
     }
 
+    @GetMapping("/assets/position")
+    @ApiOperation(value = "地图监控资产轨迹(不返回总行数)")
+    public IPageResultData<List<Position>> assetsPosition(@ApiParam("资产id") @NotNull(message = "资产id不能为空") Long assetsId,LionPage lionPage) {
+        return positionService.list(null,assetsId , lionPage);
+    }
+
     @GetMapping("/staff/position")
     @ApiOperation(value = "地图监控员工轨迹(不返回总行数)")
     public IPageResultData<List<Position>> staffPosition(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId,LionPage lionPage) {
-        return positionService.list(userId,lionPage);
+        return positionService.list(userId,null , lionPage);
     }
 
     @GetMapping("/staff/system/alarm")
@@ -224,7 +230,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @GetMapping("/patient/position")
     @ApiOperation(value = "地图监控患者轨迹(不返回总行数)")
     public IPageResultData<List<Position>> patientPosition(@ApiParam("患者id") @NotNull(message = "患者id不能为空") Long positionId,LionPage lionPage) {
-        return positionService.list(positionId,lionPage);
+        return positionService.list(positionId, null, lionPage);
     }
 
     @GetMapping("/patient/system/alarm")
@@ -236,7 +242,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @GetMapping("/temporary/person/position")
     @ApiOperation(value = "地图监控流动人员轨迹(不返回总行数)")
     public IPageResultData<List<Position>> temporaryPersonPosition(@ApiParam("流动人员id") @NotNull(message = "流动人员id不能为空") Long temporaryPersonId,LionPage lionPage) {
-        return positionService.list(temporaryPersonId,lionPage);
+        return positionService.list(temporaryPersonId,null , lionPage);
     }
 
     @GetMapping("/temporary/person/system/alarm")
