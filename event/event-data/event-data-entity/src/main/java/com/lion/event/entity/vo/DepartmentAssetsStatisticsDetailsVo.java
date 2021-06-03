@@ -21,10 +21,10 @@ public class DepartmentAssetsStatisticsDetailsVo {
     private Integer assetsCount = 0;
 
     @ApiModelProperty(value = "正常资产总数")
-    private Integer normalAssetsCount;
+    private Integer normalAssetsCount= 0;
 
     @ApiModelProperty(value = "异常资产总数")
-    private Integer abnormalAssetsCount;
+    private Integer abnormalAssetsCount= 0;
 
     @ApiModelProperty(value = "部门信息")
     private List<DepartmentAssetsStatisticsDetailsVo.DepartmentVo> departmentVos;

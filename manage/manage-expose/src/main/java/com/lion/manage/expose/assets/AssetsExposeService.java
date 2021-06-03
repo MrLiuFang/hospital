@@ -2,6 +2,7 @@ package com.lion.manage.expose.assets;
 
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.enums.State;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,9 +39,10 @@ public interface AssetsExposeService extends BaseService<Assets> {
     /**
      * 统计科室内的资产数量
      * @param departmentId
+     * @param deviceState
      * @return
      */
-    public Integer countByDepartmentId(Long departmentId);
+    public Integer countByDepartmentId(Long departmentId, State deviceState);
 
     /**
      * 查询部门内的资产

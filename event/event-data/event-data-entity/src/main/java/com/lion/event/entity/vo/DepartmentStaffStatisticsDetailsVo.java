@@ -24,10 +24,10 @@ public class DepartmentStaffStatisticsDetailsVo {
     private Integer staffCount = 0;
 
     @ApiModelProperty(value = "正常员工总数")
-    private Integer normalStaffCount;
+    private Integer normalStaffCount= 0;
 
     @ApiModelProperty(value = "异常员工总数")
-    private Integer abnormalStaffCount;
+    private Integer abnormalStaffCount= 0;
 
     @ApiModelProperty(value = "部门信息")
     private List<DepartmentStaffStatisticsDetailsVo.DepartmentVo> departmentVos;

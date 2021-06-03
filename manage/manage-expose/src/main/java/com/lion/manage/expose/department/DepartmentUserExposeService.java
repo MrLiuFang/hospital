@@ -3,6 +3,7 @@ package com.lion.manage.expose.department;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.DepartmentUser;
+import com.lion.upms.entity.enums.State;
 
 import java.util.List;
 
@@ -51,7 +52,8 @@ public interface DepartmentUserExposeService extends BaseService<DepartmentUser>
     /**
      * 统计科室下有多少员工
      * @param departmentId
+     * @param deviceState
      * @return
      */
-    public Integer count(Long departmentId);
+    public Integer count(Long departmentId, State deviceState);
 }

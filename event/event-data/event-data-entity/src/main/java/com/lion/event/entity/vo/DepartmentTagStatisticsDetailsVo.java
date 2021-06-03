@@ -24,10 +24,10 @@ public class DepartmentTagStatisticsDetailsVo {
     private Integer tagCount = 0;
 
     @ApiModelProperty(value = "正常标签总数")
-    private Integer normalTagCount;
+    private Integer normalTagCount= 0;
 
     @ApiModelProperty(value = "异常标签总数")
-    private Integer abnormalTagCount;
+    private Integer abnormalTagCount= 0;
 
     @ApiModelProperty(value = "部门信息")
     private List<DepartmentTagStatisticsDetailsVo.DepartmentVo> departmentVos;

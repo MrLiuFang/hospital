@@ -52,6 +52,13 @@ public interface MapStatisticsService {
     public DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetails(String keyword);
 
     /**
+     *
+     * @param name
+     * @return
+     */
+    public DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetails(String name);
+
+    /**
      * 员工详情
      * @param userId
      * @return

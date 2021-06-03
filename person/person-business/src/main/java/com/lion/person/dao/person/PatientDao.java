@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @description:
@@ -41,4 +42,38 @@ public interface PatientDao extends BaseDao<Patient> {
     @Transactional
     @Query(" update Patient  set lastDataTime =:dateTime where id = :id ")
     public void updateLastDataTime(@Param("id")Long id, @Param("dateTime")LocalDateTime dateTime);
+
+    /**
+     * 统计
+     * @param departmentId
+     * @param isLeave
+     * @return
+     */
+    public int countByDepartmentIdAndIsLeave(Long departmentId, Boolean isLeave);
+
+    /**
+     * 统计
+     * @param departmentId
+     * @param isLeave
+     * @param deviceSate
+     * @return
+     */
+    public int countByDepartmentIdAndIsLeaveAndDeviceSate(Long departmentId,Boolean isLeave,State deviceSate);
+
+    /**
+     * 根据科室查询
+     * @param departmentId
+     * @param isLeave
+     * @param name
+     * @return
+     */
+    public List<Patient> findByDepartmentIdAndIsLeaveAndNameLike(Long departmentId,Boolean isLeave,String name);
+
+    /**
+     * 根据科室查询
+     * @param departmentId
+     * @param isLeave
+     * @return
+     */
+    public List<Patient> findByDepartmentIdAndIsLeave(Long departmentId, Boolean isLeave);
 }

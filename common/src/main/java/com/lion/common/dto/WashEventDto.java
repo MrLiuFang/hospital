@@ -31,7 +31,7 @@ public class WashEventDto extends WashRecordDto implements Serializable {
     private Boolean ia = false;
 
     /**
-     * 触发警告原因(com.lion.common.enums.WashEventAlarmType)
+     * 触发警告原因(com.lion.manage.entity.enums.SystemAlarmType)
      */
     private Integer at;
 

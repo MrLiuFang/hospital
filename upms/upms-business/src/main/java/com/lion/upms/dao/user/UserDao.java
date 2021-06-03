@@ -73,5 +73,13 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
     @Query( " select id from User " )
     public List<Long> findAllId();
 
+    /**
+     * 统计
+     * @param ids
+     * @param deviceState
+     * @return
+     */
+    public int countByIdInAndAndDeviceSate(List<Long> ids,State deviceState);
+
 
 }

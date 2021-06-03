@@ -75,8 +75,11 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     }
 
     @Override
-    public Integer countTag(Long departmentId, TagPurpose purpose) {
-        return tagDao.countByDepartmentIdAndPurpose(departmentId, purpose);
+    public Integer countTag(Long departmentId, TagPurpose purpose, State deviceState) {
+        if (Objects.isNull(deviceState)) {
+            return tagDao.countByDepartmentIdAndPurpose(departmentId, purpose);
+        }
+        return tagDao.countByDepartmentIdAndPurposeAndDeviceSate(departmentId, purpose,deviceState);
     }
 
     @Override

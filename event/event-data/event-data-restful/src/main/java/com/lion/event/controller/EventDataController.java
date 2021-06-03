@@ -175,14 +175,20 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/department/assets/statistics/details")
     @ApiOperation(value = "地图监控科室资产统计")
-    public IResultData<List<DepartmentAssetsStatisticsDetailsVo>> departmentAssetsStatisticsDetails(@ApiParam(value = "名称/资产编码") String keyword) {
+    public IResultData<DepartmentAssetsStatisticsDetailsVo> departmentAssetsStatisticsDetails(@ApiParam(value = "名称/资产编码") String keyword) {
         return ResultData.instance().setData(mapStatisticsService.departmentAssetsStatisticsDetails(keyword));
     }
 
     @GetMapping("/department/tag/statistics/details")
     @ApiOperation(value = "地图监控科室温标签统计")
-    public IResultData<List<DepartmentTagStatisticsDetailsVo>> departmentTagStatisticsDetails(@ApiParam(value = "名称/标签编码") String keyword) {
+    public IResultData<DepartmentTagStatisticsDetailsVo> departmentTagStatisticsDetails(@ApiParam(value = "名称/标签编码") String keyword) {
         return ResultData.instance().setData(mapStatisticsService.departmentTagStatisticsDetails(keyword));
+    }
+
+    @GetMapping("/department/patient/statistics/details")
+    @ApiOperation(value = "地图监控患者统计")
+    public IResultData<DepartmentPatientStatisticsDetailsVo> departmentPatientStatisticsDetails(@ApiParam(value = "姓名") String name) {
+        return ResultData.instance().setData(mapStatisticsService.departmentPatientStatisticsDetails(name));
     }
 
     @GetMapping("/staff/details")

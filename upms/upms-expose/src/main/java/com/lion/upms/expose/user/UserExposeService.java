@@ -3,6 +3,7 @@ package com.lion.upms.expose.user;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.service.BaseService;
+import com.lion.upms.entity.enums.State;
 import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import org.springframework.data.domain.Page;
@@ -31,6 +32,8 @@ public interface UserExposeService extends BaseService<User> {
      * @return
      */
     public User find(String username);
+
+    public int count(List<Long> ids, State deviceState);
 
     /**
      * 根据员工编号查询

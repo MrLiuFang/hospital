@@ -89,6 +89,15 @@ public interface TagDao extends BaseDao<Tag> {
      */
     public Integer countByDepartmentIdAndPurpose(Long departmentId, TagPurpose purpose);
 
+    /**
+     *
+     * @param departmentId
+     * @param purpose
+     * @param deviceState
+     * @return
+     */
+    public Integer countByDepartmentIdAndPurposeAndDeviceSate(Long departmentId, TagPurpose purpose,State deviceState);
+
     @Query( " select t.id from Tag t ")
     public List<Long> allId();
 

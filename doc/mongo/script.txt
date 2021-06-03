@@ -72,27 +72,27 @@ db.runCommand({ enablesharding : "hospital"});
 
 db.runCommand({ 
     shardcollection : "hospital.wash_event",
-    key : {_id: 'hashed'}
+    key : {_id: 1}
 })
 
 db.runCommand({
     shardcollection : "hospital.system_alarm",
-    key : {_id: 'hashed'}
+    key : {_id: 1}
 })
 
 db.runCommand({
     shardcollection : "hospital.device_data",
-    key : {_id: 'hashed'}
+    key : {_id: 1}
 })
 
 db.runCommand({
     shardcollection : "hospital.position",
-    key : {_id: 'hashed'}
+    key : {_id: 1}
 })
 
 db.runCommand({
     shardcollection : "hospital.wash_record",
-    key : {_id: 'hashed'}
+    key : {_id: 1}
 })
 
 db.runCommand({
@@ -102,12 +102,12 @@ db.runCommand({
 
 db.runCommand({
     shardcollection : "hospital.tag_event",
-    key : {_id: 'hashed'}
+    key : {_id: 1}
 })
 
 db.runCommand({
     shardcollection : "hospital.tag_record",
-    key : {_id: 'hashed'}
+    key : {_id: 1}
 })
 
 use hospital;
@@ -120,13 +120,22 @@ db.current_position.drop();
 db.tag_event.drop();
 db.tag_record.drop();
 
-db.washRecord.createIndex( { "pi":1 }, { sparse: true } )
-db.washRecord.createIndex( { "ddt":1 }, { sparse: true } )
+db.wash_event.createIndex( { "pi":1 }, { sparse: true } )
+db.wash_event.createIndex( { "di":1 }, { sparse: true } )
+db.wash_event.createIndex( { "ri":1 }, { sparse: true } )
+db.wash_event.createIndex( { "ui":1 }, { sparse: true } )
+db.wash_event.createIndex( { "ddt":1 }, { sparse: true } )
 
-db.washEvent.createIndex( { "pi":1 }, { sparse: true } )
-db.washEvent.createIndex( { "ddt":1 }, { sparse: true } )
+db.system_alarm.createIndex( { "pi":1 }, { sparse: true } )
+db.system_alarm.createIndex( { "ai":1 }, { sparse: true } )
+db.system_alarm.createIndex( { "dvi":1 }, { sparse: true } )
+db.system_alarm.createIndex( { "ti":1 }, { sparse: true } )
+db.system_alarm.createIndex( { "ti":1 }, { sparse: true } )
+db.system_alarm.createIndex( { "di":1 }, { sparse: true } )
+db.system_alarm.createIndex( { "ri":1 }, { sparse: true } )
+db.system_alarm.createIndex( { "ddt":1 }, { sparse: true } )
 
-db.washEvent.stats();
+db.wash_event.stats();
 
 
 use admin;

@@ -1,6 +1,7 @@
 package com.lion.device.expose.tag;
 
 import com.lion.core.service.BaseService;
+import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 
@@ -65,9 +66,10 @@ public interface TagExposeService extends BaseService<Tag> {
      * 根据科室统计标签
      * @param departmentId
      * @param purpose
+     * @param deviceState
      * @return
      */
-    public Integer countTag(Long departmentId, TagPurpose purpose);
+    public Integer countTag(Long departmentId, TagPurpose purpose, State deviceState);
 
     /**
      * 修改状态

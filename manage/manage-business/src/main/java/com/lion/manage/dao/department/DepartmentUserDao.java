@@ -2,6 +2,9 @@ package com.lion.manage.dao.department;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.department.DepartmentUser;
+import com.lion.upms.entity.enums.State;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,4 +52,12 @@ public interface DepartmentUserDao extends BaseDao<DepartmentUser> {
      * @return
      */
     public Integer countByDepartmentId(Long departmentId);
+
+    /**
+     * 统计部门下面有多少员工
+     * @param departmentId
+     * @return
+     */
+    public Integer countByDepartmentIdAndUserIdIn(Long departmentId,List<Long> userIds);
+
 }

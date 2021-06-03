@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * @Author Mr.Liu
@@ -44,8 +45,11 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
     }
 
     @Override
-    public Integer countByDepartmentId(Long departmentId) {
-        return assetsDao.countByDepartmentId(departmentId);
+    public Integer countByDepartmentId(Long departmentId, State deviceState) {
+        if (Objects.isNull(deviceState)) {
+            return assetsDao.countByDepartmentId(departmentId);
+        }
+        return assetsDao.countByDepartmentIdAndDeviceSate(departmentId,deviceState);
     }
 
     @Override

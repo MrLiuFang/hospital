@@ -7,14 +7,13 @@ import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.DepartmentUser;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.service.department.DepartmentUserService;
+import com.lion.upms.entity.enums.State;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import sun.swing.StringUIClientPropertyKey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -88,7 +87,16 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
     }
 
     @Override
-    public Integer count(Long departmentId) {
-        return departmentUserDao.countByDepartmentId(departmentId);
+    public Integer count(Long departmentId, State deviceState) {
+        if (Objects.isNull(deviceState)) {
+            return departmentUserDao.countByDepartmentId(departmentId);
+        }
+        List<DepartmentUser>  list = departmentUserDao.findByDepartmentId(departmentId);
+        List<Long> ids = new ArrayList<>();
+        ids.add(Long.MAX_VALUE);
+        list.forEach(departmentUser -> {
+            ids.add(departmentUser.getUserId());
+        });
+        return userExposeService.count(ids,deviceState);
     }
 }

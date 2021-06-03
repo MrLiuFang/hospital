@@ -50,6 +50,14 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
     public int countByDepartmentId(Long departmentId);
 
     /**
+     * 统计科室内的资产数量
+     * @param departmentId
+     * @param deviceState
+     * @return
+     */
+    public int countByDepartmentIdAndDeviceSate(Long departmentId,State deviceState);
+
+    /**
      * 查询部门内的资产
      * @param departmentId
      * @return

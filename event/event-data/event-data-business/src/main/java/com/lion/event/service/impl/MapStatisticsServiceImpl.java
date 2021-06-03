@@ -29,6 +29,7 @@ import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
@@ -36,6 +37,11 @@ import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
+import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
+import com.lion.person.entity.enums.State;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.expose.person.PatientExposeService;
+import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
@@ -120,6 +126,15 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @DubboReference
     private FaultExposeService faultExposeService;
 
+    @DubboReference
+    private PatientExposeService patientExposeService;
+
+    @DubboReference
+    private TemporaryPersonExposeService temporaryPersonExposeService;
+
+    @DubboReference
+    private WardRoomSickbedExposeService wardRoomSickbedExposeService;
+
     @Override
     public List<RegionStatisticsDetails> regionStatisticsDetails(Long buildFloorId) {
         List<Region> regionList = regionExposeService.findByBuildFloorId(buildFloorId);
@@ -175,7 +190,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             if (map.containsKey("alarmCount")) {
                 departmentStatisticsDetailsVo.setAlarmCount(map.get("alarmCount"));
             }
-            departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(department.getId()));
+            departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(department.getId(), null));
             departmentStatisticsDetailsVo.setTagCount(tagExposeService.countTag(department.getId()));
             departmentStatisticsDetailsVo.setCctvCount(cctvExposeService.count(department.getId()));
             returnList.add(departmentStatisticsDetailsVo);
@@ -194,7 +209,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             DepartmentStaffStatisticsDetailsVo.DepartmentVo vo = new DepartmentStaffStatisticsDetailsVo.DepartmentVo();
             vo.setDepartmentName(department.getName());
             vo.setDepartmentId(department.getId());
-            departmentStaffStatisticsDetailsVo.setStaffCount(departmentStaffStatisticsDetailsVo.getStaffCount() + departmentUserExposeService.count(department.getId()));
+            departmentStaffStatisticsDetailsVo.setStaffCount(departmentStaffStatisticsDetailsVo.getStaffCount() + departmentUserExposeService.count(department.getId(),null ));
+            departmentStaffStatisticsDetailsVo.setNormalStaffCount(departmentStaffStatisticsDetailsVo.getNormalStaffCount() + departmentUserExposeService.count(department.getId(), com.lion.upms.entity.enums.State.NORMAL));
+            departmentStaffStatisticsDetailsVo.setAbnormalStaffCount(departmentStaffStatisticsDetailsVo.getAbnormalStaffCount() + departmentUserExposeService.count(department.getId(), com.lion.upms.entity.enums.State.ALARM));
             List<Long> userIds = departmentUserExposeService.findAllUser(department.getId(),name);
             List<DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo> listStaff = new ArrayList<>();
             userIds.forEach(id->{
@@ -233,7 +250,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             DepartmentAssetsStatisticsDetailsVo.DepartmentVo vo = new DepartmentAssetsStatisticsDetailsVo.DepartmentVo();
             vo.setDepartmentName(department.getName());
             vo.setDepartmentId(department.getId());
-            departmentAssetsStatisticsDetailsVo.setAssetsCount(departmentAssetsStatisticsDetailsVo.getAssetsCount() + assetsExposeService.countByDepartmentId(department.getId()));
+            departmentAssetsStatisticsDetailsVo.setAssetsCount(departmentAssetsStatisticsDetailsVo.getAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(),null ));
+            departmentAssetsStatisticsDetailsVo.setNormalAssetsCount(departmentAssetsStatisticsDetailsVo.getNormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.NORMAL));
+            departmentAssetsStatisticsDetailsVo.setAbnormalAssetsCount(departmentAssetsStatisticsDetailsVo.getAbnormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.ALARM));
             List<Assets> assets = assetsExposeService.findByDepartmentId(department.getId(),keyword ,keyword);
             List<DepartmentAssetsStatisticsDetailsVo.AssetsVo> assetsVos= new ArrayList<>();
             assets.forEach(a ->{
@@ -263,7 +282,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         departmentTagStatisticsDetailsVo.setDepartmentVos(departmentVos);
         list.forEach(department -> {
             DepartmentTagStatisticsDetailsVo.DepartmentVo departmentVo = new DepartmentTagStatisticsDetailsVo.DepartmentVo();
-            departmentTagStatisticsDetailsVo.setTagCount(departmentTagStatisticsDetailsVo.getTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH));
+            departmentVo.setDepartmentName(department.getName());
+            departmentVo.setDepartmentId(department.getId());
+            departmentTagStatisticsDetailsVo.setTagCount(departmentTagStatisticsDetailsVo.getTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH,null ));
+            departmentTagStatisticsDetailsVo.setNormalTagCount(departmentTagStatisticsDetailsVo.getNormalTagCount() +tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.NORMAL ));
+            departmentTagStatisticsDetailsVo.setAbnormalTagCount(departmentTagStatisticsDetailsVo.getAbnormalTagCount() +tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.ALARM ));
             List<Tag> tagList = tagExposeService.find(department.getId(),TagPurpose.THERMOHYGROGRAPH,keyword);
             List<DepartmentTagStatisticsDetailsVo.TagVo> tagVos = new ArrayList<>();
             tagList.forEach(tag -> {
@@ -287,6 +310,45 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             departmentVos.add(departmentVo);
         });
         return departmentTagStatisticsDetailsVo;
+    }
+
+    @Override
+    public DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetails(String name) {
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+        DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetailsVo = new DepartmentPatientStatisticsDetailsVo();
+        List<DepartmentPatientStatisticsDetailsVo.DepartmentVo> departmentVos = new ArrayList<>();
+        departmentPatientStatisticsDetailsVo.setDepartmentVos(departmentVos);
+        list.forEach(department -> {
+            DepartmentPatientStatisticsDetailsVo.DepartmentVo departmentVo = new DepartmentPatientStatisticsDetailsVo.DepartmentVo();
+            departmentVo.setDepartmentName(department.getName());
+            departmentVo.setDepartmentId(department.getId());
+            departmentPatientStatisticsDetailsVo.setPatientCount(departmentPatientStatisticsDetailsVo.getPatientCount() + patientExposeService.count(department.getId(), null));
+            departmentPatientStatisticsDetailsVo.setNormalPatientCount(departmentPatientStatisticsDetailsVo.getNormalPatientCount() + patientExposeService.count(department.getId(), State.NORMAL));
+            departmentPatientStatisticsDetailsVo.setAbnormalPatientCount(departmentPatientStatisticsDetailsVo.getAbnormalPatientCount() +  patientExposeService.count(department.getId(), State.ALARM));
+            List<DepartmentPatientStatisticsDetailsVo.PatientVo> patientVos = new ArrayList<>();
+            List<Patient> patientList = patientExposeService.find(department.getId(),name);
+            patientList.forEach(patient -> {
+                DepartmentPatientStatisticsDetailsVo.PatientVo vo = new DepartmentPatientStatisticsDetailsVo.PatientVo();
+                Tag tag = tagExposeService.find(patient.getTagCode());
+                if (Objects.nonNull(tag)){
+                    vo.setBattery(tag.getBattery());
+                }
+                WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
+                if (Objects.nonNull(wardRoomSickbed)){
+                    vo.setBedCode(wardRoomSickbed.getBedCode());
+                }
+                vo.setName(patient.getName());
+                vo.setTagCode(patient.getTagCode());
+                vo.setHeadPortrait(patient.getHeadPortrait());
+                vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
+                patientVos.add(vo);
+            });
+            departmentVo.setPatientVos(patientVos);
+            departmentVos.add(departmentVo);
+
+        });
+        return departmentPatientStatisticsDetailsVo;
     }
 
     @Override
