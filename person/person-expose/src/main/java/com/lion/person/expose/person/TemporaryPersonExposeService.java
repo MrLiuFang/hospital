@@ -1,9 +1,11 @@
 package com.lion.person.expose.person;
 
 import com.lion.core.service.BaseService;
+import com.lion.person.entity.enums.State;
 import com.lion.person.entity.person.TemporaryPerson;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @description:
@@ -25,4 +27,19 @@ public interface TemporaryPersonExposeService extends BaseService<TemporaryPerso
      * @param dateTime
      */
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime);
+
+    /**
+     * 统计
+     * @param departmentId
+     * @param deviceSate
+     * @return
+     */
+    public int count(Long departmentId, State deviceSate);
+
+    /**
+     * 根据部门查询患者
+     * @param departmentId
+     * @return
+     */
+    public List<TemporaryPerson> find(Long departmentId, String name);
 }

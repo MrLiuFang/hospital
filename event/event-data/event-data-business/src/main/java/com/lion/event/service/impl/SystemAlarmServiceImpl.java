@@ -8,10 +8,14 @@ import com.lion.common.dto.UpdateStateDto;
 import com.lion.common.enums.Type;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.event.dao.SystemAlarmDao;
 import com.lion.event.entity.CurrentPosition;
+import com.lion.event.entity.DeviceData;
+import com.lion.event.entity.Position;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
+import com.lion.event.entity.vo.ListSystemAlarmVo;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.entity.vo.SystemAlarmVo;
 import com.lion.event.service.SystemAlarmService;
@@ -21,8 +25,13 @@ import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +57,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Autowired
     private ObjectMapper jacksonObjectMapper;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
 
     @Override
     public void save(SystemAlarm systemAlarm) {
@@ -180,5 +192,32 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
             return optional.get();
         }
         return null;
+    }
+
+    @Override
+    public IPageResultData<List<ListSystemAlarmVo>> list(Long pi, LionPage lionPage) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.nonNull(pi)) {
+            criteria.and("pi").is(pi);
+        }
+        criteria.and("ua").is(false ? 1 : 0);
+        query.addCriteria(criteria);
+        query.with(lionPage);
+        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
+//        long count = mongoTemplate.count(query, SystemAlarm.class);
+//        PageableExecutionUtils.getPage(items, lionPage, () -> count);
+        List<ListSystemAlarmVo> returnList = new ArrayList<>();
+        items.forEach(systemAlarm -> {
+            ListSystemAlarmVo vo = new ListSystemAlarmVo();
+            BeanUtils.copyProperties(systemAlarm,vo);
+            SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
+            vo.setAlarmContent(systemAlarmType.getDesc());
+            vo.setAlarmCode(systemAlarmType.getName());
+            returnList.add(vo);
+        });
+        IPageResultData<List<ListSystemAlarmVo>> pageResultData =new PageResultData<>(returnList,lionPage,0L);
+        return pageResultData;
     }
 }

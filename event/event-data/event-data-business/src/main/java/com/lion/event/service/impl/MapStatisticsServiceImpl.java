@@ -40,6 +40,7 @@ import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.entity.enums.State;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.PatientExposeService;
 import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
@@ -51,8 +52,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Period;
 import java.util.*;
 
 /**
@@ -349,6 +352,40 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
         });
         return departmentPatientStatisticsDetailsVo;
+    }
+
+    @Override
+    public DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetails(String name) {
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+        DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetailsVo = new DepartmentTemporaryPersonStatisticsDetailsVo();
+        List<DepartmentTemporaryPersonStatisticsDetailsVo.DepartmentVo> departmentVos = new ArrayList<>();
+        departmentTemporaryPersonStatisticsDetailsVo.setDepartmentVos(departmentVos);
+        list.forEach(department -> {
+            DepartmentTemporaryPersonStatisticsDetailsVo.DepartmentVo departmentVo = new DepartmentTemporaryPersonStatisticsDetailsVo.DepartmentVo();
+            departmentVo.setDepartmentName(department.getName());
+            departmentVo.setDepartmentId(department.getId());
+            departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), null));
+            departmentTemporaryPersonStatisticsDetailsVo.setNormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getNormalTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), State.NORMAL));
+            departmentTemporaryPersonStatisticsDetailsVo.setAbnormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getAbnormalTemporaryPersonCount() +  temporaryPersonExposeService.count(department.getId(), State.ALARM));
+            List<DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo> temporaryPersonVos = new ArrayList<>();
+            List<TemporaryPerson> temporaryPersonList = temporaryPersonExposeService.find(department.getId(),name);
+            temporaryPersonList.forEach(temporaryPerson -> {
+                DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo vo = new DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo();
+                Tag tag = tagExposeService.find(temporaryPerson.getTagCode());
+                if (Objects.nonNull(tag)){
+                    vo.setBattery(tag.getBattery());
+                }
+                vo.setName(temporaryPerson.getName());
+                vo.setTagCode(temporaryPerson.getTagCode());
+                vo.setHeadPortrait(temporaryPerson.getHeadPortrait());
+                vo.setHeadPortraitUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
+                temporaryPersonVos.add(vo);
+            });
+            departmentVo.setTemporaryPersonVos(temporaryPersonVos);
+            departmentVos.add(departmentVo);
+        });
+        return departmentTemporaryPersonStatisticsDetailsVo;
     }
 
     @Override

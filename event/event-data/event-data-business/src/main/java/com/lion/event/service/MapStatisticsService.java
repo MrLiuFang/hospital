@@ -1,6 +1,7 @@
 package com.lion.event.service;
 
 import com.lion.core.IPageResultData;
+import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.vo.*;
 
@@ -55,6 +56,13 @@ public interface MapStatisticsService {
      * @return
      */
     public DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetails(String name);
+
+    /**
+     *
+     * @param name
+     * @return
+     */
+    public DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetails(String name);
 
     /**
      * 员工详情

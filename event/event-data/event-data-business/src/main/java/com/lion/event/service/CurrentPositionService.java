@@ -21,10 +21,10 @@ public interface CurrentPositionService  {
 
     /**
      * 查询用户当前位置
-     * @param userId
+     * @param pi
      * @return
      */
-    public CurrentPosition find(Long userId);
+    public CurrentPosition find(Long pi);
 
     /**
      * 获取标签当前位置

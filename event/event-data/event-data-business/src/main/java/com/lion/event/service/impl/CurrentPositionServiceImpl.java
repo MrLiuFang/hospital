@@ -49,10 +49,10 @@ public class CurrentPositionServiceImpl implements CurrentPositionService {
     }
 
     @Override
-    public CurrentPosition find(Long userId) {
+    public CurrentPosition find(Long pi) {
         CurrentPosition exampleCurrentPosition = new CurrentPosition();
-        if (Objects.nonNull(userId)) {
-            exampleCurrentPosition.setPi(userId);
+        if (Objects.nonNull(pi)) {
+            exampleCurrentPosition.setPi(pi);
         }
         Example<CurrentPosition> example = Example.of(exampleCurrentPosition);
         Optional<CurrentPosition> optional = currentPositionDao.findOne(example);

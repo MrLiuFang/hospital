@@ -21,8 +21,7 @@ public class PositionDto implements Serializable {
     @Id
     private String _id;
 
-    //类型 (com.lion.common.enums.Type)
-    @ApiModelProperty(value = "")
+    @ApiModelProperty(value = "类型 (com.lion.common.enums.Type)")
     private Integer typ;
 
     @ApiModelProperty(value = "员工/患者/流动人员id")

@@ -89,7 +89,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     public void add(AddTemporaryPersonDto addTemporaryPersonDto) {
         TemporaryPerson temporaryPerson = new TemporaryPerson();
         BeanUtils.copyProperties(addTemporaryPersonDto,temporaryPerson);
-        assertPatientExist(temporaryPerson.getPatientId());
+        temporaryPerson = assertPatientExist(temporaryPerson, temporaryPerson.getPatientId());
         temporaryPerson = save(temporaryPerson);
         restrictedAreaService.add(addTemporaryPersonDto.getRegionId(), PersonType.TEMPORARY_PERSON,temporaryPerson.getId());
         tagPostdocsExposeService.binding(temporaryPerson.getId(),addTemporaryPersonDto.getTagCode());
@@ -101,7 +101,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     public void update(UpdateTemporaryPersonDto updateTemporaryPersonDto) {
         TemporaryPerson temporaryPerson = new TemporaryPerson();
         BeanUtils.copyProperties(updateTemporaryPersonDto,temporaryPerson);
-        assertPatientExist(temporaryPerson.getPatientId());
+        temporaryPerson = assertPatientExist(temporaryPerson, temporaryPerson.getPatientId());
         update(temporaryPerson);
         restrictedAreaService.add(updateTemporaryPersonDto.getRegionId(), PersonType.TEMPORARY_PERSON,temporaryPerson.getId());
         tagPostdocsExposeService.binding(temporaryPerson.getId(),updateTemporaryPersonDto.getTagCode());
@@ -191,7 +191,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         tagPostdocsExposeService.unbinding(temporaryPerson.getId(),false);
     }
 
-    private void assertPatientExist(Long patientId) {
+    private TemporaryPerson assertPatientExist(TemporaryPerson temporaryPerson, Long patientId) {
         Patient patient = patientService.findById(patientId);
         if (Objects.isNull(patient)){
             BusinessException.throwException("该患者不存在");
@@ -199,5 +199,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         if (!Objects.equals(patient.getIsLeave(), false)) {
             BusinessException.throwException("该患者已登出");
         }
+        temporaryPerson.setDepartmentId(patient.getDepartmentId());
+        return temporaryPerson;
     }
 }

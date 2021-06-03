@@ -1,5 +1,7 @@
 package com.lion.event.service;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.event.entity.Position;
 
 import java.time.LocalDateTime;
@@ -31,4 +33,12 @@ public interface PositionService {
      * @return
      */
     public List<Position> findByAssetsId(Long assetsId , LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    /**
+     * 查询轨迹
+     * @param pi
+     * @param lionPage
+     * @return
+     */
+    public IPageResultData<List<Position>> list(Long pi, LionPage lionPage);
 }

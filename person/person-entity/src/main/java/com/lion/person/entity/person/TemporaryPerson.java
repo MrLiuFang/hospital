@@ -43,6 +43,10 @@ public class TemporaryPerson extends Person {
     @Column(name = "patient_Id")
     private Long patientId;
 
+    @ApiModelProperty(value = "科室ID（来源于拜访人）")
+    @Column(name = "department_id")
+    private Long departmentId;
+
     @ApiModelProperty(value = "拜访原因")
     @Column(name = "remarks")
     private String remarks;

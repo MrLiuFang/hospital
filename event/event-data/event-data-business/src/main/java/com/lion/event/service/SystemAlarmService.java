@@ -5,10 +5,10 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
+import com.lion.event.entity.vo.ListSystemAlarmVo;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.entity.vo.SystemAlarmVo;
 
-import javax.xml.crypto.KeySelector;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -99,4 +99,12 @@ public interface SystemAlarmService {
      * @return
      */
     public SystemAlarm findOne(Long pi, Long ai, Long dvi,Long ti);
+
+    /**
+     * 列表
+     * @param pi
+     * @param lionPage
+     * @return
+     */
+    public IPageResultData<List<ListSystemAlarmVo>> list(Long pi, LionPage lionPage);
 }

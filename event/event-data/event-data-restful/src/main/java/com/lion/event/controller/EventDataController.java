@@ -60,10 +60,19 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @Autowired
     private MapStatisticsService mapStatisticsService;
 
+    @Autowired
+    private PositionService positionService;
+
     @GetMapping("/user/current/region")
-    @ApiOperation(value = "用户当前位置")
+    @ApiOperation(value = "员工当前位置")
     public IResultData<CurrentRegionVo> userCurrentRegion(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId) {
         return ResultData.instance().setData(mapStatisticsService.userCurrentRegion(userId));
+    }
+
+    @GetMapping("/patient/current/region")
+    @ApiOperation(value = "患者当前位置")
+    public IResultData<CurrentPosition> patientCurrentRegion(@ApiParam(value = "患者id") @NotNull(message = "患者id不能为空") Long patientId) {
+        return ResultData.instance().setData(currentPositionService.find(patientId));
     }
 
     @GetMapping("/tag/current/region")
@@ -152,34 +161,41 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     }
 
     @GetMapping("/department/statistics/details")
-    @ApiOperation(value = "地图监控科室统计")
+    @ApiOperation(value = "地图监控科室统计(左边列表)")
     public IResultData<List<DepartmentStatisticsDetailsVo>> departmentStatisticsDetails() {
         return ResultData.instance().setData(mapStatisticsService.departmentStatisticsDetails());
     }
 
     @GetMapping("/department/staff/statistics/details")
-    @ApiOperation(value = "地图监控科室员工统计")
+    @ApiOperation(value = "地图监控科室员工统计(左边列表)")
     public IResultData<DepartmentStaffStatisticsDetailsVo> departmentStaffStatisticsDetails(@ApiParam(value = "姓名") String name) {
         return ResultData.instance().setData(mapStatisticsService.departmentStaffStatisticsDetails(name));
     }
 
     @GetMapping("/department/assets/statistics/details")
-    @ApiOperation(value = "地图监控科室资产统计")
+    @ApiOperation(value = "地图监控科室资产统计(左边列表)")
     public IResultData<DepartmentAssetsStatisticsDetailsVo> departmentAssetsStatisticsDetails(@ApiParam(value = "名称/资产编码") String keyword) {
         return ResultData.instance().setData(mapStatisticsService.departmentAssetsStatisticsDetails(keyword));
     }
 
     @GetMapping("/department/tag/statistics/details")
-    @ApiOperation(value = "地图监控科室温标签统计")
+    @ApiOperation(value = "地图监控科室温标签统计(左边列表)")
     public IResultData<DepartmentTagStatisticsDetailsVo> departmentTagStatisticsDetails(@ApiParam(value = "名称/标签编码") String keyword) {
         return ResultData.instance().setData(mapStatisticsService.departmentTagStatisticsDetails(keyword));
     }
 
     @GetMapping("/department/patient/statistics/details")
-    @ApiOperation(value = "地图监控患者统计")
+    @ApiOperation(value = "地图监控患者统计(左边列表)")
     public IResultData<DepartmentPatientStatisticsDetailsVo> departmentPatientStatisticsDetails(@ApiParam(value = "姓名") String name) {
         return ResultData.instance().setData(mapStatisticsService.departmentPatientStatisticsDetails(name));
     }
+
+    @GetMapping("/department/temporary/person/statistics/details")
+    @ApiOperation(value = "地图监控流动人员统计(左边列表)")
+    public IResultData<DepartmentTemporaryPersonStatisticsDetailsVo> departmentTemporaryPersonStatisticsDetails(@ApiParam(value = "姓名") String name) {
+        return ResultData.instance().setData(mapStatisticsService.departmentTemporaryPersonStatisticsDetails(name));
+    }
+
 
     @GetMapping("/patient/details")
     @ApiOperation(value = "地图监控患者详情")
@@ -194,17 +210,39 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     }
 
     @GetMapping("/staff/position")
-    @ApiOperation(value = "地图监控员工轨迹")
-    public IPageResultData<List<Position>> staffPosition(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId) {
-        return null;
-//        return ResultData.instance().setData(mapStatisticsService.staffDetails(userId));
+    @ApiOperation(value = "地图监控员工轨迹(不返回总行数)")
+    public IPageResultData<List<Position>> staffPosition(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId,LionPage lionPage) {
+        return positionService.list(userId,lionPage);
     }
 
     @GetMapping("/staff/system/alarm")
-    @ApiOperation(value = "地图监控员工警告")
-    public IPageResultData<List<SystemAlarm>> staffSystemAlarm(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId) {
-        return null;
-//        return ResultData.instance().setData(mapStatisticsService.staffDetails(userId));
+    @ApiOperation(value = "地图监控员工警告列表(不返回总行数)")
+    public IPageResultData<List<ListSystemAlarmVo>> staffSystemAlarm(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId,LionPage lionPage) {
+        return systemAlarmService.list(userId,lionPage);
+    }
+
+    @GetMapping("/patient/position")
+    @ApiOperation(value = "地图监控患者轨迹(不返回总行数)")
+    public IPageResultData<List<Position>> patientPosition(@ApiParam("患者id") @NotNull(message = "患者id不能为空") Long positionId,LionPage lionPage) {
+        return positionService.list(positionId,lionPage);
+    }
+
+    @GetMapping("/patient/system/alarm")
+    @ApiOperation(value = "地图监控患者警告列表(不返回总行数)")
+    public IPageResultData<List<ListSystemAlarmVo>> patientSystemAlarm(@ApiParam("患者id") @NotNull(message = "患者id不能为空") Long positionId,LionPage lionPage) {
+        return systemAlarmService.list(positionId,lionPage);
+    }
+
+    @GetMapping("/temporary/person/position")
+    @ApiOperation(value = "地图监控流动人员轨迹(不返回总行数)")
+    public IPageResultData<List<Position>> temporaryPersonPosition(@ApiParam("流动人员id") @NotNull(message = "流动人员id不能为空") Long temporaryPersonId,LionPage lionPage) {
+        return positionService.list(temporaryPersonId,lionPage);
+    }
+
+    @GetMapping("/temporary/person/system/alarm")
+    @ApiOperation(value = "地图监控流动人员警告列表(不返回总行数)")
+    public IPageResultData<List<ListSystemAlarmVo>> temporaryPersonSystemAlarm(@ApiParam("流动人员id") @NotNull(message = "流动人员id不能为空") Long temporaryPersonId,LionPage lionPage) {
+        return systemAlarmService.list(temporaryPersonId,lionPage);
     }
 
     @GetMapping("/assets/details")
