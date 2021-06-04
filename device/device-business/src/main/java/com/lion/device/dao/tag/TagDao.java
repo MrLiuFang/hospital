@@ -3,6 +3,7 @@ package com.lion.device.dao.tag;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -110,4 +111,7 @@ public interface TagDao extends BaseDao<Tag> {
     @Transactional
     @Query(" update Tag  set lastDataTime =:dateTime where id = :id ")
     public void updateLastDataTime(@Param("id")Long id, @Param("dateTime")LocalDateTime dateTime);
+
+    @Query( " select t.id from Tag t where t.type = :tagType ")
+    public List<Long> findId(@Param("tagType")TagType tagType);
 }

@@ -3,6 +3,7 @@ package com.lion.device.expose.tag;
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
 
 import java.time.LocalDateTime;
@@ -86,5 +87,12 @@ public interface TagExposeService extends BaseService<Tag> {
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime);
 
     public List<Long> allId();
+
+    /**
+     * 根据标签类型查询
+     * @param tagType
+     * @return
+     */
+    public List<Long> find(TagType tagType);
 
 }

@@ -5,6 +5,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagDao;
 import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.service.tag.TagService;
@@ -95,5 +96,10 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     @Override
     public List<Long> allId() {
         return tagDao.allId();
+    }
+
+    @Override
+    public List<Long> find(TagType tagType) {
+        return tagDao.findId(tagType);
     }
 }

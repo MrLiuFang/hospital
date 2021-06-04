@@ -2,11 +2,13 @@ package com.lion.event.service.impl;
 
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.dto.UserCurrentRegionDto;
+import com.lion.common.enums.Type;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.RedisUtil;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagAssets;
 import com.lion.device.entity.tag.TagUser;
@@ -52,10 +54,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.Period;
 import java.util.*;
 
 /**
@@ -505,7 +505,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(LionPage lionPage) {
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isUa, Long ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         LocalDateTime now = LocalDateTime.now();
         Long userId = CurrentUserUtil.getCurrentUserId();
         List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
@@ -513,6 +513,15 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         list.forEach(department -> {
             departmentIds.add(department.getId());
         });
-        return systemAlarmService.list(lionPage,departmentIds,false,LocalDateTime.of(now.toLocalDate(), LocalTime.MIN),now);
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.of(now.toLocalDate(), LocalTime.MIN);
+        }if (Objects.isNull(endDateTime)) {
+            endDateTime = now;
+        }
+        if (Objects.nonNull(tagType)){
+            tagExposeService.find(tagType);
+        }
+
+        return systemAlarmService.list(lionPage,departmentIds, isUa,startDateTime,endDateTime);
     }
 }
