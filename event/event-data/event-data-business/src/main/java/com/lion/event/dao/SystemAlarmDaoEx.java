@@ -1,5 +1,6 @@
 package com.lion.event.dao;
 
+import com.lion.common.enums.Type;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.SystemAlarm;
@@ -86,9 +87,12 @@ public interface SystemAlarmDaoEx {
      * @param lionPage
      * @param departmentIds
      * @param ua
+     * @param ri
+     * @param alarmType
+     * @param tagIds
      * @param startDateTime
      * @param endDateTime
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, Long ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

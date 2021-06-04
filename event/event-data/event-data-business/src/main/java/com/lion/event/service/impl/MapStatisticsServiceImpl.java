@@ -53,6 +53,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -505,23 +506,43 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isUa, Long ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa, Long ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         LocalDateTime now = LocalDateTime.now();
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
         List<Long> departmentIds = new ArrayList<>();
-        list.forEach(department -> {
-            departmentIds.add(department.getId());
-        });
-        if (Objects.isNull(startDateTime)) {
-            startDateTime = LocalDateTime.of(now.toLocalDate(), LocalTime.MIN);
-        }if (Objects.isNull(endDateTime)) {
-            endDateTime = now;
+        if (!isAll) {
+            Long userId = CurrentUserUtil.getCurrentUserId();
+            List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+            list.forEach(department -> {
+                departmentIds.add(department.getId());
+            });
         }
+        if (Objects.nonNull(di)){
+            departmentIds.add(di);
+        }
+//        if (Objects.isNull(startDateTime)) {
+//            startDateTime = LocalDateTime.of(now.toLocalDate(), LocalTime.MIN);
+//        }if (Objects.isNull(endDateTime)) {
+//            endDateTime = now;
+//        }
+        List<Long> tagIds = Collections.EMPTY_LIST;
         if (Objects.nonNull(tagType)){
-            tagExposeService.find(tagType);
+            tagIds.addAll(tagExposeService.find(tagType));
+        }
+        if (StringUtils.hasText(tagCode)){
+            tagIds.clear();
+            Tag tag = tagExposeService.find(tagCode);
+            if (Objects.nonNull(tag)) {
+                tagIds.add(tag.getId());
+            }
         }
 
-        return systemAlarmService.list(lionPage,departmentIds, isUa,startDateTime,endDateTime);
+        return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType,tagIds,startDateTime,endDateTime);
+    }
+
+    @Override
+    public void systemAlarmListExport(Boolean isAll, Boolean isUa, Long ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di,alarmType,tagType,tagCode,startDateTime,endDateTime,lionPage);
+        List<SystemAlarmVo> list = pageResultData.getData();
+
     }
 }

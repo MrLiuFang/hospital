@@ -41,7 +41,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
-import sun.plugin.navig.motif.OJIPlugin;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -216,7 +215,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, Long ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
@@ -225,11 +224,20 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         if (Objects.nonNull(ua)) {
             criteria.and("ua").is(ua?1:0);
         }
+        if (Objects.nonNull(ri)) {
+            criteria.and("ri").is(ri);
+        }
+        if (Objects.nonNull(alarmType)) {
+            criteria.and("ty").is(alarmType.getKey());
+        }
+        if (Objects.nonNull(tagIds) && tagIds.size()>0) {
+            criteria.and("ti").in(tagIds);
+        }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
             criteria.andOperator(Criteria.where("dt").gte(startDateTime), Criteria.where("dt").lte(endDateTime));
-        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
+        }else if (Objects.nonNull(startDateTime)) {
             criteria.and("dt").gte(startDateTime);
-        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
+        }else if (Objects.nonNull(endDateTime)) {
             criteria.and("dt").lte(endDateTime);
         }
         query.addCriteria(criteria);

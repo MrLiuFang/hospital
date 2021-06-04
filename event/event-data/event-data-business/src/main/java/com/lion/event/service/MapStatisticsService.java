@@ -2,11 +2,9 @@ package com.lion.event.service;
 
 import com.lion.common.enums.Type;
 import com.lion.core.IPageResultData;
-import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.device.entity.enums.TagType;
 import com.lion.event.entity.vo.*;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -92,6 +90,8 @@ public interface MapStatisticsService {
     /**
      * 获取警告列表
      *
+     *
+     * @param isAll
      * @param isUa
      * @param ri
      * @param di
@@ -103,6 +103,20 @@ public interface MapStatisticsService {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isUa,  Long ri,  Long di,  Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa,  Long ri,  Long di,  Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 
+    /**
+     * 导出
+     * @param isAll
+     * @param isUa
+     * @param ri
+     * @param di
+     * @param alarmType
+     * @param tagType
+     * @param tagCode
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     */
+    public void systemAlarmListExport(Boolean isAll, Boolean isUa,  Long ri,  Long di,  Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

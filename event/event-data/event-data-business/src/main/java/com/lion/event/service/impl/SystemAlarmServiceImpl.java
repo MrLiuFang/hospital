@@ -12,9 +12,6 @@ import com.lion.core.PageResultData;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.SystemAlarmDao;
-import com.lion.event.entity.CurrentPosition;
-import com.lion.event.entity.DeviceData;
-import com.lion.event.entity.Position;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.ListSystemAlarmVo;
@@ -32,12 +29,10 @@ import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
-import com.sun.corba.se.spi.ior.ObjectKey;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -189,8 +184,8 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return alarmDao.list(lionPage,departmentIds,ua,startDateTime,endDateTime);
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, Long ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return alarmDao.list(lionPage,departmentIds,ua,ri , alarmType ,tagIds, startDateTime, endDateTime);
     }
 
     @Override
