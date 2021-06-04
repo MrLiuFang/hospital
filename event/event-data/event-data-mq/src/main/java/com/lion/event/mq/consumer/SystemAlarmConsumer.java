@@ -95,6 +95,12 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                     log.info("系统内触发警告");
                     SystemAlarm newSystemAlarm = new SystemAlarm();
                     newSystemAlarm.setAi(systemAlarmDto.getAssetsId());
+                    if (Objects.nonNull(systemAlarmDto.getHumidity())) {
+                        newSystemAlarm.setH(systemAlarmDto.getHumidity());
+                    }
+                    if (Objects.nonNull(systemAlarmDto.getTemperature())) {
+                        newSystemAlarm.setT(systemAlarmDto.getTemperature());
+                    }
                     newSystemAlarm.setDvi(systemAlarmDto.getDeviceId());
                     newSystemAlarm.setPi(systemAlarmDto.getPeopleId());
                     if (Objects.nonNull(systemAlarmDto.getSystemAlarmType())) {

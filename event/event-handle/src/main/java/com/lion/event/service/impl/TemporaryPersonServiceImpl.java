@@ -66,6 +66,8 @@ public class TemporaryPersonServiceImpl implements TemporaryPersonService {
             SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
             systemAlarmDto.setDateTime(LocalDateTime.now());
             systemAlarmDto.setType(Type.MIGRANT);
+            systemAlarmDto.setTagId(tag.getId());
+            systemAlarmDto.setTagId(tag.getId());
             systemAlarmDto.setPeopleId(temporaryPerson.getId());
             systemAlarmDto.setSystemAlarmType(SystemAlarmType.CCXDFW);
             systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());

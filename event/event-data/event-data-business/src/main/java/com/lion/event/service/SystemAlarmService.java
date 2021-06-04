@@ -2,13 +2,16 @@ package com.lion.event.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lion.core.IPageResultData;
+import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.ListSystemAlarmVo;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
+import com.lion.event.entity.vo.SystemAlarmDetailsVo;
 import com.lion.event.entity.vo.SystemAlarmVo;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -107,4 +110,11 @@ public interface SystemAlarmService {
      * @return
      */
     public IPageResultData<List<ListSystemAlarmVo>> list(Long pi, LionPage lionPage);
+
+    /**
+     * 警告详情
+     * @param id
+     * @return
+     */
+    public SystemAlarmDetailsVo details(String id);
 }

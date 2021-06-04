@@ -93,7 +93,7 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
                         if (Objects.isNull(userLastWashDto)) {
                             // 记录洗手事件 (错过洗手)
                             try {
-                                recordWashEvent(loopWashDto.getUserId(),null, SystemAlarmType.ZZDQYWJXXSCZ,loopWashDto, wash);
+                                recordWashEvent(loopWashDto.getUserId(),null, SystemAlarmType.ZZDQYWJXXSCZ,loopWashDto, wash,userLastWashDto);
                             } catch (JsonProcessingException e) {
                                 e.printStackTrace();
                             }
@@ -102,7 +102,7 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
                             if (!(userLastWashDto.getDateTime().isAfter(loopWashDto.getStartWashDateTime()) && userLastWashDto.getDateTime().isBefore(loopWashDto.getEndWashDateTime()))) {
                                 // 记录洗手事件 (错过洗手)
                                 try {
-                                    recordWashEvent(loopWashDto.getUserId(),null, SystemAlarmType.ZZDQYWJXXSCZ,loopWashDto, wash);
+                                    recordWashEvent(loopWashDto.getUserId(),null, SystemAlarmType.ZZDQYWJXXSCZ,loopWashDto, wash,userLastWashDto);
                                 } catch (JsonProcessingException e) {
                                     e.printStackTrace();
                                 }
@@ -111,7 +111,7 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                 Boolean b = washRuleUtil.judgeDevideType(userLastWashDto.getMonitorId(),wash);
                                 if (!b){
                                     try {
-                                        recordWashEvent(loopWashDto.getUserId(),userLastWashDto.getDateTime(), SystemAlarmType.WXYBZDXSSBXS,loopWashDto, wash);
+                                        recordWashEvent(loopWashDto.getUserId(),userLastWashDto.getDateTime(), SystemAlarmType.WXYBZDXSSBXS,loopWashDto, wash,userLastWashDto);
                                     } catch (JsonProcessingException e) {
                                         e.printStackTrace();
                                     }
@@ -141,7 +141,7 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
         }
     }
 
-    private void recordWashEvent(Long userId,LocalDateTime wt,SystemAlarmType systemAlarmType,LoopWashDto loopWashDto,Wash wash) throws JsonProcessingException {
+    private void recordWashEvent(Long userId,LocalDateTime wt,SystemAlarmType systemAlarmType,LoopWashDto loopWashDto,Wash wash,UserLastWashDto userLastWashDto) throws JsonProcessingException {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + userId);
         WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null , null,null);
         WashEventDto washEventDto = new WashEventDto();
@@ -158,6 +158,7 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
         SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
         systemAlarmDto.setDateTime(LocalDateTime.now());
         systemAlarmDto.setType(Type.STAFF);
+        systemAlarmDto.setTagId(userLastWashDto.getTagId());
         systemAlarmDto.setRegionId(Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null);
         systemAlarmDto.setPeopleId(userId);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());

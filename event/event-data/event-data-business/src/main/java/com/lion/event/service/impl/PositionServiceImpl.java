@@ -53,7 +53,7 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public IPageResultData<List<Position>> list(Long pi, Long ai, LionPage lionPage) {
+    public IPageResultData<List<Position>> list(Long pi, Long ai, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(pi)) {
@@ -61,6 +61,13 @@ public class PositionServiceImpl implements PositionService {
         }
         if (Objects.nonNull(ai)) {
             criteria.and("ai").is(ai);
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
+        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
+            criteria.and("ddt").gte(startDateTime);
+        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
+            criteria.and("ddt").lte(endDateTime);
         }
         query.addCriteria(criteria);
         query.with(lionPage);

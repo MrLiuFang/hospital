@@ -29,6 +29,11 @@ public class UserLastWashDto implements Serializable {
     private Long starId;
 
     /**
+     * 标签Id
+     */
+    private Long tagId;
+
+    /**
      * 最后洗手发生时间
      */
     private LocalDateTime dateTime;

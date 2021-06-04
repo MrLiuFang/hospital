@@ -1,6 +1,7 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.common.enums.Type;
 import com.lion.event.entity.SystemAlarm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,10 +16,10 @@ import java.time.LocalDateTime;
  */
 @Data
 @ApiModel
-public class SystemAlarmVo {
+public class SystemAlarmVo extends SystemAlarm {
 
-    @ApiModelProperty(value = "警告id")
-    private String id;
+    @ApiModelProperty(value = "警告来源(com.lion.common.enums.Type 获取该字典)")
+    private Type type;
 
     @ApiModelProperty(value = "警告内容")
     private String alarmContent;

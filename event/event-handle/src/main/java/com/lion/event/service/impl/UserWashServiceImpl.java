@@ -67,7 +67,7 @@ public class UserWashServiceImpl implements UserWashService {
         //记录当前用户所在区域
         UserCurrentRegionDto userCurrentRegionDto = recordUserCurrentRegion(user,monitorRegion,starRegion, deviceDataDto);
         String uuid = UUID.randomUUID().toString();
-        userWashEevent(user,monitor,star, deviceDataDto,userCurrentRegionDto);
+        userWashEevent(user,monitor,star,tag , deviceDataDto, userCurrentRegionDto);
 
         //判断是否从X区域进入X区域，如果是就进行新的洗手事件监控
         if (Objects.nonNull(userCurrentRegionDto) && userCurrentRegionDto.getCurrentRegionEvent()==1 && !Objects.equals(userCurrentRegionDto.getRegionId(),userCurrentRegionDto.getPreviousRegionId())) {
@@ -76,6 +76,7 @@ public class UserWashServiceImpl implements UserWashService {
             regionWashMonitorDelayDto.setUserId(user.getId());
             regionWashMonitorDelayDto.setRegionId(userCurrentRegionDto.getRegionId());
             regionWashMonitorDelayDto.setUuid(userCurrentRegionDto.getUuid());
+            regionWashMonitorDelayDto.setTagId(tag.getId());
             if (Objects.nonNull(list) && list.size() > 0) {
                 list.forEach(wash -> {
                     //如果是全部用户
@@ -147,9 +148,10 @@ public class UserWashServiceImpl implements UserWashService {
      * @param user
      * @param monitor
      * @param star
+     * @param tag
      * @param deviceDataDto
      */
-    private void userWashEevent(User user, Device monitor, Device star, DeviceDataDto deviceDataDto, UserCurrentRegionDto userCurrentRegionDto) throws JsonProcessingException {
+    private void userWashEevent(User user, Device monitor, Device star,Tag tag, DeviceDataDto deviceDataDto, UserCurrentRegionDto userCurrentRegionDto) throws JsonProcessingException {
         Device device = Objects.isNull(monitor)?star:monitor;
         if (Objects.isNull(device)){
             return;
@@ -173,6 +175,7 @@ public class UserWashServiceImpl implements UserWashService {
             userLastWashDto.setUserId(user.getId());
             userLastWashDto.setMonitorId(Objects.isNull(monitor)?null:monitor.getId());
             userLastWashDto.setStarId(Objects.isNull(star)?null:star.getId());
+            userLastWashDto.setTagId(tag.getId());
             userLastWashDto.setSystemDateTime(deviceDataDto.getSystemDateTime());
             userLastWashDto.setDateTime(deviceDataDto.getTime());
             redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+user.getId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);

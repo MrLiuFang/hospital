@@ -31,6 +31,7 @@ import lombok.extern.java.Log;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -240,7 +241,8 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         if (Objects.nonNull(items) && items.size()>0){
             items.forEach(systemAlarm -> {
                 SystemAlarmVo vo = new SystemAlarmVo();
-                vo.setId(systemAlarm.get_id());
+                BeanUtils.copyProperties(systemAlarm,vo);
+                vo.setType(Type.instance(systemAlarm.getTy()));
                 vo.setDeviceDateTime(systemAlarm.getDt());
                 vo.setSortDateTime(systemAlarm.getSdt());
                 if (Objects.nonNull(systemAlarm.getSat())) {

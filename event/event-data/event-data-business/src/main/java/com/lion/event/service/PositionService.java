@@ -3,6 +3,7 @@ package com.lion.event.service;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.Position;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -38,8 +39,10 @@ public interface PositionService {
      * 查询轨迹
      * @param pi
      * @param ai
+     * @param startDateTime
+     * @param endDateTime
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<Position>> list(Long pi,Long ai, LionPage lionPage);
+    public IPageResultData<List<Position>> list(Long pi,Long ai, LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 }

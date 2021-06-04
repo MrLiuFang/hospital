@@ -13,7 +13,6 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.event.service.CommonService;
 import com.lion.event.service.DeviceService;
 import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.region.Region;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,27 +87,27 @@ public class DeviceServiceImpl implements DeviceService {
         if (Objects.equals(deviceDataDto.getTagType(), Type.HUMIDITY)) {//湿度仪
             if (Objects.nonNull(tag.getMaxHumidity())) {
                 if (deviceDataDto.getHumidity().compareTo(tag.getMaxHumidity()) == 1) {
-                    systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGDG,currentRegionDto);
+                    systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGDG,currentRegionDto,deviceDataDto );
                     tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.SDGDG);
                 }
             }
 
             if (Objects.nonNull(tag.getMinHumidity())) {
                 if (deviceDataDto.getHumidity().compareTo(tag.getMinHumidity()) == -1) {
-                    systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGDG,currentRegionDto);
+                    systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGDG,currentRegionDto,deviceDataDto);
                     tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.SDGDG);
                 }
             }
         }else if (Objects.equals(deviceDataDto.getTagType(), Type.TEMPERATURE)){//温度仪
             if (Objects.nonNull(tag.getMaxTemperature())) {
                 if (deviceDataDto.getTemperature().compareTo(tag.getMaxTemperature()) == 1) {
-                    systemAlarm(Type.TEMPERATURE,tag,null,SystemAlarmType.WDGDG,currentRegionDto);
+                    systemAlarm(Type.TEMPERATURE,tag,null,SystemAlarmType.WDGDG,currentRegionDto,deviceDataDto );
                     tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.WDGDG);
                 }
             }
             if (Objects.nonNull(tag.getMinTemperature())) {
                 if (deviceDataDto.getTemperature().compareTo(tag.getMinTemperature()) == -1) {
-                    systemAlarm(Type.TEMPERATURE,tag,null,SystemAlarmType.WDGDG,currentRegionDto);
+                    systemAlarm(Type.TEMPERATURE,tag,null,SystemAlarmType.WDGDG,currentRegionDto,deviceDataDto );
                     tagEvent(tagRecordDto,tag,deviceDataDto,SystemAlarmType.WDGDG);
                 }
             }
@@ -143,13 +142,19 @@ public class DeviceServiceImpl implements DeviceService {
         return tagRecordDto;
     }
 
-    private void systemAlarm(Type type, Tag tag, Assets assets, SystemAlarmType systemAlarmType,CurrentRegionDto currentRegionDto) throws JsonProcessingException {
+    private void systemAlarm(Type type, Tag tag, Assets assets, SystemAlarmType systemAlarmType,CurrentRegionDto currentRegionDto,DeviceDataDto deviceDataDto) throws JsonProcessingException {
         //系统内警告
         SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
         systemAlarmDto.setDateTime(LocalDateTime.now());
         systemAlarmDto.setType(type);
         if (Objects.nonNull(tag)){
             systemAlarmDto.setTagId(tag.getId());
+            if (Objects.nonNull(deviceDataDto.getTemperature())) {
+                systemAlarmDto.setTemperature(deviceDataDto.getTemperature());
+            }
+            if (Objects.nonNull(deviceDataDto.getHumidity())) {
+                systemAlarmDto.setHumidity(deviceDataDto.getHumidity());
+            }
         }
         if (Objects.nonNull(assets)){
             systemAlarmDto.setAssetsId(assets.getId());

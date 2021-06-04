@@ -9,6 +9,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
@@ -49,6 +50,12 @@ public class SystemAlarm implements Serializable {
 
     @ApiModelProperty(value = "警告id")
     private Long ali;
+
+    @ApiModelProperty(value = "温湿标签警告湿度")
+    private BigDecimal h;
+
+    @ApiModelProperty(value = "温湿标签标签警告温度")
+    private BigDecimal t;
 
     @ApiModelProperty(value = "警告类型(com.lion.manage.entity.enums.SystemAlarmType)")
     private Integer sat;

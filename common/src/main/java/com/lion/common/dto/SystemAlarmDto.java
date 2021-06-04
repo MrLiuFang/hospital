@@ -3,9 +3,12 @@ package com.lion.common.dto;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.common.enums.Type;
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -52,6 +55,16 @@ public class SystemAlarmDto implements Serializable {
      * 区域id
      */
     private Long regionId;
+
+    /**
+     * 温度
+     */
+    private BigDecimal temperature;
+
+    /**
+     * 温度
+     */
+    private BigDecimal humidity;
 
     /**
      * 警告类型

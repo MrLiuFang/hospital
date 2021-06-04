@@ -96,6 +96,7 @@ public class PatientServiceImpl implements PatientService {
             SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
             systemAlarmDto.setDateTime(LocalDateTime.now());
             systemAlarmDto.setType(Type.PATIENT);
+            systemAlarmDto.setTagId(tag.getId());
             systemAlarmDto.setPeopleId(patient.getId());
             systemAlarmDto.setSystemAlarmType(SystemAlarmType.CCXDFW);
             systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());

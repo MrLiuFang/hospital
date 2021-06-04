@@ -211,14 +211,17 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/assets/position")
     @ApiOperation(value = "地图监控资产轨迹(不返回总行数)")
-    public IPageResultData<List<Position>> assetsPosition(@ApiParam("资产id") @NotNull(message = "资产id不能为空") Long assetsId,LionPage lionPage) {
-        return positionService.list(null,assetsId , lionPage);
+    public IPageResultData<List<Position>> assetsPosition(@ApiParam("资产id") @NotNull(message = "资产id不能为空") Long assetsId,
+                                                          @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                          @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                          LionPage lionPage) {
+        return positionService.list(null,assetsId,startDateTime ,endDateTime, lionPage);
     }
 
     @GetMapping("/staff/position")
     @ApiOperation(value = "地图监控员工轨迹(不返回总行数)")
     public IPageResultData<List<Position>> staffPosition(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId,LionPage lionPage) {
-        return positionService.list(userId,null , lionPage);
+        return positionService.list(userId,null,null,null , lionPage);
     }
 
     @GetMapping("/staff/system/alarm")
@@ -230,7 +233,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @GetMapping("/patient/position")
     @ApiOperation(value = "地图监控患者轨迹(不返回总行数)")
     public IPageResultData<List<Position>> patientPosition(@ApiParam("患者id") @NotNull(message = "患者id不能为空") Long positionId,LionPage lionPage) {
-        return positionService.list(positionId, null, lionPage);
+        return positionService.list(positionId, null,null,null , lionPage);
     }
 
     @GetMapping("/patient/system/alarm")
@@ -242,7 +245,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @GetMapping("/temporary/person/position")
     @ApiOperation(value = "地图监控流动人员轨迹(不返回总行数)")
     public IPageResultData<List<Position>> temporaryPersonPosition(@ApiParam("流动人员id") @NotNull(message = "流动人员id不能为空") Long temporaryPersonId,LionPage lionPage) {
-        return positionService.list(temporaryPersonId,null , lionPage);
+        return positionService.list(temporaryPersonId,null,null,null , lionPage);
     }
 
     @GetMapping("/temporary/person/system/alarm")
@@ -261,5 +264,11 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @ApiOperation(value = "地图监控警告列表")
     public IPageResultData<List<SystemAlarmVo>> systemAlarmList(LionPage lionPage){
         return mapStatisticsService.systemAlarmList(lionPage);
+    }
+
+    @GetMapping("/alarm/details")
+    @ApiOperation(value = "地图监控警告详情")
+    public IResultData<SystemAlarmDetailsVo> systemAlarmDetails(@ApiParam("警告id") @NotNull(message = "警告id不能为空") String id){
+        return ResultData.instance().setData(systemAlarmService.details(id));
     }
 }

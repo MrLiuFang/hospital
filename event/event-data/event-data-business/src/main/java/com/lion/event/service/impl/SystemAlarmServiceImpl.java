@@ -9,6 +9,8 @@ import com.lion.common.enums.Type;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
+import com.lion.device.entity.tag.Tag;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.SystemAlarmDao;
 import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.DeviceData;
@@ -17,16 +19,25 @@ import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.ListSystemAlarmVo;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
+import com.lion.event.entity.vo.SystemAlarmDetailsVo;
 import com.lion.event.entity.vo.SystemAlarmVo;
 import com.lion.event.service.SystemAlarmService;
+import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.SystemAlarmType;
+import com.lion.manage.expose.assets.AssetsExposeService;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.TemporaryPerson;
+import com.lion.person.expose.person.PatientExposeService;
+import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
+import com.sun.corba.se.spi.ior.ObjectKey;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -60,6 +71,18 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+
+    @DubboReference
+    private PatientExposeService patientExposeService;
+
+    @DubboReference
+    private TemporaryPersonExposeService temporaryPersonExposeService;
+
+    @DubboReference
+    private TagExposeService tagExposeService;
+
+    @DubboReference
+    private AssetsExposeService assetsExposeService;
 
     @Override
     public void save(SystemAlarm systemAlarm) {
@@ -219,5 +242,55 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         });
         IPageResultData<List<ListSystemAlarmVo>> pageResultData =new PageResultData<>(returnList,lionPage,0L);
         return pageResultData;
+    }
+
+    @Override
+    public SystemAlarmDetailsVo details(String id) {
+        SystemAlarm exampleSystemAlarm = new SystemAlarm();
+        if (Objects.nonNull(id)) {
+            exampleSystemAlarm.set_id(id);
+        }
+        Example<SystemAlarm> example = Example.of(exampleSystemAlarm);
+        Optional<SystemAlarm> optional = alarmDao.findOne(example);
+        if (optional.isPresent()){
+            SystemAlarmDetailsVo vo = new SystemAlarmDetailsVo();
+            SystemAlarm systemAlarm = optional.get();
+            BeanUtils.copyProperties(systemAlarm,vo);
+            vo.setType(Type.instance(systemAlarm.getTy()));
+            if (Objects.equals(systemAlarm.getTy(),Type.STAFF.getKey())) {
+                User user = userExposeService.findById(systemAlarm.getPi());
+                if (Objects.nonNull(user)){
+                    vo.setUserName(user.getName());
+                    vo.setUserNumber(user.getNumber());
+                }
+            }
+            if (Objects.equals(systemAlarm.getTy(),Type.PATIENT.getKey())) {
+                Patient patient = patientExposeService.findById(systemAlarm.getPi());
+                if (Objects.nonNull(patient)) {
+                    vo.setPatientName(patient.getName());
+                }
+            }
+            if (Objects.equals(systemAlarm.getTy(),Type.MIGRANT.getKey())) {
+                TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());
+                if (Objects.nonNull(temporaryPerson)) {
+                    vo.setTemporaryPersonName(temporaryPerson.getName());
+                }
+            }
+            if (Objects.nonNull(systemAlarm.getTi())) {
+                Tag tag = tagExposeService.findById(systemAlarm.getTi());
+                if (Objects.nonNull(tag)) {
+                    vo.setTagCode(tag.getTagCode());
+                }
+            }
+            if (Objects.equals(systemAlarm.getTy(),Type.ASSET.getKey())) {
+                Assets assets = assetsExposeService.findById(systemAlarm.getAi());
+                if (Objects.nonNull(assets)) {
+                    vo.setAssetsCode(assets.getCode());
+                    vo.setAssetsName(assets.getName());
+                }
+            }
+            return vo;
+        }
+        return null;
     }
 }
