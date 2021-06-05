@@ -1,5 +1,10 @@
 package com.lion.event.service.impl;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.dto.UserCurrentRegionDto;
 import com.lion.common.enums.Type;
@@ -55,8 +60,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.*;
 
 /**
@@ -138,6 +149,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @DubboReference
     private WardRoomSickbedExposeService wardRoomSickbedExposeService;
+
+    @Autowired
+    private HttpServletResponse response;
+
+    private final String FONT = "simsun.ttc";
 
     @Override
     public List<RegionStatisticsDetails> regionStatisticsDetails(Long buildFloorId) {
@@ -540,9 +556,58 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public void systemAlarmListExport(Boolean isAll, Boolean isUa, Long ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public void systemAlarmListExport(Boolean isAll, Boolean isUa, Long ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
         IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di,alarmType,tagType,tagCode,startDateTime,endDateTime,lionPage);
         List<SystemAlarmVo> list = pageResultData.getData();
-
+        BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+        Font fontChinese = new Font(bfChinese);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("警告記錄.pdf", "UTF-8"));
+        Document document = new Document();
+        Rectangle pageSize = new Rectangle(PageSize.A4.getHeight(), PageSize.A4.getWidth());
+        pageSize.rotate();
+        document.setPageSize(pageSize);
+        ServletOutputStream servletOutputStream = response.getOutputStream();
+        PdfWriter writer = PdfWriter.getInstance(document, servletOutputStream);
+        String userName = CurrentUserUtil.getCurrentUserUsername();
+        writer.setPageEvent(new EmapPdfPageEventHelper(FONT,userName));
+        document.open();
+        PdfPTable table = new PdfPTable(8);
+        table.setWidths(new int[]{10, 10, 10, 10, 20, 10, 20, 10});
+        table.setWidthPercentage(100);
+        PdfPCell cellTitle = new PdfPCell(new Paragraph("警告記錄", new Font(bfChinese,24)));
+        cellTitle.setColspan(8);
+        cellTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cellTitle);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        PdfPCell cellTitle1 = new PdfPCell(new Paragraph("導出日期: "+simpleDateFormat.format(new Date()), new Font(bfChinese)));
+        cellTitle1.setColspan(8);
+        table.addCell(cellTitle1);
+        table.addCell(new Paragraph("警報來源", fontChinese));
+        table.addCell(new Paragraph("標籤碼", fontChinese));
+        table.addCell(new Paragraph("標籤屬性", fontChinese));
+        table.addCell(new Paragraph("科室", fontChinese));
+        table.addCell(new Paragraph("報警時間", fontChinese));
+		table.addCell(new Paragraph("報警區域", fontChinese));
+        table.addCell(new Paragraph("報警原因", fontChinese));
+        table.addCell(new Paragraph("狀態", fontChinese));
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        for (SystemAlarmVo systemAlarmVo : list) {
+            table.addCell(new Paragraph(Type.instance(systemAlarmVo.getTy()).getDesc(), fontChinese));
+            table.addCell(new Paragraph(systemAlarmVo.getTagCode(), fontChinese));
+            table.addCell(new Paragraph(systemAlarmVo.getType().getDesc(), fontChinese));
+            Department department = departmentExposeService.findById(systemAlarmVo.getDi());
+            table.addCell(new Paragraph(Objects.isNull(department)?"":department.getName(), fontChinese));
+            table.addCell(new Paragraph(dateTimeFormatter.format(systemAlarmVo.getDt()), fontChinese));
+			table.addCell(new Paragraph(systemAlarmVo.getRn(), fontChinese));
+			table.addCell(new Paragraph(systemAlarmVo.getAlarmContent(), fontChinese));
+            table.addCell(new Paragraph(Objects.equals(systemAlarmVo.getUa(),1)?"已处理":"未处理", fontChinese));
+        }
+        document.add(table);
+        document.close();
+        servletOutputStream.flush();
+        servletOutputStream.close();
     }
+
 }

@@ -2,9 +2,11 @@ package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.common.enums.Type;
+import com.lion.device.entity.enums.TagType;
 import com.lion.event.entity.SystemAlarm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import io.swagger.annotations.Tag;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -20,6 +22,12 @@ public class SystemAlarmVo extends SystemAlarm {
 
     @ApiModelProperty(value = "警告来源(com.lion.common.enums.Type 获取该字典)")
     private Type type;
+
+    @ApiModelProperty(value = "标签码")
+    private String tagCode;
+
+    @ApiModelProperty(value = "标签属性")
+    private TagType tagType;
 
     @ApiModelProperty(value = "警告内容")
     private String alarmContent;

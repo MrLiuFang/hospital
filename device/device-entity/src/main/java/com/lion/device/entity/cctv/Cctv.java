@@ -1,5 +1,6 @@
 package com.lion.device.entity.cctv;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
@@ -82,5 +83,6 @@ public class Cctv extends BaseEntity {
 
     @ApiModelProperty(value = "最后的设备数据时间")
     @Column(name = "last_data_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastDataTime;
 }

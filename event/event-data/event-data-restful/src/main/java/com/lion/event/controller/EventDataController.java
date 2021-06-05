@@ -1,6 +1,7 @@
 package com.lion.event.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.itextpdf.text.DocumentException;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.core.IPageResultData;
@@ -25,6 +26,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -290,7 +292,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public void systemAlarmList1Export(@ApiParam("区域id") Long ri, @ApiParam("科室id") Long di, @ApiParam("警报来源") Type alarmType,@ApiParam("标签属性") TagType tagType,@ApiParam("标签码") String tagCode,
                                                                  @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                  @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-                                                                 LionPage lionPage){
+                                                                 LionPage lionPage) throws IOException, DocumentException {
         mapStatisticsService.systemAlarmListExport(true, null, ri, di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage);
     }
 

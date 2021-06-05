@@ -177,6 +177,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     @Override
     public DetailsUserVo details(Long id) {
         User user = findById(id);
+        if (Objects.isNull(user)){
+            return null;
+        }
         DetailsUserVo detailsUserVo = new DetailsUserVo();
         Role role = roleDao.findByUserId(user.getId());
         if (Objects.nonNull(role)){

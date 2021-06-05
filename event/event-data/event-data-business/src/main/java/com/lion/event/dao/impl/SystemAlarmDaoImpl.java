@@ -253,6 +253,13 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                 vo.setType(Type.instance(systemAlarm.getTy()));
                 vo.setDeviceDateTime(systemAlarm.getDt());
                 vo.setSortDateTime(systemAlarm.getSdt());
+                if (Objects.nonNull(systemAlarm.getTi())) {
+                    Tag tag = tagExposeService.findById(systemAlarm.getTi());
+                    if (Objects.nonNull(tag)){
+                        vo.setTagCode(tag.getTagCode());
+                        vo.setTagType(tag.getType());
+                    }
+                }
                 if (Objects.nonNull(systemAlarm.getSat())) {
                     SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
                     vo.setAlarmContent(systemAlarmType.getDesc());
