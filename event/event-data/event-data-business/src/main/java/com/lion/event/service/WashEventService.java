@@ -1,13 +1,17 @@
 package com.lion.event.service;
 
+import com.itextpdf.text.DocumentException;
+import com.lion.common.enums.WashEventType;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.WashEvent;
+import com.lion.event.entity.vo.ListWashEventVo;
 import com.lion.event.entity.vo.UserWashDetailsVo;
 import com.lion.event.entity.vo.ListUserWashMonitorVo;
 import com.lion.event.entity.vo.ListWashMonitorVo;
 import com.lion.upms.entity.enums.UserType;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -70,4 +74,30 @@ public interface WashEventService {
      */
     IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName, Long departmentId,  UserType userType,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 
+    /**
+     * 手卫生行为包报表
+     * @param ia
+     * @param type
+     * @param regionId
+     * @param departmentId
+     * @param userIds
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     * @return
+     */
+    public IPageResultData<List<ListWashEventVo>> listWashEvent(Boolean ia,  WashEventType type,Long regionId,Long departmentId,List<Long> userIds,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+
+    /**
+     * 导出
+     * @param ia
+     * @param type
+     * @param regionId
+     * @param departmentId
+     * @param userIds
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     */
+    public void listWashEventExport(Boolean ia,  WashEventType type,Long regionId,Long departmentId,List<Long> userIds,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException;
 }

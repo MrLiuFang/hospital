@@ -3,6 +3,7 @@ package com.lion.event.controller;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itextpdf.text.DocumentException;
 import com.lion.common.enums.Type;
+import com.lion.common.enums.WashEventType;
 import com.lion.common.utils.RedisUtil;
 import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
@@ -37,7 +38,7 @@ import java.util.List;
  **/
 @RestController
 @Validated
-@Api(tags = {"地图监控"})
+@Api(tags = {"设备数据,地图监控,日志/记录……"})
 public class EventDataController extends BaseControllerImpl implements BaseController {
 
     @Autowired
@@ -66,6 +67,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @Autowired
     private PositionService positionService;
+
+    @Autowired
+    private WashEventService washEventService;
 
     @GetMapping("/user/current/region")
     @ApiOperation(value = "员工当前位置")
@@ -300,5 +304,21 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @ApiOperation(value = "地图监控警告详情")
     public IResultData<SystemAlarmDetailsVo> systemAlarmDetails(@ApiParam("警告id") @NotNull(message = "警告id不能为空") String id){
         return ResultData.instance().setData(systemAlarmService.details(id));
+    }
+
+    @GetMapping("/wash/event/list")
+    @ApiOperation(value = "手卫生行为列表(不返回总行数)")
+    public IPageResultData<List<ListWashEventVo>> listWashEvent(@ApiParam("是否合规")Boolean ia, @ApiParam("类型") WashEventType type, @ApiParam("区域")Long regionId,@ApiParam("科室")Long departmentId,@ApiParam("员工")@RequestParam(value="userIds",required = false) List<Long> userIds,
+                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
+        return washEventService.listWashEvent(ia, type, regionId, departmentId, userIds, startDateTime, endDateTime, lionPage);
+    }
+
+    @GetMapping("/wash/event/list/export")
+    @ApiOperation(value = "手卫生行为列表PDF导出")
+    public void listWashEventExport(@ApiParam("是否合规")Boolean ia, @ApiParam("类型") WashEventType type, @ApiParam("区域")Long regionId,@ApiParam("科室")Long departmentId,@ApiParam("员工")@RequestParam(value="userIds",required = false) List<Long> userIds,
+                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
+        washEventService.listWashEventExport(ia, type, regionId, departmentId, userIds, startDateTime, endDateTime, lionPage);
     }
 }

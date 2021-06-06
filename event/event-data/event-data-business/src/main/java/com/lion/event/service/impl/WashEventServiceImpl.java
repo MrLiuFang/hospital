@@ -1,14 +1,21 @@
 package com.lion.event.service.impl;
 
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+import com.lion.common.enums.Type;
+import com.lion.common.enums.WashEventType;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
+import com.lion.device.entity.device.Device;
+import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.event.dao.WashEventDao;
 import com.lion.event.entity.WashEvent;
-import com.lion.event.entity.vo.UserWashDetailsVo;
-import com.lion.event.entity.vo.ListUserWashMonitorVo;
-import com.lion.event.entity.vo.ListWashMonitorVo;
+import com.lion.event.entity.vo.*;
 import com.lion.event.service.WashEventService;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.rule.Wash;
@@ -21,16 +28,28 @@ import com.lion.manage.expose.work.WorkExposeService;
 import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 
 /**
  * @Author Mr.Liu
@@ -60,6 +79,17 @@ public class WashEventServiceImpl implements WashEventService {
 
     @DubboReference
     private WashExposeService washExposeService;
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @DubboReference
+    private DeviceExposeService deviceExposeService;
+
+    @Autowired
+    private HttpServletResponse response;
+
+    private final String FONT = "simsun.ttc";
 
     @Override
     public void save(WashEvent washEvent) {
@@ -163,6 +193,118 @@ public class WashEventServiceImpl implements WashEventService {
             }
         });
         return new PageResultData<>(returnList,lionPage,totalElements);
+    }
+
+    @Override
+    public IPageResultData<List<ListWashEventVo>> listWashEvent(Boolean ia, WashEventType type, Long regionId, Long departmentId, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.nonNull(ia)) {
+            criteria.and("ia").is(ia);
+        }
+        if (Objects.nonNull(type)) {
+            criteria.and("ai").is(ia);
+        }
+        if (Objects.nonNull(type)){
+            criteria.and("wet").is(type.getKey());
+        }
+        if (Objects.nonNull(regionId)){
+            criteria.and("ri").is(regionId);
+        }
+        if (Objects.nonNull(departmentId)){
+            criteria.and("di").is(departmentId);
+        }
+        if (Objects.nonNull(userIds) && userIds.size()>0){
+            criteria.and("pi").in(userIds);
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
+        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
+            criteria.and("ddt").gte(startDateTime);
+        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
+            criteria.and("ddt").lte(endDateTime);
+        }
+        query.addCriteria(criteria);
+        query.with(lionPage);
+        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        List<WashEvent> items = mongoTemplate.find(query,WashEvent.class);
+//        long count = mongoTemplate.count(query, WashEvent.class);
+//        PageableExecutionUtils.getPage(items, lionPage, () -> count);
+        List<ListWashEventVo> returnList = new ArrayList<>();
+        items.forEach(washEvent -> {
+            ListWashEventVo vo = new ListWashEventVo();
+            User user = userExposeService.findById(washEvent.getPi());
+            if (Objects.nonNull(user)){
+                vo.setUserType(user.getUserType());
+                vo.setName(user.getName());
+                vo.setNumber(user.getNumber());
+                vo.setGender(user.getGender());
+            }
+            vo.setDepartmentDame(washEvent.getDn());
+            vo.setIa(washEvent.getIa());
+            vo.setUseDateTime(washEvent.getDdt());
+            Device device = deviceExposeService.findById(washEvent.getDvi());
+            if (Objects.nonNull(device)){
+                vo.setDeviceName(device.getName());
+            }
+            returnList.add(vo);
+        });
+        IPageResultData<List<ListWashEventVo>> pageResultData =new PageResultData<>(returnList,lionPage,0L);
+        return pageResultData;
+    }
+
+    @Override
+    public void listWashEventExport(Boolean ia, WashEventType type, Long regionId, Long departmentId, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
+        IPageResultData<List<ListWashEventVo>> pageResultData = listWashEvent(ia, type, regionId, departmentId, userIds, startDateTime, endDateTime, lionPage);
+        List<ListWashEventVo> list = pageResultData.getData();
+        BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+        Font fontChinese = new Font(bfChinese);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("警告記錄.pdf", "UTF-8"));
+        com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+        Rectangle pageSize = new Rectangle(PageSize.A4.getHeight(), PageSize.A4.getWidth());
+        pageSize.rotate();
+        document.setPageSize(pageSize);
+        ServletOutputStream servletOutputStream = response.getOutputStream();
+        PdfWriter writer = PdfWriter.getInstance(document, servletOutputStream);
+        String userName = CurrentUserUtil.getCurrentUserUsername();
+        writer.setPageEvent(new EmapPdfPageEventHelper(FONT,userName));
+        document.open();
+        PdfPTable table = new PdfPTable(8);
+        table.setWidths(new int[]{10, 10, 10, 10, 10, 20, 20, 10});
+        table.setWidthPercentage(100);
+        PdfPCell cellTitle = new PdfPCell(new Paragraph("手衛生行為報表", new Font(bfChinese,24)));
+        cellTitle.setColspan(8);
+        cellTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cellTitle);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        PdfPCell cellTitle1 = new PdfPCell(new Paragraph("導出日期: "+simpleDateFormat.format(new Date()), new Font(bfChinese)));
+        cellTitle1.setColspan(8);
+        table.addCell(cellTitle1);
+        table.addCell(new Paragraph("姓名", fontChinese));
+        table.addCell(new Paragraph("工號", fontChinese));
+        table.addCell(new Paragraph("科室", fontChinese));
+        table.addCell(new Paragraph("類型", fontChinese));
+        table.addCell(new Paragraph("性別", fontChinese));
+        table.addCell(new Paragraph("使用設備", fontChinese));
+        table.addCell(new Paragraph("使用時間", fontChinese));
+        table.addCell(new Paragraph("是否合規", fontChinese));
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        for (ListWashEventVo listWashEventVo : list) {
+            table.addCell(new Paragraph(listWashEventVo.getName(), fontChinese));
+            table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getNumber())?"":String.valueOf(listWashEventVo.getNumber()), fontChinese));
+            table.addCell(new Paragraph(listWashEventVo.getDepartmentDame(), fontChinese));
+            table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUserType())?"":listWashEventVo.getUserType().getDesc(), fontChinese));
+            table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getGender())?"":listWashEventVo.getGender().getDesc(), fontChinese));
+            table.addCell(new Paragraph(listWashEventVo.getDeviceName(), fontChinese));
+            table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUseDateTime())?"":dateTimeFormatter.format(listWashEventVo.getUseDateTime()), fontChinese));
+            table.addCell(new Paragraph(Objects.equals(listWashEventVo.getIa(),true)?"否":"是", fontChinese));
+        }
+        document.add(table);
+        document.close();
+        servletOutputStream.flush();
+        servletOutputStream.close();
     }
 
     private ListUserWashMonitorVo init(LocalDateTime startDateTime, LocalDateTime endDateTime,Long userId,Document document){
