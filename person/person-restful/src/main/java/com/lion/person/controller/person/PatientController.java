@@ -9,8 +9,6 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
 import com.lion.person.entity.enums.TransferState;
-import com.lion.person.entity.person.Patient;
-import com.lion.person.entity.person.PatientReport;
 import com.lion.person.entity.person.dto.*;
 import com.lion.person.entity.person.vo.*;
 import com.lion.person.service.person.*;
@@ -62,11 +60,11 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @GetMapping("/list")
     @ApiOperation(value = "患者列表")
-    public IPageResultData<List<ListPatientVo>> list(@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出（true=历史患者）") Boolean isLeave,@ApiParam(value = "出生日期(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime birthday,
+    public IPageResultData<List<ListPatientVo>> list(@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出（true=历史患者）") Boolean isLeave,@ApiParam(value = "是否等待登出(通过回收箱登出)") Boolean isWaitLeave,@ApiParam(value = "出生日期(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime birthday,
                                                      @ApiParam(value = "转移状态") TransferState transferState, @ApiParam(value = "状态）") Boolean isNormal,@ApiParam(value = "标签编码") String tagCode,@ApiParam(value = "病历号") String medicalRecordNo,@ApiParam(value = "床位id") Long sickbedId,
                                                      @ApiParam(value = "入院开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "入院结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                       LionPage lionPage){
-        return patientService.list(name, isLeave, birthday, transferState, isNormal, tagCode, medicalRecordNo, sickbedId, startDateTime, endDateTime, lionPage);
+        return patientService.list(name, isLeave, isWaitLeave, birthday, transferState, isNormal, tagCode, medicalRecordNo, sickbedId, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/details")
@@ -93,7 +91,7 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     }
 
     @PutMapping("/leave")
-    @ApiOperation(value = "患者登出")
+    @ApiOperation(value = "患者登出(修改是否登出状态)")
     public IResultData leave(@RequestBody @Validated PatientLeaveDto patientLeaveDto){
         patientService.leave(patientLeaveDto);
         ResultData resultData = ResultData.instance();

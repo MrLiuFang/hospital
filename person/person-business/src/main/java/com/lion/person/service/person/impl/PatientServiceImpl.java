@@ -210,7 +210,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     @Override
-    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, LocalDateTime birthday, TransferState transferState, Boolean isNormal, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave, LocalDateTime birthday, TransferState transferState, Boolean isNormal, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         Long userId = CurrentUserUtil.getCurrentUserId();
         List<Department> departmentList = departmentResponsibleUserExposeService.findDepartment(userId);
@@ -237,6 +237,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         }
         if (Objects.nonNull(isLeave)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_isLeave",isLeave);
+        }
+        if (Objects.nonNull(isWaitLeave)) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_isWaitLeave",isWaitLeave);
         }
         if (Objects.nonNull(birthday)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_birthday",birthday);
@@ -271,7 +274,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
                 PatientTransfer  patientTransfer = patientTransferDao.findFirstByPatientIdAndState(patient.getId(),transferState);
                 if (Objects.nonNull(patientTransfer)){
                     vo.setLeaveDateTime(patientTransfer.getLeaveDateTime());
-                    vo.setTriggerDateTime(vo.getTriggerDateTime());
+                    vo.setTriggerDateTime(patientTransfer.getTriggerDateTime());
                 }
                 returnList.add(vo);
             }
@@ -373,9 +376,12 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
 
     @Override
     public void leave(PatientLeaveDto patientLeaveDto) {
-        Patient patient = new Patient();
+        Patient patient = findById(patientLeaveDto.getPatientId());
         patient.setId(patientLeaveDto.getPatientId());
-        patient.setIsLeave(true);
+        patient.setIsLeave(patientLeaveDto.getIsLeave());
+        if (Objects.equals(patient.getIsWaitLeave(),true)) {
+            patient.setIsWaitLeave(!patientLeaveDto.getIsLeave());
+        }
         patient.setLeaveRemarks(patientLeaveDto.getLeaveRemarks());
         update(patient);
         tagPatientExposeService.unbinding(patient.getId(),false);

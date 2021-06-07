@@ -40,6 +40,11 @@ public interface PatientDao extends BaseDao<Patient> {
 
     @Modifying
     @Transactional
+    @Query(" update Patient  set isWaitLeave =:isWaitLeave where id = :id ")
+    public void updateIsWaitLeave(@Param("id")Long id, @Param("isWaitLeave") Boolean isWaitLeave);
+
+    @Modifying
+    @Transactional
     @Query(" update Patient  set lastDataTime =:dateTime where id = :id ")
     public void updateLastDataTime(@Param("id")Long id, @Param("dateTime")LocalDateTime dateTime);
 

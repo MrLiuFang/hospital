@@ -9,6 +9,8 @@ import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.entity.tag.Tag;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagPostdocsExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.build.Build;
@@ -80,6 +82,9 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
 
     @DubboReference
     private DepartmentExposeService departmentExposeService;
+
+    @DubboReference
+    private TagExposeService tagExposeService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -154,7 +159,10 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         TemporaryPersonDetailsVo temporaryPersonDetailsVo= new TemporaryPersonDetailsVo();
         BeanUtils.copyProperties(temporaryPerson,temporaryPersonDetailsVo);
         temporaryPersonDetailsVo.setHeadPortraitUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
-
+        Tag tag = tagExposeService.find(temporaryPerson.getTagCode());
+        if (Objects.nonNull(tag)) {
+            temporaryPersonDetailsVo.setBattery(tag.getBattery());
+        }
         List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(temporaryPerson.getId(), PersonType.TEMPORARY_PERSON);
         List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
         restrictedAreaList.forEach(restrictedArea -> {

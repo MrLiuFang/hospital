@@ -8,6 +8,7 @@ import com.lion.person.expose.person.PatientTransferExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -31,6 +32,8 @@ public class PatientTransferExposeServiceImpl extends BaseServiceImpl<PatientTra
         PatientTransfer patientTransfer = findById(patientId);
         if (Objects.nonNull(patientTransfer)){
             patientTransfer.setState(state);
+            patientTransfer.setLeaveDateTime(LocalDateTime.now());
+            patientTransfer.setTriggerDateTime(LocalDateTime.now());
             update(patientTransfer);
         }
     }

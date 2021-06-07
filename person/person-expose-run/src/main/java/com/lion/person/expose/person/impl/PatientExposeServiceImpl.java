@@ -30,6 +30,11 @@ public class PatientExposeServiceImpl extends BaseServiceImpl<Patient> implement
     }
 
     @Override
+    public void updateIsWaitLeave(Long id, Boolean isWaitLeave) {
+        patientDao.updateIsWaitLeave(id,isWaitLeave);
+    }
+
+    @Override
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime) {
         patientDao.updateLastDataTime(id,dateTime);
     }

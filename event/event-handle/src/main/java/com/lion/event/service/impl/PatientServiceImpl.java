@@ -8,6 +8,8 @@ import com.lion.common.dto.DeviceDataDto;
 import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.enums.Type;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.tag.Tag;
 import com.lion.event.service.CommonService;
 import com.lion.event.service.PatientService;
@@ -105,6 +107,9 @@ public class PatientServiceImpl implements PatientService {
             rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
         }
 
+        if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.RECYCLING_BOX)) {
+            patientExposeService.updateIsWaitLeave(patient.getId(),true);
+        }
     }
 
 

@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
 import java.util.List;
 
 /**
@@ -18,6 +19,9 @@ public class TemporaryPersonDetailsVo extends TemporaryPerson {
 
     @ApiModelProperty(value = "头像")
     private String headPortraitUrl;
+
+    @ApiModelProperty(value = "电量(0=正常,1=少於90 天,2=少於30天)")
+    private Integer battery;
 
     @ApiModelProperty(value = "限制区域")
     private List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList;

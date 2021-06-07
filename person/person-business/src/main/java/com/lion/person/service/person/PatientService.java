@@ -1,7 +1,6 @@
 package com.lion.person.service.person;
 
 import com.lion.core.IPageResultData;
-import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
@@ -9,13 +8,9 @@ import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.dto.AddPatientDto;
 import com.lion.person.entity.person.dto.PatientLeaveDto;
-import com.lion.person.entity.person.dto.TransferDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
 import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -50,6 +45,7 @@ public interface PatientService extends BaseService<Patient> {
      * 列表
      * @param name
      * @param isLeave
+     * @param isWaitLeave
      * @param birthday
      * @param transferState
      * @param isNormal
@@ -61,7 +57,7 @@ public interface PatientService extends BaseService<Patient> {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, LocalDateTime birthday,TransferState transferState,Boolean isNormal,String tagCode,String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave,LocalDateTime birthday,TransferState transferState,Boolean isNormal,String tagCode,String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      * 详情

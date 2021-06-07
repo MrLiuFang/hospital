@@ -22,6 +22,13 @@ public interface PatientExposeService extends BaseService<Patient> {
     public void updateState(Long id,Integer state);
 
     /**
+     * 修改状态
+     * @param id
+     * @param isWaitLeave
+     */
+    public void updateIsWaitLeave(Long id,Boolean isWaitLeave);
+
+    /**
      * 更新设备数据上传时间
      * @param id
      * @param dateTime

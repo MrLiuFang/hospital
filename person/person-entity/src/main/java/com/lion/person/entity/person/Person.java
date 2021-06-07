@@ -70,6 +70,10 @@ public abstract class Person extends BaseEntity {
     @Column(name = "is_leave")
     private Boolean isLeave =false;
 
+    @ApiModelProperty(value = "是否等待登出(通过回收箱登出)")
+    @Column(name = "is_wait_leave")
+    private Boolean isWaitLeave =false;
+
     @ApiModelProperty(value = "登出时间（离开时间）")
     @Column(name = "leave_date_time")
     private LocalDateTime leaveDateTime;
