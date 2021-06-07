@@ -3,7 +3,6 @@ package com.lion.device.expose.impl.device;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceGroupDeviceDao;
 import com.lion.device.entity.device.DeviceGroupDevice;
-import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,5 +28,10 @@ public class DeviceGroupDeviceExposeServiceImpl extends BaseServiceImpl<DeviceGr
     @Override
     public DeviceGroupDevice findByDeviceId(Long deviceId) {
         return deviceGroupDeviceDao.findFirstByDeviceId(deviceId);
+    }
+
+    @Override
+    public Integer countDevice(Long deviceGroupId) {
+        return deviceGroupDeviceDao.countByDeviceGroupId(deviceGroupId);
     }
 }

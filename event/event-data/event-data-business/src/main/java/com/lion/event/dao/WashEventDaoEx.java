@@ -35,6 +35,15 @@ public interface WashEventDaoEx {
     public List<Document> eventCount(LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isDepartmentGroup, UserType userType,Long userId, LionPage lionPage);
 
     /**
+     * 区域统计合规率
+     * @param startDateTime
+     * @param endDateTime
+     * @param regionId
+     * @return
+     */
+    public Document eventCount(LocalDateTime startDateTime, LocalDateTime endDateTime, Long regionId);
+
+    /**
      * 用户洗手详情
      * @param userId
      * @param startDateTime

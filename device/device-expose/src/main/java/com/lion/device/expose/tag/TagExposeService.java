@@ -63,6 +63,7 @@ public interface TagExposeService extends BaseService<Tag> {
      */
     public Integer countTag(Long departmentId);
 
+
     /**
      * 根据科室统计标签
      * @param departmentId

@@ -39,4 +39,12 @@ public interface DeviceGroupDeviceDao extends BaseDao<DeviceGroupDevice> {
      * @return
      */
     public DeviceGroupDevice findFirstByDeviceId(Long deviceId);
+
+    /**
+     * 根据设备组统计设备
+     * @param deviceGroupId
+     * @return
+     */
+    public Integer countByDeviceGroupId(Long deviceGroupId);
+
 }

@@ -25,4 +25,11 @@ public interface DeviceGroupDeviceExposeService extends BaseService<DeviceGroupD
      * @return
      */
     public DeviceGroupDevice findByDeviceId(Long deviceId);
+
+    /**
+     * 根据设备组统计设备
+     * @param deviceGroupId
+     * @return
+     */
+    public Integer countDevice(Long deviceGroupId);
 }

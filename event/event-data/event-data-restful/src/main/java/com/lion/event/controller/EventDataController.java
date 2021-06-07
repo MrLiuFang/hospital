@@ -321,4 +321,20 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
         washEventService.listWashEventExport(ia, type, regionId, departmentId, userIds, startDateTime, endDateTime, lionPage);
     }
+
+    @GetMapping("/wash/event/region/ratio")
+    @ApiOperation(value = "手卫生行为区域")
+    public IPageResultData<List<ListWashEventRegionVo>> washEventRegionRatio( @ApiParam("楼层")Long buildFloorId, @ApiParam("区域")Long regionId,@ApiParam("科室")Long departmentId,
+                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
+        return washEventService.washEventRegionRatio(buildFloorId, regionId, departmentId, startDateTime, endDateTime, lionPage);
+    }
+
+    @GetMapping("/wash/event/region/ratio/export")
+    @ApiOperation(value = "手卫生行为区域导出")
+    public void washEventRegionRatioExport( @ApiParam("楼层")Long buildFloorId, @ApiParam("区域")Long regionId,@ApiParam("科室")Long departmentId,
+                                                                              @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                              @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
+        washEventService.washEventRegionRatioExport(buildFloorId, regionId, departmentId, startDateTime, endDateTime, lionPage);
+    }
 }

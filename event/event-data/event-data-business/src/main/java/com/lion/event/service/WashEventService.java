@@ -5,10 +5,7 @@ import com.lion.common.enums.WashEventType;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.WashEvent;
-import com.lion.event.entity.vo.ListWashEventVo;
-import com.lion.event.entity.vo.UserWashDetailsVo;
-import com.lion.event.entity.vo.ListUserWashMonitorVo;
-import com.lion.event.entity.vo.ListWashMonitorVo;
+import com.lion.event.entity.vo.*;
 import com.lion.upms.entity.enums.UserType;
 
 import java.io.IOException;
@@ -89,7 +86,7 @@ public interface WashEventService {
     public IPageResultData<List<ListWashEventVo>> listWashEvent(Boolean ia,  WashEventType type,Long regionId,Long departmentId,List<Long> userIds,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 
     /**
-     * 导出
+     * 手卫生行为包报表导出
      * @param ia
      * @param type
      * @param regionId
@@ -100,4 +97,27 @@ public interface WashEventService {
      * @param lionPage
      */
     public void listWashEventExport(Boolean ia,  WashEventType type,Long regionId,Long departmentId,List<Long> userIds,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException;
+
+    /**
+     * 手卫生行为包报表区域
+     * @param buildFloorId
+     * @param regionId
+     * @param departmentId
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     * @return
+     */
+    public IPageResultData<List<ListWashEventRegionVo>> washEventRegionRatio(Long buildFloorId, Long regionId, Long departmentId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+
+    /**
+     * 手卫生行为包报表区域导出
+     * @param buildFloorId
+     * @param regionId
+     * @param departmentId
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     */
+    public void washEventRegionRatioExport(Long buildFloorId, Long regionId, Long departmentId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException;
 }

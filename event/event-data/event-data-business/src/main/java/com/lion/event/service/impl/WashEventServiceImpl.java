@@ -5,23 +5,32 @@ import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.lion.common.enums.Type;
 import com.lion.common.enums.WashEventType;
 import com.lion.common.expose.file.FileExposeService;
+import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
+import com.lion.core.persistence.JpqlParameter;
+import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.device.Device;
+import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.WashEventDao;
 import com.lion.event.entity.WashEvent;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.WashEventService;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.WashUser;
 import com.lion.manage.entity.work.Work;
+import com.lion.manage.expose.assets.AssetsExposeService;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.rule.WashExposeService;
 import com.lion.manage.expose.rule.WashUserExposeService;
 import com.lion.manage.expose.work.WorkExposeService;
@@ -38,6 +47,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -88,6 +98,24 @@ public class WashEventServiceImpl implements WashEventService {
 
     @Autowired
     private HttpServletResponse response;
+
+    @DubboReference
+    private RegionExposeService regionExposeService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
+    @DubboReference
+    private DeviceGroupDeviceExposeService deviceGroupDeviceExposeService;
+
+    @DubboReference
+    private TagExposeService tagExposeService;
+
+    @DubboReference
+    private CctvExposeService cctvExposeService;
+
+    @DubboReference
+    private AssetsExposeService assetsExposeService;
 
     private final String FONT = "simsun.ttc";
 
@@ -261,7 +289,7 @@ public class WashEventServiceImpl implements WashEventService {
         Font fontChinese = new Font(bfChinese);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("警告記錄.pdf", "UTF-8"));
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("手衛生行為報表.pdf", "UTF-8"));
         com.itextpdf.text.Document document = new com.itextpdf.text.Document();
         Rectangle pageSize = new Rectangle(PageSize.A4.getHeight(), PageSize.A4.getWidth());
         pageSize.rotate();
@@ -300,6 +328,86 @@ public class WashEventServiceImpl implements WashEventService {
             table.addCell(new Paragraph(listWashEventVo.getDeviceName(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUseDateTime())?"":dateTimeFormatter.format(listWashEventVo.getUseDateTime()), fontChinese));
             table.addCell(new Paragraph(Objects.equals(listWashEventVo.getIa(),true)?"否":"是", fontChinese));
+        }
+        document.add(table);
+        document.close();
+        servletOutputStream.flush();
+        servletOutputStream.close();
+    }
+
+    @Override
+    public IPageResultData<List<ListWashEventRegionVo>> washEventRegionRatio(Long buildFloorId, Long regionId, Long departmentId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        JpqlParameter jpqlParameter = new JpqlParameter();
+        if (Objects.nonNull(buildFloorId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_buildFloorId",buildFloorId);
+        }
+        if (Objects.nonNull(regionId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_regionId",regionId);
+        }
+        if (Objects.nonNull(departmentId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
+        }
+        lionPage.setJpqlParameter(jpqlParameter);
+        PageResultData resultData = regionExposeService.find(lionPage);
+        List<Region> list = resultData.getContent();
+        List<ListWashEventRegionVo> returnList = new ArrayList<>();
+        list.forEach(region -> {
+            ListWashEventRegionVo vo = new ListWashEventRegionVo();
+            vo.setRegionName(region.getName());
+            vo.setRegionId(region.getId());
+            Department department = departmentExposeService.findById(region.getDepartmentId());
+            vo.setDepartmentName(Objects.isNull(department)?"":department.getName());
+            vo.setDeviceCount(vo.getDeviceCount()+deviceGroupDeviceExposeService.countDevice(region.getDeviceGroupId()));
+            Document document = washEventDao.eventCount(startDateTime, endDateTime, region.getId());
+            if (Objects.nonNull(document)) {
+                vo.setRatio(new BigDecimal(document.getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP));
+            }
+            returnList.add(vo);
+        });
+        return new PageResultData<>(returnList,resultData.getPageable(),resultData.getTotalElements());
+    }
+
+    @Override
+    public void washEventRegionRatioExport(Long buildFloorId, Long regionId, Long departmentId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
+        IPageResultData<List<ListWashEventRegionVo>> pageResultData = washEventRegionRatio(buildFloorId, regionId, departmentId, startDateTime, endDateTime, lionPage);
+        List<ListWashEventRegionVo> list = pageResultData.getData();
+        BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+        Font fontChinese = new Font(bfChinese);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("手衛生行為報表.pdf", "UTF-8"));
+        com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+        Rectangle pageSize = new Rectangle(PageSize.A4.getHeight(), PageSize.A4.getWidth());
+        pageSize.rotate();
+        document.setPageSize(pageSize);
+        ServletOutputStream servletOutputStream = response.getOutputStream();
+        PdfWriter writer = PdfWriter.getInstance(document, servletOutputStream);
+        String userName = CurrentUserUtil.getCurrentUserUsername();
+        writer.setPageEvent(new EmapPdfPageEventHelper(FONT,userName));
+        document.open();
+        PdfPTable table = new PdfPTable(4);
+        table.setWidthPercentage(100);
+        PdfPCell cellTitle = new PdfPCell(new Paragraph("手衛生行為報表", new Font(bfChinese,24)));
+        cellTitle.setColspan(4);
+        cellTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cellTitle);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        PdfPCell cellTitle1 = new PdfPCell(new Paragraph("導出日期: "+simpleDateFormat.format(new Date()), new Font(bfChinese)));
+        cellTitle1.setColspan(4);
+        table.addCell(cellTitle1);
+        table.addCell(new Paragraph("區域名稱", fontChinese));
+        table.addCell(new Paragraph("科室", fontChinese));
+        table.addCell(new Paragraph("設備數量", fontChinese));
+        table.addCell(new Paragraph("總合規率", fontChinese));
+        for (ListWashEventRegionVo listWashEventRegionVo : list) {
+            table.addCell(new Paragraph(listWashEventRegionVo.getRegionName(), fontChinese));
+            table.addCell(new Paragraph(listWashEventRegionVo.getDepartmentName(), fontChinese));
+            table.addCell(new Paragraph(String.valueOf(listWashEventRegionVo.getDeviceCount()), fontChinese));
+            if (Objects.nonNull(listWashEventRegionVo.getRatio())) {
+                table.addCell(new Paragraph(listWashEventRegionVo.getRatio().toString()+"%", fontChinese));
+            }else {
+                table.addCell(new Paragraph("", fontChinese));
+            }
         }
         document.add(table);
         document.close();

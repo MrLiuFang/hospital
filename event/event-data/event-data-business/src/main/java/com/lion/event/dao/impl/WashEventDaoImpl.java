@@ -21,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @Author Mr.Liu
@@ -130,6 +131,41 @@ public class WashEventDaoImpl implements WashEventDaoEx {
 //        },
 //        { $match: { allNoAlarmRatio: {$lt:80}} },
 // ] )
+    }
+
+    @Override
+    public Document eventCount(LocalDateTime startDateTime, LocalDateTime endDateTime, Long regionId) {
+        List<Bson> pipeline = new ArrayList<Bson>();
+        BasicDBObject group = new BasicDBObject();
+        group = BasicDBObjectUtil.put(group,"$group","_id","$a"); //全院
+        group = BasicDBObjectUtil.put(group,"$group","allCount",new BasicDBObject("$sum",1));//全部
+        group = BasicDBObjectUtil.put(group,"$group","allNoAlarm",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",false})})).append("then",1).append("else",0))));//合规
+
+        BasicDBObject match = new BasicDBObject();
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime)) {
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime).append("$lte",endDateTime));
+        }else if (Objects.nonNull(startDateTime) && Objects.isNull(endDateTime)) {
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime));
+        }else if (Objects.isNull(startDateTime) && Objects.nonNull(endDateTime)) {
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$lte",endDateTime));
+        }
+        if (Objects.nonNull(regionId)){
+            match = BasicDBObjectUtil.put(match,"$match","ri",regionId );
+        }
+        BasicDBObject project = new BasicDBObject();
+        project = BasicDBObjectUtil.put(project,"$project","_id",1);
+        project = BasicDBObjectUtil.put(project,"$project","allNoAlarmRatio",new BasicDBObject("$divide",new String[]{"$allNoAlarm","$allCount"}));
+
+        pipeline.add(match);
+        pipeline.add(group);
+        pipeline.add(project);
+
+        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("wash_event").aggregate(pipeline);
+        AtomicReference<Document> document = new AtomicReference<>();
+        aggregateIterable.forEach(d -> {
+            document.set(d);
+        });
+        return document.get();
     }
 
     @Override
