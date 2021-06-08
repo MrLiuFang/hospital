@@ -1,8 +1,14 @@
 package com.lion.event.dao.impl;
 
 import com.lion.common.enums.Type;
+import com.lion.common.utils.BasicDBObjectUtil;
 import com.lion.event.dao.PositionDaoEx;
 import com.lion.event.entity.Position;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.AggregateIterable;
+import lombok.extern.java.Log;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -20,6 +26,7 @@ import java.util.Objects;
  * @author: Mr.Liu
  * @time: 2021/5/22 下午5:10
  */
+@Log
 public class PositionDaoImpl implements PositionDaoEx {
 
     @Autowired
@@ -56,5 +63,32 @@ public class PositionDaoImpl implements PositionDaoEx {
             });
         }
         return list;
+    }
+
+    @Override
+    public List<String> personAllRegion(Long personId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<Bson> pipeline = new ArrayList<Bson>();
+        BasicDBObject group = new BasicDBObject();
+        group = BasicDBObjectUtil.put(group,"$group","_id","$rn"); //区域
+
+        BasicDBObject match = new BasicDBObject();
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime)) {
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime).append("$lte",endDateTime));
+        }else if (Objects.nonNull(startDateTime) && Objects.isNull(endDateTime)) {
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime));
+        }else if (Objects.isNull(startDateTime) && Objects.nonNull(endDateTime)) {
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$lte",endDateTime));
+        }
+        if (Objects.nonNull(personId)){
+            match = BasicDBObjectUtil.put(match,"$match","pi",personId );
+        }
+        pipeline.add(match);
+        pipeline.add(group);
+        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("position").aggregate(pipeline);
+        List<String> returnList = new ArrayList<>();
+        aggregateIterable.forEach(d -> {
+            returnList.add(d.getString("_id"));
+        });
+        return returnList;
     }
 }

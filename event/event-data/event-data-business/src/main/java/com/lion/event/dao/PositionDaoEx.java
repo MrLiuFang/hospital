@@ -22,4 +22,13 @@ public interface PositionDaoEx {
      * @return
      */
     public List<Position> find(Long id ,com.lion.common.enums.Type type, LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    /**
+     * 病人/流动人员所到区域
+     * @param personId
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public List<String> personAllRegion(Long personId, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

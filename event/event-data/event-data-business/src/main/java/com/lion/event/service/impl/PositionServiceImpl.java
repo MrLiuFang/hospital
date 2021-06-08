@@ -78,4 +78,9 @@ public class PositionServiceImpl implements PositionService {
         IPageResultData<List<Position>> pageResultData =new PageResultData<>(items,lionPage,0L);
         return pageResultData;
     }
+
+    @Override
+    public List<String> personAllRegion(Long personId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return positionDao.personAllRegion(personId, startDateTime, endDateTime);
+    }
 }

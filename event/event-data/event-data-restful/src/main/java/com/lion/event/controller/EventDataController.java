@@ -337,4 +337,11 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                                               @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
         washEventService.washEventRegionRatioExport(buildFloorId, regionId, departmentId, startDateTime, endDateTime, lionPage);
     }
+
+    @GetMapping("/person/all/region")
+    @ApiOperation(value = "病人或流动人员所到区域")
+    public IResultData<List<String>> personAllRegion(@ApiParam("病人或流动人员id")@NotNull(message = "病人或流动人员不能为空") Long personId,@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                     @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime ) {
+        return ResultData.instance().setData(positionService.personAllRegion(personId, startDateTime, endDateTime));
+    }
 }
