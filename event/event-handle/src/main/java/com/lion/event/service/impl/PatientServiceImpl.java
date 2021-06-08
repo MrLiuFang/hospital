@@ -2,10 +2,12 @@ package com.lion.event.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.CurrentRegionDto;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.common.dto.SystemAlarmDto;
+import com.lion.common.dto.TempLeaveMonitorDto;
 import com.lion.common.enums.Type;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceClassify;
@@ -27,6 +29,7 @@ import com.lion.person.expose.person.TempLeaveExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @description:
@@ -64,9 +68,13 @@ public class PatientServiceImpl implements PatientService {
     @Autowired
     private CommonService commonService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     public void patientEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient) throws JsonProcessingException {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
+        redisTemplate.opsForValue().set(RedisConstants.PATIENT_CURRENT_REGION,currentRegionDto,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         commonService.position(deviceDataDto,patient,currentRegionDto.getRegionId());
         PatientTransfer patientTransfer = patientTransferExposeService.find(patient.getId());
         List<TempLeave> tempLeaves =tempLeaveExposeService.find(patient.getId());
@@ -89,6 +97,10 @@ public class PatientServiceImpl implements PatientService {
             for (TempLeave tempLeave :tempLeaves) {
                 LocalDateTime now = LocalDateTime.now();
                 if ( now.isAfter(tempLeave.getStartDateTime()) && now.isBefore(tempLeave.getEndDateTime()) ){
+                    TempLeaveMonitorDto tempLeaveMonitorDto = new TempLeaveMonitorDto();
+                    tempLeaveMonitorDto.setPatientId(patient.getId());
+                    tempLeaveMonitorDto.setDelayDateTime(tempLeave.getEndDateTime());
+                    rocketMQTemplate.syncSend(TopicConstants.TEMP_LEAVE_MONITOR, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(tempLeaveMonitorDto)).build());
                     return;
                 }
             }

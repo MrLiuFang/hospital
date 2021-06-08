@@ -155,4 +155,14 @@ public class TopicConstants {
      */
     public static final String UPDATE_STATE_CONSUMER_GROUP = "update_state_consumer_group";
 
+    /**
+     * 临时离开监控
+     */
+    public static final String TEMP_LEAVE_MONITOR = "temp_leave_monitor";
+
+    /**
+     * 临时离开监控
+     */
+    public static final String TEMP_LEAVE_MONITOR_CONSUMER_GROUP = "temp_leave_monitor_consumer_group";
+
 }

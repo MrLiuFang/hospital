@@ -218,6 +218,11 @@ public class RedisConstants {
     public static final String UNALARM = "unalarm_";
 
     /**
+     * 资产(key:patientId,value:CurrentRegionDto)
+     */
+    public static final String PATIENT_CURRENT_REGION = "patient_current_region_";
+
+    /**
      * 员工上班状态(key:userId,value:start/end)
      */
     public static final String USER_WORK_STATE = "user_work_state_";
