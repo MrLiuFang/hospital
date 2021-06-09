@@ -22,6 +22,18 @@ import java.time.LocalDateTime;
 @ApiModel
 public class ListAssetsBorrowVo extends Assets {
 
+//    @ApiModelProperty(value = "使用区域名称")
+//    private String useRegionName;
+//
+//    @ApiModelProperty(value = "使用建筑名称")
+//    private String useBuildName;
+//
+//    @ApiModelProperty(value = "使用建筑楼层名称")
+//    private String useBuildFloorName;
+//
+//    @ApiModelProperty(value = "使用科室名称")
+//    private String useDepartmentName;
+
     @ApiModelProperty(value = "所属区域名称")
     private String regionName;
 

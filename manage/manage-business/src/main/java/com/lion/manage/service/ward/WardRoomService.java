@@ -1,6 +1,7 @@
 package com.lion.manage.service.ward;
 
 import com.lion.core.service.BaseService;
+import com.lion.manage.entity.ward.Ward;
 import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.entity.ward.dto.AddWardRoomDto;
 
@@ -33,4 +34,5 @@ public interface WardRoomService extends BaseService<WardRoom> {
      * @return
      */
     public List<WardRoom> find(Long wardId);
+
 }

@@ -16,6 +16,9 @@ import javax.persistence.Column;
 @ApiModel
 public class ListTempLeaveVo extends TempLeave {
 
+    @ApiModelProperty(value = "科室名称")
+    private String departmentName;
+
     @ApiModelProperty(value = "患者名字")
     private String patientName;
 

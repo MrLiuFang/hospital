@@ -140,8 +140,8 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @GetMapping("/temp/leave/list")
     @ApiOperation(value = "临时离开列表")
-    public IPageResultData<List<ListTempLeaveVo>> tempLeaveList(@ApiParam(value = "患者id") Long patientId, @ApiParam(value = "登记人id") Long userId, @ApiParam(value = "开始离开时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "结束离开时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
-        return tempLeaveService.list(patientId, userId, startDateTime, endDateTime, lionPage);
+    public IPageResultData<List<ListTempLeaveVo>> tempLeaveList(@ApiParam(value = "标签编码") String tagCode,@ApiParam(value = "科室id") Long departmentId,@ApiParam(value = "患者id") Long patientId, @ApiParam(value = "登记人id") Long userId, @ApiParam(value = "开始离开时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "结束离开时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
+        return tempLeaveService.list(tagCode, departmentId, patientId, userId, startDateTime, endDateTime, lionPage);
     }
 
     @PostMapping("/report/add")

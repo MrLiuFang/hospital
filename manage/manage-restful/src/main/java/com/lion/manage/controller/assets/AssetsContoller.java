@@ -1,5 +1,6 @@
 package com.lion.manage.controller.assets;
 
+import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.common.dto.DeleteDto;
@@ -14,16 +15,23 @@ import com.lion.manage.entity.assets.vo.*;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.AssetsFaultState;
 import com.lion.manage.entity.enums.AssetsType;
 import com.lion.manage.entity.enums.AssetsUseState;
+import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
+import com.lion.manage.service.region.RegionService;
+import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.CurrentUserUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -35,6 +43,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import sun.util.resources.ga.LocaleNames_ga;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -73,6 +82,18 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @DubboReference
     private UserExposeService userExposeService;
+
+    @DubboReference
+    private FileExposeService fileExposeService;
+
+    @Autowired
+    private RegionService regionService;
+
+    @DubboReference
+    private RoleExposeService roleExposeService;
+
+    @DubboReference
+    private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增资产")
@@ -163,9 +184,9 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/borrw/list")
     @ApiOperation(value = "资产借用列表")
-    public IPageResultData<List<ListAssetsBorrowVo>> listBorrw(@ApiParam(value = "资产id") Long assetsId, @ApiParam(value = "借用开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "借用结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+    public IPageResultData<List<ListAssetsBorrowVo>> listBorrw(@ApiParam(value = "资产名称")String name,@ApiParam(value = "登记人/借用人")Long borrowUserId,@ApiParam(value = "资产类型")AssetsType type,@ApiParam(value = "科室id") Long departmentId, @ApiParam(value = "资产id") Long assetsId, @ApiParam(value = "借用开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "借用结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                @ApiParam(value = "是否已归还(null值 查所有)") Boolean isReturn, LionPage lionPage){
-        return assetsBorrowService.list(assetsId,startDateTime ,endDateTime ,isReturn, lionPage);
+        return assetsBorrowService.list(name, borrowUserId, type, departmentId, assetsId, startDateTime, endDateTime, isReturn, lionPage);
     }
 
 //    @GetMapping("/borrw/details")
@@ -220,11 +241,59 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/fault/list")
     @ApiOperation(value = "资产故障列表")
-    public IPageResultData<List<ListAssetsFaultVo>> listFault(@ApiParam("资产ID") Long assetsId, LionPage lionPage){
+    public IPageResultData<List<ListAssetsFaultVo>> listFault(@ApiParam("科室")Long departmentId, @ApiParam("状态") AssetsFaultState state, @ApiParam("资产ID") Long assetsId,@ApiParam("故障编码")String code,@ApiParam("设备-资产编码")String assetsCode,
+                                                              @ApiParam(value = "开始申报时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                              @ApiParam(value = "结束申报时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
+        List<Long> departmentIds = new ArrayList<>();
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        Role role = roleExposeService.find(userId);
+        if (Objects.nonNull(role)) {
+            if (role.getCode().toLowerCase().indexOf("admin") < 0) {
+                List<Department> list = new ArrayList<>();
+                if (Objects.nonNull(departmentId)) {
+                    list = departmentResponsibleUserExposeService.findDepartment(userId, departmentId);
+                } else {
+                    list = departmentResponsibleUserExposeService.findDepartment(userId);
+                }
+                list.forEach(department -> {
+                    departmentIds.add(department.getId());
+                });
+                departmentIds.add(Long.MAX_VALUE);
+            } else {
+                if (Objects.nonNull(departmentId)) {
+                    departmentIds.add(departmentId);
+                }
+            }
+        }
+        if (departmentIds.size()>0) {
+            List<Assets> list = assetsService.findByDepartmentId(departmentIds);
+            List<Long> ids = new ArrayList<>();
+            ids.add(Long.MAX_VALUE);
+            list.forEach(assets -> {
+                ids.add(assets.getId());
+            });
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids);
+        }
         if (Objects.nonNull(assetsId)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsId",assetsId);
+        }
+        if (Objects.nonNull(state)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_state",state);
+        }
+        if (StringUtils.hasText(code)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_code",code);
+        }
+        if (StringUtils.hasText(assetsCode)) {
+            List<Assets> list = assetsService.find(assetsCode);
+            List<Long> ids = new ArrayList<>();
+            list.forEach(assets -> {
+                ids.add(assets.getId());
+            });
+            if (ids.size()>0){
+                jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids);
+            }
         }
         lionPage.setJpqlParameter(jpqlParameter);
         Page<AssetsFault> page = assetsFaultService.findNavigator(lionPage);
@@ -237,6 +306,31 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
                 User user = userExposeService.findById(assetsFault.getDeclarantUserId());
                 if (Objects.nonNull(user)){
                     vo.setDeclarantUserName(user.getName());
+                    vo.setDeclarantUserHeadPortrait(user.getHeadPortrait());
+                    vo.setDeclarantUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                }
+            }
+            Assets assets = assetsService.findById(assetsFault.getAssetsId());
+            if (Objects.nonNull(assets)){
+                vo.setCode(assets.getCode());
+                vo.setImg(assets.getImg());
+                vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
+                vo.setName(assets.getName());
+                Build build = buildService.findById(assets.getBuildId());
+                if (Objects.nonNull(build)) {
+                    vo.setBuildName(build.getName());
+                }
+                BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
+                if (Objects.nonNull(buildFloor)){
+                    vo.setBuildFloorName(buildFloor.getName());
+                }
+                Region region = regionService.findById(assets.getRegionId());
+                if (Objects.nonNull(region)){
+                    vo.setRegionName(region.getName());
+                }
+                Department department = departmentService.findById(assets.getDepartmentId());
+                if (Objects.nonNull(department)){
+                    vo.setDepartmentName(department.getName());
                 }
             }
             listAssetsFaultVos.add(vo);
@@ -256,6 +350,31 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
                 User user = userExposeService.findById(assetsFault.getDeclarantUserId());
                 if (Objects.nonNull(user)){
                     vo.setDeclarantUserName(user.getName());
+                    vo.setDeclarantUserHeadPortrait(user.getHeadPortrait());
+                    vo.setDeclarantUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                }
+            }
+            Assets assets = assetsService.findById(assetsFault.getAssetsId());
+            if (Objects.nonNull(assets)){
+                vo.setCode(assets.getCode());
+                vo.setImg(assets.getImg());
+                vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
+                vo.setName(assets.getName());
+                Build build = buildService.findById(assets.getBuildId());
+                if (Objects.nonNull(build)) {
+                    vo.setBuildName(build.getName());
+                }
+                BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
+                if (Objects.nonNull(buildFloor)){
+                    vo.setBuildFloorName(buildFloor.getName());
+                }
+                Region region = regionService.findById(assets.getRegionId());
+                if (Objects.nonNull(region)){
+                    vo.setRegionName(region.getName());
+                }
+                Department department = departmentService.findById(assets.getDepartmentId());
+                if (Objects.nonNull(department)){
+                    vo.setDepartmentName(department.getName());
                 }
             }
             resultData.setData(vo);

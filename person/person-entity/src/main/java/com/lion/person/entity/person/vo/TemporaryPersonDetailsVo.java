@@ -23,6 +23,9 @@ public class TemporaryPersonDetailsVo extends TemporaryPerson {
     @ApiModelProperty(value = "电量(0=正常,1=少於90 天,2=少於30天)")
     private Integer battery;
 
+    @ApiModelProperty(value = "科室名称（来源于拜访人）")
+    private String departmentName;
+
     @ApiModelProperty(value = "限制区域")
     private List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList;
 

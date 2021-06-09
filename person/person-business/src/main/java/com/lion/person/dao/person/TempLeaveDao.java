@@ -11,7 +11,7 @@ import java.util.List;
  * @author: Mr.Liu
  * @time: 2021/5/25 下午9:23
  */
-public interface TempLeaveDao extends BaseDao<TempLeave> {
+public interface TempLeaveDao extends BaseDao<TempLeave> ,TempLeaveDaoEx {
 
     /**
      *

@@ -22,18 +22,26 @@ import com.lion.manage.entity.assets.vo.ListAssetsBorrowVo;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.AssetsType;
 import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoomSickbed;
+import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsService;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
+import com.lion.manage.service.ward.WardService;
+import com.lion.upms.entity.role.Role;
+import com.lion.upms.entity.role.RoleUser;
 import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +51,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -90,6 +99,18 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
     @DubboReference
     private TagExposeService tagExposeService;
 
+    @Autowired
+    private WardRoomService wardRoomService;
+
+    @Autowired
+    private WardService wardService;
+
+    @DubboReference
+    private RoleExposeService roleExposeService;
+
+    @DubboReference
+    private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
+
     @Override
     @Transactional
     public void add(AddAssetsBorrowDto addAssetsBorrowDto) {
@@ -136,8 +157,29 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
     }
 
     @Override
-    public IPageResultData<List<ListAssetsBorrowVo>> list(Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage) {
-        Page page = assetsDao.list(assetsId,startDateTime , endDateTime,isReturn, lionPage);
+    public IPageResultData<List<ListAssetsBorrowVo>> list(String name, Long borrowUserId, AssetsType type, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage) {
+        List<Long> departmentIds = new ArrayList<>();
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        Role role = roleExposeService.find(userId);
+        if (Objects.nonNull(role)) {
+            if (role.getCode().toLowerCase().indexOf("admin") < 0) {
+                List<Department> list = new ArrayList<>();
+                if (Objects.nonNull(departmentId)) {
+                    list = departmentResponsibleUserExposeService.findDepartment(userId, departmentId);
+                } else {
+                    list = departmentResponsibleUserExposeService.findDepartment(userId);
+                }
+                list.forEach(department -> {
+                    departmentIds.add(department.getId());
+                });
+                departmentIds.add(Long.MAX_VALUE);
+            } else {
+                if (Objects.nonNull(departmentId)) {
+                    departmentIds.add(departmentId);
+                }
+            }
+        }
+        Page page = assetsDao.list(name, borrowUserId,departmentIds , type, assetsId, startDateTime, endDateTime, isReturn, lionPage);
         List<MoreEntity> list = page.getContent();
         List<ListAssetsBorrowVo> returnList = new ArrayList<>();
         list.forEach(moreEntity -> {
@@ -171,6 +213,17 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
             vo.setRegistrationTime(assetsBorrow.getCreateDateTime());
             vo.setStartDateTime(assetsBorrow.getStartDateTime());
             vo.setEndDateTime(assetsBorrow.getEndDateTime());
+
+//            if (Objects.nonNull(wardRoomSickbed)){
+//                WardRoom wardRoom = wardRoomService.findById(wardRoomSickbed.getWardRoomId());
+//                if (Objects.nonNull(wardRoom)) {
+//                    Ward ward = wardService.findById(wardRoom.getWardId());
+//                    if (Objects.nonNull(ward)) {
+//
+//                    }
+//                }
+//            }
+
             User user = userExposeService.findById(assetsBorrow.getBorrowUserId());
             if (Objects.nonNull(user)){
                 vo.setBorrowUserName(user.getName());

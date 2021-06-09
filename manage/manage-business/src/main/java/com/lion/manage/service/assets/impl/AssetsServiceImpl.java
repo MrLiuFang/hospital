@@ -155,18 +155,26 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             Build build = buildService.findById(assets.getBuildId());
             if (Objects.nonNull(build)){
                 detailsAssetsVo.setPosition(build.getName());
+                detailsAssetsVo.setBuildName(build.getName());
             }
         }
         if (Objects.nonNull(assets.getBuildFloorId())){
             BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
             if (Objects.nonNull(buildFloor)){
                 detailsAssetsVo.setPosition(detailsAssetsVo.getPosition()+buildFloor.getName());
+                detailsAssetsVo.setBuildFloorName(buildFloor.getName());
             }
         }
         if (Objects.nonNull(assets.getDepartmentId())){
             Department department = departmentService.findById(assets.getDepartmentId());
             if (Objects.nonNull(department)){
                 detailsAssetsVo.setDepartmentName(department.getName());
+            }
+        }
+        if (Objects.nonNull(assets.getRegionId())) {
+            Region region = regionService.findById(assets.getRegionId());
+            if (Objects.nonNull(region)){
+                detailsAssetsVo.setRegionName(region.getName());
             }
         }
         Tag tag = tagExposeService.findById(assets.getId());
@@ -185,6 +193,16 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             return assets;
         }
         return null;
+    }
+
+    @Override
+    public List<Assets> findByDepartmentId(List<Long> departmentIds) {
+        return assetsDao.findByDepartmentIdIn(departmentIds);
+    }
+
+    @Override
+    public List<Assets> find(String code) {
+        return assetsDao.findByCodeLike("%"+code+"%");
     }
 
     private void assertDepartmentExist(Long id) {

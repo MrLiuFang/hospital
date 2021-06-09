@@ -31,6 +31,14 @@ public interface DepartmentResponsibleUserExposeService extends BaseService<Depa
     public List<Department> findDepartment(Long userId);
 
     /**
+     *
+     * @param userId
+     * @param departmentId
+     * @return
+     */
+    public List<Department> findDepartment(Long userId,Long departmentId);
+
+    /**
      * 获取科室负责人
      * @param departmentId
      * @return

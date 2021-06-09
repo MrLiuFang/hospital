@@ -14,6 +14,11 @@ public class RedisConstants {
     public static String LAST_DATA = "last_data_";
 
     /**
+     * 温湿标签最后的记录
+     */
+    public static String LAST_TAG_DATA = "last_tag_data_";
+
+    /**
      * 用户(key:userId,value:user)
      */
     public static final String USER = "user_";

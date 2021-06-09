@@ -7,6 +7,7 @@ import com.lion.person.entity.person.TempLeave;
 import com.lion.person.entity.person.dto.AddTempLeaveDto;
 import com.lion.person.entity.person.dto.AdvanceOverTempLeaveDto;
 import com.lion.person.entity.person.vo.ListTempLeaveVo;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -34,6 +35,9 @@ public interface TempLeaveService extends BaseService<TempLeave> {
 
     /**
      * 列表
+     *
+     * @param tagCode
+     * @param departmentId
      * @param patientId
      * @param userId
      * @param startDateTime
@@ -41,5 +45,5 @@ public interface TempLeaveService extends BaseService<TempLeave> {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListTempLeaveVo>> list(Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<ListTempLeaveVo>> list( String tagCode,  Long departmentId, Long patientId,Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

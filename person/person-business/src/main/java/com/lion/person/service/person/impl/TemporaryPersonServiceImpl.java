@@ -15,6 +15,7 @@ import com.lion.device.expose.tag.TagPostdocsExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
@@ -127,13 +128,22 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     }
 
     @Override
-    public IPageResultData<List<ListTemporaryPersonVo>> list(String name, Boolean isLeave, LionPage lionPage) {
+    public IPageResultData<List<ListTemporaryPersonVo>> list(String name, Boolean isLeave, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name","%"+name+"%");
         }
         if (Objects.nonNull(isLeave)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_isLeave",isLeave);
+        }
+        if (StringUtils.hasText(tagCode)){
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_tagCode","%"+tagCode+"%");
+        }
+        if (Objects.nonNull(startDateTime)) {
+            jpqlParameter.setSearchParameter(SearchConstant.GREATER_THAN_OR_EQUAL_TO+"_createDateTime",startDateTime);
+        }
+        if (Objects.nonNull(endDateTime)) {
+            jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_createDateTime",endDateTime);
         }
         lionPage.setJpqlParameter(jpqlParameter);
         Page<TemporaryPerson> page = this.findNavigator(lionPage);
@@ -162,6 +172,10 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         Tag tag = tagExposeService.find(temporaryPerson.getTagCode());
         if (Objects.nonNull(tag)) {
             temporaryPersonDetailsVo.setBattery(tag.getBattery());
+        }
+        Department department = departmentExposeService.findById(temporaryPerson.getDepartmentId());
+        if (Objects.nonNull(department)) {
+            temporaryPersonDetailsVo.setDepartmentName(department.getName());
         }
         List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(temporaryPerson.getId(), PersonType.TEMPORARY_PERSON);
         List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();

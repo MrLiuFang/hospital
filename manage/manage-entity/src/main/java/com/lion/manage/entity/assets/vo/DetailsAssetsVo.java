@@ -1,10 +1,14 @@
 package com.lion.manage.entity.assets.vo;
 
+import com.lion.core.persistence.Validator;
 import com.lion.manage.entity.assets.Assets;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import sun.rmi.runtime.Log;
+
+import javax.persistence.Column;
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Mr.Liu
@@ -27,8 +31,17 @@ public class DetailsAssetsVo extends Assets {
     @ApiModelProperty(value = "图片Url")
     private String imgUrl;
 
-    @ApiModelProperty(value = "科室名称")
+    @ApiModelProperty(value = "所属科室名称")
     private String departmentName;
+
+    @ApiModelProperty(value = "所属区域名称")
+    private String regionName;
+
+    @ApiModelProperty(value = "所属建筑名称")
+    private String buildName;
+
+    @ApiModelProperty(value = "所属建筑楼层名称")
+    private String buildFloorName;
 
     @ApiModelProperty(value = "标签编码")
     private String tagCode;

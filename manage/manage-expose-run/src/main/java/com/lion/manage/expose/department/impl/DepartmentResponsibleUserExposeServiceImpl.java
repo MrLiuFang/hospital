@@ -46,6 +46,11 @@ public class DepartmentResponsibleUserExposeServiceImpl extends BaseServiceImpl<
     }
 
     @Override
+    public List<Department> findDepartment(Long userId, Long departmentId) {
+        return departmentDao.findResponsibleDepartmentByUserId(userId,departmentId);
+    }
+
+    @Override
     public List<Map<String,Object>> responsibleUser(Long departmentId) {
         List<ResponsibleUserVo> list = departmentResponsibleUserService.responsibleUser(departmentId);
         List<Map<String,Object>> returnList = new ArrayList<Map<String,Object>>();

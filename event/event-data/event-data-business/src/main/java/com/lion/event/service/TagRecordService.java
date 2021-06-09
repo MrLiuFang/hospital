@@ -1,6 +1,13 @@
 package com.lion.event.service;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.event.entity.TagRecord;
+import com.lion.event.entity.vo.ListTagRecordVo;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @Author Mr.Liu
@@ -10,4 +17,16 @@ import com.lion.event.entity.TagRecord;
 public interface TagRecordService {
 
     public void save(TagRecord tagRecord);
+
+    /**
+     *  温湿标签列表
+     * @param regionId
+     * @param departmentId
+     * @param deviceCode
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     * @return
+     */
+    public IPageResultData<List<ListTagRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 }

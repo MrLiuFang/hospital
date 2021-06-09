@@ -8,24 +8,25 @@ import com.lion.core.PageResultData;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
+import com.lion.manage.entity.department.Department;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.person.dao.person.TempLeaveDao;
 import com.lion.person.entity.person.Patient;
-import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.TempLeave;
 import com.lion.person.entity.person.dto.AddTempLeaveDto;
 import com.lion.person.entity.person.dto.AdvanceOverTempLeaveDto;
-import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.ListTempLeaveVo;
-import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.service.person.PatientLogService;
 import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.TempLeaveService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -43,17 +44,20 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
     @Autowired
     private TempLeaveDao tempLeaveDao;
 
-    @Autowired
+    @DubboReference
     private UserExposeService userExposeService;
 
     @Autowired
     private PatientService patientService;
 
-    @Autowired
+    @DubboReference
     private FileExposeService fileExposeService;
 
     @Autowired
     private PatientLogService patientLogService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
 
     @Override
     public void addTempLeave(AddTempLeaveDto addTempLeaveDto) {
@@ -93,22 +97,8 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
     }
 
     @Override
-    public IPageResultData<List<ListTempLeaveVo>> list(Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        JpqlParameter jpqlParameter = new JpqlParameter();
-        if (Objects.nonNull(patientId)) {
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_patientId",patientId);
-        }
-        if (Objects.nonNull(userId)) {
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_userId",userId);
-        }
-        if (Objects.nonNull(startDateTime)) {
-            jpqlParameter.setSearchParameter(SearchConstant.GREATER_THAN_OR_EQUAL_TO+"_startDateTime",startDateTime);
-        }
-        if (Objects.nonNull(endDateTime)) {
-            jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_endDateTime",endDateTime);
-        }
-        lionPage.setJpqlParameter(jpqlParameter);
-        Page<TempLeave> page = this.findNavigator(lionPage);
+    public IPageResultData<List<ListTempLeaveVo>> list(String tagCode, Long departmentId, Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        Page<TempLeave> page = tempLeaveDao.list(tagCode, departmentId, patientId, userId, startDateTime, endDateTime, lionPage);
         List<TempLeave> list = page.getContent();
         List<ListTempLeaveVo> returnList = new ArrayList<>();
         list.forEach(tempLeave -> {
@@ -125,6 +115,10 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
                 vo.setUserName(user.getName());
                 vo.setUserHeadPortrait(user.getHeadPortrait());
                 vo.setUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+            }
+            Department department = departmentExposeService.findById(patient.getDepartmentId());
+            if (Objects.nonNull(department)) {
+                vo.setDepartmentName(department.getName());
             }
             returnList.add(vo);
         });

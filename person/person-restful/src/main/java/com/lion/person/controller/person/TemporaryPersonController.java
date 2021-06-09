@@ -16,10 +16,12 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -46,8 +48,11 @@ public class TemporaryPersonController extends BaseControllerImpl implements Bas
 
     @GetMapping("/list")
     @ApiOperation(value = "流动人员列表")
-    public IPageResultData<List<ListTemporaryPersonVo>> list(@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出") Boolean isLeave, LionPage lionPage){
-        return temporaryPersonService.list(name, isLeave, lionPage);
+    public IPageResultData<List<ListTemporaryPersonVo>> list(@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出") Boolean isLeave,@ApiParam(value = "标签编码")String tagCode,
+                                                             @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                             @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                             LionPage lionPage){
+        return temporaryPersonService.list(name, isLeave, tagCode, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/details")

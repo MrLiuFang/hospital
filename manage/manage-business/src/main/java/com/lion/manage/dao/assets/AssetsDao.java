@@ -34,6 +34,14 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
      */
     public Assets findFirstByCode(String code);
 
+
+    /**
+     * 根据编码查询资产
+     * @param code
+     * @return
+     */
+    public List<Assets> findByCodeLike(String code);
+
     /**
      * 根据楼层统计区域内资产数量
      * @param buildFloorId
@@ -63,6 +71,13 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
      * @return
      */
     public List<Assets> findByDepartmentId(Long departmentId);
+
+    /**
+     * 查询部门内的资产
+     * @param departmentIds
+     * @return
+     */
+    public List<Assets> findByDepartmentIdIn(List<Long> departmentIds);
 
     /**
      * 查询部门内的资产

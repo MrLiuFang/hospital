@@ -1,5 +1,8 @@
 package com.lion.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.common.enums.Type;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -14,52 +17,48 @@ import java.time.LocalDateTime;
 @Data
 public class TagRecordDto implements Serializable {
 
-    //类型 (com.lion.event.entity.enums.Type)
+    @ApiModelProperty(value = "类型 (com.lion.common.enums.Type)")
     private Integer typ;
 
-    /**
-     * tagid
-     */
+    @ApiModelProperty(value = "tagid")
     private Long ti;
 
-    //建筑id
+    @ApiModelProperty(value = "建筑id")
     private Long bui;
 
-    //建筑名称
+    @ApiModelProperty(value = "建筑名称")
     private String bun;
 
-    //楼层id
+    @ApiModelProperty(value = "楼层id")
     private Long bfi;
 
-    //楼层名称
+    @ApiModelProperty(value = "楼层名称")
     private String bfn;
 
-    /**
-     * 科室id
-     */
+    @ApiModelProperty(value = "科室id")
     private Long di;
 
-    /**
-     * 科室名称
-     */
+    @ApiModelProperty(value = "科室名称")
     private String dn;
 
-    //区域id
+    @ApiModelProperty(value = "区域id")
     private Long ri;
 
-    //区域名称
+    @ApiModelProperty(value = "区域名称")
     private String rn;
 
-    //温度
+    @ApiModelProperty(value = "温度")
     private BigDecimal t;
 
-    //湿度
+    @ApiModelProperty(value = "湿度")
     private BigDecimal h;
 
-    //设备产生時間
+    @ApiModelProperty(value = "设备产生時間")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ddt;
 
-    //系统接受到时间
+    @ApiModelProperty(value = "系统接受到时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sdt;
 }
 

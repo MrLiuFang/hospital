@@ -9,9 +9,11 @@ import com.lion.person.entity.person.dto.*;
 import com.lion.person.entity.person.vo.ListTemporaryPersonVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.entity.person.vo.TemporaryPersonDetailsVo;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -44,10 +46,13 @@ public interface TemporaryPersonService extends BaseService<TemporaryPerson> {
      * 列表
      * @param name
      * @param isLeave
+     * @param tagCode
+     * @param startDateTime
+     * @param endDateTime
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListTemporaryPersonVo>> list(String name, Boolean isLeave, LionPage lionPage);
+    public IPageResultData<List<ListTemporaryPersonVo>> list(String name,Boolean isLeave,String tagCode, LocalDateTime startDateTime,LocalDateTime endDateTime,LionPage lionPage);
 
     /**
      * 详情

@@ -3,6 +3,7 @@ package com.lion.manage.dao.department;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.department.Department;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -49,5 +50,13 @@ public interface DepartmentDao extends BaseDao<Department> {
      */
     @Query(" select d from Department d join DepartmentResponsibleUser dru on d.id = dru.departmentId where dru.userId = :userId ")
     public List<Department> findResponsibleDepartmentByUserId(Long userId);
+
+    /**
+     * 获取用户所有负责的科室
+     * @param userId
+     * @return
+     */
+    @Query(" select d from Department d join DepartmentResponsibleUser dru on d.id = dru.departmentId where dru.userId = :userId and d.id =:departmentId ")
+    public List<Department> findResponsibleDepartmentByUserId(@Param("userId") Long userId,@Param("departmentId")  Long departmentId);
 
 }
