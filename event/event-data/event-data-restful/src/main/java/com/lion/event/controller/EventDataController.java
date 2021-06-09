@@ -11,7 +11,9 @@ import com.lion.core.LionPage;
 import com.lion.core.ResultData;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
+import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
+import com.lion.device.entity.tag.Tag;
 import com.lion.event.entity.*;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.dto.OldAlarmToNewAlarm;
@@ -38,7 +40,7 @@ import java.util.List;
  **/
 @RestController
 @Validated
-@Api(tags = {"设备数据,地图监控,日志/记录……"})
+@Api(tags = {"设备数据,地图监控,日志记录……"})
 public class EventDataController extends BaseControllerImpl implements BaseController {
 
     @Autowired
@@ -343,5 +345,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IResultData<List<String>> personAllRegion(@ApiParam("病人或流动人员id")@NotNull(message = "病人或流动人员不能为空") Long personId,@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                      @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime ) {
         return ResultData.instance().setData(positionService.personAllRegion(personId, startDateTime, endDateTime));
+    }
+
+    @GetMapping("/tag/position")
+    @ApiOperation(value = "标签位置(不返回总行数)")
+    public IPageResultData<List<ListPositionVo>> tagPosition(@ApiParam("标签类型") TagPurpose tagPurpose, @ApiParam("区域")Long regionId, @ApiParam("科室")Long departmentId, @ApiParam("设备名称/标签名称")String deviceName, @ApiParam("标签编码")String tagCode,
+                                                       @ApiParam(value = "开始进入时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                       @ApiParam(value = "结束进入时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                       LionPage lionPage) {
+        return positionService.tagPosition(tagPurpose, regionId, departmentId, deviceName, tagCode, startDateTime, endDateTime, lionPage);
     }
 }

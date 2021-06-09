@@ -6,7 +6,6 @@ import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.CurrentRegionDto;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.common.dto.PositionDto;
-import com.lion.common.dto.UserCurrentRegionDto;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
@@ -23,10 +22,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
-import javax.swing.text.Position;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -50,32 +46,32 @@ public class CommonServiceImpl implements CommonService {
 
 
     @Override
-    public void position(DeviceDataDto deviceDataDto, User user, Long regionId) throws JsonProcessingException {
-        position(Type.STAFF,user.getId(), regionId,null,null,null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+    public void position(DeviceDataDto deviceDataDto, User user, Long regionId, Tag tag) throws JsonProcessingException {
+        position(Type.STAFF,user.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
     }
 
     @Override
-    public void position(DeviceDataDto deviceDataDto, Patient patient, Long regionId) throws JsonProcessingException {
-        position(Type.PATIENT,patient.getId(), regionId,null,null,null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+    public void position(DeviceDataDto deviceDataDto, Patient patient, Long regionId, Tag tag) throws JsonProcessingException {
+        position(Type.PATIENT,patient.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
     }
 
     @Override
-    public void position(DeviceDataDto deviceDataDto, TemporaryPerson temporaryPerson, Long regionId) throws JsonProcessingException {
-        position(Type.MIGRANT,temporaryPerson.getId(), regionId,null,null,null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+    public void position(DeviceDataDto deviceDataDto, TemporaryPerson temporaryPerson, Long regionId, Tag tag) throws JsonProcessingException {
+        position(Type.MIGRANT,temporaryPerson.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
     }
 
     @Override
     public void position(DeviceDataDto deviceDataDto, Tag tag, Long regionId) throws JsonProcessingException {
         if (Objects.equals(deviceDataDto.getTagType(),Type.HUMIDITY)) {
-            position(Type.HUMIDITY, null, regionId, null, tag.getId(), null, deviceDataDto.getTime(), deviceDataDto.getSystemDateTime());
+            position(Type.HUMIDITY, null, regionId, null, tag.getId(), deviceDataDto.getTime(), deviceDataDto.getSystemDateTime());
         }else if (Objects.equals(deviceDataDto.getTagType(),Type.TEMPERATURE)) {
-            position(Type.TEMPERATURE, null, regionId, null, null, tag.getId(), deviceDataDto.getTime(), deviceDataDto.getSystemDateTime());
+            position(Type.TEMPERATURE, null, regionId, null, Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(), deviceDataDto.getSystemDateTime());
         }
     }
 
     @Override
-    public void position(DeviceDataDto deviceDataDto, Assets assets, Long regionId) throws JsonProcessingException {
-        position(Type.ASSET,null,regionId,assets.getId(),null,null,deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+    public void position(DeviceDataDto deviceDataDto, Assets assets, Long regionId, Tag tag) throws JsonProcessingException {
+        position(Type.ASSET,null,regionId,assets.getId(),Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
     }
 
     @Override
@@ -103,13 +99,12 @@ public class CommonServiceImpl implements CommonService {
      * @param pi 员工/患者/流动人员id
      * @param ri 区域id
      * @param adi 设备/资产id(资产)
-     * @param thi 标签id(温度)
-     * @param tti 标签id
+     * @param ti 标签id(温度)
      * @param ddt 设备产生的时间
      * @param sdt 系统接收到的时间
      * @throws JsonProcessingException
      */
-    private void position(Type type, Long pi, Long ri, Long adi, Long thi,Long tti, LocalDateTime ddt, LocalDateTime sdt) throws JsonProcessingException {
+    private void position(Type type, Long pi, Long ri, Long adi, Long ti, LocalDateTime ddt, LocalDateTime sdt) throws JsonProcessingException {
 
         PositionDto positionDto = new PositionDto();
         positionDto.setTyp(type.getKey());
@@ -122,11 +117,8 @@ public class CommonServiceImpl implements CommonService {
         if (Objects.nonNull(adi)) {
             positionDto.setAdi(adi);
         }
-        if (Objects.nonNull(thi)) {
-            positionDto.setTi(thi);
-        }
-        if (Objects.nonNull(tti)) {
-            positionDto.setTi(tti);
+        if (Objects.nonNull(ti)) {
+            positionDto.setTi(ti);
         }
         positionDto.setDdt(ddt);
         positionDto.setSdt(sdt);

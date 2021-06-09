@@ -11,7 +11,6 @@ import com.lion.common.dto.TempLeaveMonitorDto;
 import com.lion.common.enums.Type;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceClassify;
-import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.tag.Tag;
 import com.lion.event.service.CommonService;
 import com.lion.event.service.PatientService;
@@ -75,7 +74,7 @@ public class PatientServiceImpl implements PatientService {
     public void patientEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient) throws JsonProcessingException {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
         redisTemplate.opsForValue().set(RedisConstants.PATIENT_CURRENT_REGION,currentRegionDto,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        commonService.position(deviceDataDto,patient,currentRegionDto.getRegionId());
+        commonService.position(deviceDataDto,patient,currentRegionDto.getRegionId(),tag );
         PatientTransfer patientTransfer = patientTransferExposeService.find(patient.getId());
         List<TempLeave> tempLeaves =tempLeaveExposeService.find(patient.getId());
         List<RestrictedArea> restrictedAreas = restrictedAreaExposeService.find(patient.getId(), PersonType.PATIENT );

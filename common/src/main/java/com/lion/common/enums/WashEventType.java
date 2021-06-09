@@ -51,7 +51,7 @@ public enum WashEventType implements IEnum {
 
     @Override
     public Object jsonValue() {
-        return getKey();
+        return getName();
     }
 
     @JsonCreator

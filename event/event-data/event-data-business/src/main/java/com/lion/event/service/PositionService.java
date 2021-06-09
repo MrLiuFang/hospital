@@ -3,7 +3,9 @@ package com.lion.event.service;
 import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
 import com.lion.core.LionPage;
+import com.lion.device.entity.enums.TagPurpose;
 import com.lion.event.entity.Position;
+import com.lion.event.entity.vo.ListPositionVo;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
@@ -55,4 +57,18 @@ public interface PositionService {
      * @return
      */
     public List<String> personAllRegion(Long personId, LocalDateTime startDateTime,LocalDateTime endDateTime );
+
+    /**
+     * 标签位置
+     * @param tagPurpose
+     * @param regionId
+     * @param departmentId
+     * @param deviceName
+     * @param tagCode
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     * @return
+     */
+     public IPageResultData<List<ListPositionVo>> tagPosition(TagPurpose tagPurpose, Long regionId,Long departmentId,String deviceName,String tagCode,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 }

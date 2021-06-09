@@ -58,7 +58,7 @@ public enum Type implements IEnum {
 
     @Override
     public Object jsonValue() {
-        return getKey();
+        return getName();
     }
 
     @JsonCreator

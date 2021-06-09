@@ -65,7 +65,7 @@ public class UserWashServiceImpl implements UserWashService {
             starRegion = redisUtil.getRegion(star.getId());
         }
         //记录当前用户所在区域
-        UserCurrentRegionDto userCurrentRegionDto = recordUserCurrentRegion(user,monitorRegion,starRegion, deviceDataDto);
+        UserCurrentRegionDto userCurrentRegionDto = recordUserCurrentRegion(user,monitorRegion,starRegion, deviceDataDto, tag);
         String uuid = UUID.randomUUID().toString();
         userWashEevent(user,monitor,star,tag , deviceDataDto, userCurrentRegionDto);
 
@@ -109,10 +109,11 @@ public class UserWashServiceImpl implements UserWashService {
      * @param monitorRegion
      * @param starRegion
      * @param deviceDataDto
+     * @param tag
      * @return
      * @throws JsonProcessingException
      */
-    private UserCurrentRegionDto recordUserCurrentRegion(User user, Region monitorRegion, Region starRegion, DeviceDataDto deviceDataDto) throws JsonProcessingException {
+    private UserCurrentRegionDto recordUserCurrentRegion(User user, Region monitorRegion, Region starRegion, DeviceDataDto deviceDataDto,Tag tag) throws JsonProcessingException {
         Region region = Objects.isNull(monitorRegion)?starRegion:monitorRegion;
         if (Objects.isNull(region)){
             return null;
@@ -123,14 +124,14 @@ public class UserWashServiceImpl implements UserWashService {
             userCurrentRegionDto  = new UserCurrentRegionDto();
             userCurrentRegionDto.setFirstEntryTime(deviceDataDto.getTime());
             userCurrentRegionDto.setUuid(uuid);
-            position(deviceDataDto,user,region);
+            position(deviceDataDto,user,region,tag );
         }else  if (Objects.nonNull(region) && !Objects.equals(region.getId(),userCurrentRegionDto.getRegionId())) {//判断是否从X区域进入X区域
             userCurrentRegionDto.setFirstEntryTime(deviceDataDto.getTime());
             userCurrentRegionDto.setPreviousRegionId(userCurrentRegionDto.getRegionId());
             userCurrentRegionDto.setWashRecord(null);
             userCurrentRegionDto.setCurrentRegionEvent(0);
             userCurrentRegionDto.setUuid(uuid);
-            position(deviceDataDto,user,region);
+            position(deviceDataDto,user,region,tag );
         }
         userCurrentRegionDto.setCurrentRegionEvent(userCurrentRegionDto.getCurrentRegionEvent()+1);
         userCurrentRegionDto.setUserId(user.getId());
@@ -139,9 +140,9 @@ public class UserWashServiceImpl implements UserWashService {
         return userCurrentRegionDto;
     }
 
-    private void position(DeviceDataDto deviceDataDto,User user, Region region) throws JsonProcessingException {
+    private void position(DeviceDataDto deviceDataDto,User user, Region region,Tag tag) throws JsonProcessingException {
         //记录位置
-        commonService.position(deviceDataDto,user,region.getId());
+        commonService.position(deviceDataDto,user,region.getId(),tag );
     }
 
     /**
