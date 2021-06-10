@@ -90,6 +90,13 @@ public interface MapStatisticsService {
     public AssetsDetailsVo assetsDetails(Long assetsId);
 
     /**
+     * 患者详情
+     * @param patientId
+     * @return
+     */
+    public PatientDetailsVo patientDetails(Long patientId);
+
+    /**
      * 获取警告列表
      *
      *

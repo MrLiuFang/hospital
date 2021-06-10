@@ -21,10 +21,15 @@ import com.lion.event.entity.vo.SystemAlarmVo;
 import com.lion.event.service.SystemAlarmService;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.SystemAlarmType;
+import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.assets.AssetsExposeService;
+import com.lion.manage.expose.region.RegionExposeService;
+import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.RestrictedArea;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.PatientExposeService;
+import com.lion.person.expose.person.RestrictedAreaExposeService;
 import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
@@ -78,6 +83,12 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @DubboReference
     private AssetsExposeService assetsExposeService;
+
+    @DubboReference
+    private RestrictedAreaExposeService restrictedAreaExposeService;
+
+    @DubboReference
+    private RegionExposeService regionExposeService;
 
     @Override
     public void save(SystemAlarm systemAlarm) {
@@ -264,6 +275,13 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 if (Objects.nonNull(patient)) {
                     vo.setPatientName(patient.getName());
                 }
+                List<RestrictedArea> list = restrictedAreaExposeService.find(systemAlarm.getPi(), PersonType.PATIENT);
+                List<String> restrictedAreaStringList = new ArrayList<>();
+                list.forEach(restrictedArea -> {
+                    Region region = regionExposeService.findById(restrictedArea.getRegionId());
+                    restrictedAreaStringList.add(Objects.isNull(region)?"":region.getName());
+                });
+                vo.setRestrictedArea(restrictedAreaStringList);
             }
             if (Objects.equals(systemAlarm.getTy(),Type.MIGRANT.getKey())) {
                 TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());

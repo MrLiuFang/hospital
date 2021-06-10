@@ -213,7 +213,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @GetMapping("/patient/details")
     @ApiOperation(value = "地图监控患者详情")
     public IResultData<PatientDetailsVo> patientDetails(@ApiParam("患者id") @NotNull(message = "患者id不能为空") Long patientId) {
-        return ResultData.instance().setData(mapStatisticsService.staffDetails(patientId));
+        return ResultData.instance().setData(mapStatisticsService.patientDetails(patientId));
     }
 
     @GetMapping("/staff/details")

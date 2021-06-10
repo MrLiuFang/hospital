@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @description:
  * @author: Mr.Liu
@@ -17,6 +19,9 @@ public class SystemAlarmDetailsVo extends SystemAlarm {
 
     @ApiModelProperty(value = "警告来源(com.lion.common.enums.Type 获取该字典)")
     private Type type;
+
+    @ApiModelProperty(value = "患者行动限制区域")
+    private List<String> restrictedArea;
 
     @ApiModelProperty(value = "警告内容")
     private String alarmContent;

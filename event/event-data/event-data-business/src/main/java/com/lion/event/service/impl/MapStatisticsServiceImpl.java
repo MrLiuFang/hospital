@@ -6,6 +6,7 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.lion.common.constants.RedisConstants;
+import com.lion.common.dto.CurrentRegionDto;
 import com.lion.common.dto.UserCurrentRegionDto;
 import com.lion.common.enums.Type;
 import com.lion.common.expose.file.FileExposeService;
@@ -56,6 +57,7 @@ import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -453,28 +455,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             }
         }
         if (Objects.nonNull(userCurrentRegionDto)){
-            CurrentRegionVo vo = new CurrentRegionVo();
+            CurrentRegionVo vo = convertVo(userCurrentRegionDto);
             vo.setFirstEntryTime(userCurrentRegionDto.getFirstEntryTime());
-            Region region = redisUtil.getRegionById(userCurrentRegionDto.getRegionId());
-            if (Objects.nonNull(region)) {
-                vo.setRegionId(region.getId());
-                vo.setRegionName(region.getName());
-                Build build = redisUtil.getBuild(region.getBuildId());
-                if (Objects.nonNull(build)) {
-                    vo.setBuildId(build.getId());
-                    vo.setBuildName(build.getName());
-                }
-                BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)) {
-                    vo.setBuildFloorId(buildFloor.getId());
-                    vo.setBuildFloorName(buildFloor.getName());
-                }
-                Department department = redisUtil.getDepartment(region.getDepartmentId());
-                if (Objects.nonNull(department)) {
-                    vo.setDepartmentId(department.getId());
-                    vo.setDepartmentName(department.getName());
-                }
-            }
             return vo;
         }
         return null;
@@ -519,6 +501,37 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         assetsDetailsVo.setPositions(positionService.findByAssetsId(assets.getId(),now.minusDays(30),now));
         assetsDetailsVo.setFaultRecord(faultExposeService.findLast(assets.getId()));
         return assetsDetailsVo;
+    }
+
+    @Override
+    public PatientDetailsVo patientDetails(Long patientId) {
+        PatientDetailsVo vo = new PatientDetailsVo();
+        Patient patient = patientExposeService.findById(patientId);
+        BeanUtils.copyProperties(patient,vo);
+        Tag tag = tagExposeService.findById(patient.getTagCode());
+        if (Objects.nonNull(tag)) {
+            vo.setBattery(tag.getBattery());
+        }
+        WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
+        if (Objects.nonNull(wardRoomSickbed)) {
+            vo.setBedCode(wardRoomSickbed.getBedCode());
+        }
+        CurrentRegionDto currentRegion = (CurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.PATIENT_CURRENT_REGION+patientId);
+        vo.setCurrentRegionVo(convertVo(currentRegion));
+        User doctor = userExposeService.findById(patient.getDoctorId());
+        if (Objects.nonNull(doctor)) {
+            vo.setDoctorHeadPortrait(doctor.getHeadPortrait());
+            vo.setDoctorHeadPortraitUrl(fileExposeService.getUrl(doctor.getHeadPortrait()));
+            vo.setDoctorName(doctor.getName());
+        }
+        vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
+        User nurse = userExposeService.findById(patient.getNurseId());
+        if (Objects.nonNull(nurse)) {
+            vo.setNurseHeadPortrait(nurse.getHeadPortrait());
+            vo.setNurseHeadPortraitUrl(fileExposeService.getUrl(nurse.getHeadPortrait()));
+            vo.setNurseName(nurse.getName());
+        }
+        return vo;
     }
 
     @Override
@@ -610,4 +623,29 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         servletOutputStream.close();
     }
 
+    private CurrentRegionVo convertVo(CurrentRegionDto currentRegionDto){
+        CurrentRegionVo vo = new CurrentRegionVo();
+        vo.setFirstEntryTime(currentRegionDto.getFirstEntryTime());
+        Region region = redisUtil.getRegionById(currentRegionDto.getRegionId());
+        if (Objects.nonNull(region)) {
+            vo.setRegionId(region.getId());
+            vo.setRegionName(region.getName());
+            Build build = redisUtil.getBuild(region.getBuildId());
+            if (Objects.nonNull(build)) {
+                vo.setBuildId(build.getId());
+                vo.setBuildName(build.getName());
+            }
+            BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
+            if (Objects.nonNull(buildFloor)) {
+                vo.setBuildFloorId(buildFloor.getId());
+                vo.setBuildFloorName(buildFloor.getName());
+            }
+            Department department = redisUtil.getDepartment(region.getDepartmentId());
+            if (Objects.nonNull(department)) {
+                vo.setDepartmentId(department.getId());
+                vo.setDepartmentName(department.getName());
+            }
+        }
+        return vo;
+    }
 }
