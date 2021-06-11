@@ -50,6 +50,7 @@ public class TagPostdocsExposeServiceImpl extends BaseServiceImpl<TagPostdocs> i
     public void binding(Long postdocsId, String tagCode) {
         if (!StringUtils.hasText(tagCode)){
             unbinding(postdocsId,false);
+            return;
         }
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){

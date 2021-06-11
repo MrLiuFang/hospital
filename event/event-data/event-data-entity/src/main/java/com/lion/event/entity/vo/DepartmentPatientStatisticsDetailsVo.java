@@ -1,12 +1,9 @@
 package com.lion.event.entity.vo;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.lion.person.entity.person.Patient;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.util.List;
 
 /**
@@ -28,11 +25,11 @@ public class DepartmentPatientStatisticsDetailsVo {
     private Integer abnormalPatientCount= 0;
 
     @ApiModelProperty(value = "部门信息")
-    private List<DepartmentPatientStatisticsDetailsVo.DepartmentVo> departmentVos;
+    private List<PatientDepartmentVo> patientDepartmentVos;
 
     @ApiModel
     @Data
-    public static class DepartmentVo{
+    public static class PatientDepartmentVo {
 
         @ApiModelProperty(value = "科室id")
         private Long departmentId;
@@ -41,7 +38,7 @@ public class DepartmentPatientStatisticsDetailsVo {
         private String departmentName;
 
         @ApiModelProperty(value = "患者信息")
-        private List<DepartmentPatientStatisticsDetailsVo.PatientVo> patientVos;
+        private List<PatientVo> patientVos;
     }
 
     @ApiModel

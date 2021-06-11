@@ -97,17 +97,18 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 user = redisUtil.getUser(tag.getId());
                 if (Objects.isNull(user)) {
                     patient = redisUtil.getPatientByTagId(tag.getId());
-                }else if (Objects.isNull(patient)) {
+                }
+                if (Objects.isNull(patient)) {
                     temporaryPerson = redisUtil.getTemporaryPersonByTagId(tag.getId());
                 }
             }
 
-            if (Objects.nonNull(user) && Objects.equals(deviceDataDto.getTagType(), Type.STAFF) ){ //如果根据标签查出员工，进行洗手事件处理
+            if (Objects.nonNull(user)){ //如果根据标签查出员工，进行洗手事件处理
                 userWashService.userWashEevent(deviceDataDto,monitor,star,tag,user);
             }else if (Objects.nonNull(patient)  ) { //处理患者数据
                 patientService.patientEvent(deviceDataDto,monitor,star,tag,patient);
             }else if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
-                temporaryPersonService.TemporaryPersonEvent(deviceDataDto,monitor,star,tag,temporaryPerson);
+                temporaryPersonService.temporaryPersonEvent(deviceDataDto,monitor,star,tag,temporaryPerson);
             }else if (Objects.nonNull(tag)
                     && (Objects.equals(deviceDataDto.getTagType(), Type.ASSET) || Objects.equals(deviceDataDto.getTagType(), Type.DEVICE) || Objects.equals(deviceDataDto.getTagType(), Type.HUMIDITY) || Objects.equals(deviceDataDto.getTagType(), Type.TEMPERATURE) )
                     && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据

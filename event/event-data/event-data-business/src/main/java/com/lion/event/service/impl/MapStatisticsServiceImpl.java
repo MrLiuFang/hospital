@@ -57,7 +57,6 @@ import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -242,6 +241,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo staff = new DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo();
                     staff.setUserId(user.getId());
                     staff.setUserName(user.getName());
+                    staff.setType(user.getUserType());
                     staff.setHeadPortrait(user.getHeadPortrait());
                     staff.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                     staff.setNumber(user.getNumber());
@@ -266,10 +266,10 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         Long userId = CurrentUserUtil.getCurrentUserId();
         List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
         DepartmentAssetsStatisticsDetailsVo departmentAssetsStatisticsDetailsVo =new DepartmentAssetsStatisticsDetailsVo();
-        List<DepartmentAssetsStatisticsDetailsVo.DepartmentVo> departmentVos = new ArrayList<>();
-        departmentAssetsStatisticsDetailsVo.setDepartmentVos(departmentVos);
+        List<DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo> assetsDepartmentVos = new ArrayList<>();
+        departmentAssetsStatisticsDetailsVo.setAssetsDepartmentVos(assetsDepartmentVos);
         list.forEach(department -> {
-            DepartmentAssetsStatisticsDetailsVo.DepartmentVo vo = new DepartmentAssetsStatisticsDetailsVo.DepartmentVo();
+            DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo vo = new DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo();
             vo.setDepartmentName(department.getName());
             vo.setDepartmentId(department.getId());
             departmentAssetsStatisticsDetailsVo.setAssetsCount(departmentAssetsStatisticsDetailsVo.getAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(),null ));
@@ -290,7 +290,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 assetsVos.add(assetsVo);
             });
             vo.setAssetsVos(assetsVos);
-            departmentVos.add(vo);
+            assetsDepartmentVos.add(vo);
         });
         return departmentAssetsStatisticsDetailsVo;
     }
@@ -300,12 +300,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         Long userId = CurrentUserUtil.getCurrentUserId();
         List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
         DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetailsVo = new DepartmentTagStatisticsDetailsVo();
-        List<DepartmentTagStatisticsDetailsVo.DepartmentVo> departmentVos = new ArrayList<>();
-        departmentTagStatisticsDetailsVo.setDepartmentVos(departmentVos);
+        List<DepartmentTagStatisticsDetailsVo.TagDepartmentVo> tagDepartmentVos = new ArrayList<>();
+        departmentTagStatisticsDetailsVo.setTagDepartmentVos(tagDepartmentVos);
         list.forEach(department -> {
-            DepartmentTagStatisticsDetailsVo.DepartmentVo departmentVo = new DepartmentTagStatisticsDetailsVo.DepartmentVo();
-            departmentVo.setDepartmentName(department.getName());
-            departmentVo.setDepartmentId(department.getId());
+            DepartmentTagStatisticsDetailsVo.TagDepartmentVo tagDepartmentVo = new DepartmentTagStatisticsDetailsVo.TagDepartmentVo();
+            tagDepartmentVo.setDepartmentName(department.getName());
+            tagDepartmentVo.setDepartmentId(department.getId());
             departmentTagStatisticsDetailsVo.setTagCount(departmentTagStatisticsDetailsVo.getTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH,null ));
             departmentTagStatisticsDetailsVo.setNormalTagCount(departmentTagStatisticsDetailsVo.getNormalTagCount() +tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.NORMAL ));
             departmentTagStatisticsDetailsVo.setAbnormalTagCount(departmentTagStatisticsDetailsVo.getAbnormalTagCount() +tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.ALARM ));
@@ -328,8 +328,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 }
                 tagVos.add(vo);
             });
-            departmentVo.setTagVos(tagVos);
-            departmentVos.add(departmentVo);
+            tagDepartmentVo.setTagVos(tagVos);
+            tagDepartmentVos.add(tagDepartmentVo);
         });
         return departmentTagStatisticsDetailsVo;
     }
@@ -339,12 +339,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         Long userId = CurrentUserUtil.getCurrentUserId();
         List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
         DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetailsVo = new DepartmentPatientStatisticsDetailsVo();
-        List<DepartmentPatientStatisticsDetailsVo.DepartmentVo> departmentVos = new ArrayList<>();
-        departmentPatientStatisticsDetailsVo.setDepartmentVos(departmentVos);
+        List<DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo> patientDepartmentVos = new ArrayList<>();
+        departmentPatientStatisticsDetailsVo.setPatientDepartmentVos(patientDepartmentVos);
         list.forEach(department -> {
-            DepartmentPatientStatisticsDetailsVo.DepartmentVo departmentVo = new DepartmentPatientStatisticsDetailsVo.DepartmentVo();
-            departmentVo.setDepartmentName(department.getName());
-            departmentVo.setDepartmentId(department.getId());
+            DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo patientDepartmentVo = new DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo();
+            patientDepartmentVo.setDepartmentName(department.getName());
+            patientDepartmentVo.setDepartmentId(department.getId());
             departmentPatientStatisticsDetailsVo.setPatientCount(departmentPatientStatisticsDetailsVo.getPatientCount() + patientExposeService.count(department.getId(), null));
             departmentPatientStatisticsDetailsVo.setNormalPatientCount(departmentPatientStatisticsDetailsVo.getNormalPatientCount() + patientExposeService.count(department.getId(), State.NORMAL));
             departmentPatientStatisticsDetailsVo.setAbnormalPatientCount(departmentPatientStatisticsDetailsVo.getAbnormalPatientCount() +  patientExposeService.count(department.getId(), State.ALARM));
@@ -366,8 +366,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
                 patientVos.add(vo);
             });
-            departmentVo.setPatientVos(patientVos);
-            departmentVos.add(departmentVo);
+            patientDepartmentVo.setPatientVos(patientVos);
+            patientDepartmentVos.add(patientDepartmentVo);
 
         });
         return departmentPatientStatisticsDetailsVo;
@@ -378,12 +378,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         Long userId = CurrentUserUtil.getCurrentUserId();
         List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
         DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetailsVo = new DepartmentTemporaryPersonStatisticsDetailsVo();
-        List<DepartmentTemporaryPersonStatisticsDetailsVo.DepartmentVo> departmentVos = new ArrayList<>();
-        departmentTemporaryPersonStatisticsDetailsVo.setDepartmentVos(departmentVos);
+        List<DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo> temporaryPersonDepartmentVos = new ArrayList<>();
+        departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonDepartmentVos(temporaryPersonDepartmentVos);
         list.forEach(department -> {
-            DepartmentTemporaryPersonStatisticsDetailsVo.DepartmentVo departmentVo = new DepartmentTemporaryPersonStatisticsDetailsVo.DepartmentVo();
-            departmentVo.setDepartmentName(department.getName());
-            departmentVo.setDepartmentId(department.getId());
+            DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo temporaryPersonDepartmentVo = new DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo();
+            temporaryPersonDepartmentVo.setDepartmentName(department.getName());
+            temporaryPersonDepartmentVo.setDepartmentId(department.getId());
             departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), null));
             departmentTemporaryPersonStatisticsDetailsVo.setNormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getNormalTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), State.NORMAL));
             departmentTemporaryPersonStatisticsDetailsVo.setAbnormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getAbnormalTemporaryPersonCount() +  temporaryPersonExposeService.count(department.getId(), State.ALARM));
@@ -401,8 +401,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
                 temporaryPersonVos.add(vo);
             });
-            departmentVo.setTemporaryPersonVos(temporaryPersonVos);
-            departmentVos.add(departmentVo);
+            temporaryPersonDepartmentVo.setTemporaryPersonVos(temporaryPersonVos);
+            temporaryPersonDepartmentVos.add(temporaryPersonDepartmentVo);
         });
         return departmentTemporaryPersonStatisticsDetailsVo;
     }

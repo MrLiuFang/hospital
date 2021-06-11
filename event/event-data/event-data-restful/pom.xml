@@ -22,7 +22,6 @@
 			<groupId>com.lion</groupId>
 			<artifactId>lion-restful-starter</artifactId>
 		</dependency>
-
 	</dependencies>
 	<build>
 		<plugins>

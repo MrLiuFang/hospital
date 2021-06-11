@@ -21,5 +21,5 @@ public interface TemporaryPersonService {
      * @param tag
      * @param temporaryPerson
      */
-    public void  TemporaryPersonEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, TemporaryPerson temporaryPerson) throws JsonProcessingException;
+    public void temporaryPersonEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, TemporaryPerson temporaryPerson) throws JsonProcessingException;
 }

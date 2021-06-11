@@ -56,6 +56,7 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
     public void binding(Long userId, String tagCode, Long departmentId) {
         if (!StringUtils.hasText(tagCode)){
             unbinding(userId,false);
+            return;
         }
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){

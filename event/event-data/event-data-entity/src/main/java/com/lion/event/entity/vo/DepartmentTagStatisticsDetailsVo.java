@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,11 +29,11 @@ public class DepartmentTagStatisticsDetailsVo {
     private Integer abnormalTagCount= 0;
 
     @ApiModelProperty(value = "部门信息")
-    private List<DepartmentTagStatisticsDetailsVo.DepartmentVo> departmentVos;
+    private List<TagDepartmentVo> tagDepartmentVos;
 
     @ApiModel
     @Data
-    public static class DepartmentVo{
+    public static class TagDepartmentVo {
 
         @ApiModelProperty(value = "科室id")
         private Long departmentId;

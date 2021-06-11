@@ -79,7 +79,7 @@ public class PatientServiceImpl implements PatientService {
         List<TempLeave> tempLeaves =tempLeaveExposeService.find(patient.getId());
         List<RestrictedArea> restrictedAreas = restrictedAreaExposeService.find(patient.getId(), PersonType.PATIENT );
         Boolean isLeaveRestrictedArea = true;
-        if (Objects.nonNull(restrictedAreas) && restrictedAreas.size()<=0){
+        if (Objects.isNull(restrictedAreas) || restrictedAreas.size()<=0){
             return;
         }
         for (RestrictedArea restrictedArea : restrictedAreas) {

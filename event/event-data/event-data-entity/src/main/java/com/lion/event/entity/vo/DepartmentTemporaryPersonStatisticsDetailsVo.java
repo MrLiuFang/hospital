@@ -1,6 +1,5 @@
 package com.lion.event.entity.vo;
 
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -25,11 +24,11 @@ public class DepartmentTemporaryPersonStatisticsDetailsVo {
     private Integer abnormalTemporaryPersonCount= 0;
 
     @ApiModelProperty(value = "部门信息")
-    private List<DepartmentTemporaryPersonStatisticsDetailsVo.DepartmentVo> departmentVos;
+    private List<TemporaryPersonDepartmentVo> temporaryPersonDepartmentVos;
 
     @ApiModel
     @Data
-    public static class DepartmentVo{
+    public static class TemporaryPersonDepartmentVo {
 
         @ApiModelProperty(value = "科室id")
         private Long departmentId;

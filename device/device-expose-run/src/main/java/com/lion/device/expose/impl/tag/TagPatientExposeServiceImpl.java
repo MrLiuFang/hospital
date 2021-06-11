@@ -51,6 +51,7 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
     public void binding(Long patientId, String tagCode, Long departmentId) {
         if (!StringUtils.hasText(tagCode)){
             unbinding(patientId,false);
+            return;
         }
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){

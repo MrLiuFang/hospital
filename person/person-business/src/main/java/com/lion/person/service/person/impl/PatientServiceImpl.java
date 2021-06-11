@@ -120,6 +120,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @Autowired
     private PatientLogService patientLogService;
 
+    @Autowired
     private RedisTemplate redisTemplate;
 
     @Override

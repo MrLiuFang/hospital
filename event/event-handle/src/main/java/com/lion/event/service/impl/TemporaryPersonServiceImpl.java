@@ -48,12 +48,12 @@ public class TemporaryPersonServiceImpl implements TemporaryPersonService {
     private RocketMQTemplate rocketMQTemplate;
 
     @Override
-    public void TemporaryPersonEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, TemporaryPerson temporaryPerson) throws JsonProcessingException {
+    public void temporaryPersonEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, TemporaryPerson temporaryPerson) throws JsonProcessingException {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
         commonService.position(deviceDataDto,temporaryPerson,currentRegionDto.getRegionId(),tag );
         List<RestrictedArea> restrictedAreas = restrictedAreaExposeService.find(temporaryPerson.getId(), PersonType.TEMPORARY_PERSON);
         Boolean isLeaveRestrictedArea = true;
-        if (Objects.nonNull(restrictedAreas) && restrictedAreas.size()<=0){
+        if (Objects.isNull(restrictedAreas) || restrictedAreas.size()<=0){
             return;
         }
         for (RestrictedArea restrictedArea : restrictedAreas) {

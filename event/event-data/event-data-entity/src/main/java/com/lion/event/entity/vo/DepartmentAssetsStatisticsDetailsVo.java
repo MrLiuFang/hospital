@@ -27,11 +27,11 @@ public class DepartmentAssetsStatisticsDetailsVo {
     private Integer abnormalAssetsCount= 0;
 
     @ApiModelProperty(value = "部门信息")
-    private List<DepartmentAssetsStatisticsDetailsVo.DepartmentVo> departmentVos;
+    private List<AssetsDepartmentVo> assetsDepartmentVos;
 
     @ApiModel
     @Data
-    public static class DepartmentVo{
+    public static class AssetsDepartmentVo {
 
         @ApiModelProperty(value = "科室id")
         private Long departmentId;
