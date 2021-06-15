@@ -10,6 +10,17 @@ import javax.print.DocFlavor;
 public class TopicConstants {
 
     /**
+     * 按钮记录
+     */
+    public static final String BUTTON_RECORD = "button_record";
+
+    /**
+     * 按钮记录
+     */
+    public static final String BUTTON_RECORD_CONSUMER_GROUP = "button_record_consumer_group";
+
+
+    /**
      * 洗手记录
      */
     public static final String WASH_RECORD = "wash_record";

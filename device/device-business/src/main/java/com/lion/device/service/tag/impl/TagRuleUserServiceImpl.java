@@ -1,5 +1,6 @@
 package com.lion.device.service.tag.impl;
 
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -9,10 +10,8 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagRuleUserDao;
 import com.lion.device.entity.tag.TagRuleUser;
-import com.lion.device.entity.tag.TagUser;
 import com.lion.device.entity.tag.vo.ListTagRuleUserVo;
 import com.lion.device.service.tag.TagRuleLogService;
-import com.lion.device.service.tag.TagRuleService;
 import com.lion.device.service.tag.TagRuleUserService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
@@ -23,9 +22,12 @@ import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -50,30 +52,14 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
     @DubboReference
     private DepartmentUserExposeService departmentUserExposeService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
+    @Transactional
     public void relationUser(List<Long> newUser, List<Long> deleteUser,List<Long> allUser, Long tagRuleId) {
         if (Objects.nonNull(allUser)){
-            tagRuleUserDao.deleteByTagRuleId(tagRuleId);
-            save(allUser,tagRuleId);
-            return;
-        }
-
-        if (Objects.nonNull(deleteUser)) {
-            deleteUser.forEach(id->{
-                tagRuleUserDao.deleteByUserIdAndAndTagRuleId(id,tagRuleId);
-                User user = userExposeService.findById(id);
-                if (Objects.nonNull(user)){
-                    tagRuleLogService.add(tagRuleId,user.getName()+"从规则中删除");
-                }
-            });
-        }
-        save(newUser,tagRuleId);
-
-    }
-
-    private void save(List<Long> newUser,Long tagRuleId){
-        if (Objects.nonNull(newUser)) {
-            newUser.forEach(id->{
+            allUser.forEach(id->{
                 TagRuleUser tagRuleUser = tagRuleUserDao.findFirstByUserIdAndTagRuleIdNot(id, tagRuleId);
                 if (Objects.nonNull(tagRuleUser)) {
                     User user = userExposeService.findById(id);
@@ -81,15 +67,49 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                         BusinessException.throwException(user.getName() + "已关联其它标签规则");
                     }
                 }
+            });
+            List<TagRuleUser> list = tagRuleUserDao.findByTagRuleId(tagRuleId);
+            list.forEach(tagRuleUser -> {
+                if (!allUser.contains(tagRuleUser.getUserId())){
+                    User user = userExposeService.findById(tagRuleUser.getUserId());
+                    tagRuleLogService.add(tagRuleId,user.getName()+"从规则中删除");
+                }
+                redisTemplate.delete(RedisConstants.USER_TAG_RULE+tagRuleUser.getUserId());
+            });
+            tagRuleUserDao.deleteByTagRuleId(tagRuleId);
+            save(allUser,tagRuleId,list );
+            return;
+        }
+
+        if (Objects.nonNull(deleteUser)) {
+            deleteUser.forEach(id->{
+                redisTemplate.delete(RedisConstants.USER_TAG_RULE+id);
+                tagRuleUserDao.deleteByUserIdAndAndTagRuleId(id,tagRuleId);
+                User user = userExposeService.findById(id);
+                if (Objects.nonNull(user)){
+                    tagRuleLogService.add(tagRuleId,user.getName()+"从规则中删除");
+                }
+            });
+        }
+        save(newUser,tagRuleId, null);
+
+    }
+
+    private void save(List<Long> newUser,Long tagRuleId,List<TagRuleUser> list){
+        if (Objects.nonNull(newUser)) {
+            newUser.forEach(id->{
                 tagRuleUserDao.deleteByUserIdAndAndTagRuleId(id,tagRuleId);
                 TagRuleUser newTagRuleUser = new TagRuleUser();
                 newTagRuleUser.setUserId(id);
                 newTagRuleUser.setTagRuleId(tagRuleId);
                 save(newTagRuleUser);
                 User user = userExposeService.findById(id);
-                if (Objects.nonNull(user)){
+                if (Objects.nonNull(user) && Objects.isNull(list)){
+                    tagRuleLogService.add(tagRuleId,user.getName()+"添加到规则中");
+                }else if (Objects.nonNull(list) && !list.contains(id)) {
                     tagRuleLogService.add(tagRuleId,user.getName()+"添加到规则中");
                 }
+                redisTemplate.opsForValue().set(RedisConstants.USER_TAG_RULE+id,tagRuleId,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });
         }
     }

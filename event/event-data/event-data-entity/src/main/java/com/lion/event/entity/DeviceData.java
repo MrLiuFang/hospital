@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 @Data
 @Document(value = "device_data")
 @ApiModel
+@Deprecated
 public class DeviceData implements Serializable {
 
     @Id

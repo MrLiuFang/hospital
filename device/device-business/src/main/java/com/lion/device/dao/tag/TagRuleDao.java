@@ -2,6 +2,7 @@ package com.lion.device.dao.tag;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.tag.TagRule;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * @Author Mr.Liu
@@ -16,4 +17,12 @@ public interface TagRuleDao extends BaseDao<TagRule> {
      * @return
      */
     public TagRule findFirstByName(String name);
+
+    /**
+     * 根据员工查询规则
+     * @param userId
+     * @return
+     */
+    @Query( " select t from TagRule t join TagRuleUser tru on t.id = tru.tagRuleId where tru.userId = :userId " )
+    public TagRule findByUserId(Long userId);
 }

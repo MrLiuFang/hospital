@@ -100,14 +100,19 @@ db.runCommand({
     key : {_id: 1}
 })
 
+db.runCommand({
+    shardcollection : "hospital.user_tag_button_record",
+    key : {_id: 1}
+})
+
 use hospital;
 db.wash_event.drop();
 db.system_alarm.drop();
-db.device_data.drop();
 db.position.drop();
 db.wash_record.drop();
 db.current_position.drop();
 db.humiture_record.drop();
+db.user_tag_button_record.drop();
 
 db.wash_event.createIndex( { "pi":1 }, { sparse: true } )
 db.wash_event.createIndex( { "di":1 }, { sparse: true } )

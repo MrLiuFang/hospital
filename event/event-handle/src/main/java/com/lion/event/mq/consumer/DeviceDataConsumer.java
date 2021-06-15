@@ -6,14 +6,12 @@ import com.lion.common.dto.DeviceDataDto;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
-import com.lion.event.service.DeviceService;
-import com.lion.event.service.PatientService;
-import com.lion.event.service.TemporaryPersonService;
-import com.lion.event.service.UserWashService;
+import com.lion.event.service.*;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
@@ -71,6 +69,9 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private TemporaryPersonService temporaryPersonService;
 
+    @Autowired
+    private UserButtonService userButtonService;
+
     @Override
     public void onMessage(MessageExt messageExt) {
         try {
@@ -103,17 +104,24 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 }
             }
 
-            if (Objects.nonNull(user)){ //如果根据标签查出员工，进行洗手事件处理
-                userWashService.userWashEevent(deviceDataDto,monitor,star,tag,user);
+            if (Objects.nonNull(user)){
+                //进行洗手事件处理
+                if (Objects.equals(monitor.getDeviceClassify(), DeviceClassify.HAND_WASHING)) {
+                    userWashService.userWashEevent(deviceDataDto, monitor, star, tag, user);
+                }else if(Objects.nonNull(deviceDataDto.getButtonId())) { //员工按钮事件记录
+                    userButtonService.tagButtonEvent(deviceDataDto,monitor,star,tag,user);
+                }
             }else if (Objects.nonNull(patient)  ) { //处理患者数据
                 patientService.patientEvent(deviceDataDto,monitor,star,tag,patient);
             }else if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
                 temporaryPersonService.temporaryPersonEvent(deviceDataDto,monitor,star,tag,temporaryPerson);
-            }else if (Objects.nonNull(tag)
-                    && (Objects.equals(deviceDataDto.getTagType(), Type.ASSET) || Objects.equals(deviceDataDto.getTagType(), Type.DEVICE) || Objects.equals(deviceDataDto.getTagType(), Type.HUMIDITY) || Objects.equals(deviceDataDto.getTagType(), Type.TEMPERATURE) )
-                    && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
+            }else if (Objects.nonNull(tag) && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
                 deviceService.deviceEevent(deviceDataDto,monitor,star,tag);
+            }else if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
+
             }
+
+
 
             updateDeviceBattery(monitor,deviceDataDto.getMonitorBattery());
             updateTagBattery(tag,deviceDataDto.getTagBattery());

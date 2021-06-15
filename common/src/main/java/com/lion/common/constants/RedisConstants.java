@@ -239,6 +239,16 @@ public class RedisConstants {
     public static final String USER_WORK_STATE_END = "end";
 
     /**
+     * 员工标签按钮规则(key:userId,value:tagRuleId)
+     */
+    public static final String USER_TAG_RULE = "user_tag_rule_";
+
+    /**
+     * 按钮规则(key:tagRuleId,value:tagRule)
+     */
+    public static final String TAG_RULE = "tag_rule_";
+
+    /**
      * 缓存过期时间
      */
     public static final Integer EXPIRE_TIME = 364;
