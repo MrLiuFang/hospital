@@ -128,12 +128,12 @@ public class TopicConstants {
     /**
      * 标签记录(温湿标签)
      */
-    public static final String TAG_RECORD = "tag_record";
+    public static final String HUMITURE_RECORD = "humiture_record";
 
     /**
      * 标签记录(温湿标签)
      */
-    public static final String TAG_RECORD_CONSUMER_GROUP = "tag_record_consumer_group";
+    public static final String HUMITURE_RECORD_CONSUMER_GROUP = "humiture_record_consumer_group";
 
     /**
      * 标签事件(温湿标签)

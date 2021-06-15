@@ -1,11 +1,8 @@
 package com.lion.event.mq.consumer.utils;
 
-import com.lion.common.dto.TagRecordDto;
 import com.lion.common.dto.WashRecordDto;
-import com.lion.common.utils.DateTimeFormatterUtil;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
-import com.lion.event.entity.WashRecord;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
@@ -14,9 +11,6 @@ import com.lion.upms.entity.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Map;
 import java.util.Objects;
 
 /**

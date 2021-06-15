@@ -31,18 +31,13 @@ import com.lion.person.dao.person.PatientTransferDao;
 import com.lion.person.dao.person.TempLeaveDao;
 import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.enums.TransferState;
-import com.lion.person.entity.person.Patient;
-import com.lion.person.entity.person.PatientTransfer;
-import com.lion.person.entity.person.RestrictedArea;
-import com.lion.person.entity.person.TempLeave;
+import com.lion.person.entity.person.*;
 import com.lion.person.entity.person.dto.AddPatientDto;
 import com.lion.person.entity.person.dto.PatientLeaveDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
 import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
-import com.lion.person.service.person.PatientLogService;
-import com.lion.person.service.person.PatientService;
-import com.lion.person.service.person.RestrictedAreaService;
+import com.lion.person.service.person.*;
 import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
@@ -123,6 +118,12 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private PatientDoctorService patientDoctorService;
+
+    @Autowired
+    private PatientNurseService patientNurseService;
+
     @Override
     @Transactional
 //    @GlobalTransactional
@@ -132,9 +133,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         sickbedIsCanUse(patient.getSickbedId(),null);
         assertMedicalRecordNoExist(patient.getMedicalRecordNo(),null);
         patient = setOtherInfo(patient);
-        assertNurseExist(patient.getNurseId());
-        assertDoctorExist(patient.getDoctorId());
         patient = save(patient);
+        patientNurseService.add(addPatientDto.getNurseIds(),patient.getId());
+        patientDoctorService.add(addPatientDto.getDoctorIds(),patient.getId());
         restrictedAreaService.add(addPatientDto.getRegionId(), PersonType.PATIENT,patient.getId());
         if (Objects.nonNull(patient.getTagCode())) {
             tagPatientExposeService.binding(patient.getId(),patient.getTagCode(),patient.getDepartmentId());
@@ -153,9 +154,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         sickbedIsCanUse(patient.getSickbedId(),patient.getId());
         assertMedicalRecordNoExist(patient.getMedicalRecordNo(),patient.getId());
         patient = setOtherInfo(patient);
-        assertNurseExist(patient.getNurseId());
-        assertDoctorExist(patient.getDoctorId());
         update(patient);
+        patientNurseService.add(updatePatientDto.getNurseIds(),patient.getId());
+        patientDoctorService.add(updatePatientDto.getDoctorIds(),patient.getId());
         restrictedAreaService.add(updatePatientDto.getRegionId(), PersonType.PATIENT,patient.getId());
         if (Objects.nonNull(patient.getTagCode())) {
             tagPatientExposeService.binding(patient.getId(),patient.getTagCode(),patient.getDepartmentId());
@@ -163,17 +164,11 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         if (Objects.nonNull(patient.getBindPatientId()) && !Objects.equals(oldPatient.getBindPatientId(),patient.getBindPatientId())) {
             patientLogService.add("修改绑定患者",patient.getId());
         }
-        if (Objects.nonNull(patient.getDoctorId()) && !Objects.equals(oldPatient.getDoctorId(),patient.getDoctorId())) {
-            patientLogService.add("修改负责医生",patient.getId());
-        }
         if (Objects.nonNull(patient.getTagCode()) && !Objects.equals(oldPatient.getTagCode(),patient.getTagCode())) {
             patientLogService.add("修改标签码",patient.getId());
         }
         if (Objects.nonNull(patient.getDepartmentId()) && !Objects.equals(oldPatient.getDepartmentId(),patient.getDepartmentId())) {
             patientLogService.add("修改科室",patient.getId());
-        }
-        if (Objects.nonNull(patient.getNurseId()) && !Objects.equals(oldPatient.getNurseId(),patient.getNurseId())) {
-            patientLogService.add("修改负责护士",patient.getId());
         }
         if (Objects.nonNull(patient.getSickbedId()) && !Objects.equals(oldPatient.getSickbedId(),patient.getSickbedId())) {
             patientLogService.add("修改床位",patient.getId());
@@ -306,22 +301,33 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             vo.setDepartmentName(department.getName());
         }
         vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
-        if (Objects.nonNull(patient.getNurseId())){
-            User nurse = userExposeService.findById(patient.getNurseId());
+        List<PatientNurse> patientNurses = patientNurseService.find(patient.getId());
+        List<PatientDetailsVo.NurseVo> nurseVos = new ArrayList<>();
+        patientNurses.forEach(patientNurse -> {
+            User nurse = userExposeService.findById(patientNurse.getNurseId());
+            PatientDetailsVo.NurseVo nurseVo = new PatientDetailsVo.NurseVo();
             if (Objects.nonNull(nurse)){
-                vo.setNurseName(nurse.getName());
-                vo.setNurseHeadPortrait(nurse.getHeadPortrait());
-                vo.setNurseHeadPortraitUrl(fileExposeService.getUrl(nurse.getHeadPortrait()));
+                nurseVo.setNurseName(nurse.getName());
+                nurseVo.setNurseHeadPortrait(nurse.getHeadPortrait());
+                nurseVo.setNurseHeadPortraitUrl(fileExposeService.getUrl(nurse.getHeadPortrait()));
+                nurseVos.add(nurseVo);
             }
-        }
-        if (Objects.nonNull(patient.getDoctorId())) {
-            User doctor = userExposeService.findById(patient.getDoctorId());
+        });
+        vo.setNurseVos(nurseVos);
+        List<PatientDoctor> patientDoctors = patientDoctorService.find(patient.getId());
+        List<PatientDetailsVo.DoctorVo> doctorVos = new ArrayList<>();
+        patientDoctors.forEach(patientDoctor -> {
+            User doctor = userExposeService.findById(patientDoctor.getDoctorId());
+            PatientDetailsVo.DoctorVo doctorVo = new PatientDetailsVo.DoctorVo();
             if (Objects.nonNull(doctor)){
-                vo.setDoctorName(doctor.getName());
-                vo.setDoctorHeadPortrait(doctor.getHeadPortrait());
-                vo.setDoctorHeadPortraitUrl(fileExposeService.getUrl(doctor.getHeadPortrait()));
+                doctorVo.setDoctorName(doctor.getName());
+                doctorVo.setDoctorHeadPortrait(doctor.getHeadPortrait());
+                doctorVo.setDoctorHeadPortraitUrl(fileExposeService.getUrl(doctor.getHeadPortrait()));
+                doctorVos.add(doctorVo);
             }
-        }
+        });
+        vo.setDoctorVos(doctorVos);
+
         List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(patient.getId(), PersonType.PATIENT);
         List<PatientDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
         restrictedAreaList.forEach(restrictedArea -> {
@@ -412,26 +418,6 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         Patient patient = patientDao.findFirstBySickbedIdAndIsLeave(sickbedId,false);
         if ((Objects.isNull(patientId) && Objects.nonNull(patient)) || (Objects.nonNull(patientId) && Objects.nonNull(patient) && !Objects.equals(patient.getId(),patientId)) ){
             BusinessException.throwException("该床位已有患者未登出,不能使用");
-        }
-    }
-
-    private void assertNurseExist(Long nurseId) {
-        User user = userExposeService.findById(nurseId);
-        if (Objects.isNull(user)){
-            BusinessException.throwException("该护士不存在");
-        }
-        if (!Objects.equals(user.getUserType(), UserType.NURSE)) {
-            BusinessException.throwException("选择的负责护士非护士人员");
-        }
-    }
-
-    private void assertDoctorExist(Long doctorId) {
-        User user = userExposeService.findById(doctorId);
-        if (Objects.isNull(user)){
-            BusinessException.throwException("该医生不存在");
-        }
-        if (!Objects.equals(user.getUserType(), UserType.DOCTOR)) {
-            BusinessException.throwException("选择的负责医生非医生人员");
         }
     }
 

@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
  * @Date 2021/5/17 下午8:29
  **/
 @Data
-public class TagRecordDto implements Serializable {
+public class HumitureRecordDto implements Serializable {
 
     @ApiModelProperty(value = "类型 (com.lion.common.enums.Type)")
     private Integer typ;

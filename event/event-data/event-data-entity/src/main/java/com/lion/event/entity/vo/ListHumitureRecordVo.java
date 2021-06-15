@@ -1,7 +1,7 @@
 package com.lion.event.entity.vo;
 
 import com.lion.common.enums.Type;
-import com.lion.event.entity.TagRecord;
+import com.lion.event.entity.HumitureRecord;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -13,7 +13,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel
-public class ListTagRecordVo extends TagRecord {
+public class ListHumitureRecordVo extends HumitureRecord {
 
     @ApiModelProperty(value = "温度/湿度仪")
     private Type type;

@@ -70,18 +70,13 @@ sh.status()
 
 db.runCommand({ enablesharding : "hospital"});
 
-db.runCommand({ 
+db.runCommand({
     shardcollection : "hospital.wash_event",
     key : {_id: 1}
 })
 
 db.runCommand({
     shardcollection : "hospital.system_alarm",
-    key : {_id: 1}
-})
-
-db.runCommand({
-    shardcollection : "hospital.device_data",
     key : {_id: 1}
 })
 
@@ -101,12 +96,7 @@ db.runCommand({
 })
 
 db.runCommand({
-    shardcollection : "hospital.tag_event",
-    key : {_id: 1}
-})
-
-db.runCommand({
-    shardcollection : "hospital.tag_record",
+    shardcollection : "hospital.humiture_record",
     key : {_id: 1}
 })
 
@@ -117,8 +107,7 @@ db.device_data.drop();
 db.position.drop();
 db.wash_record.drop();
 db.current_position.drop();
-db.tag_event.drop();
-db.tag_record.drop();
+db.humiture_record.drop();
 
 db.wash_event.createIndex( { "pi":1 }, { sparse: true } )
 db.wash_event.createIndex( { "di":1 }, { sparse: true } )

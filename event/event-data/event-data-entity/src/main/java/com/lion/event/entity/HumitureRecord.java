@@ -1,13 +1,11 @@
 package com.lion.event.entity;
 
-import com.lion.common.dto.TagRecordDto;
+import com.lion.common.dto.HumitureRecordDto;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 /**
  * @Author Mr.Liu
@@ -15,8 +13,8 @@ import java.time.LocalDateTime;
  * @Date 2021/5/16 下午5:36
  **/
 @Data
-@Document(value = "tag_record")
-public class TagRecord extends TagRecordDto implements Serializable {
+@Document(value = "HUMITURE_RECORD")
+public class HumitureRecord extends HumitureRecordDto implements Serializable {
 
     @Id
     private String _id;

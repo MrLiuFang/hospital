@@ -1,6 +1,6 @@
 package com.lion.event.mq.consumer.utils;
 
-import com.lion.common.dto.TagRecordDto;
+import com.lion.common.dto.HumitureRecordDto;
 import com.lion.common.utils.RedisUtil;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -24,29 +24,29 @@ public class TagCommonUtil {
 
     /**
      * 设置区域位置相关信息
-     * @param tagRecordDto
+     * @param humitureRecordDto
      * @return
      */
-    public TagRecordDto setRegionInfo(TagRecordDto tagRecordDto){
-        Region region = redisUtil.getRegionById(tagRecordDto.getRi());
+    public HumitureRecordDto setRegionInfo(HumitureRecordDto humitureRecordDto){
+        Region region = redisUtil.getRegionById(humitureRecordDto.getRi());
         if (Objects.nonNull(region)) {
-            tagRecordDto.setRn(region.getName());
+            humitureRecordDto.setRn(region.getName());
             Build build = redisUtil.getBuild(region.getBuildId());
             if (Objects.nonNull(build)) {
-                tagRecordDto.setBui(build.getId());
-                tagRecordDto.setBun(build.getName());
+                humitureRecordDto.setBui(build.getId());
+                humitureRecordDto.setBun(build.getName());
             }
             BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
             if (Objects.nonNull(buildFloor)) {
-                tagRecordDto.setBfi(buildFloor.getId());
-                tagRecordDto.setBfn(buildFloor.getName());
+                humitureRecordDto.setBfi(buildFloor.getId());
+                humitureRecordDto.setBfn(buildFloor.getName());
             }
             Department department = redisUtil.getDepartment(region.getDepartmentId());
             if (Objects.nonNull(department)) {
-                tagRecordDto.setDi(department.getId());
-                tagRecordDto.setDn(department.getName());
+                humitureRecordDto.setDi(department.getId());
+                humitureRecordDto.setDn(department.getName());
             }
         }
-        return tagRecordDto;
+        return humitureRecordDto;
     }
 }

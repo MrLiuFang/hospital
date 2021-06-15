@@ -2,9 +2,8 @@ package com.lion.event.service;
 
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
-import com.lion.event.entity.TagRecord;
-import com.lion.event.entity.vo.ListTagRecordVo;
-import org.springframework.format.annotation.DateTimeFormat;
+import com.lion.event.entity.HumitureRecord;
+import com.lion.event.entity.vo.ListHumitureRecordVo;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,9 +13,9 @@ import java.util.List;
  * @Description //TODO
  * @Date 2021/5/17 下午9:15
  **/
-public interface TagRecordService {
+public interface HumitureRecordService {
 
-    public void save(TagRecord tagRecord);
+    public void save(HumitureRecord humitureRecord);
 
     /**
      *  温湿标签列表
@@ -28,5 +27,5 @@ public interface TagRecordService {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListTagRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

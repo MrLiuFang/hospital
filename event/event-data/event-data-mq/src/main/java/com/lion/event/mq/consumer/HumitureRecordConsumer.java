@@ -5,10 +5,10 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
-import com.lion.event.entity.TagRecord;
+import com.lion.event.entity.HumitureRecord;
 import com.lion.event.mq.consumer.utils.TagCommonUtil;
 import com.lion.event.service.SystemAlarmService;
-import com.lion.event.service.TagRecordService;
+import com.lion.event.service.HumitureRecordService;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
@@ -27,9 +27,9 @@ import java.util.concurrent.TimeUnit;
  * @Date 2021/5/17 下午7:57
  **/
 @Component
-@RocketMQMessageListener(topic = TopicConstants.TAG_RECORD,selectorExpression="*",consumerGroup = TopicConstants.TAG_RECORD_CONSUMER_GROUP)
+@RocketMQMessageListener(topic = TopicConstants.HUMITURE_RECORD,selectorExpression="*",consumerGroup = TopicConstants.HUMITURE_RECORD_CONSUMER_GROUP)
 @Log
-public class TagRecordConsumer implements RocketMQListener<MessageExt> {
+public class HumitureRecordConsumer implements RocketMQListener<MessageExt> {
 
     @Autowired
     private ObjectMapper jacksonObjectMapper;
@@ -47,7 +47,7 @@ public class TagRecordConsumer implements RocketMQListener<MessageExt> {
     private TagCommonUtil tagCommonUtil;
 
     @Autowired
-    private TagRecordService tagRecordService;
+    private HumitureRecordService humitureRecordService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -57,20 +57,20 @@ public class TagRecordConsumer implements RocketMQListener<MessageExt> {
         try {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
-            TagRecord tagRecord = jacksonObjectMapper.readValue(msg, TagRecord.class);
-            TagRecord lastData = (TagRecord) redisTemplate.opsForValue().get(RedisConstants.LAST_TAG_DATA+tagRecord.getTi());
-            redisTemplate.opsForValue().set(RedisConstants.LAST_TAG_DATA+tagRecord.getTi(),tagRecord,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            HumitureRecord humitureRecord = jacksonObjectMapper.readValue(msg, HumitureRecord.class);
+            HumitureRecord lastData = (HumitureRecord) redisTemplate.opsForValue().get(RedisConstants.LAST_TAG_DATA+humitureRecord.getTi());
+            redisTemplate.opsForValue().set(RedisConstants.LAST_TAG_DATA+humitureRecord.getTi(),humitureRecord,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             if (Objects.nonNull(lastData)){
-                Type type = Type.instance(tagRecord.getTyp());
-                if (Objects.equals(type,Type.TEMPERATURE) && Objects.equals(lastData.getT(),tagRecord.getT())) {
+                Type type = Type.instance(humitureRecord.getTyp());
+                if (Objects.equals(type,Type.TEMPERATURE) && Objects.equals(lastData.getT(),humitureRecord.getT())) {
                     return;
                 }
-                if (Objects.equals(type,Type.HUMIDITY) && Objects.equals(lastData.getH(),tagRecord.getH())) {
+                if (Objects.equals(type,Type.HUMIDITY) && Objects.equals(lastData.getH(),humitureRecord.getH())) {
                     return;
                 }
             }
-            tagRecord = (TagRecord) tagCommonUtil.setRegionInfo(tagRecord);
-            tagRecordService.save(tagRecord);
+            humitureRecord = (HumitureRecord) tagCommonUtil.setRegionInfo(humitureRecord);
+            humitureRecordService.save(humitureRecord);
         }catch (Exception e){
             e.printStackTrace();
         }

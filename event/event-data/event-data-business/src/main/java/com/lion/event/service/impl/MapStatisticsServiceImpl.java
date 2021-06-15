@@ -24,9 +24,9 @@ import com.lion.device.expose.fault.FaultExposeService;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
-import com.lion.event.dao.TagRecordDao;
+import com.lion.event.dao.HumitureRecordDao;
 import com.lion.event.entity.CurrentPosition;
-import com.lion.event.entity.TagRecord;
+import com.lion.event.entity.HumitureRecord;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.CurrentPositionService;
 import com.lion.event.service.MapStatisticsService;
@@ -48,8 +48,12 @@ import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.entity.enums.State;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.PatientDoctor;
+import com.lion.person.entity.person.PatientNurse;
 import com.lion.person.entity.person.TemporaryPerson;
+import com.lion.person.expose.person.PatientDoctorExposeService;
 import com.lion.person.expose.person.PatientExposeService;
+import com.lion.person.expose.person.PatientNurseExposeService;
 import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
@@ -119,7 +123,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     private TagAssetsExposeService tagAssetsExposeService;
 
     @Autowired
-    private TagRecordDao tagRecordDao;
+    private HumitureRecordDao humitureRecordDao;
 
     @Autowired
     private PositionService positionService;
@@ -150,6 +154,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @DubboReference
     private WardRoomSickbedExposeService wardRoomSickbedExposeService;
+
+    @DubboReference
+    private PatientDoctorExposeService patientDoctorExposeService;
+
+    @DubboReference
+    private PatientNurseExposeService patientNurseExposeService;
 
     @Autowired
     private HttpServletResponse response;
@@ -314,7 +324,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             tagList.forEach(tag -> {
                 DepartmentTagStatisticsDetailsVo.TagVo vo = new DepartmentTagStatisticsDetailsVo.TagVo();
                 BeanUtils.copyProperties(tag,vo);
-                TagRecord record = tagRecordDao.find(tag.getId());
+                HumitureRecord record = humitureRecordDao.find(tag.getId());
                 if (Objects.nonNull(record)) {
                     if (Objects.nonNull(record.getT())){
                         vo.setTemperature(record.getT());
@@ -518,19 +528,32 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         }
         CurrentRegionDto currentRegion = (CurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.PATIENT_CURRENT_REGION+patientId);
         vo.setCurrentRegionVo(convertVo(currentRegion));
-        User doctor = userExposeService.findById(patient.getDoctorId());
-        if (Objects.nonNull(doctor)) {
-            vo.setDoctorHeadPortrait(doctor.getHeadPortrait());
-            vo.setDoctorHeadPortraitUrl(fileExposeService.getUrl(doctor.getHeadPortrait()));
-            vo.setDoctorName(doctor.getName());
-        }
-        vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
-        User nurse = userExposeService.findById(patient.getNurseId());
-        if (Objects.nonNull(nurse)) {
-            vo.setNurseHeadPortrait(nurse.getHeadPortrait());
-            vo.setNurseHeadPortraitUrl(fileExposeService.getUrl(nurse.getHeadPortrait()));
-            vo.setNurseName(nurse.getName());
-        }
+        List<PatientNurse> patientNurses = patientNurseExposeService.find(patient.getId());
+        List<PatientDetailsVo.NurseVo> nurseVos = new ArrayList<>();
+        patientNurses.forEach(patientNurse -> {
+            User nurse = userExposeService.findById(patientNurse.getNurseId());
+            PatientDetailsVo.NurseVo nurseVo = new PatientDetailsVo.NurseVo();
+            if (Objects.nonNull(nurse)){
+                nurseVo.setNurseName(nurse.getName());
+                nurseVo.setNurseHeadPortrait(nurse.getHeadPortrait());
+                nurseVo.setNurseHeadPortraitUrl(fileExposeService.getUrl(nurse.getHeadPortrait()));
+                nurseVos.add(nurseVo);
+            }
+        });
+        vo.setNurseVos(nurseVos);
+        List<PatientDoctor> patientDoctors = patientDoctorExposeService.find(patient.getId());
+        List<PatientDetailsVo.DoctorVo> doctorVos = new ArrayList<>();
+        patientDoctors.forEach(patientDoctor -> {
+            User doctor = userExposeService.findById(patientDoctor.getDoctorId());
+            PatientDetailsVo.DoctorVo doctorVo = new PatientDetailsVo.DoctorVo();
+            if (Objects.nonNull(doctor)){
+                doctorVo.setDoctorName(doctor.getName());
+                doctorVo.setDoctorHeadPortrait(doctor.getHeadPortrait());
+                doctorVo.setDoctorHeadPortraitUrl(fileExposeService.getUrl(doctor.getHeadPortrait()));
+                doctorVos.add(doctorVo);
+            }
+        });
+        vo.setDoctorVos(doctorVos);
         return vo;
     }
 

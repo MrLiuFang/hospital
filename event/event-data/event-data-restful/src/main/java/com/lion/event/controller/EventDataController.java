@@ -13,7 +13,6 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
-import com.lion.device.entity.tag.Tag;
 import com.lion.event.entity.*;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.dto.OldAlarmToNewAlarm;
@@ -74,7 +73,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     private WashEventService washEventService;
 
     @Autowired
-    private TagRecordService tagRecordService;
+    private HumitureRecordService humitureRecordService;
 
     @GetMapping("/user/current/region")
     @ApiOperation(value = "员工当前位置")
@@ -361,10 +360,10 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/tag/temperatureHumidity/list")
     @ApiOperation(value = "温湿记录(不返回总行数)")
-    public IPageResultData<List<ListTagRecordVo>> temperatureHumidityList(@ApiParam("区域")Long regionId, @ApiParam("科室")Long departmentId, @ApiParam("设备编码")String deviceCode,
-                                                           @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
-                                                           @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-                                                           LionPage lionPage){
-        return tagRecordService.temperatureHumidityList(regionId, departmentId, deviceCode, startDateTime, endDateTime, lionPage);
+    public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(@ApiParam("区域")Long regionId, @ApiParam("科室")Long departmentId, @ApiParam("设备编码")String deviceCode,
+                                                                               @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                               @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                                               LionPage lionPage){
+        return humitureRecordService.temperatureHumidityList(regionId, departmentId, deviceCode, startDateTime, endDateTime, lionPage);
     }
 }

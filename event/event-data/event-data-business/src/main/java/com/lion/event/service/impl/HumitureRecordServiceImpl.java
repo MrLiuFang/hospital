@@ -7,16 +7,13 @@ import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
-import com.lion.event.dao.TagRecordDao;
-import com.lion.event.entity.Position;
-import com.lion.event.entity.TagRecord;
-import com.lion.event.entity.vo.ListPositionVo;
-import com.lion.event.entity.vo.ListTagRecordVo;
-import com.lion.event.service.TagRecordService;
+import com.lion.event.dao.HumitureRecordDao;
+import com.lion.event.entity.HumitureRecord;
+import com.lion.event.entity.vo.ListHumitureRecordVo;
+import com.lion.event.service.HumitureRecordService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -24,7 +21,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.sound.midi.VoiceStatus;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -34,10 +30,10 @@ import java.util.*;
  * @Date 2021/5/17 下午9:17
  **/
 @Service
-public class TagRecordServiceImpl implements TagRecordService {
+public class HumitureRecordServiceImpl implements HumitureRecordService {
 
     @Autowired
-    private TagRecordDao tagRecordDao;
+    private HumitureRecordDao humitureRecordDao;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -46,12 +42,12 @@ public class TagRecordServiceImpl implements TagRecordService {
     private TagExposeService tagExposeService;
 
     @Override
-    public void save(TagRecord tagRecord) {
-        tagRecordDao.save(tagRecord);
+    public void save(HumitureRecord humitureRecord) {
+        humitureRecordDao.save(humitureRecord);
     }
 
     @Override
-    public IPageResultData<List<ListTagRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Map<String, Object> searchParameter = new HashMap<>();
         if (StringUtils.hasText(deviceCode)){
             searchParameter.put(SearchConstant.LIKE+"_deviceCode","%"+deviceCode+"%");
@@ -82,17 +78,17 @@ public class TagRecordServiceImpl implements TagRecordService {
         query.addCriteria(criteria);
         query.with(lionPage);
         query.with(Sort.by(Sort.Direction.DESC,"ddt"));
-        List<TagRecord> items = mongoTemplate.find(query,TagRecord.class);
-        List<ListTagRecordVo> returnList = new ArrayList<>();
-        items.forEach(tagRecord -> {
-            ListTagRecordVo vo = new ListTagRecordVo();
-            BeanUtils.copyProperties(tagRecord,vo);
-            Tag tag = tagExposeService.findById(tagRecord.getTi());
+        List<HumitureRecord> items = mongoTemplate.find(query, HumitureRecord.class);
+        List<ListHumitureRecordVo> returnList = new ArrayList<>();
+        items.forEach(humitureRecord -> {
+            ListHumitureRecordVo vo = new ListHumitureRecordVo();
+            BeanUtils.copyProperties(humitureRecord,vo);
+            Tag tag = tagExposeService.findById(humitureRecord.getTi());
             if (Objects.nonNull(tag)){
                 vo.setTagCode(tag.getTagCode());
                 vo.setDeviceName(tag.getDeviceName());
                 vo.setDeviceCode(tag.getDeviceCode());
-                vo.setType(Type.instance(tagRecord.getTyp()));
+                vo.setType(Type.instance(humitureRecord.getTyp()));
             }
             returnList.add(vo);
         });

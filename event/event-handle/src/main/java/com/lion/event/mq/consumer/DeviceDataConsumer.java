@@ -115,9 +115,27 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 deviceService.deviceEevent(deviceDataDto,monitor,star,tag);
             }
 
+            updateDeviceBattery(monitor,deviceDataDto.getMonitorBattery());
+            updateTagBattery(tag,deviceDataDto.getTagBattery());
 
         }catch (Exception exception){
             exception.printStackTrace();
+        }
+    }
+
+    private void updateDeviceBattery(Device device,Integer battery){
+        if (Objects.nonNull(device)){
+            if (!Objects.equals(device.getBattery(),battery)){
+                deviceExposeService.updateBattery(device.getId(),battery);
+            }
+        }
+    }
+
+    private void updateTagBattery(Tag tag,Integer battery){
+        if (Objects.nonNull(tag)){
+            if (!Objects.equals(tag.getBattery(),battery)){
+                tagExposeService.updateBattery(tag.getId(),battery);
+            }
         }
     }
 

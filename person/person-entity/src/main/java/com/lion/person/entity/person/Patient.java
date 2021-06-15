@@ -83,16 +83,6 @@ public class Patient extends Person {
     @Length(max = 255,message = "最多255个字符",groups = {Validator.Insert.class, Validator.Update.class})
     private String remarks;
 
-    @ApiModelProperty(value = "负责护士")
-    @Column(name = "nurse_id")
-    @NotNull(message = "负责护士不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private Long nurseId;
-
-    @ApiModelProperty(value = "负责医生")
-    @Column(name = "doctor_id")
-    @NotNull(message = "负责医生不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private Long doctorId;
-
     @ApiModelProperty(value = "绑定患者")
     @Column(name = "bind_patient_id")
     private Long bindPatientId;
