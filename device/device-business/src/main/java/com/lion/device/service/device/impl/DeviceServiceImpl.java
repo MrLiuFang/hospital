@@ -154,8 +154,8 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     }
 
     @Override
-    public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceSate, LionPage lionPage) {
-        Page<Device> page = deviceDao.deviceMonitorList(buildId, buildFloorId, deviceSate, lionPage);
+    public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, LionPage lionPage) {
+        Page<Device> page = deviceDao.deviceMonitorList(buildId, buildFloorId, deviceState, lionPage);
         List<ListDeviceMonitorVo> returnList = new ArrayList<>();
         List<Device> list = page.getContent();
         list.forEach(device -> {
@@ -170,7 +170,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
             vo.setDepartmentName("");
             vo.setImg(device.getImg());
             vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
-            vo.setState(device.getDeviceSate());
+            vo.setState(device.getDeviceState());
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());

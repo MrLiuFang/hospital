@@ -67,11 +67,11 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
      * 设备统计
      * @param buildId
      * @param buildFloorId
-     * @param deviceSate
+     * @param deviceState
      * @param lionPage
      * @return
      */
-    public Page<Device> findByBuildIdAndBuildFloorIdAndDeviceSate(Long buildId, Long buildFloorId, State deviceSate, LionPage lionPage);
+    public Page<Device> findByBuildIdAndBuildFloorIdAndDeviceState(Long buildId, Long buildFloorId, State deviceState, LionPage lionPage);
 
     @Modifying
     @Transactional
@@ -80,7 +80,7 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
 
     @Modifying
     @Transactional
-    @Query(" update Device set deviceSate =:state where id = :id ")
+    @Query(" update Device set deviceState =:state where id = :id ")
     public void updateState(@Param("id")Long id,@Param("state") State state);
 
 }

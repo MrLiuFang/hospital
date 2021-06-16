@@ -63,7 +63,7 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
      * @param deviceState
      * @return
      */
-    public int countByDepartmentIdAndDeviceSate(Long departmentId,State deviceState);
+    public int countByDepartmentIdAndDeviceState(Long departmentId, State deviceState);
 
     /**
      * 查询部门内的资产
@@ -93,9 +93,9 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
     public List<Long> allId();
 
     @Modifying
-    @Query(" update Assets  set deviceSate =:state where id = :id ")
+    @Query(" update Assets  set deviceState =:state where id = :id ")
     @Transactional
-    public void updateSate(@Param("id")Long id, @Param("state") State state);
+    public void updateState(@Param("id")Long id, @Param("state") State state);
 
     @Modifying
     @Transactional

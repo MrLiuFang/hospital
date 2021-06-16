@@ -36,5 +36,5 @@ public interface DeviceService extends BaseService<Device> {
      */
    public List<Long> allId();
 
-   public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceSate, LionPage lionPage);
+   public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, LionPage lionPage);
 }

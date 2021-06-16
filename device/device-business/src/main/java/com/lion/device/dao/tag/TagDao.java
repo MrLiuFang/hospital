@@ -98,7 +98,7 @@ public interface TagDao extends BaseDao<Tag> {
      * @param deviceState
      * @return
      */
-    public Integer countByDepartmentIdAndPurposeAndDeviceSate(Long departmentId, TagPurpose purpose,State deviceState);
+    public Integer countByDepartmentIdAndPurposeAndDeviceState(Long departmentId, TagPurpose purpose, State deviceState);
 
     @Query( " select t.id from Tag t ")
     public List<Long> allId();
@@ -106,7 +106,7 @@ public interface TagDao extends BaseDao<Tag> {
     @Modifying
     @Transactional
     @Query(" update Tag set deviceState =:state where id = :id ")
-    public void updateDeviceSate(@Param("id")Long id, @Param("state") State state);
+    public void updateDeviceState(@Param("id")Long id, @Param("state") State state);
 
     @Modifying
     @Transactional

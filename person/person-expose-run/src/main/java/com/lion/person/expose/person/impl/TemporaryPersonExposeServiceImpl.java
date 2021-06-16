@@ -35,11 +35,11 @@ public class TemporaryPersonExposeServiceImpl extends BaseServiceImpl<TemporaryP
     }
 
     @Override
-    public int count(Long departmentId, State deviceSate) {
-        if (Objects.isNull(deviceSate)){
+    public int count(Long departmentId, State deviceState) {
+        if (Objects.isNull(deviceState)){
             return temporaryPersonDao.countByDepartmentIdAndIsLeave(departmentId,false);
         }
-        return temporaryPersonDao.countByDepartmentIdAndIsLeaveAndDeviceSate(departmentId,false,deviceSate);
+        return temporaryPersonDao.countByDepartmentIdAndIsLeaveAndDeviceState(departmentId,false, deviceState);
     }
 
     @Override

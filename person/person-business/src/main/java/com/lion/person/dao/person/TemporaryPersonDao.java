@@ -2,7 +2,6 @@ package com.lion.person.dao.person;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.person.entity.enums.State;
-import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,7 +20,7 @@ public interface TemporaryPersonDao extends BaseDao<TemporaryPerson> {
 
     @Modifying
     @Transactional
-    @Query(" update TemporaryPerson set deviceSate =:state where id = :id ")
+    @Query(" update TemporaryPerson set deviceState =:state where id = :id ")
     public void updateState(@Param("id")Long id, @Param("state") State state);
 
     @Modifying
@@ -47,10 +46,10 @@ public interface TemporaryPersonDao extends BaseDao<TemporaryPerson> {
      * 统计
      * @param departmentId
      * @param isLeave
-     * @param deviceSate
+     * @param deviceState
      * @return
      */
-    public int countByDepartmentIdAndIsLeaveAndDeviceSate(Long departmentId,Boolean isLeave,State deviceSate);
+    public int countByDepartmentIdAndIsLeaveAndDeviceState(Long departmentId, Boolean isLeave, State deviceState);
 
     /**
      * 根据科室查询

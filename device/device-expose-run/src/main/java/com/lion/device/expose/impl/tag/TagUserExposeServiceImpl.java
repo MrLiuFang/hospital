@@ -6,6 +6,7 @@ import com.lion.device.dao.tag.TagDao;
 import com.lion.device.dao.tag.TagUserDao;
 import com.lion.device.entity.enums.TagLogContent;
 import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagState;
 import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagUser;
@@ -61,6 +62,9 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){
             BusinessException.throwException("该标签不存在");
+        }
+        if (Objects.equals(tag.getState(), TagState.DISABLE)) {
+            BusinessException.throwException("该表标签处于停用状态，可能在回收箱中！");
         }
         if (!Objects.equals(tag.getPurpose(),TagPurpose.STAFF)) {
             BusinessException.throwException("此标签不能绑定员工");

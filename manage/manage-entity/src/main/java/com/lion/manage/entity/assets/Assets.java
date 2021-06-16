@@ -86,9 +86,9 @@ public class Assets extends BaseEntity {
     private Long img;
 
     @ApiModelProperty(value = "设备状态")
-    @Column(name = "device_sate")
+    @Column(name = "device_state")
     @Convert(converter = com.lion.manage.entity.enums.State.StateConverter.class)
-    private com.lion.manage.entity.enums.State deviceSate = State.NORMAL;
+    private com.lion.manage.entity.enums.State deviceState = State.NORMAL;
 
     @ApiModelProperty(value = "最后的设备数据时间")
     @Column(name = "last_data_time")

@@ -49,7 +49,7 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
         if (Objects.isNull(deviceState)) {
             return assetsDao.countByDepartmentId(departmentId);
         }
-        return assetsDao.countByDepartmentIdAndDeviceSate(departmentId,deviceState);
+        return assetsDao.countByDepartmentIdAndDeviceState(departmentId,deviceState);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
 
     @Override
     public void updateState(Long id, Integer state) {
-        assetsDao.updateSate(id, State.instance(state));
+        assetsDao.updateState(id, State.instance(state));
     }
 
     @Override

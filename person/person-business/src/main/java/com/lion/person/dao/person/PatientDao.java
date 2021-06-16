@@ -35,7 +35,7 @@ public interface PatientDao extends BaseDao<Patient> {
 
     @Modifying
     @Transactional
-    @Query(" update Patient  set deviceSate =:state where id = :id ")
+    @Query(" update Patient  set deviceState =:state where id = :id ")
     public void updateState(@Param("id")Long id, @Param("state") State state);
 
     @Modifying
@@ -60,10 +60,10 @@ public interface PatientDao extends BaseDao<Patient> {
      * 统计
      * @param departmentId
      * @param isLeave
-     * @param deviceSate
+     * @param deviceState
      * @return
      */
-    public int countByDepartmentIdAndIsLeaveAndDeviceSate(Long departmentId,Boolean isLeave,State deviceSate);
+    public int countByDepartmentIdAndIsLeaveAndDeviceState(Long departmentId,Boolean isLeave,State deviceState);
 
     /**
      * 根据科室查询

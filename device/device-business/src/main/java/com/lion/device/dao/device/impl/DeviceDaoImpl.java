@@ -23,7 +23,7 @@ public class DeviceDaoImpl implements DeviceDaoEx {
     private BaseDao<Device> baseDao;
 
     @Override
-    public Page deviceMonitorList(Long buildId, Long buildFloorId, State deviceSate, LionPage lionPage) {
+    public Page deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> searchParameter = new HashMap<>();
         sb.append(" select d from Device d where 1=1 ");
@@ -34,9 +34,9 @@ public class DeviceDaoImpl implements DeviceDaoEx {
         if (Objects.nonNull(buildFloorId)){
             sb.append(" and d.buildFloorId =:buildFloorId ");
             searchParameter.put("buildFloorId",buildFloorId);
-        }if (Objects.nonNull(deviceSate)){
-            sb.append(" and d.deviceSate =:deviceSate ");
-            searchParameter.put("deviceSate",deviceSate);
+        }if (Objects.nonNull(deviceState)){
+            sb.append(" and d.deviceState =:deviceState ");
+            searchParameter.put("deviceState", deviceState);
         }
         sb.append(" order by d.createDateTime ");
         return baseDao.findNavigator(lionPage,sb.toString(),searchParameter);

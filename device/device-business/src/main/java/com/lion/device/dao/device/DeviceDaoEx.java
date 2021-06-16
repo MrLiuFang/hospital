@@ -15,9 +15,9 @@ public interface DeviceDaoEx {
      * 设备监控列表
      * @param buildId
      * @param buildFloorId
-     * @param deviceSate
+     * @param deviceState
      * @param lionPage
      * @return
      */
-    Page deviceMonitorList(Long buildId, Long buildFloorId, State deviceSate, LionPage lionPage);
+    Page deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, LionPage lionPage);
 }

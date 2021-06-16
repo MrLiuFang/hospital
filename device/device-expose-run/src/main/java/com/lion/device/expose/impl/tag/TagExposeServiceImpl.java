@@ -81,12 +81,12 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
         if (Objects.isNull(deviceState)) {
             return tagDao.countByDepartmentIdAndPurpose(departmentId, purpose);
         }
-        return tagDao.countByDepartmentIdAndPurposeAndDeviceSate(departmentId, purpose,deviceState);
+        return tagDao.countByDepartmentIdAndPurposeAndDeviceState(departmentId, purpose,deviceState);
     }
 
     @Override
-    public void updateDeviceSate(Long id, Integer state) {
-        tagDao.updateDeviceSate(id, State.instance(state));
+    public void updateDeviceState(Long id, Integer state) {
+        tagDao.updateDeviceState(id, State.instance(state));
     }
 
     @Override

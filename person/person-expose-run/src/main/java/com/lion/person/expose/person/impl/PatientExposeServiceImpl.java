@@ -40,11 +40,11 @@ public class PatientExposeServiceImpl extends BaseServiceImpl<Patient> implement
     }
 
     @Override
-    public int count(Long departmentId, State deviceSate) {
-        if (Objects.isNull(deviceSate)){
+    public int count(Long departmentId, State deviceState) {
+        if (Objects.isNull(deviceState)){
             return patientDao.countByDepartmentIdAndIsLeave(departmentId,false);
         }
-        return patientDao.countByDepartmentIdAndIsLeaveAndDeviceSate(departmentId,false,deviceSate);
+        return patientDao.countByDepartmentIdAndIsLeaveAndDeviceState(departmentId,false, deviceState);
     }
 
     @Override

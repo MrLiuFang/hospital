@@ -52,7 +52,7 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
 
     @Override
     public int count(List<Long> ids, State deviceState) {
-        return userDao.countByIdInAndAndDeviceSate(ids,deviceState);
+        return userDao.countByIdInAndAndDeviceState(ids,deviceState);
     }
 
     @Override

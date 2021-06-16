@@ -78,7 +78,7 @@ public interface TagExposeService extends BaseService<Tag> {
      * @param id
      * @param state
      */
-    public void updateDeviceSate(Long id, Integer state);
+    public void updateDeviceState(Long id, Integer state);
 
     /**
      * 修改状态

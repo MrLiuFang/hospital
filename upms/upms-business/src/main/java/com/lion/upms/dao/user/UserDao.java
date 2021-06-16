@@ -62,7 +62,7 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
 
     @Modifying
     @Transactional
-    @Query(" update User  set deviceSate =:state where id = :id ")
+    @Query(" update User  set deviceState =:state where id = :id ")
     public void updateSate(@Param("id") Long id, @Param("state") State state);
 
     @Modifying
@@ -79,7 +79,7 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
      * @param deviceState
      * @return
      */
-    public int countByIdInAndAndDeviceSate(List<Long> ids,State deviceState);
+    public int countByIdInAndAndDeviceState(List<Long> ids, State deviceState);
 
 
 }

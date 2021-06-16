@@ -77,9 +77,9 @@ public class Cctv extends BaseEntity {
     private Long departmentId;
 
     @ApiModelProperty(value = "设备状态")
-    @Column(name = "device_sate")
+    @Column(name = "device_state")
     @Convert(converter = State.StateConverter.class)
-    private State deviceSate = State.NORMAL;
+    private State deviceState = State.NORMAL;
 
     @ApiModelProperty(value = "最后的设备数据时间")
     @Column(name = "last_data_time")
