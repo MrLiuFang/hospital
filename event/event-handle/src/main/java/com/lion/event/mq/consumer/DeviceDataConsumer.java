@@ -115,16 +115,16 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                     userButtonService.tagButtonEvent(deviceDataDto,monitor,star,tag,user);
                 }
             }
-            if (Objects.nonNull(patient)  ) { //处理患者数据
+            if (Objects.nonNull(star) && Objects.nonNull(tag) && Objects.nonNull(patient)  ) { //处理患者数据
                 patientService.patientEvent(deviceDataDto,monitor,star,tag,patient);
             }
-            if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
+            if (Objects.nonNull(star) && Objects.nonNull(tag) && Objects.nonNull(temporaryPerson)) { //处理流动人员数据
                 temporaryPersonService.temporaryPersonEvent(deviceDataDto,monitor,star,tag,temporaryPerson);
             }
-            if (Objects.nonNull(tag) && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
+            if (Objects.nonNull(star) && Objects.nonNull(tag) && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
                 deviceService.deviceEevent(deviceDataDto,monitor,star,tag);
             }
-            if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
+            if (Objects.nonNull(star) && Objects.nonNull(tag) && Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
                 recyclingBoxService.event(deviceDataDto,monitor,star,tag,patient,temporaryPerson);
             }
 

@@ -607,7 +607,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         ServletOutputStream servletOutputStream = response.getOutputStream();
         PdfWriter writer = PdfWriter.getInstance(document, servletOutputStream);
         String userName = CurrentUserUtil.getCurrentUserUsername();
-        writer.setPageEvent(new EmapPdfPageEventHelper(FONT,userName));
+        writer.setPageEvent(new PdfPageEventHelper(FONT,userName));
         document.open();
         PdfPTable table = new PdfPTable(8);
         table.setWidths(new int[]{10, 10, 10, 10, 20, 10, 20, 10});

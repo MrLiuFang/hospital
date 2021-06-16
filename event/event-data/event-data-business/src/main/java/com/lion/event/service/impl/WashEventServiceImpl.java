@@ -12,7 +12,6 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.core.persistence.JpqlParameter;
-import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.device.Device;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
@@ -47,7 +46,6 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -297,7 +295,7 @@ public class WashEventServiceImpl implements WashEventService {
         ServletOutputStream servletOutputStream = response.getOutputStream();
         PdfWriter writer = PdfWriter.getInstance(document, servletOutputStream);
         String userName = CurrentUserUtil.getCurrentUserUsername();
-        writer.setPageEvent(new EmapPdfPageEventHelper(FONT,userName));
+        writer.setPageEvent(new PdfPageEventHelper(FONT,userName));
         document.open();
         PdfPTable table = new PdfPTable(8);
         table.setWidths(new int[]{10, 10, 10, 10, 10, 20, 20, 10});
@@ -383,7 +381,7 @@ public class WashEventServiceImpl implements WashEventService {
         ServletOutputStream servletOutputStream = response.getOutputStream();
         PdfWriter writer = PdfWriter.getInstance(document, servletOutputStream);
         String userName = CurrentUserUtil.getCurrentUserUsername();
-        writer.setPageEvent(new EmapPdfPageEventHelper(FONT,userName));
+        writer.setPageEvent(new PdfPageEventHelper(FONT,userName));
         document.open();
         PdfPTable table = new PdfPTable(4);
         table.setWidthPercentage(100);

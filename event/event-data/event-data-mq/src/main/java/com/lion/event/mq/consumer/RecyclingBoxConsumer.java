@@ -65,6 +65,7 @@ public class RecyclingBoxConsumer implements RocketMQListener<MessageExt> {
                 }
             }
             recyclingBoxRecordService.save(recyclingBoxRecord);
+
         }catch (Exception e){
             e.printStackTrace();
         }

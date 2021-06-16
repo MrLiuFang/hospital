@@ -63,6 +63,8 @@ public class RecyclingBoxServiceImpl implements RecyclingBoxService {
         recyclingBoxRecordDto.setTt(tag.getType().getKey());
         recyclingBoxRecordDto.setTp(tag.getPurpose().getKey());
         recyclingBoxRecordDto.setTc(tag.getTagCode());
+        recyclingBoxRecordDto.setDdt(deviceDataDto.getTime());
+        recyclingBoxRecordDto.setSdt(deviceDataDto.getSystemDateTime());
         rocketMQTemplate.syncSend(TopicConstants.RECYCLING_BOX, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(recyclingBoxRecordDto)).build());
     }
 }

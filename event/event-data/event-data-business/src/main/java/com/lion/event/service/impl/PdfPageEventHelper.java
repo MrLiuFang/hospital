@@ -7,7 +7,7 @@ import com.itextpdf.text.pdf.*;
 
 import java.io.IOException;
 
-public class EmapPdfPageEventHelper extends PdfPageEventHelper {
+public class PdfPageEventHelper extends com.itextpdf.text.pdf.PdfPageEventHelper {
     // 模板
     public PdfTemplate tpl ;
 
@@ -15,7 +15,7 @@ public class EmapPdfPageEventHelper extends PdfPageEventHelper {
 
     private String username;
 
-    public EmapPdfPageEventHelper(String fontPath, String username) {
+    public PdfPageEventHelper(String fontPath, String username) {
         this.fontPath = fontPath;
         this.username = username;
     }
