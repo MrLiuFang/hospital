@@ -20,6 +20,7 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
+import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.person.dao.person.TemporaryPersonDao;
 import com.lion.person.entity.enums.PersonType;
@@ -34,6 +35,9 @@ import com.lion.person.entity.person.vo.TemporaryPersonDetailsVo;
 import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.RestrictedAreaService;
 import com.lion.person.service.person.TemporaryPersonService;
+import com.lion.upms.entity.role.Role;
+import com.lion.upms.expose.role.RoleExposeService;
+import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +95,12 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @DubboReference
+    private RoleExposeService roleExposeService;
+
+    @DubboReference
+    private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
+
     @Override
     @Transactional
     public void add(AddTemporaryPersonDto addTemporaryPersonDto) {
@@ -130,7 +140,22 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
 
     @Override
     public IPageResultData<List<ListTemporaryPersonVo>> list(String name, Boolean isLeave, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        List<Long> departmentIds = new ArrayList<>();
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        Role role = roleExposeService.find(userId);
+        if (Objects.nonNull(role)) {
+            if (role.getCode().toLowerCase().indexOf("admin") < 0) {
+                List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+                list.forEach(department -> {
+                    departmentIds.add(department.getId());
+                });
+                departmentIds.add(Long.MAX_VALUE);
+            }
+        }
         JpqlParameter jpqlParameter = new JpqlParameter();
+        if (departmentIds.size()>0) {
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
+        }
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name","%"+name+"%");
         }
