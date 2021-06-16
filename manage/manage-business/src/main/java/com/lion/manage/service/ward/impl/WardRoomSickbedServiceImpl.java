@@ -5,6 +5,7 @@ import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
+import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.service.ward.WardRoomSickbedService;
 import org.springframework.beans.BeanUtils;
@@ -31,11 +32,32 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
         if (Objects.isNull(addWardRoomSickbedDto)){
             return;
         }
+        List<WardRoomSickbed> list = wardRoomSickbedDao.findByWardRoomId(wardRoomId);
         addWardRoomSickbedDto.forEach(dto->{
-            WardRoomSickbed wardRoomSickbed = new WardRoomSickbed();
-            BeanUtils.copyProperties(dto,wardRoomSickbed);
-            wardRoomSickbed.setWardRoomId(wardRoomId);
-            save(wardRoomSickbed);
+            Boolean isExist = false;
+            for (WardRoomSickbed wrs : list) {
+                if (Objects.equals(dto.getBedCode(),wrs.getBedCode())) {
+                    isExist = true;
+                }
+            }
+            if (!isExist) {
+                WardRoomSickbed wardRoomSickbed = new WardRoomSickbed();
+                BeanUtils.copyProperties(dto,wardRoomSickbed);
+                wardRoomSickbed.setWardRoomId(wardRoomId);
+                save(wardRoomSickbed);
+            }
+        });
+
+        list.forEach(wrs -> {
+            Boolean isDelete = true;
+            for (WardRoomSickbed wardRoomSickbed : addWardRoomSickbedDto) {
+                if (Objects.equals(wrs.getBedCode(), wardRoomSickbed.getBedCode())) {
+                    isDelete = false;
+                }
+            }
+            if (isDelete) {
+                deleteById(wrs.getId());
+            }
         });
     }
 

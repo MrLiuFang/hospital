@@ -52,24 +52,48 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
     @Override
     @Transactional
     public void save(List<? extends WardRoom> wardRoomDto, Long wardId) {
-        if (Objects.isNull(wardRoomDto)){
-            return;
-        }
         if (Objects.isNull(wardId)){
             return;
         }
-        deleteByWardId(wardId);
-        wardRoomDto.forEach(dto->{
-            WardRoom wardRoom = new WardRoom();
-            BeanUtils.copyProperties(dto,wardRoom);
-            wardRoom.setWardId(wardId);
-            wardRoom = save(wardRoom);
-            if (dto instanceof AddWardRoomDto){
-                wardRoomSickbedService.save(((AddWardRoomDto)dto).getWardRoomSickbed(),wardRoom.getId());
-            }else if ((dto instanceof UpdateWardRoomDto)){
-                wardRoomSickbedService.save(((UpdateWardRoomDto)dto).getWardRoomSickbed(),wardRoom.getId());
+//        deleteByWardId(wardId);
+        List<WardRoom> list = wardRoomDao.findByWardId(wardId);
+        if (Objects.nonNull(wardRoomDto)) {
+            wardRoomDto.forEach(dto -> {
+                WardRoom wardRoom = new WardRoom();
+                Boolean isExist = false;
+                for (WardRoom wr: list){
+                    if (Objects.equals(wr.getCode(),dto.getCode())) {
+                        isExist = true;
+                        wardRoom = wr;
+                    }
+                }
+                if (!isExist) {
+                    BeanUtils.copyProperties(dto, wardRoom);
+                    wardRoom.setWardId(wardId);
+                    wardRoom = save(wardRoom);
+                }
+                if (dto instanceof AddWardRoomDto) {
+                    wardRoomSickbedService.save(((AddWardRoomDto) dto).getWardRoomSickbed(), wardRoom.getId());
+                } else if ((dto instanceof UpdateWardRoomDto)) {
+                    wardRoomSickbedService.save(((UpdateWardRoomDto) dto).getWardRoomSickbed(), wardRoom.getId());
+                }
+
+            });
+        }
+
+        list.forEach(wardRoom -> {
+            Boolean isDelete = true;
+            for (WardRoom wr : wardRoomDto) {
+                if (Objects.equals(wardRoom.getCode(), wr.getCode())) {
+                    isDelete = false;
+                }
+            }
+            if (isDelete) {
+                deleteById(wardRoom.getId());
+                wardRoomSickbedDao.deleteByWardRoomId(wardRoom.getId());
             }
         });
+
     }
 
     @Override

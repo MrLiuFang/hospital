@@ -3,6 +3,7 @@ package com.lion.device.dao.tag;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagState;
 import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
 import org.springframework.data.jpa.repository.Modifying;
@@ -104,8 +105,13 @@ public interface TagDao extends BaseDao<Tag> {
 
     @Modifying
     @Transactional
-    @Query(" update Tag set deviceSate =:state where id = :id ")
-    public void updateState(@Param("id")Long id, @Param("state") State state);
+    @Query(" update Tag set deviceState =:state where id = :id ")
+    public void updateDeviceSate(@Param("id")Long id, @Param("state") State state);
+
+    @Modifying
+    @Transactional
+    @Query(" update Tag set state =:state where id = :id ")
+    public void updateState(@Param("id")Long id, @Param("state") TagState state);
 
     @Modifying
     @Transactional

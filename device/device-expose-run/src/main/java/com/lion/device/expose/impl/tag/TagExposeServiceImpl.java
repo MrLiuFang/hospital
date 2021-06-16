@@ -5,6 +5,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagDao;
 import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagState;
 import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
@@ -84,8 +85,13 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     }
 
     @Override
+    public void updateDeviceSate(Long id, Integer state) {
+        tagDao.updateDeviceSate(id, State.instance(state));
+    }
+
+    @Override
     public void updateState(Long id, Integer state) {
-        tagDao.updateState(id, State.instance(state));
+        tagDao.updateState(id, TagState.instance(state));
     }
 
     @Override

@@ -3,15 +3,16 @@ package com.lion.event.mq.consumer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.utils.RedisUtil;
-import com.lion.event.entity.Position;
+import com.lion.device.entity.enums.TagState;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.entity.RecyclingBoxRecord;
-import com.lion.event.service.PositionService;
 import com.lion.event.service.RecyclingBoxRecordService;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import lombok.extern.java.Log;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
@@ -39,6 +40,9 @@ public class RecyclingBoxConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private RedisUtil redisUtil;
 
+    @DubboReference
+    private TagExposeService tagExposeService;
+
     @Override
     public void onMessage(MessageExt messageExt) {
         try {
@@ -65,7 +69,7 @@ public class RecyclingBoxConsumer implements RocketMQListener<MessageExt> {
                 }
             }
             recyclingBoxRecordService.save(recyclingBoxRecord);
-
+            tagExposeService.updateState(recyclingBoxRecord.getTi(), TagState.DISABLE.getKey());
         }catch (Exception e){
             e.printStackTrace();
         }
