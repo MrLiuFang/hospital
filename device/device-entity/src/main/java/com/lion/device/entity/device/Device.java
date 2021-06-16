@@ -18,6 +18,7 @@ import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -34,8 +35,9 @@ import java.time.LocalDateTime;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "设备")
-public class Device extends BaseEntity {
+public class Device extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 3432969462078655827L;
     @ApiModelProperty(value = "设备名称")
     @Column(name = "name")
     @NotBlank(message = "设备名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})

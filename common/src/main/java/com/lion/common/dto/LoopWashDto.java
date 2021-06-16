@@ -2,6 +2,7 @@ package com.lion.common.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -10,8 +11,9 @@ import java.time.LocalDateTime;
  * @Date 2021/5/19 下午2:10
  **/
 @Data
-public class LoopWashDto {
+public class LoopWashDto implements Serializable {
 
+    private static final long serialVersionUID = -1898767569626930575L;
     private Long userId;
 
     private String uuid;

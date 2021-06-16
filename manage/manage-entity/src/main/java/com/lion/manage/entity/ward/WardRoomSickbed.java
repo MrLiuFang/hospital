@@ -16,6 +16,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @author Mr.Liu
@@ -30,8 +31,9 @@ import javax.validation.constraints.NotNull;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "病房(房间-病床)")
-public class WardRoomSickbed extends BaseEntity {
+public class WardRoomSickbed extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 2539027088777851254L;
     @ApiModelProperty(value = "病房id")
     @Column(name = "ward_room_id")
     @NotNull(message = "病房(基本信息)不能为空")

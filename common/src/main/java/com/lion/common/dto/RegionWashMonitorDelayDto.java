@@ -13,7 +13,8 @@ import java.util.UUID;
  **/
 @Data
 public class RegionWashMonitorDelayDto implements Serializable {
-    private static final long serialVersionUID = -90000050L;
+
+    private static final long serialVersionUID = -6015687865551435784L;
     /**
      * 用户ID
      */

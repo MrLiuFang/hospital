@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -30,8 +31,9 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @Data
 @ApiModel(description = "临时离开权限")
-public class TempLeave extends BaseEntity {
+public class TempLeave extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 2751099054472220914L;
     @ApiModelProperty(value = "患者id")
     @NotNull(message = "患者id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "patient_id")

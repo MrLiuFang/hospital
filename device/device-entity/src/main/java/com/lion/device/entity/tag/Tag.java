@@ -18,6 +18,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
@@ -34,8 +35,9 @@ import java.time.LocalDateTime;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "标签")
-public class Tag extends BaseEntity {
+public class Tag extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 610297207210388788L;
     @ApiModelProperty(value = "标签分类")
     @Convert(converter = TagType.TagTypeConverter.class)
     @NotNull(message = "标签分类不能为空", groups = {Validator.Insert.class, Validator.Update.class})

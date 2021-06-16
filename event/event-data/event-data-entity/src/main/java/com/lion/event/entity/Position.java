@@ -19,4 +19,5 @@ import java.time.LocalDateTime;
 @Document(value = "position")
 public class Position extends PositionDto implements Serializable {
 
+    private static final long serialVersionUID = 2185500636981747571L;
 }

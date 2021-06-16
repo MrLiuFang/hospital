@@ -16,4 +16,5 @@ import java.io.Serializable;
 @ApiModel
 public class CurrentPosition extends Position implements Serializable {
 
+    private static final long serialVersionUID = 1210769701993214844L;
 }

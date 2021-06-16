@@ -19,4 +19,5 @@ import java.time.format.DateTimeFormatter;
 @Document(value = "wash_event")
 public class WashEvent extends WashEventDto implements Serializable {
 
+    private static final long serialVersionUID = 2189349216798656780L;
 }

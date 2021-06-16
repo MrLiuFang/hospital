@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @Data
 public class HumitureRecordDto implements Serializable {
 
+    private static final long serialVersionUID = -4561410568391847197L;
     @ApiModelProperty(value = "类型 (com.lion.common.enums.Type)")
     private Integer typ;
 

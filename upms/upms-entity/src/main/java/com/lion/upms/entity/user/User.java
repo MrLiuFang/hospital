@@ -21,6 +21,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -38,8 +39,9 @@ import java.time.LocalDateTime;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"password","createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "用户")
-public class User extends BaseEntity {
+public class User extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 2414603096785043264L;
     @ApiModelProperty(value = "用户登陆账号")
     @Column(name = "username",updatable = false)
 //    @NotBlank(message = "用户登陆账号不能为空", groups = {Validator.Insert.class})

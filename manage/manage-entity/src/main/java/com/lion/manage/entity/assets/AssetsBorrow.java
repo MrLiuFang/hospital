@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -34,8 +35,9 @@ import java.time.LocalDateTime;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "资产借用")
-public class AssetsBorrow extends BaseEntity {
+public class AssetsBorrow extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 7686080297795275063L;
     @ApiModelProperty(value = "资产Id")
     @Column(name = "assets_id")
     @NotNull(message = "资产id不能为空", groups = {Validator.Insert.class})

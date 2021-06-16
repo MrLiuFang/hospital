@@ -14,6 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @author Mr.Liu
@@ -28,8 +29,9 @@ import javax.validation.constraints.NotNull;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "洗手规则")
-public class Wash extends BaseEntity {
+public class Wash extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 6103915473684030413L;
     @ApiModelProperty(value = "规则名称")
     @Column(name = "name")
     @NotBlank(message = "规则名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})

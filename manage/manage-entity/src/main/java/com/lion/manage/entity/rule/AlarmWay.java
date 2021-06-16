@@ -13,6 +13,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @Author Mr.Liu
@@ -27,8 +28,9 @@ import javax.validation.constraints.NotNull;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "警报方式")
-public class AlarmWay extends BaseEntity {
+public class AlarmWay extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 7542149250412572073L;
     @ApiModelProperty(value = "警报id")
     @Column(name = "alarm_id")
     @NotNull(message = "警报id不能为空", groups = {Validator.Insert.class, Validator.Update.class})

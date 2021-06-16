@@ -17,6 +17,7 @@ import java.io.Serializable;
 @ApiModel
 public class WorkDto implements Serializable {
 
+    private static final long serialVersionUID = -686488803847327337L;
     @ApiModelProperty(value = "员工id")
     @NotNull(message = "员工id不能为空")
     private Long userId;

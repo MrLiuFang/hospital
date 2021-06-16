@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @Data
 public class WashRecordDto implements Serializable {
 
+    private static final long serialVersionUID = -7868264693079166765L;
     @Id
     private String _id;
 

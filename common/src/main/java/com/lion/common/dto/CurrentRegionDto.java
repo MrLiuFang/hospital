@@ -14,6 +14,8 @@ import java.time.LocalDateTime;
 @Data
 public class CurrentRegionDto implements Serializable {
 
+    private static final long serialVersionUID = -5394114715986856960L;
+
     @ApiModelProperty(value = "当前所在的区域Id")
     private Long regionId;
 

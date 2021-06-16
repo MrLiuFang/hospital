@@ -19,6 +19,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
+import java.io.Serializable;
 import java.time.LocalDate;
 
 /**
@@ -37,8 +38,9 @@ import java.time.LocalDate;
         ignoreUnknown = true,
         value = {"updateDateTime", "createUserId", "updateUserId"}
 )
-public class Patient extends Person {
+public class Patient extends Person implements Serializable {
 
+    private static final long serialVersionUID = 6519257488177091836L;
     @ApiModelProperty(value = "出生日期")
     @Column(name = "birthday")
     @Past(message = "出生日期不能大于/等于当前日期", groups = {Validator.Insert.class, Validator.Update.class})

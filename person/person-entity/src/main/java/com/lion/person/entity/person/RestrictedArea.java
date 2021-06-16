@@ -12,6 +12,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @description:
@@ -25,8 +26,9 @@ import javax.validation.constraints.NotNull;
 @DynamicInsert
 @Data
 @ApiModel(description = "限制区域")
-public class RestrictedArea extends BaseEntity {
+public class RestrictedArea extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -2133649767384990644L;
     @ApiModelProperty(value = "人员类型")
     @Convert(converter = PersonType.PersonTypeConverter.class)
     @NotNull(message = "人员类型不能为空", groups = {Validator.Insert.class, Validator.Update.class})

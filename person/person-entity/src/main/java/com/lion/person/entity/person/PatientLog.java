@@ -16,6 +16,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @description:
@@ -33,8 +34,9 @@ import javax.validation.constraints.NotNull;
         ignoreUnknown = true,
         value = { "updateDateTime", "createUserId", "updateUserId"}
 )
-public class PatientLog extends BaseEntity {
+public class PatientLog extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -744298217698937325L;
     @ApiModelProperty(value = "患者ID")
     @Column(name = "patient_id")
     @NotNull(message = "患者不能为空",groups = {Validator.Update.class, Validator.Insert.class})

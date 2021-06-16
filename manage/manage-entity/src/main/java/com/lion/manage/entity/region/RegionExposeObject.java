@@ -14,6 +14,7 @@ import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @author Mr.Liu
@@ -28,8 +29,9 @@ import javax.validation.constraints.NotNull;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "区域公开对象")
-public class RegionExposeObject extends BaseEntity {
+public class RegionExposeObject extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 3557894623331404596L;
     @ApiModelProperty(value = "区域id")
     @Column(name = "region_id")
     @NotNull(message = "区域不能为空", groups = {Validator.Insert.class, Validator.Update.class})

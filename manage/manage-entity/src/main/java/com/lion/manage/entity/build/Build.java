@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
 
 /**
  * @author Mr.Liu
@@ -29,8 +30,9 @@ import javax.validation.constraints.NotBlank;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "建筑")
-public class Build extends BaseEntity {
+public class Build extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -3137908609554075165L;
     @ApiModelProperty(value = "建筑名称")
     @Column(name = "name")
     @NotBlank(message = "建筑名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})

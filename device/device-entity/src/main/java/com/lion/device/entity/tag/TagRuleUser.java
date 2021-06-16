@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @Author Mr.Liu
@@ -27,8 +28,9 @@ import javax.validation.constraints.NotNull;
 @DynamicInsert
 @Data
 @ApiModel(description = "标签规则关联的用户")
-public class TagRuleUser extends BaseEntity {
+public class TagRuleUser extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -8844894716739235743L;
     @ApiModelProperty(value = "标签id")
     @NotNull(message = "标签id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "tag_rule_id")

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  **/
 @Data
 public class UserLastWashDto implements Serializable {
-    private static final long serialVersionUID = -90000050L;
+    private static final long serialVersionUID = -6752849889644287105L;
     /**
      * 用户ID
      */

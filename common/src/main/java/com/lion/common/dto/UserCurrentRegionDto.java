@@ -19,8 +19,8 @@ import java.util.UUID;
 @Data
 @ApiModel
 public class UserCurrentRegionDto extends CurrentRegionDto implements Serializable {
-    private static final long serialVersionUID = -90000050L;
 
+    private static final long serialVersionUID = -2870941843121278585L;
     @ApiModelProperty(value = "上次所在的区域Id")
     private Long previousRegionId;
 
@@ -48,8 +48,8 @@ public class UserCurrentRegionDto extends CurrentRegionDto implements Serializab
     @Data
     @ApiModel
     public static class WashRecord implements Serializable{
-        private static final long serialVersionUID = -90000050L;
 
+        private static final long serialVersionUID = -640132126179527186L;
         @ApiModelProperty(value = "洗手发生的时间")
         private LocalDateTime dateTime;
 

@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @Data
 public class DeviceDataDto implements Serializable {
 
-    private static final long serialVersionUID = -90000050L;
+    private static final long serialVersionUID = 4692994096293827415L;
     //Star 的 MacID
     private String starId;
     //Monitor 的 ID

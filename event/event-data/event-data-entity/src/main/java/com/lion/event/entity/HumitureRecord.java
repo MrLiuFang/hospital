@@ -16,6 +16,7 @@ import java.io.Serializable;
 @Document(value = "humiture_record")
 public class HumitureRecord extends HumitureRecordDto implements Serializable {
 
+    private static final long serialVersionUID = -3194168602025725419L;
     @Id
     private String _id;
 

@@ -15,6 +15,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -30,8 +31,9 @@ import java.time.LocalDateTime;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "cctv")
-public class Cctv extends BaseEntity {
+public class Cctv extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 9015253379019012364L;
     @ApiModelProperty(value = "cctv名称")
     @Column(name = "name")
     @NotBlank(message = "cctv名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})

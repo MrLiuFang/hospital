@@ -13,6 +13,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -28,8 +29,9 @@ import java.time.LocalDateTime;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "员工上下班")
-public class Work extends BaseEntity {
+public class Work extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 6314578566875824981L;
     @ApiModelProperty(value = "员工id")
     @Column(name = "user_id")
     private Long userId;

@@ -11,6 +11,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -25,8 +26,9 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @Data
 @ApiModel(description = "患者")
-public class PatientTransfer extends BaseEntity {
+public class PatientTransfer extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 6410357470049605092L;
     @ApiModelProperty(value = "患者ID")
     @Column(name = "patient_id")
     private Long patientId;

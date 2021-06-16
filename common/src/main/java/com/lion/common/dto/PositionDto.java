@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 @ApiModel
 public class PositionDto implements Serializable {
 
+    private static final long serialVersionUID = 6996838306863461533L;
     @Id
     private String _id;
 

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Data
 public class UserTagButtonRecordDto implements Serializable {
 
+    private static final long serialVersionUID = 320853505628827188L;
     @ApiModelProperty(value = "员工id")
     private Long pi;
 

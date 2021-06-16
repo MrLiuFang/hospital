@@ -17,6 +17,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @Author Mr.Liu
@@ -30,9 +31,10 @@ import javax.validation.constraints.NotNull;
 @DynamicInsert
 @Data
 @ApiModel(description = "标签规则")
-public class TagRule extends BaseEntity {
+public class TagRule extends BaseEntity implements Serializable {
 
 
+    private static final long serialVersionUID = -4762444619380889778L;
     @ApiModelProperty(value = "规则名称")
     @Column(name = "name")
     private String name;

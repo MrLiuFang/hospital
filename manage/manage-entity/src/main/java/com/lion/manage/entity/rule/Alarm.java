@@ -16,6 +16,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @author Mr.Liu
@@ -30,8 +31,9 @@ import javax.validation.constraints.NotNull;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "警报规则")
-public class Alarm extends BaseEntity {
+public class Alarm extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -4020836313788285118L;
     @ApiModelProperty(value = "警报分类")
     @Column(name = "classify")
     @Convert(converter = AlarmClassify.AlarmClassifyConverter.class)

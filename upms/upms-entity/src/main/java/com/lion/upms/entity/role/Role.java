@@ -17,6 +17,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 
 /**
  * @author Mr.Liu
@@ -31,8 +32,9 @@ import javax.validation.constraints.Size;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "角色表")
-public class Role extends BaseEntity {
+public class Role extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -5128444654752793118L;
     @ApiModelProperty(value = "角色名称")
     @Column(name = "name")
     @NotBlank(message = "角色名称不能为空",groups = {Validator.Update.class, Validator.Insert.class})

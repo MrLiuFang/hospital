@@ -12,6 +12,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @description:
@@ -25,8 +26,9 @@ import javax.validation.constraints.NotNull;
 @DynamicInsert
 @Data
 @ApiModel(description = "临时人员")
-public class TemporaryPerson extends Person {
+public class TemporaryPerson extends Person implements Serializable {
 
+    private static final long serialVersionUID = -5294943964036491904L;
     @ApiModelProperty(value = "证件类型")
     @Column(name = "identity_document_type")
     @Convert(converter = IdentityDocumentType.IdentityDocumentTypeConverter.class)

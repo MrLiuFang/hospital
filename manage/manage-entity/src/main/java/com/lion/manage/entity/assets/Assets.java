@@ -17,6 +17,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -32,8 +33,9 @@ import java.time.LocalDateTime;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "资产")
-public class Assets extends BaseEntity {
+public class Assets extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 2129036984572348881L;
     @ApiModelProperty(value = "资产名称")
     @Column(name = "name")
     @NotBlank(message = "资产名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})

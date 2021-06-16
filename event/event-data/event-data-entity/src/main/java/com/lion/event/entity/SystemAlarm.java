@@ -24,6 +24,7 @@ import java.util.Objects;
 @ApiModel
 public class SystemAlarm implements Serializable {
 
+    private static final long serialVersionUID = 8357470689294387808L;
     @Id
     private String _id;
 

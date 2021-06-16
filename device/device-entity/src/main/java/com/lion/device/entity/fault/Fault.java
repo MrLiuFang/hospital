@@ -16,6 +16,7 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @description:
@@ -30,8 +31,9 @@ import javax.validation.constraints.NotNull;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "故障表")
-public class Fault extends BaseEntity {
+public class Fault extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 8725223620163785910L;
     @ApiModelProperty(value = "关联ID（资产ID/cctvId/……）")
     @Column(name = "relation_id")
     private Long relationId;

@@ -17,4 +17,5 @@ import java.io.Serializable;
 @ApiModel(value = "洗手记录(为减少mongo存储空间字段采用缩写方式)")
 public class WashRecord extends WashRecordDto implements Serializable {
 
+    private static final long serialVersionUID = -172159515038534622L;
 }

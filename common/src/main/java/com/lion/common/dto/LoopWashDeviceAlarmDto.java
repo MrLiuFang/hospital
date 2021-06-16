@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Data
 public class LoopWashDeviceAlarmDto implements Serializable {
 
+    private static final long serialVersionUID = 6542097293690040154L;
     private Long userId;
 
     private String uuid;

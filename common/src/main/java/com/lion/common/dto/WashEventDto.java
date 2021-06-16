@@ -17,6 +17,7 @@ import java.time.format.DateTimeFormatter;
 @ApiModel
 public class WashEventDto extends WashRecordDto implements Serializable {
 
+    private static final long serialVersionUID = 7308806002975275332L;
     @ApiModelProperty(value = "用于统计所有员工(仅限sql语法统计,无实际含义)")
     private Integer a = 0;
 

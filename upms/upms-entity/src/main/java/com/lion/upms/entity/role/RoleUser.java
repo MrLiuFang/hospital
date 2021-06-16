@@ -12,6 +12,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
+import java.io.Serializable;
 
 /**
  * @author Mr.Liu
@@ -26,8 +27,9 @@ import javax.persistence.Table;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "角色与用户关联表")
-public class RoleUser extends BaseEntity {
+public class RoleUser extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -471663775678035086L;
     @Column(name = "role_id")
     private Long roleId;
 

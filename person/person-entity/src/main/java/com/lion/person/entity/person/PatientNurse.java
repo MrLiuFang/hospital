@@ -14,6 +14,7 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @description:
@@ -27,8 +28,9 @@ import javax.validation.constraints.NotNull;
 @DynamicInsert
 @Data
 @ApiModel(description = "患者")
-public class PatientNurse extends BaseEntity {
+public class PatientNurse extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -5151149865866950108L;
     @ApiModelProperty(value = "患者ID")
     @Column(name = "patient_id")
     @NotNull(message = "患者不能为空", groups = {Validator.Insert.class, Validator.Update.class})

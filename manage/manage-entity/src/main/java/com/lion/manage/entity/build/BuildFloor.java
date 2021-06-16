@@ -16,6 +16,7 @@ import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 /**
@@ -31,8 +32,9 @@ import java.math.BigDecimal;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "楼层")
-public class BuildFloor extends BaseEntity {
+public class BuildFloor extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 4430569449863892569L;
     @ApiModelProperty(value = "建筑id")
     @NotNull(message = "建筑名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "build_id")

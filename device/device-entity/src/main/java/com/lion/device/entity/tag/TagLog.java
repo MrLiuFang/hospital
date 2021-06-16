@@ -12,6 +12,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * @Author Mr.Liu
@@ -25,8 +26,9 @@ import javax.persistence.*;
 @DynamicInsert
 @Data
 @ApiModel(description = "标签日志")
-public class TagLog extends BaseEntity {
+public class TagLog extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = 8039008614074904670L;
     @ApiModelProperty(value = "标签id")
     @Column(name = "tag_id")
     private Long tagId;

@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 /**
  * @author Mr.Liu
@@ -29,8 +30,9 @@ import javax.validation.constraints.NotNull;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "设备组关联的设备")
-public class DeviceGroupDevice extends BaseEntity {
+public class DeviceGroupDevice extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -5786186112857864557L;
     @ApiModelProperty(value = "设备组id")
     @Column(name = "device_group_id")
     @NotNull(message = "设备组id不能为空", groups = {Validator.Insert.class, Validator.Update.class})

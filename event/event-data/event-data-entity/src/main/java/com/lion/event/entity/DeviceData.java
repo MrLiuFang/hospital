@@ -21,6 +21,7 @@ import java.time.LocalDateTime;
 @ApiModel
 public class DeviceData implements Serializable {
 
+    private static final long serialVersionUID = -2540094505107531820L;
     @Id
     private String _id;
 

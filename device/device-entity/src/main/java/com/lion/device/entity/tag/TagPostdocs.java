@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -30,8 +31,9 @@ import java.time.LocalDateTime;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "标签与流动人员关联")
-public class TagPostdocs extends BaseEntity {
+public class TagPostdocs extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -7781310604889118075L;
     @ApiModelProperty(value = "标签id")
     @NotNull(message = "标签id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "tag_id")

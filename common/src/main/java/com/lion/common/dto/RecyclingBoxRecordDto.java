@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -15,8 +16,9 @@ import java.time.LocalDateTime;
  */
 @Data
 @ApiModel
-public class RecyclingBoxRecordDto {
+public class RecyclingBoxRecordDto implements Serializable {
 
+    private static final long serialVersionUID = 5169920111697099159L;
     @ApiModelProperty(value = "回收箱id")
     private Long rbi;
 

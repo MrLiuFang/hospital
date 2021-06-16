@@ -3,6 +3,7 @@ package com.lion.common.dto;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -12,8 +13,9 @@ import java.time.LocalDateTime;
  */
 @Data
 @ApiModel
-public class TempLeaveMonitorDto {
+public class TempLeaveMonitorDto implements Serializable {
 
+    private static final long serialVersionUID = 3832909425985165822L;
     private Long patientId;
 
     private LocalDateTime delayDateTime;

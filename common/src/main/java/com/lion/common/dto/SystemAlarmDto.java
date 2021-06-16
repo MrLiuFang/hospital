@@ -21,6 +21,7 @@ import java.util.UUID;
 @ApiModel
 public class SystemAlarmDto implements Serializable {
 
+    private static final long serialVersionUID = -4723208189836453408L;
     /**
      * 唯一追踪标识
      */

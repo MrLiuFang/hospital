@@ -18,6 +18,7 @@ import org.hibernate.annotations.DynamicUpdate;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -27,8 +28,9 @@ import java.time.LocalDateTime;
  */
 @MappedSuperclass
 @Data
-public abstract class Person extends BaseEntity {
+public abstract class Person extends BaseEntity implements Serializable {
 
+    private static final long serialVersionUID = -9197610700850011610L;
     @ApiModelProperty(value = "头像（文件id）")
     @Column(name = "head_portrait")
     private Long headPortrait;

@@ -3,7 +3,6 @@ package com.lion.upms.dao.user;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.upms.entity.enums.State;
 import com.lion.upms.entity.user.User;
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

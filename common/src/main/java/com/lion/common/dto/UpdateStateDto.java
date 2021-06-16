@@ -14,6 +14,7 @@ import java.io.Serializable;
 @Data
 public class UpdateStateDto implements Serializable {
 
+    private static final long serialVersionUID = -5523753380760451854L;
     private Type type;
 
     private Long id;
