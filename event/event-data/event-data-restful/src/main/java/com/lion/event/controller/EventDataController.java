@@ -378,7 +378,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return recyclingBoxRecordService.list(isDisinfect, tagType, name, code, tagCode, startDateTime, endDateTime, lionPage);
     }
 
-    @GetMapping("/recyclingBox/disinfect")
+    @PutMapping("/recyclingBox/disinfect")
     @ApiOperation(value = "回收箱一键消毒(只处理负责科室的回收箱)")
     public ResultData recyclingBoxDisinfect(){
         recyclingBoxRecordService.disinfect();
