@@ -27,6 +27,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -78,6 +79,7 @@ public class PatientReportServiceImpl extends BaseServiceImpl<PatientReport> imp
         if (Objects.nonNull(patientId)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_patientId",patientId);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page page = findNavigator(lionPage);
         List<PatientReport> list = page.getContent();

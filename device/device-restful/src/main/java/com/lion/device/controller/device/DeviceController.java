@@ -37,6 +37,7 @@ import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -117,7 +118,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
                 jpqlParameter.setSearchParameter(SearchConstant.IN, ids);
             }
         }
-
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         return (IPageResultData<List<Device>>) deviceService.findNavigator(lionPage);
     }

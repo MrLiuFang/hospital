@@ -92,7 +92,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                 }
                                 //判断是否用规定的洗手设备洗手
                                 Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(),wash);
-                                if (Objects.equals(false,b)){
+                                if (Objects.equals(b,false)){
                                     alarm(washEventDto,true,SystemAlarmType.WXYBZDXSSBXS,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,wash,regionWashMonitorDelayDto.getTagId() );
                                     return;
                                 }
@@ -112,7 +112,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                 }
                                 //判断有没有在规定的洗手设备洗手
                                 Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(),wash);
-                                if (Objects.equals(false,b)){
+                                if (Objects.equals(b,false)){
                                     alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,wash,regionWashMonitorDelayDto.getTagId() );
                                     return;
                                 }
@@ -188,7 +188,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
      * @param tag
      */
     private void sendAlarmToTag(Long userId, Wash wash, String uuid, SystemAlarmType systemAlarmType, UserCurrentRegionDto userCurrentRegionDto, Long tagId) throws JsonProcessingException {
-        if (Objects.equals(true,wash.getRemind())) {
+        if (Objects.equals(wash.getRemind(),true)) {
             User user = redisUtil.getUserById(userId);
             if (Objects.nonNull(user)) {
                 // TODO: 2021/5/17 给设备发送数据

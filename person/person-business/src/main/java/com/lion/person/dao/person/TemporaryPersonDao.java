@@ -29,6 +29,12 @@ public interface TemporaryPersonDao extends BaseDao<TemporaryPerson> {
     @Query(" update TemporaryPerson  set lastDataTime =:dateTime where id = :id ")
     public void updateLastDataTime(@Param("id")Long id, @Param("dateTime")LocalDateTime dateTime);
 
+    @Modifying
+    @Transactional
+    @Query(" update TemporaryPerson  set isWaitLeave =:isWaitLeave where id = :id ")
+    public void updateIsWaitLeave(@Param("id")Long id, @Param("isWaitLeave") Boolean isWaitLeave);
+
+
     /**
      * 统计
      * @param departmentId

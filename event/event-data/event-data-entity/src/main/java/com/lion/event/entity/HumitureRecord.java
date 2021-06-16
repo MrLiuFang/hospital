@@ -13,7 +13,7 @@ import java.io.Serializable;
  * @Date 2021/5/16 下午5:36
  **/
 @Data
-@Document(value = "HUMITURE_RECORD")
+@Document(value = "humiture_record")
 public class HumitureRecord extends HumitureRecordDto implements Serializable {
 
     @Id

@@ -64,6 +64,8 @@ public class AssetsDaoImpl implements AssetsDaoEx {
             sb.append(" and ab.endDateTime <= :endDateTime ");
             searchParameter.put("endDateTime",endDateTime);
         }
+
+        sb.append(" order by a.createDateTime ");
         return baseDao.findNavigator(lionPage, sb.toString(), searchParameter);
     }
 }

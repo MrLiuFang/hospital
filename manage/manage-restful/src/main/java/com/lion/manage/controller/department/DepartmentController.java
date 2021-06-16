@@ -23,6 +23,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -74,6 +75,7 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         PageResultData page = (PageResultData) departmentService.findNavigator(lionPage);
         List<Department> list = page.getContent();

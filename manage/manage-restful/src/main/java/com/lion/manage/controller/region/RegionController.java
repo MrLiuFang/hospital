@@ -31,6 +31,7 @@ import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -97,6 +98,7 @@ public class RegionController extends BaseControllerImpl implements BaseControll
         if (Objects.nonNull(buildFloorId)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_buildFloorId",buildFloorId);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         PageResultData page = (PageResultData) regionService.findNavigator(lionPage);
         List<Region> list = page.getContent();

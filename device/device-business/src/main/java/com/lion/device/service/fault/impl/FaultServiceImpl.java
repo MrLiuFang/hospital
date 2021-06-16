@@ -35,6 +35,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -113,6 +114,7 @@ public class FaultServiceImpl extends BaseServiceImpl<Fault> implements FaultSer
         if (StringUtils.hasText(code)) {
             jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_code", code);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<Fault> page = this.findNavigator(lionPage);
         List<Fault> list = page.getContent();

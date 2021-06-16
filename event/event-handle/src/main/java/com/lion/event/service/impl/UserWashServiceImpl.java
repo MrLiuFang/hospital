@@ -66,6 +66,9 @@ public class UserWashServiceImpl implements UserWashService {
         }
         //记录当前用户所在区域
         UserCurrentRegionDto userCurrentRegionDto = recordUserCurrentRegion(user,monitorRegion,starRegion, deviceDataDto, tag);
+        if (Objects.isNull(userCurrentRegionDto)){
+            return;
+        }
         String uuid = UUID.randomUUID().toString();
         userWashEevent(user,monitor,star,tag , deviceDataDto, userCurrentRegionDto);
 

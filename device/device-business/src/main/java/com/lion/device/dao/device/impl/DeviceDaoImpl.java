@@ -38,6 +38,7 @@ public class DeviceDaoImpl implements DeviceDaoEx {
             sb.append(" and d.deviceSate =:deviceSate ");
             searchParameter.put("deviceSate",deviceSate);
         }
+        sb.append(" order by d.createDateTime ");
         return baseDao.findNavigator(lionPage,sb.toString(),searchParameter);
     }
 }

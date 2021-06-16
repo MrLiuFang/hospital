@@ -31,6 +31,7 @@ import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -82,6 +83,7 @@ public class WashController extends BaseControllerImpl implements BaseController
         if (Objects.nonNull(type)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_type",type);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         PageResultData page = (PageResultData) washService.findNavigator(lionPage);
         List<Wash> list = page.getContent();

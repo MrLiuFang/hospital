@@ -72,6 +72,9 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private UserButtonService userButtonService;
 
+    @Autowired
+    private RecyclingBoxService recyclingBoxService;
+
     @Override
     public void onMessage(MessageExt messageExt) {
         try {
@@ -111,17 +114,19 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 }else if(Objects.nonNull(deviceDataDto.getButtonId())) { //员工按钮事件记录
                     userButtonService.tagButtonEvent(deviceDataDto,monitor,star,tag,user);
                 }
-            }else if (Objects.nonNull(patient)  ) { //处理患者数据
-                patientService.patientEvent(deviceDataDto,monitor,star,tag,patient);
-            }else if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
-                temporaryPersonService.temporaryPersonEvent(deviceDataDto,monitor,star,tag,temporaryPerson);
-            }else if (Objects.nonNull(tag) && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
-                deviceService.deviceEevent(deviceDataDto,monitor,star,tag);
-            }else if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
-
             }
-
-
+            if (Objects.nonNull(patient)  ) { //处理患者数据
+                patientService.patientEvent(deviceDataDto,monitor,star,tag,patient);
+            }
+            if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
+                temporaryPersonService.temporaryPersonEvent(deviceDataDto,monitor,star,tag,temporaryPerson);
+            }
+            if (Objects.nonNull(tag) && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
+                deviceService.deviceEevent(deviceDataDto,monitor,star,tag);
+            }
+            if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
+                recyclingBoxService.event(deviceDataDto,monitor,star,tag,patient,temporaryPerson);
+            }
 
             updateDeviceBattery(monitor,deviceDataDto.getMonitorBattery());
             updateTagBattery(tag,deviceDataDto.getTagBattery());

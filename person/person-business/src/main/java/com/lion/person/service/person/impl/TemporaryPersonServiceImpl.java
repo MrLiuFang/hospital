@@ -38,6 +38,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -145,6 +146,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         if (Objects.nonNull(endDateTime)) {
             jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_createDateTime",endDateTime);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<TemporaryPerson> page = this.findNavigator(lionPage);
         List<TemporaryPerson> list = page.getContent();

@@ -25,14 +25,13 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Mr.Liu
@@ -70,7 +69,9 @@ public class CctvController extends BaseControllerImpl implements BaseController
         if (StringUtils.hasText(code)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
+        Map<String, Object> sortParameter = new HashMap();
         Page<Cctv> page = cctvService.findNavigator(lionPage);
         List<Cctv> list = page.getContent();
         List<CctvVo>  returnList= new ArrayList<>();

@@ -42,4 +42,11 @@ public interface TemporaryPersonExposeService extends BaseService<TemporaryPerso
      * @return
      */
     public List<TemporaryPerson> find(Long departmentId, String name);
+
+    /**
+     * 修改状态
+     * @param id
+     * @param isWaitLeave
+     */
+    public void updateIsWaitLeave(Long id,Boolean isWaitLeave);
 }

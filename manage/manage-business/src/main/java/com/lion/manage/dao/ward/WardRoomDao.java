@@ -12,7 +12,7 @@ import java.util.List;
  * @Description:
  * @date 2021/4/1上午10:58
  */
-public interface WardRoomDao extends BaseDao<WardRoom> {
+public interface WardRoomDao extends BaseDao<WardRoom> , WardRoomDaoEx{
 
 
     /**

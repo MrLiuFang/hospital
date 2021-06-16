@@ -1,11 +1,15 @@
 package com.lion.manage.service.ward.impl;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.service.ward.WardRoomSickbedService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,5 +42,11 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
     @Override
     public List<WardRoomSickbed> find(Long wardRoomId) {
         return wardRoomSickbedDao.findByWardRoomId(wardRoomId);
+    }
+
+    @Override
+    public Page<WardRoomSickbed> list(Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage) {
+        Page<WardRoomSickbed> page = wardRoomSickbedDao.list(departmentId, wardId, wardRoomId, lionPage);
+        return page;
     }
 }

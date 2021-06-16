@@ -105,7 +105,9 @@ public class CommonServiceImpl implements CommonService {
      * @throws JsonProcessingException
      */
     private void position(Type type, Long pi, Long ri, Long adi, Long ti, LocalDateTime ddt, LocalDateTime sdt) throws JsonProcessingException {
-
+        if (Objects.isNull(ri)){
+            return;
+        }
         PositionDto positionDto = new PositionDto();
         positionDto.setTyp(type.getKey());
         if (Objects.nonNull(pi)) {

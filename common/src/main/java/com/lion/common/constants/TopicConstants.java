@@ -176,4 +176,14 @@ public class TopicConstants {
      */
     public static final String TEMP_LEAVE_MONITOR_CONSUMER_GROUP = "temp_leave_monitor_consumer_group";
 
+    /**
+     * 回收箱
+     */
+    public static final String RECYCLING_BOX ="recycling_box";
+
+    /**
+     * 回收箱
+     */
+    public static final String RECYCLING_BOX_CONSUMER_GROUP ="recycling_box_consumer_group";
+
 }

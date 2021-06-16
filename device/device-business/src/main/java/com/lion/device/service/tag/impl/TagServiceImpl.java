@@ -31,6 +31,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -166,6 +167,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         if (Objects.nonNull(useState)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_useState",useState);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<Tag> page = findNavigator(lionPage);
         List<Tag> list = page.getContent();

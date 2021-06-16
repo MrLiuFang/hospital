@@ -50,7 +50,7 @@ public class TemporaryPersonServiceImpl implements TemporaryPersonService {
     @Override
     public void temporaryPersonEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, TemporaryPerson temporaryPerson) throws JsonProcessingException {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
-        commonService.position(deviceDataDto,temporaryPerson,currentRegionDto.getRegionId(),tag );
+        commonService.position(deviceDataDto,temporaryPerson,Objects.nonNull(currentRegionDto)?currentRegionDto.getRegionId():null,tag );
         List<RestrictedArea> restrictedAreas = restrictedAreaExposeService.find(temporaryPerson.getId(), PersonType.TEMPORARY_PERSON);
         Boolean isLeaveRestrictedArea = true;
         if (Objects.isNull(restrictedAreas) || restrictedAreas.size()<=0){

@@ -49,4 +49,9 @@ public class TemporaryPersonExposeServiceImpl extends BaseServiceImpl<TemporaryP
         }
         return temporaryPersonDao.findByDepartmentIdAndIsLeave(departmentId,false);
     }
+
+    @Override
+    public void updateIsWaitLeave(Long id, Boolean isWaitLeave) {
+        temporaryPersonDao.updateIsWaitLeave(id,isWaitLeave);
+    }
 }

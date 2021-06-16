@@ -1,7 +1,10 @@
 package com.lion.manage.service.ward;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.ward.WardRoomSickbed;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -25,4 +28,14 @@ public interface WardRoomSickbedService extends BaseService<WardRoomSickbed> {
      * @return
      */
     public List<WardRoomSickbed> find(Long wardRoomId);
+
+    /**
+     * 列表
+     * @param departmentId
+     * @param wardId
+     * @param wardRoomId
+     * @param lionPage
+     * @return
+     */
+    public Page<WardRoomSickbed> list(Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage);
 }

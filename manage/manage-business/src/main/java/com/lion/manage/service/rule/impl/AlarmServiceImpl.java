@@ -27,6 +27,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -112,6 +113,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         if (Objects.nonNull(level)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_level",level);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<Alarm> page = findNavigator(lionPage);
         List<Alarm> list = page.getContent();

@@ -108,7 +108,7 @@ public class DeviceServiceImpl implements DeviceService {
 
     private HumitureRecordDto humitureRecord(Tag tag, CurrentRegionDto currentRegionDto, DeviceDataDto deviceDataDto) throws JsonProcessingException {
         HumitureRecordDto humitureRecordDto = new HumitureRecordDto();
-        humitureRecordDto.setRi(currentRegionDto.getRegionId());
+        humitureRecordDto.setRi(Objects.nonNull(currentRegionDto)?currentRegionDto.getRegionId():null);
         humitureRecordDto.setTyp(deviceDataDto.getTagType().getKey());
         humitureRecordDto.setDdt(deviceDataDto.getTime());
         humitureRecordDto.setSdt(deviceDataDto.getSystemDateTime());

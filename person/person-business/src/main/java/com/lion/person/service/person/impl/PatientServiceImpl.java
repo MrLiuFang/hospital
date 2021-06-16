@@ -46,6 +46,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -258,6 +259,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         if (Objects.nonNull(endDateTime)){
             jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_createDateTime",endDateTime);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<Patient> page = this.findNavigator(lionPage);
         List<Patient> list = page.getContent();
@@ -386,12 +388,12 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         Patient patient = findById(patientLeaveDto.getPatientId());
         patient.setId(patientLeaveDto.getPatientId());
         patient.setIsLeave(patientLeaveDto.getIsLeave());
-        if (Objects.equals(patient.getIsWaitLeave(),true)) {
-            patient.setIsWaitLeave(!patientLeaveDto.getIsLeave());
-        }
+        patient.setIsWaitLeave(false);
         patient.setLeaveRemarks(patientLeaveDto.getLeaveRemarks());
         update(patient);
-        tagPatientExposeService.unbinding(patient.getId(),false);
+        if (Objects.equals(patientLeaveDto.getIsLeave(),true)) {
+            tagPatientExposeService.unbinding(patient.getId(), false);
+        }
     }
 
     private Patient setOtherInfo(Patient patient) {

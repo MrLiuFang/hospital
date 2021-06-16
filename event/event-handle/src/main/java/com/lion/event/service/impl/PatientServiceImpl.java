@@ -74,7 +74,7 @@ public class PatientServiceImpl implements PatientService {
     public void patientEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient) throws JsonProcessingException {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
         redisTemplate.opsForValue().set(RedisConstants.PATIENT_CURRENT_REGION,currentRegionDto,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        commonService.position(deviceDataDto,patient,currentRegionDto.getRegionId(),tag );
+        commonService.position(deviceDataDto,patient,Objects.nonNull(currentRegionDto)?currentRegionDto.getRegionId():null,tag );
         PatientTransfer patientTransfer = patientTransferExposeService.find(patient.getId());
         List<TempLeave> tempLeaves =tempLeaveExposeService.find(patient.getId());
         List<RestrictedArea> restrictedAreas = restrictedAreaExposeService.find(patient.getId(), PersonType.PATIENT );
@@ -118,9 +118,9 @@ public class PatientServiceImpl implements PatientService {
             rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
         }
 
-        if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.RECYCLING_BOX)) {
-            patientExposeService.updateIsWaitLeave(patient.getId(),true);
-        }
+//        if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.RECYCLING_BOX)) {
+//            patientExposeService.updateIsWaitLeave(patient.getId(),true);
+//        }
     }
 
 

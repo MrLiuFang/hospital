@@ -30,6 +30,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -72,7 +73,7 @@ public class WardController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/list")
     @ApiOperation(value = "病房列表")
-    public IPageResultData<List<ListWardVo>> list(@ApiParam(value = "区域名称") String name, @ApiParam(value = "科室id")Long departmentId,LionPage lionPage){
+    public IPageResultData<List<ListWardVo>> list(@ApiParam(value = "病房名称") String name, @ApiParam(value = "科室id")Long departmentId,LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
@@ -81,6 +82,7 @@ public class WardController extends BaseControllerImpl implements BaseController
         if (Objects.nonNull(departmentId)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         PageResultData page = (PageResultData) wardService.findNavigator(lionPage);
         List<Ward> list = page.getContent();
@@ -140,4 +142,17 @@ public class WardController extends BaseControllerImpl implements BaseController
         ResultData resultData = ResultData.instance();
         return resultData;
     }
+
+    @GetMapping("/room/list")
+    @ApiOperation(value = "病房房间列表")
+    public IPageResultData<List<WardRoom>> roomList(@ApiParam(value = "科室")Long departmentId,@ApiParam(value = "病房")Long wardId,LionPage lionPage) {
+        return (IPageResultData<List<WardRoom>>) wardRoomService.list(departmentId, wardId,  lionPage);
+    }
+
+    @GetMapping("/sickbed/list")
+    @ApiOperation(value = "病床列表")
+    public IPageResultData<List<WardRoomSickbed>> sickbedList(@ApiParam(value = "科室")Long departmentId,@ApiParam(value = "病房")Long wardId,@ApiParam(value = "病房房间")Long wardRoomId,LionPage lionPage) {
+        return (IPageResultData<List<WardRoomSickbed>>) wardRoomSickbedService.list(departmentId, wardId, wardRoomId, lionPage);
+    }
+
 }

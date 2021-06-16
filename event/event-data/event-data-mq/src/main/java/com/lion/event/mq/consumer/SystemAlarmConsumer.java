@@ -143,16 +143,16 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                     UpdateStateDto updateStateDto = new UpdateStateDto();
                     updateStateDto.setType(systemAlarmDto.getType());
                     updateStateDto.setState(2);
-                    if (Objects.equals(Type.STAFF,updateStateDto.getType()) || Objects.equals(Type.PATIENT,updateStateDto.getType()) || Objects.equals(Type.MIGRANT,updateStateDto.getType())) {
+                    if (Objects.equals(updateStateDto.getType(),Type.STAFF) || Objects.equals(updateStateDto.getType(),Type.PATIENT) || Objects.equals(updateStateDto.getType(),Type.MIGRANT)) {
                         updateStateDto.setId(newSystemAlarm.getPi());
-                    }else if (Objects.equals(Type.ASSET,updateStateDto.getType())) {
+                    }else if (Objects.equals(updateStateDto.getType(),Type.ASSET)) {
                         updateStateDto.setId(newSystemAlarm.getAi());
-                    }else if (Objects.equals(Type.HUMIDITY,updateStateDto.getType()) || Objects.equals(Type.TEMPERATURE,updateStateDto.getType())) {
+                    }else if (Objects.equals(updateStateDto.getType(),Type.HUMIDITY) || Objects.equals(updateStateDto.getType(),Type.TEMPERATURE)) {
                         updateStateDto.setId(newSystemAlarm.getTi());
                     }
                     rocketMQTemplate.syncSend(TopicConstants.UPDATE_STATE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(updateStateDto)).build());
                 }
-                if (Objects.nonNull(alarm) && Objects.equals(true, alarm.getAgain())) {
+                if (Objects.nonNull(alarm) && Objects.equals(alarm.getAgain(),true )) {
                     systemAlarmDto.setDelayDateTime(LocalDateTime.now().plusMinutes(alarm.getInterval()));
                     againAlarm(systemAlarmDto);
                 }

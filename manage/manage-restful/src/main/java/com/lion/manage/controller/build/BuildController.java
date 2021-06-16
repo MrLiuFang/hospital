@@ -27,6 +27,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -74,6 +75,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         PageResultData page = (PageResultData) buildService.findNavigator(lionPage);
         List<Build> list = page.getContent();
@@ -141,6 +143,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
         if (Objects.nonNull(buildId)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_buildId",buildId);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         PageResultData page = (PageResultData) buildFloorService.findNavigator(lionPage);
         List<BuildFloor> list = page.getContent();

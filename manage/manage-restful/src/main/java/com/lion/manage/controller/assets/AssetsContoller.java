@@ -39,6 +39,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -121,6 +122,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
         if (Objects.nonNull(useState)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_useState",useState);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<Assets> page = assetsService.findNavigator(lionPage);
         List<Assets> list = page.getContent();
@@ -295,6 +297,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
                 jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids);
             }
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<AssetsFault> page = assetsFaultService.findNavigator(lionPage);
         List<AssetsFault> list = page.getContent();

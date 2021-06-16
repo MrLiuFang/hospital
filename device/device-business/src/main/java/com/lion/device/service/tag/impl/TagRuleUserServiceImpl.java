@@ -22,6 +22,7 @@ import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -120,6 +121,7 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
         if (Objects.nonNull(tagRuleId)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_tagRuleId",tagRuleId);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<TagRuleUser> page = findNavigator(lionPage);
         List<TagRuleUser> list = page.getContent();

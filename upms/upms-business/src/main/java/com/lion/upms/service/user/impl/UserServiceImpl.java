@@ -37,6 +37,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -168,6 +169,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             }
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",userList);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<User> page = this.findNavigator(lionPage);
         PageResultData pageResultData = new PageResultData(convertVo(page.getContent()),page.getPageable(),page.getTotalElements());
@@ -223,7 +225,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     public void update(UpdateUserDto updateUserDto) {
         User user = new User();
         BeanUtils.copyProperties(updateUserDto,user);
-        if (Objects.equals(true,updateUserDto.getIsCreateAccount())){
+        if (Objects.equals(updateUserDto.getIsCreateAccount(),true)){
             User tmp = findById(user.getId());
             if (!StringUtils.hasText(tmp.getPassword())) {
                 if (!StringUtils.hasText(tmp.getEmail()) && !StringUtils.hasText(user.getEmail())) {

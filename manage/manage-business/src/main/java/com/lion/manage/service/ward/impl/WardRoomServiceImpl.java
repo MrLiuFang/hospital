@@ -1,12 +1,10 @@
 package com.lion.manage.service.ward.impl;
 
+import com.lion.core.LionPage;
 import com.lion.core.service.impl.BaseServiceImpl;
-import com.lion.exception.BusinessException;
 import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
-import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.ward.WardRoom;
-import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.entity.ward.dto.AddWardRoomDto;
 import com.lion.manage.entity.ward.dto.UpdateWardRoomDto;
 import com.lion.manage.service.region.RegionService;
@@ -14,8 +12,8 @@ import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -77,5 +75,10 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
     @Override
     public List<WardRoom> find(Long wardId) {
         return wardRoomDao.findByWardId(wardId);
+    }
+
+    @Override
+    public Page<WardRoom> list(Long departmentId, Long wardId, LionPage lionPage) {
+        return wardRoomDao.list(departmentId, wardId, lionPage);
     }
 }
