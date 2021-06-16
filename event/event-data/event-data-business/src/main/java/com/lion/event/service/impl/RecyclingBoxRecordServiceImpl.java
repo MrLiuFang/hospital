@@ -4,7 +4,9 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagState;
 import com.lion.device.entity.enums.TagType;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.RecyclingBoxRecordDao;
 import com.lion.event.entity.RecyclingBoxRecord;
 import com.lion.event.entity.vo.ListRecyclingBoxRecordVo;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -43,6 +46,9 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
 
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
+
+    @DubboReference
+    private TagExposeService tagExposeService;
 
     @Override
     public void save(RecyclingBoxRecord recyclingBoxRecord) {
@@ -100,5 +106,31 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,lionPage,0L);
+    }
+
+    @Override
+    public void disinfect() {
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+        List<Long> departmentIds = new ArrayList<>();
+        departmentIds.add(Long.MAX_VALUE);
+        list.forEach(department -> {
+            departmentIds.add(department.getId());
+        });
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        criteria.and("di").in(departmentIds);
+        criteria.and("id").is(false);
+        query.addCriteria(criteria);
+        List<RecyclingBoxRecord> items = mongoTemplate.find(query, RecyclingBoxRecord.class);
+        items.forEach(recyclingBoxRecord -> {
+            tagExposeService.updateState(recyclingBoxRecord.getTi(), TagState.NORMAL.getKey());
+        });
+
+        Criteria where = new Criteria();
+        where.and("di").in(departmentIds);
+        Update update = new Update();
+        update.set("id", true);
+        mongoTemplate.updateMulti(new Query(where),update,"recycling_box_record");
     }
 }

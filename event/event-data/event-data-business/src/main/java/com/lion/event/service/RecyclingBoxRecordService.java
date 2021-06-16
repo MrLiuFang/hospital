@@ -32,4 +32,9 @@ public interface RecyclingBoxRecordService {
      * @return
      */
     public IPageResultData<List<ListRecyclingBoxRecordVo>> list(Boolean isDisinfect,TagType tagType, String name, String code, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+
+    /**
+     * 一键消毒
+     */
+    public void disinfect();
 }
