@@ -7,11 +7,15 @@ import com.lion.common.dto.UserTagButtonRecordDto;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.event.entity.UserTagButtonRecord;
+import com.lion.event.service.UserTagButtonRecordService;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
+import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.user.UserExposeService;
 import lombok.extern.java.Log;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
@@ -33,6 +37,12 @@ public class UserTagButtonConsumer implements RocketMQListener<MessageExt> {
 
     @Autowired
     private ObjectMapper jacksonObjectMapper;
+
+    @DubboReference
+    private UserExposeService userExposeService;
+
+    @Autowired
+    private UserTagButtonRecordService userTagButtonRecordService;
 
     @Autowired
     private RedisUtil redisUtil;
@@ -63,6 +73,11 @@ public class UserTagButtonConsumer implements RocketMQListener<MessageExt> {
                     userTagButtonRecord.setDn(department.getName());
                 }
             }
+            User user = userExposeService.findById(userTagButtonRecord.getPi());
+            if (Objects.nonNull(user)) {
+                userTagButtonRecord.setN(user.getName());
+            }
+            userTagButtonRecordService.add(userTagButtonRecord);
         }catch (Exception e){
             e.printStackTrace();
         }

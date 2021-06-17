@@ -115,6 +115,12 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                     } catch (JsonProcessingException e) {
                                         e.printStackTrace();
                                     }
+                                }else {
+                                    try {
+                                        recordWashEvent(loopWashDto.getUserId(),userLastWashDto.getDateTime(), loopWashDto, wash,userLastWashDto);
+                                    } catch (JsonProcessingException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
                             }
                         }
@@ -139,6 +145,18 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void recordWashEvent(Long userId,LocalDateTime wt,LoopWashDto loopWashDto,Wash wash,UserLastWashDto userLastWashDto) throws JsonProcessingException {
+        UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + userId);
+        WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null , null,null);
+        WashEventDto washEventDto = new WashEventDto();
+        washEventDto.setIa(false);
+        washEventDto.setWet(WashEventType.LOOP.getKey());
+        washEventDto.setWt(null);
+        BeanUtils.copyProperties(washRecordDto,washEventDto);
+        rocketMQTemplate.syncSend(TopicConstants.WASH_EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washEventDto)).build());
+
     }
 
     private void recordWashEvent(Long userId,LocalDateTime wt,SystemAlarmType systemAlarmType,LoopWashDto loopWashDto,Wash wash,UserLastWashDto userLastWashDto) throws JsonProcessingException {

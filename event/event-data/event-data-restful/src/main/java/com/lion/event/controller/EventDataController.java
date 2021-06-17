@@ -12,6 +12,7 @@ import com.lion.core.ResultData;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagRuleEffect;
 import com.lion.device.entity.enums.TagType;
 import com.lion.event.entity.*;
 import com.lion.event.entity.dto.AlarmReportDto;
@@ -77,6 +78,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @Autowired
     private RecyclingBoxRecordService recyclingBoxRecordService;
+
+    @Autowired
+    private UserTagButtonRecordService userTagButtonRecordService;
 
     @GetMapping("/user/current/region")
     @ApiOperation(value = "员工当前位置")
@@ -383,6 +387,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public ResultData recyclingBoxDisinfect(){
         recyclingBoxRecordService.disinfect();
         return ResultData.instance();
+    }
+
+    @GetMapping("/user/tag/button/list")
+    @ApiOperation(value = "员工标签按钮日志(不返回总行数)")
+    public IPageResultData<List<ListUserTagButtonRecordVo>> userTagButtonRecordList(@ApiParam(value = "操作类型") TagRuleEffect tagRuleEffect,@ApiParam(value = "操作类型")String name,
+                                                                                    @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                                    @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
+        return userTagButtonRecordService.list(tagRuleEffect, name, startDateTime, endDateTime, lionPage);
     }
 
 }

@@ -109,7 +109,7 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
 
             if (Objects.nonNull(user)){
                 //进行洗手事件处理
-                if (Objects.equals(monitor.getDeviceClassify(), DeviceClassify.HAND_WASHING)) {
+                if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.HAND_WASHING)) {
                     userWashService.userWashEevent(deviceDataDto, monitor, star, tag, user);
                 }else if(Objects.nonNull(deviceDataDto.getButtonId())) { //员工按钮事件记录
                     userButtonService.tagButtonEvent(deviceDataDto,monitor,star,tag,user);
@@ -126,6 +126,14 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             }
             if (Objects.nonNull(star) && Objects.nonNull(tag) && Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
                 recyclingBoxService.event(deviceDataDto,monitor,star,tag,patient,temporaryPerson);
+            }
+
+            //低电量警报
+            if (deviceDataDto.getMonitorBattery() <=1){
+
+            }
+            if (deviceDataDto.getTagBattery() <=1){
+
             }
 
             updateDeviceBattery(monitor,deviceDataDto.getMonitorBattery());

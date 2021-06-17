@@ -19,6 +19,11 @@ public class UserLastWashDto implements Serializable {
     private Long userId;
 
     /**
+     * 唯一标识
+     */
+    private String uuid;
+
+    /**
      * 设备
      */
     private Long monitorId;

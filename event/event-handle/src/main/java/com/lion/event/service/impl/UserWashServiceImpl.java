@@ -177,6 +177,7 @@ public class UserWashServiceImpl implements UserWashService {
                 userLastWashDto.setPrevious(previous);
             }
             userLastWashDto.setUserId(user.getId());
+            userLastWashDto.setUuid(userCurrentRegionDto.getUuid());
             userLastWashDto.setMonitorId(Objects.isNull(monitor)?null:monitor.getId());
             userLastWashDto.setStarId(Objects.isNull(star)?null:star.getId());
             userLastWashDto.setTagId(tag.getId());
@@ -203,6 +204,7 @@ public class UserWashServiceImpl implements UserWashService {
                 Duration duration = Duration.between(userLastWashDto.getDateTime(), LocalDateTime.now());
                 userLastWashDto.setTime(Long.valueOf(duration.toMillis()).intValue()/1000);
                 redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+user.getId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+
             }
         }
     }

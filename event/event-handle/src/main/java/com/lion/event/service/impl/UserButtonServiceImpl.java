@@ -52,22 +52,25 @@ public class UserButtonServiceImpl implements UserButtonService {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
         commonService.position(deviceDataDto,user,currentRegionDto.getRegionId(),tag );
         if (Objects.equals(1,deviceDataDto.getButtonId())) {
-            record(currentRegionDto,user,tagRule.getGreenButton().getDesc(),deviceDataDto.getButtonId());
+            record(currentRegionDto,user,tagRule.getGreenButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
         }else if (Objects.equals(2,deviceDataDto.getButtonId())) {
-            record(currentRegionDto,user,tagRule.getRedButton().getDesc(),deviceDataDto.getButtonId());
+            record(currentRegionDto,user,tagRule.getRedButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
         }else if (Objects.equals(3,deviceDataDto.getButtonId())) {
-            record(currentRegionDto,user,tagRule.getYellowButton().getDesc(),deviceDataDto.getButtonId());
+            record(currentRegionDto,user,tagRule.getYellowButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
         }else if (Objects.equals(4,deviceDataDto.getButtonId())) {
-            record(currentRegionDto,user,tagRule.getBottomButton().getDesc(),deviceDataDto.getButtonId());
+            record(currentRegionDto,user,tagRule.getBottomButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
         }
     }
 
-    private void record(CurrentRegionDto currentRegionDto,User user,String buttonName,Integer buttonId) throws JsonProcessingException {
+    private void record(CurrentRegionDto currentRegionDto,User user,String buttonName,Integer buttonId,Tag tag,DeviceDataDto deviceDataDto) throws JsonProcessingException {
         UserTagButtonRecordDto userTagButtonRecordDto = new UserTagButtonRecordDto();
         userTagButtonRecordDto.setRi(currentRegionDto.getRegionId());
         userTagButtonRecordDto.setPi(user.getId());
         userTagButtonRecordDto.setBn(buttonName);
         userTagButtonRecordDto.setBi(buttonId);
+        userTagButtonRecordDto.setTi(tag.getId());
+        userTagButtonRecordDto.setDdt(deviceDataDto.getTime());
+        userTagButtonRecordDto.setSdt(deviceDataDto.getSystemDateTime());
         rocketMQTemplate.syncSend(TopicConstants.BUTTON_RECORD, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(userTagButtonRecordDto)).build());
     }
 

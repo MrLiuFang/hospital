@@ -66,6 +66,9 @@ public class DeviceServiceImpl implements DeviceService {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
         if (Objects.nonNull(currentRegionDto)) {
             Assets assets = redisUtil.getAssets(tag.getId());
+            if (Objects.isNull(assets)) {
+                return;
+            }
             commonService.position(deviceDataDto,assets,currentRegionDto.getRegionId(), tag);
         }
     }
