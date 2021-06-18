@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "t_patient",indexes = {@Index(columnList = "patient_id")})
+@Table(name = "t_patient_transfer",indexes = {@Index(columnList = "patient_id")})
 @DynamicUpdate
 @DynamicInsert
 @Data

@@ -1,5 +1,6 @@
 package com.lion.person.entity.person.vo;
 
+import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.PatientTransfer;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,6 +16,9 @@ import javax.persistence.Column;
 @Data
 @ApiModel
 public class ListPatientTransferVo extends PatientTransfer {
+
+    @ApiModelProperty(value = "患者信息")
+    private PatientDetailsVo patientDetailsVo;
 
     @ApiModelProperty(value = "转移前科室名称")
     private String oldDepartmentName;

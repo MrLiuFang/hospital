@@ -132,6 +132,7 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
             vo.setReceiveUserName(Objects.isNull(receiveUser)?"":receiveUser.getName());
             vo.setReceiveUserHeadPortrait(Objects.isNull(receiveUser)?null:receiveUser.getHeadPortrait());
             vo.setReceiveUserHeadPortraitUrl(fileExposeService.getUrl(Objects.isNull(receiveUser)?null:receiveUser.getHeadPortrait()));
+            vo.setPatientDetailsVo(patientService.details(patientTransfer.getPatientId()));
             returnList.add(vo);
         });
         return returnList;
