@@ -19,6 +19,7 @@ import com.lion.manage.entity.enums.AssetsFaultState;
 import com.lion.manage.entity.enums.AssetsType;
 import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsFaultService;
@@ -95,6 +96,9 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增资产")
@@ -248,27 +252,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
                                                               @ApiParam(value = "结束申报时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
-        List<Long> departmentIds = new ArrayList<>();
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        Role role = roleExposeService.find(userId);
-        if (Objects.nonNull(role)) {
-            if (role.getCode().toLowerCase().indexOf("admin") < 0) {
-                List<Department> list = new ArrayList<>();
-                if (Objects.nonNull(departmentId)) {
-                    list = departmentResponsibleUserExposeService.findDepartment(userId, departmentId);
-                } else {
-                    list = departmentResponsibleUserExposeService.findDepartment(userId);
-                }
-                list.forEach(department -> {
-                    departmentIds.add(department.getId());
-                });
-                departmentIds.add(Long.MAX_VALUE);
-            } else {
-                if (Objects.nonNull(departmentId)) {
-                    departmentIds.add(departmentId);
-                }
-            }
-        }
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(departmentId);
         if (departmentIds.size()>0) {
             List<Assets> list = assetsService.findByDepartmentId(departmentIds);
             List<Long> ids = new ArrayList<>();

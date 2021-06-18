@@ -10,11 +10,12 @@ import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.dto.TempLeaveMonitorDto;
 import com.lion.common.enums.Type;
 import com.lion.device.entity.device.Device;
-import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.tag.Tag;
 import com.lion.event.service.CommonService;
 import com.lion.event.service.PatientService;
 import com.lion.manage.entity.enums.SystemAlarmType;
+import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.Patient;
@@ -70,6 +71,9 @@ public class PatientServiceImpl implements PatientService {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @DubboReference
+    private RegionExposeService regionExposeService;
+
     @Override
     public void patientEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient) throws JsonProcessingException {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
@@ -88,7 +92,12 @@ public class PatientServiceImpl implements PatientService {
             }
         }
         if (Objects.nonNull(patientTransfer) && isLeaveRestrictedArea){
-            patientTransferExposeService.updateSate(patient.getId(), TransferState.TRANSFERRING);
+            Region region = regionExposeService.findById(currentRegionDto.getRegionId());
+            if (Objects.equals(patientTransfer.getNewDepartmentId(),region.departmentId)) {
+                patientTransferExposeService.updateState(patient.getId(), TransferState.WAITING_TO_RECEIVE);
+            }else {
+                patientTransferExposeService.updateState(patient.getId(), TransferState.TRANSFERRING);
+            }
             return;
         }
 

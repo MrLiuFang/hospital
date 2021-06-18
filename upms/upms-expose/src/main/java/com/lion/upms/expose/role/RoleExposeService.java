@@ -17,5 +17,4 @@ public interface RoleExposeService extends BaseService<Role> {
      */
     public Role find(Long userId);
 
-
 }

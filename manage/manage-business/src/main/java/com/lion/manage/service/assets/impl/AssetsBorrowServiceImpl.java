@@ -26,6 +26,7 @@ import com.lion.manage.entity.enums.AssetsType;
 import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoomSickbed;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsService;
@@ -109,6 +110,9 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
     private RoleExposeService roleExposeService;
 
     @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
+    @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
 
     @Override
@@ -158,27 +162,7 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
 
     @Override
     public IPageResultData<List<ListAssetsBorrowVo>> list(String name, Long borrowUserId, AssetsType type, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage) {
-        List<Long> departmentIds = new ArrayList<>();
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        Role role = roleExposeService.find(userId);
-        if (Objects.nonNull(role)) {
-            if (role.getCode().toLowerCase().indexOf("admin") < 0) {
-                List<Department> list = new ArrayList<>();
-                if (Objects.nonNull(departmentId)) {
-                    list = departmentResponsibleUserExposeService.findDepartment(userId, departmentId);
-                } else {
-                    list = departmentResponsibleUserExposeService.findDepartment(userId);
-                }
-                list.forEach(department -> {
-                    departmentIds.add(department.getId());
-                });
-                departmentIds.add(Long.MAX_VALUE);
-            } else {
-                if (Objects.nonNull(departmentId)) {
-                    departmentIds.add(departmentId);
-                }
-            }
-        }
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(departmentId);
         Page page = assetsDao.list(name, borrowUserId,departmentIds , type, assetsId, startDateTime, endDateTime, isReturn, lionPage);
         List<MoreEntity> list = page.getContent();
         List<ListAssetsBorrowVo> returnList = new ArrayList<>();

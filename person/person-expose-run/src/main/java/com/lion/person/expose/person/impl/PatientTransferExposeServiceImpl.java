@@ -28,12 +28,14 @@ public class PatientTransferExposeServiceImpl extends BaseServiceImpl<PatientTra
     }
 
     @Override
-    public void updateSate(Long patientId, TransferState state) {
+    public void updateState(Long patientId, TransferState state) {
         PatientTransfer patientTransfer = findById(patientId);
         if (Objects.nonNull(patientTransfer)){
             patientTransfer.setState(state);
-            patientTransfer.setLeaveDateTime(LocalDateTime.now());
-            patientTransfer.setTriggerDateTime(LocalDateTime.now());
+            if (Objects.equals(TransferState.TRANSFERRING,state)) {
+                patientTransfer.setLeaveDateTime(LocalDateTime.now());
+                patientTransfer.setTriggerDateTime(LocalDateTime.now());
+            }
             update(patientTransfer);
         }
     }

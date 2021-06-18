@@ -12,4 +12,12 @@ import java.util.List;
  */
 public interface DepartmentExposeService extends BaseService<Department> {
 
+    /**
+     *  获取负责的部门id admin角色返回空
+     *
+     * @param departmentId
+     * @return
+     */
+    public List<Long> responsibleDepartment(Long departmentId);
+
 }

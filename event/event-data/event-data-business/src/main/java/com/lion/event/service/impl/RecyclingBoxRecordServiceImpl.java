@@ -12,6 +12,7 @@ import com.lion.event.entity.RecyclingBoxRecord;
 import com.lion.event.entity.vo.ListRecyclingBoxRecordVo;
 import com.lion.event.service.RecyclingBoxRecordService;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -45,7 +46,7 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
     private MongoTemplate mongoTemplate;
 
     @DubboReference
-    private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
+    private DepartmentExposeService departmentExposeService;
 
     @DubboReference
     private TagExposeService tagExposeService;
@@ -57,13 +58,7 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
 
     @Override
     public IPageResultData<List<ListRecyclingBoxRecordVo>> list(Boolean isDisinfect, TagType tagType, String name, String code, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
-        List<Long> departmentIds = new ArrayList<>();
-        departmentIds.add(Long.MAX_VALUE);
-        list.forEach(department -> {
-            departmentIds.add(department.getId());
-        });
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         Query query = new Query();
         Criteria criteria = new Criteria();
         criteria.and("di").in(departmentIds);
@@ -110,13 +105,7 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
 
     @Override
     public void disinfect() {
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
-        List<Long> departmentIds = new ArrayList<>();
-        departmentIds.add(Long.MAX_VALUE);
-        list.forEach(department -> {
-            departmentIds.add(department.getId());
-        });
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         Query query = new Query();
         Criteria criteria = new Criteria();
         criteria.and("di").in(departmentIds);

@@ -140,18 +140,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
 
     @Override
     public IPageResultData<List<ListTemporaryPersonVo>> list(String name, Boolean isLeave, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        List<Long> departmentIds = new ArrayList<>();
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        Role role = roleExposeService.find(userId);
-        if (Objects.nonNull(role)) {
-            if (role.getCode().toLowerCase().indexOf("admin") < 0) {
-                List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
-                list.forEach(department -> {
-                    departmentIds.add(department.getId());
-                });
-                departmentIds.add(Long.MAX_VALUE);
-            }
-        }
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (departmentIds.size()>0) {
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);

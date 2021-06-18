@@ -18,7 +18,8 @@ public enum TransferState implements IEnum {
     TRANSFERRING(1, "转移中"),
     WAITING_TO_RECEIVE(2, "待接收"),
     CANCEL(3, "取消"),
-    FINISH(4, "完成");
+    FINISH(4, "完成"),
+    ROUTINE(5, "常规");
 
     private final int key;
 

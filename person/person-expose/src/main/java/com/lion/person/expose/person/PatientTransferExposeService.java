@@ -23,5 +23,5 @@ public interface PatientTransferExposeService extends BaseService<PatientTransfe
      * @param patientId
      * @param state
      */
-    public void updateSate(Long patientId, TransferState state);
+    public void updateState(Long patientId, TransferState state);
 }

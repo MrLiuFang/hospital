@@ -197,12 +197,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Override
     public List<DepartmentStatisticsDetailsVo> departmentStatisticsDetails() {
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+        List<Long> list = departmentExposeService.responsibleDepartment(null);
         List<DepartmentStatisticsDetailsVo> returnList = new ArrayList<>();
-        list.forEach(department -> {
+        list.forEach(departmentId -> {
             DepartmentStatisticsDetailsVo departmentStatisticsDetailsVo = new DepartmentStatisticsDetailsVo();
-            List<Region> regionList = regionExposeService.findByDepartmentId(department.getId());
+            List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);
             List<Long> deviceGroupIds = new ArrayList<>();
             regionList.forEach(region -> {
                 if (Objects.nonNull(region.getDeviceGroupId())) {
@@ -210,8 +209,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 }
             });
             departmentStatisticsDetailsVo.setLowPowerDeviceCount(deviceExposeService.countDevice(deviceGroupIds,1));
-            departmentStatisticsDetailsVo.setLowPowerTagCount(tagExposeService.countTag(department.getId(),1));
-            Map<String,Integer> map = systemAlarmService.groupCount(department.getId());
+            departmentStatisticsDetailsVo.setLowPowerTagCount(tagExposeService.countTag(departmentId,1));
+            Map<String,Integer> map = systemAlarmService.groupCount(departmentId);
             if (map.containsKey("allAlarmCount")) {
                 departmentStatisticsDetailsVo.setAllAlarmCount(map.get("allAlarmCount"));
             }
@@ -221,9 +220,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             if (map.containsKey("alarmCount")) {
                 departmentStatisticsDetailsVo.setAlarmCount(map.get("alarmCount"));
             }
-            departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(department.getId(), null));
-            departmentStatisticsDetailsVo.setTagCount(tagExposeService.countTag(department.getId()));
-            departmentStatisticsDetailsVo.setCctvCount(cctvExposeService.count(department.getId()));
+            departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(departmentId, null));
+            departmentStatisticsDetailsVo.setTagCount(tagExposeService.countTag(departmentId));
+            departmentStatisticsDetailsVo.setCctvCount(cctvExposeService.count(departmentId));
             returnList.add(departmentStatisticsDetailsVo);
         });
         return returnList;
@@ -231,12 +230,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Override
     public DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetails(String name) {
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+        List<Long> list = departmentExposeService.responsibleDepartment(null);
         DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetailsVo = new DepartmentStaffStatisticsDetailsVo();
         List<DepartmentStaffStatisticsDetailsVo.DepartmentVo> departmentVos = new ArrayList<>();
         departmentStaffStatisticsDetailsVo.setDepartmentVos(departmentVos);
-        list.forEach(department -> {
+        list.forEach(departmentId -> {
+            Department department = departmentExposeService.findById(departmentId);
             DepartmentStaffStatisticsDetailsVo.DepartmentVo vo = new DepartmentStaffStatisticsDetailsVo.DepartmentVo();
             vo.setDepartmentName(department.getName());
             vo.setDepartmentId(department.getId());
@@ -273,112 +272,117 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Override
     public DepartmentAssetsStatisticsDetailsVo departmentAssetsStatisticsDetails(String keyword) {
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+        List<Long> list = departmentExposeService.responsibleDepartment(null);
         DepartmentAssetsStatisticsDetailsVo departmentAssetsStatisticsDetailsVo =new DepartmentAssetsStatisticsDetailsVo();
         List<DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo> assetsDepartmentVos = new ArrayList<>();
         departmentAssetsStatisticsDetailsVo.setAssetsDepartmentVos(assetsDepartmentVos);
-        list.forEach(department -> {
-            DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo vo = new DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo();
-            vo.setDepartmentName(department.getName());
-            vo.setDepartmentId(department.getId());
-            departmentAssetsStatisticsDetailsVo.setAssetsCount(departmentAssetsStatisticsDetailsVo.getAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(),null ));
-            departmentAssetsStatisticsDetailsVo.setNormalAssetsCount(departmentAssetsStatisticsDetailsVo.getNormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.NORMAL));
-            departmentAssetsStatisticsDetailsVo.setAbnormalAssetsCount(departmentAssetsStatisticsDetailsVo.getAbnormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.ALARM));
-            List<Assets> assets = assetsExposeService.findByDepartmentId(department.getId(),keyword ,keyword);
-            List<DepartmentAssetsStatisticsDetailsVo.AssetsVo> assetsVos= new ArrayList<>();
-            assets.forEach(a ->{
-                DepartmentAssetsStatisticsDetailsVo.AssetsVo assetsVo = new DepartmentAssetsStatisticsDetailsVo.AssetsVo();
-                BeanUtils.copyProperties(a,assetsVo);
-                TagAssets tagAssets = tagAssetsExposeService.find(a.getId());
-                if (Objects.nonNull(tagAssets)) {
-                    Tag tag = tagExposeService.findById(tagAssets.getTagId());
-                    if (Objects.nonNull(tag)){
-                        assetsVo.setBattery(tag.getBattery());
+        list.forEach(departmentId -> {
+            Department department = departmentExposeService.findById(departmentId);
+            if (Objects.nonNull(department)) {
+                DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo vo = new DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo();
+                vo.setDepartmentName(department.getName());
+                vo.setDepartmentId(department.getId());
+                departmentAssetsStatisticsDetailsVo.setAssetsCount(departmentAssetsStatisticsDetailsVo.getAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), null));
+                departmentAssetsStatisticsDetailsVo.setNormalAssetsCount(departmentAssetsStatisticsDetailsVo.getNormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.NORMAL));
+                departmentAssetsStatisticsDetailsVo.setAbnormalAssetsCount(departmentAssetsStatisticsDetailsVo.getAbnormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.ALARM));
+                List<Assets> assets = assetsExposeService.findByDepartmentId(department.getId(), keyword, keyword);
+                List<DepartmentAssetsStatisticsDetailsVo.AssetsVo> assetsVos = new ArrayList<>();
+                assets.forEach(a -> {
+                    DepartmentAssetsStatisticsDetailsVo.AssetsVo assetsVo = new DepartmentAssetsStatisticsDetailsVo.AssetsVo();
+                    BeanUtils.copyProperties(a, assetsVo);
+                    TagAssets tagAssets = tagAssetsExposeService.find(a.getId());
+                    if (Objects.nonNull(tagAssets)) {
+                        Tag tag = tagExposeService.findById(tagAssets.getTagId());
+                        if (Objects.nonNull(tag)) {
+                            assetsVo.setBattery(tag.getBattery());
+                        }
                     }
-                }
-                assetsVos.add(assetsVo);
-            });
-            vo.setAssetsVos(assetsVos);
-            assetsDepartmentVos.add(vo);
+                    assetsVos.add(assetsVo);
+                });
+                vo.setAssetsVos(assetsVos);
+                assetsDepartmentVos.add(vo);
+            }
         });
         return departmentAssetsStatisticsDetailsVo;
     }
 
     @Override
     public DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetails(String keyword) {
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+        List<Long> list = departmentExposeService.responsibleDepartment(null);
         DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetailsVo = new DepartmentTagStatisticsDetailsVo();
         List<DepartmentTagStatisticsDetailsVo.TagDepartmentVo> tagDepartmentVos = new ArrayList<>();
         departmentTagStatisticsDetailsVo.setTagDepartmentVos(tagDepartmentVos);
-        list.forEach(department -> {
-            DepartmentTagStatisticsDetailsVo.TagDepartmentVo tagDepartmentVo = new DepartmentTagStatisticsDetailsVo.TagDepartmentVo();
-            tagDepartmentVo.setDepartmentName(department.getName());
-            tagDepartmentVo.setDepartmentId(department.getId());
-            departmentTagStatisticsDetailsVo.setTagCount(departmentTagStatisticsDetailsVo.getTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH,null ));
-            departmentTagStatisticsDetailsVo.setNormalTagCount(departmentTagStatisticsDetailsVo.getNormalTagCount() +tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.NORMAL ));
-            departmentTagStatisticsDetailsVo.setAbnormalTagCount(departmentTagStatisticsDetailsVo.getAbnormalTagCount() +tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.ALARM ));
-            List<Tag> tagList = tagExposeService.find(department.getId(),TagPurpose.THERMOHYGROGRAPH,keyword);
-            List<DepartmentTagStatisticsDetailsVo.TagVo> tagVos = new ArrayList<>();
-            tagList.forEach(tag -> {
-                DepartmentTagStatisticsDetailsVo.TagVo vo = new DepartmentTagStatisticsDetailsVo.TagVo();
-                BeanUtils.copyProperties(tag,vo);
-                HumitureRecord record = humitureRecordDao.find(tag.getId());
-                if (Objects.nonNull(record)) {
-                    if (Objects.nonNull(record.getT())){
-                        vo.setTemperature(record.getT());
+        list.forEach(departmentId -> {
+            Department department = departmentExposeService.findById(departmentId);
+            if (Objects.nonNull(department)) {
+                DepartmentTagStatisticsDetailsVo.TagDepartmentVo tagDepartmentVo = new DepartmentTagStatisticsDetailsVo.TagDepartmentVo();
+                tagDepartmentVo.setDepartmentName(department.getName());
+                tagDepartmentVo.setDepartmentId(department.getId());
+                departmentTagStatisticsDetailsVo.setTagCount(departmentTagStatisticsDetailsVo.getTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, null));
+                departmentTagStatisticsDetailsVo.setNormalTagCount(departmentTagStatisticsDetailsVo.getNormalTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.NORMAL));
+                departmentTagStatisticsDetailsVo.setAbnormalTagCount(departmentTagStatisticsDetailsVo.getAbnormalTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.ALARM));
+                List<Tag> tagList = tagExposeService.find(department.getId(), TagPurpose.THERMOHYGROGRAPH, keyword);
+                List<DepartmentTagStatisticsDetailsVo.TagVo> tagVos = new ArrayList<>();
+                tagList.forEach(tag -> {
+                    DepartmentTagStatisticsDetailsVo.TagVo vo = new DepartmentTagStatisticsDetailsVo.TagVo();
+                    BeanUtils.copyProperties(tag, vo);
+                    HumitureRecord record = humitureRecordDao.find(tag.getId());
+                    if (Objects.nonNull(record)) {
+                        if (Objects.nonNull(record.getT())) {
+                            vo.setTemperature(record.getT());
+                        }
+                        if (Objects.nonNull(record.getH())) {
+                            vo.setHumidity(record.getH());
+                        }
+                        if (Objects.nonNull(record.getDdt())) {
+                            vo.setDataDateTime(record.getDdt());
+                        }
                     }
-                    if (Objects.nonNull(record.getH())){
-                        vo.setHumidity(record.getH());
-                    }
-                    if (Objects.nonNull(record.getDdt())){
-                        vo.setDataDateTime(record.getDdt());
-                    }
-                }
-                tagVos.add(vo);
-            });
-            tagDepartmentVo.setTagVos(tagVos);
-            tagDepartmentVos.add(tagDepartmentVo);
+                    tagVos.add(vo);
+                });
+                tagDepartmentVo.setTagVos(tagVos);
+                tagDepartmentVos.add(tagDepartmentVo);
+            }
         });
         return departmentTagStatisticsDetailsVo;
     }
 
     @Override
     public DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetails(String name) {
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+        List<Long> list = departmentExposeService.responsibleDepartment(null);
         DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetailsVo = new DepartmentPatientStatisticsDetailsVo();
         List<DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo> patientDepartmentVos = new ArrayList<>();
         departmentPatientStatisticsDetailsVo.setPatientDepartmentVos(patientDepartmentVos);
-        list.forEach(department -> {
-            DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo patientDepartmentVo = new DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo();
-            patientDepartmentVo.setDepartmentName(department.getName());
-            patientDepartmentVo.setDepartmentId(department.getId());
-            departmentPatientStatisticsDetailsVo.setPatientCount(departmentPatientStatisticsDetailsVo.getPatientCount() + patientExposeService.count(department.getId(), null));
-            departmentPatientStatisticsDetailsVo.setNormalPatientCount(departmentPatientStatisticsDetailsVo.getNormalPatientCount() + patientExposeService.count(department.getId(), State.NORMAL));
-            departmentPatientStatisticsDetailsVo.setAbnormalPatientCount(departmentPatientStatisticsDetailsVo.getAbnormalPatientCount() +  patientExposeService.count(department.getId(), State.ALARM));
-            List<DepartmentPatientStatisticsDetailsVo.PatientVo> patientVos = new ArrayList<>();
-            List<Patient> patientList = patientExposeService.find(department.getId(),name);
-            patientList.forEach(patient -> {
-                DepartmentPatientStatisticsDetailsVo.PatientVo vo = new DepartmentPatientStatisticsDetailsVo.PatientVo();
-                Tag tag = tagExposeService.find(patient.getTagCode());
-                if (Objects.nonNull(tag)){
-                    vo.setBattery(tag.getBattery());
-                }
-                WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
-                if (Objects.nonNull(wardRoomSickbed)){
-                    vo.setBedCode(wardRoomSickbed.getBedCode());
-                }
-                vo.setName(patient.getName());
-                vo.setTagCode(patient.getTagCode());
-                vo.setHeadPortrait(patient.getHeadPortrait());
-                vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
-                patientVos.add(vo);
-            });
-            patientDepartmentVo.setPatientVos(patientVos);
-            patientDepartmentVos.add(patientDepartmentVo);
-
+        list.forEach(departmentId -> {
+            Department department = departmentExposeService.findById(departmentId);
+            if (Objects.nonNull(department)) {
+                DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo patientDepartmentVo = new DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo();
+                patientDepartmentVo.setDepartmentName(department.getName());
+                patientDepartmentVo.setDepartmentId(department.getId());
+                departmentPatientStatisticsDetailsVo.setPatientCount(departmentPatientStatisticsDetailsVo.getPatientCount() + patientExposeService.count(department.getId(), null));
+                departmentPatientStatisticsDetailsVo.setNormalPatientCount(departmentPatientStatisticsDetailsVo.getNormalPatientCount() + patientExposeService.count(department.getId(), State.NORMAL));
+                departmentPatientStatisticsDetailsVo.setAbnormalPatientCount(departmentPatientStatisticsDetailsVo.getAbnormalPatientCount() + patientExposeService.count(department.getId(), State.ALARM));
+                List<DepartmentPatientStatisticsDetailsVo.PatientVo> patientVos = new ArrayList<>();
+                List<Patient> patientList = patientExposeService.find(department.getId(), name);
+                patientList.forEach(patient -> {
+                    DepartmentPatientStatisticsDetailsVo.PatientVo vo = new DepartmentPatientStatisticsDetailsVo.PatientVo();
+                    Tag tag = tagExposeService.find(patient.getTagCode());
+                    if (Objects.nonNull(tag)) {
+                        vo.setBattery(tag.getBattery());
+                    }
+                    WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
+                    if (Objects.nonNull(wardRoomSickbed)) {
+                        vo.setBedCode(wardRoomSickbed.getBedCode());
+                    }
+                    vo.setName(patient.getName());
+                    vo.setTagCode(patient.getTagCode());
+                    vo.setHeadPortrait(patient.getHeadPortrait());
+                    vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
+                    patientVos.add(vo);
+                });
+                patientDepartmentVo.setPatientVos(patientVos);
+                patientDepartmentVos.add(patientDepartmentVo);
+            }
         });
         return departmentPatientStatisticsDetailsVo;
     }
@@ -386,33 +390,36 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @Override
     public DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetails(String name) {
         Long userId = CurrentUserUtil.getCurrentUserId();
-        List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
+        List<Long> list = departmentExposeService.responsibleDepartment(null);
         DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetailsVo = new DepartmentTemporaryPersonStatisticsDetailsVo();
         List<DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo> temporaryPersonDepartmentVos = new ArrayList<>();
         departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonDepartmentVos(temporaryPersonDepartmentVos);
-        list.forEach(department -> {
-            DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo temporaryPersonDepartmentVo = new DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo();
-            temporaryPersonDepartmentVo.setDepartmentName(department.getName());
-            temporaryPersonDepartmentVo.setDepartmentId(department.getId());
-            departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), null));
-            departmentTemporaryPersonStatisticsDetailsVo.setNormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getNormalTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), State.NORMAL));
-            departmentTemporaryPersonStatisticsDetailsVo.setAbnormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getAbnormalTemporaryPersonCount() +  temporaryPersonExposeService.count(department.getId(), State.ALARM));
-            List<DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo> temporaryPersonVos = new ArrayList<>();
-            List<TemporaryPerson> temporaryPersonList = temporaryPersonExposeService.find(department.getId(),name);
-            temporaryPersonList.forEach(temporaryPerson -> {
-                DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo vo = new DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo();
-                Tag tag = tagExposeService.find(temporaryPerson.getTagCode());
-                if (Objects.nonNull(tag)){
-                    vo.setBattery(tag.getBattery());
-                }
-                vo.setName(temporaryPerson.getName());
-                vo.setTagCode(temporaryPerson.getTagCode());
-                vo.setHeadPortrait(temporaryPerson.getHeadPortrait());
-                vo.setHeadPortraitUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
-                temporaryPersonVos.add(vo);
-            });
-            temporaryPersonDepartmentVo.setTemporaryPersonVos(temporaryPersonVos);
-            temporaryPersonDepartmentVos.add(temporaryPersonDepartmentVo);
+        list.forEach(departmentId -> {
+            Department department = departmentExposeService.findById(departmentId);
+            if (Objects.nonNull(department)) {
+                DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo temporaryPersonDepartmentVo = new DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo();
+                temporaryPersonDepartmentVo.setDepartmentName(department.getName());
+                temporaryPersonDepartmentVo.setDepartmentId(department.getId());
+                departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), null));
+                departmentTemporaryPersonStatisticsDetailsVo.setNormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getNormalTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), State.NORMAL));
+                departmentTemporaryPersonStatisticsDetailsVo.setAbnormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getAbnormalTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), State.ALARM));
+                List<DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo> temporaryPersonVos = new ArrayList<>();
+                List<TemporaryPerson> temporaryPersonList = temporaryPersonExposeService.find(department.getId(), name);
+                temporaryPersonList.forEach(temporaryPerson -> {
+                    DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo vo = new DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo();
+                    Tag tag = tagExposeService.find(temporaryPerson.getTagCode());
+                    if (Objects.nonNull(tag)) {
+                        vo.setBattery(tag.getBattery());
+                    }
+                    vo.setName(temporaryPerson.getName());
+                    vo.setTagCode(temporaryPerson.getTagCode());
+                    vo.setHeadPortrait(temporaryPerson.getHeadPortrait());
+                    vo.setHeadPortraitUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
+                    temporaryPersonVos.add(vo);
+                });
+                temporaryPersonDepartmentVo.setTemporaryPersonVos(temporaryPersonVos);
+                temporaryPersonDepartmentVos.add(temporaryPersonDepartmentVo);
+            }
         });
         return departmentTemporaryPersonStatisticsDetailsVo;
     }
@@ -437,13 +444,16 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             staffDetailsVo.setDepartmentId(department.getId());
             staffDetailsVo.setDepartmentName(department.getName());
         }
-        List<Department> departmentResponsibleList = departmentResponsibleUserExposeService.findDepartment(userId);
+        List<Long> departmentResponsibleList = departmentExposeService.responsibleDepartment(null);
         List<StaffDetailsVo.DepartmentResponsibleVo> departmentResponsibleVos = new ArrayList<>();
-        departmentResponsibleList.forEach(d -> {
-            StaffDetailsVo.DepartmentResponsibleVo vo = new StaffDetailsVo.DepartmentResponsibleVo();
-            vo.setDepartmentId(d.getId());
-            vo.setDepartmentName(d.getName());
-            departmentResponsibleVos.add(vo);
+        departmentResponsibleList.forEach(id -> {
+            Department d = departmentExposeService.findById(id);
+            if (Objects.nonNull(d)) {
+                StaffDetailsVo.DepartmentResponsibleVo vo = new StaffDetailsVo.DepartmentResponsibleVo();
+                vo.setDepartmentId(d.getId());
+                vo.setDepartmentName(d.getName());
+                departmentResponsibleVos.add(vo);
+            }
         });
         staffDetailsVo.setDepartmentResponsibleVos(departmentResponsibleVos);
         LocalDateTime now = LocalDateTime.now();
@@ -562,14 +572,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         LocalDateTime now = LocalDateTime.now();
         List<Long> departmentIds = new ArrayList<>();
         if (!isAll) {
-            Long userId = CurrentUserUtil.getCurrentUserId();
-            List<Department> list = departmentResponsibleUserExposeService.findDepartment(userId);
-            list.forEach(department -> {
-                departmentIds.add(department.getId());
-            });
-        }
-        if (Objects.nonNull(di)){
-            departmentIds.add(di);
+            departmentIds = departmentExposeService.responsibleDepartment(di);
         }
 //        if (Objects.isNull(startDateTime)) {
 //            startDateTime = LocalDateTime.of(now.toLocalDate(), LocalTime.MIN);

@@ -38,7 +38,6 @@ import com.lion.person.entity.person.dto.UpdatePatientDto;
 import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.service.person.*;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
@@ -209,15 +208,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @Override
     public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave, LocalDateTime birthday, TransferState transferState, Boolean isNormal, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        List<Department> departmentList = departmentResponsibleUserExposeService.findDepartment(userId);
-        List<Long> departmentIds = new ArrayList<>();
-        departmentIds.add(Long.MAX_VALUE);
-        departmentList.forEach(department -> {
-            departmentIds.add(department.getId());
-        });
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
-        if (Objects.nonNull(transferState)) {
+        if (Objects.nonNull(transferState) && !Objects.equals(transferState,TransferState.ROUTINE)) {
             List<PatientTransfer> list =patientTransferDao.findByState(transferState);
             if (Objects.nonNull(list) && list.size()>0) {
                 List<Long> ids = new ArrayList<>();
@@ -227,6 +220,23 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
                 if (ids.size()>0) {
                     jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
                 }
+            }
+        }else if (Objects.nonNull(transferState) && Objects.equals(transferState,TransferState.ROUTINE)) {
+            List<PatientTransfer> list =patientTransferDao.findByState(TransferState.TRANSFERRING);
+            List<PatientTransfer> list1 =patientTransferDao.findByState(TransferState.PENDING_TRANSFER);
+            List<PatientTransfer> list2 =patientTransferDao.findByState(TransferState.WAITING_TO_RECEIVE);
+            List<Long> ids = new ArrayList<>();
+            list.forEach(patientTransfer -> {
+                ids.add(patientTransfer.getPatientId());
+            });
+            list1.forEach(patientTransfer -> {
+                ids.add(patientTransfer.getPatientId());
+            });
+            list2.forEach(patientTransfer -> {
+                ids.add(patientTransfer.getPatientId());
+            });
+            if (ids.size()>0) {
+                jpqlParameter.setSearchParameter(SearchConstant.NOT_IN+"_id",ids);
             }
         }
         if (StringUtils.hasText(name)){
