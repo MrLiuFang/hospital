@@ -16,7 +16,6 @@ import com.lion.device.entity.tag.*;
 import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
 import com.lion.device.entity.tag.vo.ListTagVo;
-import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.assets.Assets;
@@ -24,12 +23,15 @@ import com.lion.manage.entity.department.Department;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.TemporaryPerson;
+import com.lion.person.expose.person.PatientExposeService;
+import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -76,6 +78,12 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private PatientExposeService patientExposeService;
+
+    @DubboReference
+    private TemporaryPersonExposeService temporaryPersonExposeService;
 
     @DubboReference
     private AssetsExposeService assetsExposeService;
@@ -150,10 +158,13 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     }
 
     @Override
-    public IPageResultData<List<ListTagVo>> list(TagUseState useState, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
+    public IPageResultData<List<ListTagVo>> list(Long departmentId, TagUseState useState, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(tagCode)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_tagCode",tagCode);
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_tagCode","%"+tagCode+"%");
+        }
+        if (Objects.nonNull(departmentId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
         }
         if (Objects.nonNull(type)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_type",type);
@@ -194,9 +205,21 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                     }
                 }
             }else if (Objects.equals(tag.getPurpose(),TagPurpose.PATIENT)) {
-
+                TagPatient tagPatient = tagPatientDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
+                if (Objects.nonNull(tagPatient)) {
+                    Patient patient = patientExposeService.findById(tagPatient.getPatientId());
+                    if (Objects.nonNull(patient)) {
+                        vo.setBindingName(patient.getName());
+                    }
+                }
             }else if (Objects.equals(tag.getPurpose(),TagPurpose.POSTDOCS)) {
-
+                TagPostdocs tagPostdocs = tagPostdocsDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
+                if (Objects.nonNull(tagPostdocs)) {
+                    TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(tagPostdocs.getPostdocsId());
+                    if (Objects.nonNull(temporaryPerson)) {
+                        vo.setBindingName(temporaryPerson.getName());
+                    }
+                }
             }else if (Objects.equals(tag.getPurpose(),TagPurpose.ASSETS)) {
                 TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
                 if (Objects.nonNull(tagAssets)){

@@ -126,8 +126,8 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         }
         Region region = new Region();
         BeanUtils.copyProperties(updateRegionDto,region);
-        assertBuildExist(region.getBuildId());
-        assertBuildFloorExist(region.getBuildId(),region.getBuildFloorId());
+//        assertBuildExist(region.getBuildId());
+//        assertBuildFloorExist(region.getBuildId(),region.getBuildFloorId());
         assertDepartmentExist(region.departmentId);
         assertNameExist(region.getName(),region.getId());
         assertDeviceGroupIsUse(region.getDeviceGroupId(),null);

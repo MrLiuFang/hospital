@@ -14,7 +14,6 @@ import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagRule;
 import com.lion.device.entity.tag.TagRuleUser;
-import com.lion.device.entity.tag.TagUser;
 import com.lion.device.entity.tag.dto.*;
 import com.lion.device.entity.tag.vo.*;
 import com.lion.device.service.tag.*;
@@ -73,8 +72,8 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/list")
     @ApiOperation(value = "标签列表")
-    public IPageResultData<List<ListTagVo>> list( @ApiParam(value = "使用状态")TagUseState useState,@ApiParam(value = "电量(0=正常,1=少於90 天,2=少於30天)")Integer battery, @ApiParam(value = "标签编码") String tagCode, @ApiParam(value = "标签分类") TagType type, @ApiParam(value = "用途") TagPurpose purpose, LionPage lionPage){
-        return tagService.list(useState, battery, tagCode, type, purpose, lionPage);
+    public IPageResultData<List<ListTagVo>> list( @ApiParam(value = "部门")Long departmentId,@ApiParam(value = "使用状态")TagUseState useState,@ApiParam(value = "电量(0=正常,1=少於90 天,2=少於30天)")Integer battery, @ApiParam(value = "标签编码") String tagCode, @ApiParam(value = "标签分类") TagType type, @ApiParam(value = "用途") TagPurpose purpose, LionPage lionPage){
+        return tagService.list(departmentId, useState, battery, tagCode, type, purpose, lionPage);
     }
 
     @GetMapping("/log/list")
