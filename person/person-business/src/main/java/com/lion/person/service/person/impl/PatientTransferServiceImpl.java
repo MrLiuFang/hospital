@@ -16,6 +16,7 @@ import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.dto.ReceivePatientDto;
 import com.lion.person.entity.person.dto.TransferDto;
+import com.lion.person.entity.person.dto.UpdateTransferDto;
 import com.lion.person.entity.person.vo.ListPatientTransferVo;
 import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.PatientTransferService;
@@ -137,4 +138,17 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
         });
         return returnList;
     }
+
+    @Override
+    public void updateState(UpdateTransferDto updateTransferDto) {
+        if (!Objects.equals(updateTransferDto.getTransferState(),TransferState.ROUTINE)) {
+            List<TransferState> list = new ArrayList<>();
+            list.add(TransferState.FINISH);
+            list.add(TransferState.CANCEL);
+            PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(updateTransferDto.getPatientId(),list);
+            patientTransfer.setState(updateTransferDto.getTransferState());
+            update(patientTransfer);
+        }
+    }
+
 }

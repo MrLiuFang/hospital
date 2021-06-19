@@ -18,6 +18,7 @@ import com.lion.exception.BusinessException;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -49,6 +50,7 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
 
 
     @Override
+    @Transactional
     public void binding(Long patientId, String tagCode, Long departmentId) {
         if (!StringUtils.hasText(tagCode)){
             unbinding(patientId,false);
@@ -87,6 +89,7 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
     }
 
     @Override
+    @Transactional
     public void unbinding(Long patientId, Boolean isDelete) {
         TagPatient tagPatient = tagPatientDao.findFirstByPatientIdAndUnbindingTimeIsNull(patientId);
         if (Objects.equals(true,isDelete)) {

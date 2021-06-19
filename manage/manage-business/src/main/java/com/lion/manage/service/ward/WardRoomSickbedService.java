@@ -1,6 +1,5 @@
 package com.lion.manage.service.ward;
 
-import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.ward.WardRoomSickbed;
@@ -31,11 +30,13 @@ public interface WardRoomSickbedService extends BaseService<WardRoomSickbed> {
 
     /**
      * 列表
+     *
+     * @param bedCode
      * @param departmentId
      * @param wardId
      * @param wardRoomId
      * @param lionPage
      * @return
      */
-    public Page<WardRoomSickbed> list(Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage);
+    public Page<WardRoomSickbed> list(String bedCode,Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage);
 }

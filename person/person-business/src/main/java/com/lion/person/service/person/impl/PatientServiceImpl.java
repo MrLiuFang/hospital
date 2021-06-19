@@ -40,7 +40,6 @@ import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.service.person.*;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
-import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -206,26 +205,28 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     @Override
-    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave, LocalDateTime birthday, TransferState transferState, Boolean isNormal, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave, LocalDateTime birthday, TransferState transferState, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         if (Objects.nonNull(transferState) && !Objects.equals(transferState,TransferState.ROUTINE)) {
             List<PatientTransfer> list =patientTransferDao.findByState(transferState);
+            List<Long> ids = new ArrayList<>();
+            ids.add(Long.MAX_VALUE);
             if (Objects.nonNull(list) && list.size()>0) {
-                List<Long> ids = new ArrayList<>();
                 list.forEach(patientTransfer -> {
                     ids.add(patientTransfer.getPatientId());
                 });
-                if (ids.size()>0) {
-                    jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
-                }
+            }
+            if (ids.size()>0) {
+                jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
             }
         }else if (Objects.nonNull(transferState) && Objects.equals(transferState,TransferState.ROUTINE)) {
             List<PatientTransfer> list =patientTransferDao.findByState(TransferState.TRANSFERRING);
             List<PatientTransfer> list1 =patientTransferDao.findByState(TransferState.PENDING_TRANSFER);
             List<PatientTransfer> list2 =patientTransferDao.findByState(TransferState.WAITING_TO_RECEIVE);
             List<Long> ids = new ArrayList<>();
+            ids.add(Long.MAX_VALUE);
             list.forEach(patientTransfer -> {
                 ids.add(patientTransfer.getPatientId());
             });
@@ -251,9 +252,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         if (Objects.nonNull(birthday)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_birthday",birthday);
         }
-        if (Objects.nonNull(isNormal)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_isNormal",isNormal);
-        }
+
         if (StringUtils.hasText(tagCode)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_tagCode",tagCode);
         }

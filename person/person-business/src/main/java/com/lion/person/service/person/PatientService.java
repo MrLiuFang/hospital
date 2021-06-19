@@ -48,7 +48,6 @@ public interface PatientService extends BaseService<Patient> {
      * @param isWaitLeave
      * @param birthday
      * @param transferState
-     * @param isNormal
      * @param tagCode
      * @param medicalRecordNo
      * @param sickbedId
@@ -57,7 +56,7 @@ public interface PatientService extends BaseService<Patient> {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave,LocalDateTime birthday,TransferState transferState,Boolean isNormal,String tagCode,String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave,LocalDateTime birthday,TransferState transferState,String tagCode,String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      * 详情

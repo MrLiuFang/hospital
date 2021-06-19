@@ -63,6 +63,9 @@ public class DepartmentExposeServiceImpl extends BaseServiceImpl<Department> imp
                 }
             }
         }
+//        else {
+//            departmentIds.add(Long.MAX_VALUE);
+//        }
         return departmentIds;
     }
 }

@@ -61,10 +61,10 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     @GetMapping("/list")
     @ApiOperation(value = "患者列表")
     public IPageResultData<List<ListPatientVo>> list(@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出（true=历史患者）") Boolean isLeave,@ApiParam(value = "是否等待登出(通过回收箱登出)") Boolean isWaitLeave,@ApiParam(value = "出生日期(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime birthday,
-                                                     @ApiParam(value = "转移状态") TransferState transferState, @ApiParam(value = "状态）") Boolean isNormal,@ApiParam(value = "标签编码") String tagCode,@ApiParam(value = "病历号") String medicalRecordNo,@ApiParam(value = "床位id") Long sickbedId,
+                                                     @ApiParam(value = "转移状态") TransferState transferState,@ApiParam(value = "标签编码") String tagCode,@ApiParam(value = "病历号") String medicalRecordNo,@ApiParam(value = "床位id") Long sickbedId,
                                                      @ApiParam(value = "入院开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "入院结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                       LionPage lionPage){
-        return patientService.list(name, isLeave, isWaitLeave, birthday, transferState, isNormal, tagCode, medicalRecordNo, sickbedId, startDateTime, endDateTime, lionPage);
+        return patientService.list(name, isLeave, isWaitLeave, birthday, transferState, tagCode, medicalRecordNo, sickbedId, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/details")
@@ -106,6 +106,15 @@ public class PatientController extends BaseControllerImpl implements BaseControl
         return resultData;
     }
 
+
+    @PutMapping("/transfer/update")
+    @ApiOperation(value = "修改患者转移状态(只修改非完成&取消的转移)")
+    public IResultData transferUpdate(@RequestBody @Validated UpdateTransferDto updateTransferDto){
+        patientTransferService.updateState(updateTransferDto);
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
     @GetMapping("/transfer/list")
     @ApiOperation(value = "患者转移记录")
     public IResultData<List<ListPatientTransferVo>> transferList(@ApiParam(value = "患者id") Long patientId ){
@@ -115,7 +124,7 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     }
 
     @PostMapping("/receiveOrCancel")
-    @ApiOperation(value = "接收/取消传其患者(本接口修改患者转移状态,其它数据调患者修改接口,接收患者需要调两次接口（患者修改和本接口）)")
+    @ApiOperation(value = "接收/取消转移患者(本接口修改患者转移状态,其它数据调患者修改接口,接收患者需要调两次接口（患者修改和本接口）)")
     public IResultData receiveOrCancel(@RequestBody @Validated ReceivePatientDto receivePatientDto) {
         patientTransferService.receiveOrCancel(receivePatientDto);
         ResultData resultData = ResultData.instance();
