@@ -1,6 +1,8 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagType;
 import com.lion.manage.entity.assets.Assets;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -47,6 +49,21 @@ public class DepartmentAssetsStatisticsDetailsVo {
     @Data
     @JsonIgnoreProperties(ignoreUnknown = true,value = {"img","departmentId","buildFloorId","buildId","regionId","createDateTime","updateDateTime","createUserId","updateUserId"})
     public static class AssetsVo extends Assets{
+
+        @ApiModelProperty(value = "标签类型")
+        private TagType tagType;
+
+        @ApiModelProperty(value = "标签用途")
+        private TagPurpose tagPurpose;
+
+        @ApiModelProperty(value = "标签编码")
+        private String tagCode;
+
+        @ApiModelProperty(value = "设备名称（标签字段）")
+        private String deviceName;
+
+        @ApiModelProperty(value = "设备编码（标签字段）")
+        private String deviceCode;
 
         @ApiModelProperty(value = "标签电量")
         private Integer battery;

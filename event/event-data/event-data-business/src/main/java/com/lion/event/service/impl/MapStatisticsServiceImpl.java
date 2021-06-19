@@ -295,6 +295,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                         Tag tag = tagExposeService.findById(tagAssets.getTagId());
                         if (Objects.nonNull(tag)) {
                             assetsVo.setBattery(tag.getBattery());
+                            assetsVo.setTagCode(tag.getTagCode());
+                            assetsVo.setDeviceName(tag.getDeviceName());
+                            assetsVo.setDeviceCode(tag.getDeviceCode());
+                            assetsVo.setTagType(tag.getType());
+                            assetsVo.setTagPurpose(tag.getPurpose());
                         }
                     }
                     assetsVos.add(assetsVo);

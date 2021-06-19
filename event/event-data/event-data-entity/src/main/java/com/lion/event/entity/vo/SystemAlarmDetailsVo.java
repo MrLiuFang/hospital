@@ -20,6 +20,15 @@ public class SystemAlarmDetailsVo extends SystemAlarm {
     @ApiModelProperty(value = "警告来源(com.lion.common.enums.Type 获取该字典)")
     private Type type;
 
+    @ApiModelProperty(value = "标题")
+    private String title;
+
+    @ApiModelProperty(value = "图片")
+    private Long img;
+
+    @ApiModelProperty(value = "图片url")
+    private String imgUrl;
+
     @ApiModelProperty(value = "患者行动限制区域")
     private List<String> restrictedArea;
 

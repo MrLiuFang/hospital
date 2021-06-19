@@ -6,6 +6,7 @@ import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.dto.UpdateStateDto;
 import com.lion.common.enums.Type;
+import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
@@ -89,6 +90,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @DubboReference
     private RegionExposeService regionExposeService;
+
+    @DubboReference
+    private FileExposeService fileExposeService;
 
     @Override
     public void save(SystemAlarm systemAlarm) {
@@ -268,12 +272,18 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 if (Objects.nonNull(user)){
                     vo.setUserName(user.getName());
                     vo.setUserNumber(user.getNumber());
+                    vo.setTitle(user.getName());
+                    vo.setImg(user.getHeadPortrait());
+                    vo.setImgUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                 }
             }
             if (Objects.equals(systemAlarm.getTy(),Type.PATIENT.getKey())) {
                 Patient patient = patientExposeService.findById(systemAlarm.getPi());
                 if (Objects.nonNull(patient)) {
                     vo.setPatientName(patient.getName());
+                    vo.setTitle(patient.getName());
+                    vo.setImg(patient.getHeadPortrait());
+                    vo.setImgUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
                 }
                 List<RestrictedArea> list = restrictedAreaExposeService.find(systemAlarm.getPi(), PersonType.PATIENT);
                 List<String> restrictedAreaStringList = new ArrayList<>();
@@ -287,12 +297,16 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());
                 if (Objects.nonNull(temporaryPerson)) {
                     vo.setTemporaryPersonName(temporaryPerson.getName());
+                    vo.setTitle(temporaryPerson.getName());
+                    vo.setImg(temporaryPerson.getHeadPortrait());
+                    vo.setImgUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
                 }
             }
             if (Objects.nonNull(systemAlarm.getTi())) {
                 Tag tag = tagExposeService.findById(systemAlarm.getTi());
                 if (Objects.nonNull(tag)) {
                     vo.setTagCode(tag.getTagCode());
+                    vo.setTitle(tag.getDeviceName());
                 }
             }
             if (Objects.equals(systemAlarm.getTy(),Type.ASSET.getKey())) {
@@ -300,6 +314,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 if (Objects.nonNull(assets)) {
                     vo.setAssetsCode(assets.getCode());
                     vo.setAssetsName(assets.getName());
+                    vo.setTitle(assets.getName());
+                    vo.setImg(assets.getImg());
+                    vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
                 }
             }
             return vo;
