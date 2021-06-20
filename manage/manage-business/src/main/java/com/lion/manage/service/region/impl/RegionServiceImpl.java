@@ -130,7 +130,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
 //        assertBuildFloorExist(region.getBuildId(),region.getBuildFloorId());
         assertDepartmentExist(region.departmentId);
         assertNameExist(region.getName(),region.getId());
-        assertDeviceGroupIsUse(region.getDeviceGroupId(),null);
+        assertDeviceGroupIsUse(region.getDeviceGroupId(),region.getId());
         if (updateRegionDto.isPublic && (Objects.isNull(updateRegionDto.getExposeObjects()) ||updateRegionDto.getExposeObjects().size()<=0) ){
             BusinessException.throwException("请选择公开对象");
         }

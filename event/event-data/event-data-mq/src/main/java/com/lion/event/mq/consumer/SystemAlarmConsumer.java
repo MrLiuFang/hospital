@@ -147,6 +147,8 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                         updateStateDto.setId(newSystemAlarm.getPi());
                     }else if (Objects.equals(updateStateDto.getType(),Type.ASSET)) {
                         updateStateDto.setId(newSystemAlarm.getAi());
+                    }else if (Objects.equals(updateStateDto.getType(),Type.DEVICE)) {
+                        updateStateDto.setId(newSystemAlarm.getDvi());
                     }else if (Objects.equals(updateStateDto.getType(),Type.HUMIDITY) || Objects.equals(updateStateDto.getType(),Type.TEMPERATURE)) {
                         updateStateDto.setId(newSystemAlarm.getTi());
                     }

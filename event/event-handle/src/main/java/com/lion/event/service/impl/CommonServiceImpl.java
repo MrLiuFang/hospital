@@ -124,6 +124,9 @@ public class CommonServiceImpl implements CommonService {
      */
     private void penaltyZoneAlarm(Type type,Long pi,Long ri, Long ti) {
         Region region = redisUtil.getRegionById(ri);
+        if (Objects.isNull(region)) {
+            return;
+        }
         if (Objects.equals(region.isPublic,true)) {
             return;
         }

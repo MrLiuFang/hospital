@@ -134,6 +134,8 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                         updateStateDto.setId(systemAlarm.getPi());
                     }else if (Objects.equals(Type.ASSET,updateStateDto.getType())) {
                         updateStateDto.setId(systemAlarm.getAi());
+                    }else if (Objects.equals(Type.DEVICE,updateStateDto.getType())) {
+                        updateStateDto.setId(systemAlarm.getDvi());
                     }else if (Objects.equals(Type.HUMIDITY,updateStateDto.getType()) || Objects.equals(Type.TEMPERATURE,updateStateDto.getType())) {
                         updateStateDto.setId(systemAlarm.getTi());
                     }
