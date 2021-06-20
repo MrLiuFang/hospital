@@ -13,6 +13,6 @@ import lombok.Data;
  */
 @Data
 @ApiModel
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"id","electricity","createDateTime","updateDateTime","createUserId","updateUserId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"id","deviceState","lastDataTime","electricity","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class AddTagDto extends Tag {
 }

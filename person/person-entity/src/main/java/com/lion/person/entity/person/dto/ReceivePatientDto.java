@@ -17,19 +17,18 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @ApiModel
-public class ReceivePatientDto {
+public class ReceivePatientDto extends UpdatePatientDto {
 
 
-    @ApiModelProperty(value = "病床ID(该参数由接收转移患者后 修改新的床位带过来)")
-    @NotNull(message = "病床ID不能为空")
-    private Long newSickbedId;
+//    @ApiModelProperty(value = "病床ID(该参数由接收转移患者后 修改新的床位带过来)")
+//    private Long newSickbedId;
 
-    @ApiModelProperty(value = "患者id")
-    @NotNull(message = "患者id不能为空")
-    private Long patientId;
+//    @ApiModelProperty(value = "患者id")
+//    @NotNull(message = "患者id不能为空",groups = {Validator.OtherOne.class})
+//    private Long patientId;
 
     @ApiModelProperty(value = "转移状态")
-    @NotNull(message = "转移状态不能为空")
+    @NotNull(message = "转移状态不能为空",groups = {Validator.OtherOne.class})
     private TransferState state = TransferState.FINISH;
 
 

@@ -79,7 +79,7 @@ public class TemporaryPersonController extends BaseControllerImpl implements Bas
     }
 
     @PutMapping("/leave")
-    @ApiOperation(value = "患者登出")
+    @ApiOperation(value = "流动人员登出")
     public IResultData leave(@RequestBody @Validated TemporaryPersonLeaveDto temporaryPersonLeaveDto){
         temporaryPersonService.leave(temporaryPersonLeaveDto);
         ResultData resultData = ResultData.instance();

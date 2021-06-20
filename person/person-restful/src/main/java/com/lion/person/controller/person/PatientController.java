@@ -124,8 +124,8 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     }
 
     @PostMapping("/receiveOrCancel")
-    @ApiOperation(value = "接收/取消转移患者(本接口修改患者转移状态,其它数据调患者修改接口,接收患者需要调两次接口（患者修改和本接口）)")
-    public IResultData receiveOrCancel(@RequestBody @Validated ReceivePatientDto receivePatientDto) {
+    @ApiOperation(value = "接收/取消转移患者(取消转移不修改病人信息-床位，负责医生……等)只修改状态")
+    public IResultData receiveOrCancel(@RequestBody @Validated({Validator.OtherOne.class}) ReceivePatientDto receivePatientDto) {
         patientTransferService.receiveOrCancel(receivePatientDto);
         ResultData resultData = ResultData.instance();
         return resultData;

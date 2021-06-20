@@ -13,7 +13,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"id","buildId","buildFloorId","createDateTime","updateDateTime","createUserId","updateUserId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"id","deviceState","lastDataTime","buildId","buildFloorId","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class AddAssetsDto extends Assets {
 
     @ApiModelProperty(value = "标签编码")

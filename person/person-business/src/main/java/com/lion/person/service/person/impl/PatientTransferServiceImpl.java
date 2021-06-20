@@ -16,6 +16,7 @@ import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.dto.ReceivePatientDto;
 import com.lion.person.entity.person.dto.TransferDto;
+import com.lion.person.entity.person.dto.UpdatePatientDto;
 import com.lion.person.entity.person.dto.UpdateTransferDto;
 import com.lion.person.entity.person.vo.ListPatientTransferVo;
 import com.lion.person.service.person.PatientService;
@@ -27,6 +28,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -94,16 +96,27 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
     }
 
     @Override
+    @Transactional
     public void receiveOrCancel(ReceivePatientDto receivePatientDto) {
+        if (Objects.isNull(receivePatientDto.getId())) {
+            BusinessException.throwException("患者id不能为空");
+        }
         if (!(Objects.equals(receivePatientDto.getState(),TransferState.FINISH) || Objects.equals(receivePatientDto.getState(),TransferState.CANCEL))) {
             BusinessException.throwException("只能进行接受/取消转移操作");
+        }
+        if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH)) {
+            UpdatePatientDto updatePatientDto = new ReceivePatientDto();
+            BeanUtils.copyProperties(receivePatientDto, updatePatientDto);
+            patientService.update(updatePatientDto);
         }
         List<TransferState> state = new ArrayList<>();
         state.add(TransferState.CANCEL);
         state.add(TransferState.FINISH);
-        PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(receivePatientDto.getPatientId(),state);
+        PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(receivePatientDto.getId(),state);
         patientTransfer.setState(receivePatientDto.getState());
-        patientTransfer.setNewSickbedId(receivePatientDto.getNewSickbedId());
+        if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH)) {
+            patientTransfer.setNewSickbedId(receivePatientDto.getSickbedId());
+        }
         Long userId = CurrentUserUtil.getCurrentUserId();
         patientTransfer.setReceiveUserId(userId);
         patientTransfer.setReceiveDateTime(LocalDateTime.now());

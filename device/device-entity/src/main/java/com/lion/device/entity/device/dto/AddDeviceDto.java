@@ -12,7 +12,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"id","warrantyPeriodDate","electricity","createDateTime","updateDateTime","createUserId","updateUserId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"id","deviceState","lastDataTime","warrantyPeriodDate","electricity","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class AddDeviceDto extends Device {
 
 }

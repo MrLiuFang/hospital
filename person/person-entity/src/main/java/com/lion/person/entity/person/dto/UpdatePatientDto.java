@@ -21,7 +21,7 @@ import java.util.List;
 @ApiModel
 @JsonIgnoreProperties(
         ignoreUnknown = true,
-        value = {"createDateTime", "updateDateTime", "createUserId", "updateUserId","departmentId","roomId","wardId"}
+        value = {"createDateTime","lastDataTime","deviceState", "isLeave","isWaitLeave","updateDateTime", "createUserId", "updateUserId","departmentId","roomId","wardId"}
 )
 public class UpdatePatientDto extends Patient {
 

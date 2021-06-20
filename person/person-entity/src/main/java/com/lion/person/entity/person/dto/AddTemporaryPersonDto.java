@@ -17,7 +17,7 @@ import java.util.List;
 @ApiModel
 @JsonIgnoreProperties(
         ignoreUnknown = true,
-        value = {"id","createDateTime", "updateDateTime", "createUserId", "updateUserId"}
+        value = {"id","deviceState","lastDataTime","isLeave","isWaitLeave","createDateTime", "updateDateTime", "createUserId", "updateUserId"}
 )
 public class AddTemporaryPersonDto extends TemporaryPerson {
     @ApiModelProperty(value = "限制行动区域")

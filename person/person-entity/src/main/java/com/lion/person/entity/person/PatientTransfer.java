@@ -49,11 +49,11 @@ public class PatientTransfer extends BaseEntity implements Serializable {
     @Column(name = "new_sickbed_id")
     private Long newSickbedId;
 
-    @ApiModelProperty(value = "接收员工")
+    @ApiModelProperty(value = "接收/取消员工")
     @Column(name = "receive_user_id")
     private Long receiveUserId;
 
-    @ApiModelProperty(value = "接收时间")
+    @ApiModelProperty(value = "接收/取消时间")
     @Column(name = "receive_date_time")
     private LocalDateTime receiveDateTime;
 
