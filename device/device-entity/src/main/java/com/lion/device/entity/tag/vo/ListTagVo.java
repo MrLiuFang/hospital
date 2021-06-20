@@ -1,6 +1,8 @@
 package com.lion.device.entity.tag.vo;
 
 import com.lion.device.entity.tag.Tag;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -9,15 +11,12 @@ import lombok.Data;
  * @Date 2021/5/4 上午9:18
  **/
 @Data
+@ApiModel
 public class ListTagVo extends Tag {
 
-    /**
-     * 绑定对象
-     */
+    @ApiModelProperty(value = "绑定对象")
     private String bindingName;
 
-    /**
-     * 科室
-     */
+    @ApiModelProperty(value = "科室")
     private String departmentName;
 }

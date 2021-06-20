@@ -23,4 +23,5 @@ public interface DeviceGroupDao extends BaseDao<DeviceGroup> {
      * @return
      */
     public DeviceGroup findFirstByCode(String code);
+
 }

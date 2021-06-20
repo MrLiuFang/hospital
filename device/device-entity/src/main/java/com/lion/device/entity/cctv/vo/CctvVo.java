@@ -27,4 +27,8 @@ public class CctvVo extends Cctv {
 
     @ApiModelProperty(value = "科室名称")
     private String departmentName;
+
+    @ApiModelProperty(value = "图片")
+    private String imgUrl;
+
 }

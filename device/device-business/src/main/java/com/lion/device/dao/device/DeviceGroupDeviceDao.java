@@ -2,6 +2,9 @@ package com.lion.device.dao.device;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.device.DeviceGroupDevice;
+import com.lion.device.entity.enums.State;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
 
@@ -45,6 +48,15 @@ public interface DeviceGroupDeviceDao extends BaseDao<DeviceGroupDevice> {
      * @param deviceGroupId
      * @return
      */
-    public Integer countByDeviceGroupId(Long deviceGroupId);
+    public int countByDeviceGroupId(Long deviceGroupId);
+
+    /**
+     * 统计
+     * @param deviceGroupId
+     * @param state
+     * @return
+     */
+    @Query(" select count(dgd) from DeviceGroupDevice dgd join  Device d on d.id = dgd.deviceId where dgd.deviceGroupId = :deviceGroupId and d.deviceState=:state " )
+    public int count(@Param("deviceGroupId") Long deviceGroupId,@Param("state") State state);
 
 }

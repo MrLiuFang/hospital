@@ -13,6 +13,10 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.RedisUtil;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.device.entity.device.Device;
+import com.lion.device.entity.device.DeviceGroup;
+import com.lion.device.entity.device.DeviceGroupDevice;
+import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
@@ -20,6 +24,8 @@ import com.lion.device.entity.tag.TagAssets;
 import com.lion.device.entity.tag.TagUser;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
+import com.lion.device.expose.device.DeviceGroupExposeService;
 import com.lion.device.expose.fault.FaultExposeService;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagExposeService;
@@ -160,6 +166,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @DubboReference
     private PatientNurseExposeService patientNurseExposeService;
+
+    @DubboReference
+    private DeviceGroupExposeService deviceGroupExposeService;
+
+    @DubboReference
+    private DeviceGroupDeviceExposeService deviceGroupDeviceExposeService;
 
     @Autowired
     private HttpServletResponse response;
@@ -394,7 +406,6 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Override
     public DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetails(String name) {
-        Long userId = CurrentUserUtil.getCurrentUserId();
         List<Long> list = departmentExposeService.responsibleDepartment(null);
         DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetailsVo = new DepartmentTemporaryPersonStatisticsDetailsVo();
         List<DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo> temporaryPersonDepartmentVos = new ArrayList<>();
@@ -427,6 +438,41 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             }
         });
         return departmentTemporaryPersonStatisticsDetailsVo;
+    }
+
+    @Override
+    public DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetails(String name) {
+        List<Long> list = departmentExposeService.responsibleDepartment(null);
+        DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetailsVo = new DepartmentDeviceGroupStatisticsDetailsVo();
+        List<DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo> deviceGroupDetailsVos = new ArrayList<>();
+        list.forEach(id->{
+            departmentDeviceGroupStatisticsDetailsVo.setDeviceGroupCount(departmentDeviceGroupStatisticsDetailsVo.getDeviceGroupCount() + deviceGroupExposeService.count(id));
+            departmentDeviceGroupStatisticsDetailsVo.setNormalDeviceCount(departmentDeviceGroupStatisticsDetailsVo.getNormalDeviceCount() + deviceGroupExposeService.count(id, com.lion.device.entity.enums.State.NORMAL));
+            departmentDeviceGroupStatisticsDetailsVo.setAbnormalDeviceCount(departmentDeviceGroupStatisticsDetailsVo.getAbnormalDeviceCount() + deviceGroupExposeService.count(id, com.lion.device.entity.enums.State.ALARM));
+            List<Region> regionList = regionExposeService.findByDepartmentId(id);
+            regionList.forEach(region->{
+                DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo deviceGroupDetailsVo = new DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo();
+                DeviceGroup deviceGroup = deviceGroupExposeService.findById(region.getDeviceGroupId());
+                if (Objects.nonNull(deviceGroup)) {
+                    deviceGroupDetailsVo.setName(deviceGroup.getName());
+                    List<DetailsDeviceVo> detailsDeviceVos = new ArrayList<>();
+                    List<DeviceGroupDevice> deviceGroupDevices = deviceGroupDeviceExposeService.find(deviceGroup.getId());
+                    deviceGroupDevices.forEach(deviceGroupDevice -> {
+                        Device device = deviceExposeService.findById(deviceGroupDevice.getDeviceId());
+                        if (Objects.nonNull(device)) {
+                            DetailsDeviceVo detailsDeviceVo = new DetailsDeviceVo();
+                            BeanUtils.copyProperties(device,detailsDeviceVo);
+                            detailsDeviceVo.setImgUrl(fileExposeService.getUrl(device.getImg()));
+                            detailsDeviceVos.add(detailsDeviceVo);
+                        }
+                    });
+                    deviceGroupDetailsVo.setDetailsDeviceVos(detailsDeviceVos);
+                    deviceGroupDetailsVos.add(deviceGroupDetailsVo);
+                }
+            });
+        });
+        departmentDeviceGroupStatisticsDetailsVo.setDeviceGroupDetailsVos(deviceGroupDetailsVos);
+        return departmentDeviceGroupStatisticsDetailsVo;
     }
 
     @Override

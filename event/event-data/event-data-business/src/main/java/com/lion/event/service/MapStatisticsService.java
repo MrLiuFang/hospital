@@ -69,6 +69,13 @@ public interface MapStatisticsService {
     public DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetails(String name);
 
     /**
+     *
+     * @param name
+     * @return
+     */
+    public DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetails(String name);
+
+    /**
      * 员工详情
      * @param userId
      * @return

@@ -22,8 +22,7 @@ public enum DeviceClassify implements IEnum {
     VIRTUAL_WALL(2, "virtual wall"),
     LF_EXCITER(3, "lf exciter"),
     HAND_WASHING(4, "hand washing"),
-    RECYCLING_BOX(5, "回收箱"),
-    ;
+    RECYCLING_BOX(5, "回收箱");
 
     private final int key;
 

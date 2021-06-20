@@ -1,5 +1,6 @@
 package com.lion.device.controller.device;
 
+import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
@@ -74,6 +75,9 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
     @DubboReference
     private BuildFloorExposeService buildFloorExposeService;
 
+    @DubboReference
+    private FileExposeService fileExposeService;
+
     @PostMapping("/add")
     @ApiOperation(value = "新增设备")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class})AddDeviceDto addDeviceDto){
@@ -143,7 +147,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
                 detailsDeviceVo.setMapUrl(buildFloor.getMapUrl());
             }
         }
-
+        detailsDeviceVo.setImgUrl(fileExposeService.getUrl(device.getImg()));
         resultData.setData(detailsDeviceVo);
         return resultData;
     }

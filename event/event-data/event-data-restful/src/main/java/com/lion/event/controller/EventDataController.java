@@ -215,6 +215,11 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return ResultData.instance().setData(mapStatisticsService.departmentTemporaryPersonStatisticsDetails(name));
     }
 
+    @GetMapping("/department/device/group/statistics/details")
+    @ApiOperation(value = "地图监控监控器列表(左边列表)")
+    public IResultData<DepartmentDeviceGroupStatisticsDetailsVo> departmentDeviceGroupStatisticsDetails(@ApiParam(value = "设备组名称") String name){
+        return ResultData.instance().setData(mapStatisticsService.departmentDeviceGroupStatisticsDetails(name));
+    }
 
     @GetMapping("/patient/details")
     @ApiOperation(value = "地图监控患者详情")
@@ -396,5 +401,6 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                                                     @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
         return userTagButtonRecordService.list(tagRuleEffect, name, startDateTime, endDateTime, lionPage);
     }
+
 
 }
