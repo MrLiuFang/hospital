@@ -12,6 +12,7 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.service.*;
+import com.lion.manage.entity.assets.Assets;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
@@ -75,6 +76,9 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
     @Autowired
     private RecyclingBoxService recyclingBoxService;
 
+    @Autowired
+    private BatteryAlarmService batteryAlarmService;
+
     @Override
     public void onMessage(MessageExt messageExt) {
         try {
@@ -88,6 +92,7 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             User user = null;
             Patient patient = null;
             TemporaryPerson temporaryPerson = null;
+            Assets assets = null;
             if (Objects.nonNull(deviceDataDto.getMonitorId())) {
                 monitor = redisUtil.getDevice(deviceDataDto.getMonitorId());
             }
@@ -104,6 +109,9 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 }
                 if (Objects.isNull(patient)) {
                     temporaryPerson = redisUtil.getTemporaryPersonByTagId(tag.getId());
+                }
+                if (Objects.isNull(temporaryPerson)) {
+                    assets = redisUtil.getAssets(tag.getId());
                 }
             }
 
@@ -130,10 +138,20 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
 
             //低电量警报
             if (deviceDataDto.getMonitorBattery() <=1){
-
+                batteryAlarmService.deviceLowBatteryAlarm(monitor,deviceDataDto);
             }
             if (deviceDataDto.getTagBattery() <=1){
-
+                if (Objects.nonNull(user)) {
+                    batteryAlarmService.userLowBatteryAlarm(user,deviceDataDto,tag);
+                }else if (Objects.nonNull(assets)) {
+                    batteryAlarmService.assetsLowBatteryAlarm(assets,deviceDataDto,tag);
+                }else if (Objects.nonNull(patient)) {
+                    batteryAlarmService.patientLowBatteryAlarm(patient,deviceDataDto,tag);
+                }else if (Objects.nonNull(temporaryPerson)) {
+                    batteryAlarmService.temporaryPersonLowBatteryAlarm(temporaryPerson,deviceDataDto,tag);
+                }else if (Objects.equals(tag.getPurpose(),TagPurpose.THERMOHYGROGRAPH)) {
+                    batteryAlarmService.tagLowBatteryAlarm(deviceDataDto,tag);
+                }
             }
 
             updateDeviceBattery(monitor,deviceDataDto.getMonitorBattery());

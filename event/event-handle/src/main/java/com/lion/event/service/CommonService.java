@@ -75,4 +75,12 @@ public interface CommonService {
      */
     public CurrentRegionDto currentRegion(Device monitor, Device star);
 
+    /**
+     * 获取当前位置
+     * @param deviceDataDto
+     * @return
+     * @throws JsonProcessingException
+     */
+    public CurrentRegionDto currentRegion(DeviceDataDto deviceDataDto);
+
 }

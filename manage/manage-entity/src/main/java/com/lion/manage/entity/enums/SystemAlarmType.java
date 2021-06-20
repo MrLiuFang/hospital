@@ -33,7 +33,7 @@ public enum SystemAlarmType implements IEnum {
 //    WDGG(16, "温度过高"),
     SDGDG(17, "湿度过低/高"),
 //    SDGG(18, "湿度过高"),
-    BQDCBZ(19, "标签电池不足"),
+    BQDCBZ(19, "电池不足"),
     SBGZ(20, "设备故障");
 
     private final int key;
