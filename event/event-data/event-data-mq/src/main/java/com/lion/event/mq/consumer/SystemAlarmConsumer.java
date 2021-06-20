@@ -87,6 +87,10 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                 return;
             }else {
                 Alarm alarm = getAlarm(systemAlarmDto);
+                if (Objects.isNull(alarm)) {
+                    log.info("未找到警告规则，取消警告");
+                    return;
+                }
                 if (systemAlarmDto.getCount()>1){
                     systemAlarmDto.setCount(systemAlarmDto.getCount()+1);
                     systemAlarmService.updateSdt(systemAlarmDto.getUuid());

@@ -21,7 +21,8 @@ public enum AlarmClassify implements IEnum {
     STAFF(2, "职员"),
     ASSETS(3, "资产"),
     DEVICE(4, "设备"),
-    TEMPERATURE_HUMIDITY_INSTRUMENT(5, "温湿");
+    TEMPERATURE_HUMIDITY_INSTRUMENT(5, "温湿"),
+    POSTDOCS(6, "流动人员");
     private final int key;
 
     private final String desc;
