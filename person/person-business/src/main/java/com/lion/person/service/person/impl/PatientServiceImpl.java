@@ -40,6 +40,7 @@ import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.service.person.*;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -393,6 +394,8 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     @Override
+    @Transactional
+//    @GlobalTransactional
     public void leave(PatientLeaveDto patientLeaveDto) {
         Patient patient = findById(patientLeaveDto.getPatientId());
         patient.setId(patientLeaveDto.getPatientId());
