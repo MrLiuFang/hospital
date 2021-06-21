@@ -26,9 +26,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -90,10 +93,15 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
     }
 
     @Override
+    @Transactional
     public void advanceOverTempLeave(AdvanceOverTempLeaveDto advanceOverTempLeaveDto) {
-        TempLeave tempLeave = tempLeaveDao.findFirstByPatientIdOrderByCreateDateTimeDesc(advanceOverTempLeaveDto.getPatientId());
-        tempLeave.setIsClosure(true);
-        update(tempLeave);
+        if (Objects.nonNull(advanceOverTempLeaveDto.getPatientIds()) && advanceOverTempLeaveDto.getPatientIds().size()>0 ) {
+            advanceOverTempLeaveDto.getPatientIds().forEach(id->{
+                TempLeave tempLeave = tempLeaveDao.findFirstByPatientIdOrderByCreateDateTimeDesc(id);
+                tempLeave.setIsClosure(true);
+                update(tempLeave);
+            });
+        }
     }
 
     @Override
@@ -107,6 +115,13 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
             Patient patient =patientService.findById(tempLeave.getPatientId());
             if (Objects.nonNull(patient)){
                 vo.setPatientName(patient.getName());
+                vo.setGender(patient.getGender());
+                if (Objects.nonNull(patient.getBirthday())) {
+                    Period period = Period.between(patient.getBirthday(), LocalDate.now());
+                    vo.setAge(period.getYears());
+                }
+                vo.setMedicalRecordNo(patient.getMedicalRecordNo());
+                vo.setTagCode(patient.getTagCode());
                 vo.setHeadPortrait(patient.getHeadPortrait());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
             }

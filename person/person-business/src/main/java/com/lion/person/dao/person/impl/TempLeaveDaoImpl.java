@@ -53,6 +53,7 @@ public class TempLeaveDaoImpl implements TempLeaveDaoEx {
             sb.append(" and tl.createDateTime <= :endDateTime ");
             searchParameter.put("endDateTime",endDateTime);
         }
+//        sb.append(" and tl.isClosure = false ");
         sb.append(" order by tl.createDateTime ");
         return baseDao.findNavigator(lionPage, sb.toString(), searchParameter);
     }
