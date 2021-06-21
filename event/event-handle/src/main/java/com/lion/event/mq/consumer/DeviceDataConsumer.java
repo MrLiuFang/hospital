@@ -1,8 +1,10 @@
 package com.lion.event.mq.consumer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.DeviceDataDto;
+import com.lion.common.dto.UserLastWashDto;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
@@ -24,10 +26,13 @@ import org.apache.rocketmq.spring.core.RocketMQListener;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -99,6 +104,9 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             if (Objects.nonNull(deviceDataDto.getStarId())) {
                 star = redisUtil.getDevice(deviceDataDto.getStarId());
             }
+            if (Objects.isNull(monitor) && Objects.isNull(star)) {
+                return;
+            }
             if (Objects.nonNull(deviceDataDto.getTagId())) {
                 tag = redisUtil.getTag(deviceDataDto.getTagId());
             }
@@ -119,7 +127,17 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 //进行洗手事件处理
                 if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.HAND_WASHING)) {
                     userWashService.userWashEevent(deviceDataDto, monitor, star, tag, user);
-                }else if(Objects.nonNull(deviceDataDto.getButtonId())) { //员工按钮事件记录
+                }else {
+                    //记录洗手时长
+                    UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
+                    if (Objects.nonNull(userLastWashDto)){
+                        Duration duration = Duration.between(userLastWashDto.getDateTime(), LocalDateTime.now());
+                        userLastWashDto.setTime(Long.valueOf(duration.toMillis()).intValue()/1000);
+                        redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+user.getId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                        rocketMQTemplate.syncSend(TopicConstants.UPDATE_WASH_TIME, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(userLastWashDto)).build());
+                    }
+                }
+                if(Objects.nonNull(deviceDataDto.getButtonId())) { //员工按钮事件记录
                     userButtonService.tagButtonEvent(deviceDataDto,monitor,star,tag,user);
                 }
             }

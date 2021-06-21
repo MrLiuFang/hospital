@@ -13,6 +13,7 @@ import com.lion.core.PageResultData;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.SystemAlarmDao;
+import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.ListSystemAlarmVo;
@@ -115,18 +116,17 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         if (Objects.nonNull(userId)) {
             User user = userExposeService.findById(userId);
             if (Objects.nonNull(user)) {
-                SystemAlarm exampleSystemAlarm = new SystemAlarm();
+                Query query = new Query();
+                Criteria criteria = new Criteria();
                 if (Objects.nonNull(uuid)) {
-                    exampleSystemAlarm.setUi(uuid);
+                    criteria.and("ui").is(uuid);
                 }
                 if (Objects.nonNull(id)) {
-                    exampleSystemAlarm.set_id(id);
+                    criteria.and("_id").is(id);
                 }
-                exampleSystemAlarm.setUa(false);
-                Example<SystemAlarm> example = Example.of(exampleSystemAlarm);
-                Optional<SystemAlarm> optional = alarmDao.findOne(example);
-                if (optional.isPresent()) {
-                    SystemAlarm systemAlarm = optional.get();
+                query.addCriteria(criteria);
+                SystemAlarm systemAlarm = mongoTemplate.findOne(query,SystemAlarm.class);
+                if (Objects.nonNull(systemAlarm)) {
                     UpdateStateDto updateStateDto = new UpdateStateDto();
                     updateStateDto.setType(Type.instance(systemAlarm.getTy()));
                     updateStateDto.setState(1);
@@ -207,26 +207,23 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Override
     public SystemAlarm findOne(Long pi, Long ai, Long dvi, Long ti) {
-        SystemAlarm exampleSystemAlarm = new SystemAlarm();
+        Query query = new Query();
+        Criteria criteria = new Criteria();
         if (Objects.nonNull(pi)) {
-            exampleSystemAlarm.setPi(pi);
+            criteria.and("pi").is(pi);
         }
         if (Objects.nonNull(ai)) {
-            exampleSystemAlarm.setAi(ai);
+            criteria.and("ai").is(ai);
         }
         if (Objects.nonNull(dvi)) {
-            exampleSystemAlarm.setDvi(dvi);
+            criteria.and("dvi").is(dvi);
         }
         if (Objects.nonNull(ti)) {
-            exampleSystemAlarm.setTi(ti);
+            criteria.and("ti").is(ti);
         }
-        exampleSystemAlarm.setUa(false);
-        Example<SystemAlarm> example = Example.of(exampleSystemAlarm);
-        Optional<SystemAlarm> optional = alarmDao.findOne(example);
-        if (optional.isPresent()){
-            return optional.get();
-        }
-        return null;
+        query.addCriteria(criteria);
+        SystemAlarm systemAlarm = mongoTemplate.findOne(query,SystemAlarm.class);
+        return systemAlarm;
     }
 
     @Override
@@ -259,15 +256,15 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Override
     public SystemAlarmDetailsVo details(String id) {
-        SystemAlarm exampleSystemAlarm = new SystemAlarm();
+        Query query = new Query();
+        Criteria criteria = new Criteria();
         if (Objects.nonNull(id)) {
-            exampleSystemAlarm.set_id(id);
+            criteria.and("_id").is(id);
         }
-        Example<SystemAlarm> example = Example.of(exampleSystemAlarm);
-        Optional<SystemAlarm> optional = alarmDao.findOne(example);
-        if (optional.isPresent()){
+        query.addCriteria(criteria);
+        SystemAlarm systemAlarm = mongoTemplate.findOne(query,SystemAlarm.class);
+        if (Objects.nonNull(systemAlarm)){
             SystemAlarmDetailsVo vo = new SystemAlarmDetailsVo();
-            SystemAlarm systemAlarm = optional.get();
             BeanUtils.copyProperties(systemAlarm,vo);
             vo.setType(Type.instance(systemAlarm.getTy()));
             if (Objects.equals(systemAlarm.getTy(),Type.STAFF.getKey())) {

@@ -87,6 +87,9 @@ public class BatteryAlarmServiceImpl implements BatteryAlarmService {
 
     private void systemAlarm(Type type,Long tagId,Long peopleId,Long deviceId,Long assetsId,DeviceDataDto deviceDataDto)  {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(deviceDataDto);
+        if (Objects.isNull(currentRegionDto)){
+            return;
+        }
         SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
         systemAlarmDto.setDateTime(LocalDateTime.now());
         systemAlarmDto.setDeviceId(deviceId);

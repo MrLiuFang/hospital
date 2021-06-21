@@ -74,9 +74,10 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
                         for (Wash wash :washList){
                             WashRecordDto washRecordDto = washCommon.init(userCurrentRegionDto.getUserId(),userCurrentRegionDto.getRegionId(),Objects.isNull(userLastWashDto)?null:userLastWashDto.getMonitorId(),userCurrentRegionDto.getUuid() ,
-                                    null,null);
+                                    userLastWashDto.getDateTime(),userLastWashDto.getSystemDateTime());
                             WashEventDto washEventDto = new WashEventDto();
                             BeanUtils.copyProperties(washRecordDto,washEventDto);
+                            washEventDto.setWi(wash.getId());
                             //进入X区域之前X分钟洗手检测
                             if (Objects.equals(wash.getType(), WashRuleType.REGION) && Objects.nonNull(wash.getBeforeEnteringTime()) && wash.getBeforeEnteringTime() >0){
                                 //没有最后的洗手记录(未洗手)
@@ -117,7 +118,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                     return;
                                 }
                             }
-                            washEventDto.setWi(wash.getId());
+
                             recordWashEvent(washEventDto);
                         }
                     }

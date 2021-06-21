@@ -41,8 +41,9 @@ public class UpdateWashTimeConsumer implements RocketMQListener<MessageExt> {
             UserLastWashDto userLastWashDto = jacksonObjectMapper.readValue(msg, UserLastWashDto.class);
             washRecordService.updateWashTime(userLastWashDto);
             washEventService.updateWashTime(userLastWashDto);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }

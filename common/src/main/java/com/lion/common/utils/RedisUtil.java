@@ -183,8 +183,8 @@ public class RedisUtil {
                     redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON + temporaryPerson.getId(), temporaryPerson, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }else {
                     redisTemplate.delete(RedisConstants.TAG_TEMPORARY_PERSON + tagId);
-                    redisTemplate.delete(RedisConstants.TEMPORARY_PERSON_TAG +  temporaryPerson.getId());
-                    redisTemplate.delete(RedisConstants.TEMPORARY_PERSON + temporaryPerson.getId());
+                    redisTemplate.delete(RedisConstants.TEMPORARY_PERSON_TAG +  tagPostdocs.getPostdocsId());
+                    redisTemplate.delete(RedisConstants.TEMPORARY_PERSON + tagPostdocs.getPostdocsId());
                 }
             }
         }
@@ -235,8 +235,8 @@ public class RedisUtil {
                     redisTemplate.opsForValue().set(RedisConstants.PATIENT + patient.getId(), patient, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }else {
                     redisTemplate.delete(RedisConstants.TAG_PATIENT + tagId);
-                    redisTemplate.delete(RedisConstants.PATIENT_TAG +  patient.getId());
-                    redisTemplate.delete(RedisConstants.PATIENT + patient.getId());
+                    redisTemplate.delete(RedisConstants.PATIENT_TAG +  tagPatient.getPatientId());
+                    redisTemplate.delete(RedisConstants.PATIENT + tagPatient.getPatientId());
                 }
             }
         }
@@ -421,7 +421,7 @@ public class RedisUtil {
                     redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }else {
                     redisTemplate.delete(RedisConstants.DEVICE_REGION+deviceId);
-                    redisTemplate.delete(RedisConstants.REGION+region.getId());
+                    redisTemplate.delete(RedisConstants.REGION+regionId);
                 }
             }
         }

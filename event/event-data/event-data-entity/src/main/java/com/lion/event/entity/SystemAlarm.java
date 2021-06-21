@@ -117,7 +117,7 @@ public class SystemAlarm implements Serializable {
     private Integer rnu;
 
     @ApiModelProperty(value = "员工汇报内容")
-    private String re="";
+    private String re;
 
     @ApiModelProperty(value = "汇报时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

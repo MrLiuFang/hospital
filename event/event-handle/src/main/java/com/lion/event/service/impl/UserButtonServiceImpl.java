@@ -50,6 +50,9 @@ public class UserButtonServiceImpl implements UserButtonService {
             return;
         }
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
+        if (Objects.isNull(currentRegionDto)) {
+            return;
+        }
         commonService.position(deviceDataDto,user,currentRegionDto.getRegionId(),tag );
         if (Objects.equals(1,deviceDataDto.getButtonId())) {
             record(currentRegionDto,user,tagRule.getGreenButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);

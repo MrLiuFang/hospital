@@ -30,7 +30,7 @@ public class WashRecordDto implements Serializable {
     private Long pi;
 
     @ApiModelProperty(value = "员工类型 com.lion.upms.entity.enums.UserType")
-    private int py;
+    private Integer py;
 
     @ApiModelProperty(value = "员工所在的科室id")
     private Long pdi;

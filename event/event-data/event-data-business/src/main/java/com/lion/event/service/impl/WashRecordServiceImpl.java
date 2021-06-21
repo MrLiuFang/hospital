@@ -5,9 +5,11 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.dao.WashEventDao;
 import com.lion.event.dao.WashRecordDao;
+import com.lion.event.entity.WashEvent;
 import com.lion.event.entity.WashRecord;
 import com.lion.event.service.WashRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -17,6 +19,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @Author Mr.Liu
@@ -58,10 +61,20 @@ public class WashRecordServiceImpl implements WashRecordService {
     public void updateWashTime(UserLastWashDto userLastWashDto) {
         if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && Objects.nonNull(userLastWashDto.getUserId()) ) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("pi").is(userLastWashDto.getUserId()).and("ddt").is(userLastWashDto.getDateTime()));
-            Update update = new Update();
-            update.set("t", userLastWashDto.getTime());
-            mongoTemplate.updateFirst(query, update, "wash_record");
+            Criteria criteria = new Criteria();
+            criteria.and("pi").is(userLastWashDto.getUserId());
+            criteria.and("ddt").is(userLastWashDto.getDateTime());
+            criteria.and("sdt").is(userLastWashDto.getSystemDateTime());
+            query.addCriteria(criteria);
+            WashRecord washRecord = mongoTemplate.findOne(query, WashRecord.class);
+            if (Objects.nonNull(washRecord)) {
+                Query queryUpdate = new Query();
+                queryUpdate.addCriteria(Criteria.where("_id").is(washRecord.get_id()));
+                Update update = new Update();
+                update.set("t", userLastWashDto.getTime());
+                mongoTemplate.updateFirst(queryUpdate, update, "wash_record");
+            }
+
         }
     }
 }

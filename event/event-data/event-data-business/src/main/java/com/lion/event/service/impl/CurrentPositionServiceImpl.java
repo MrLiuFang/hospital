@@ -8,6 +8,9 @@ import com.lion.event.service.CurrentPositionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -25,24 +28,31 @@ public class CurrentPositionServiceImpl implements CurrentPositionService {
     @Autowired
     private CurrentPositionDao currentPositionDao;
 
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     @Override
     public void save(Position position) {
         CurrentPosition currentPosition = new CurrentPosition();
         BeanUtils.copyProperties(position,currentPosition);
-        CurrentPosition exampleCurrentPosition = new CurrentPosition();
+
+        Query query = new Query();
+        Criteria criteria = new Criteria();
         if (Objects.nonNull(position.getPi())) {
-            exampleCurrentPosition.setPi(position.getPi());
+            criteria.and("pi").is(position.getPi());
         }
         if (Objects.nonNull(position.getAdi())) {
-            exampleCurrentPosition.setAdi(position.getAdi());
+            criteria.and("adi").is(position.getAdi());
+        }
+        if (Objects.nonNull(position.getAdi())) {
+            criteria.and("adi").is(position.getAdi());
         }
         if (Objects.nonNull(position.getTi())) {
-            exampleCurrentPosition.setTi(position.getTi());
+            criteria.and("ti").is(position.getTi());
         }
-        Example<CurrentPosition> example = Example.of(exampleCurrentPosition);
-        Optional<CurrentPosition> optional = currentPositionDao.findOne(example);
-        if (optional.isPresent()){
-            CurrentPosition oldCurrentPosition = optional.get();
+        query.addCriteria(criteria);
+        CurrentPosition oldCurrentPosition = mongoTemplate.findOne(query,CurrentPosition.class);
+        if (Objects.nonNull(oldCurrentPosition)){
             currentPosition.set_id(oldCurrentPosition.get_id());
         }
         currentPositionDao.save(currentPosition);
@@ -50,32 +60,26 @@ public class CurrentPositionServiceImpl implements CurrentPositionService {
 
     @Override
     public CurrentPosition find(Long pi) {
-        CurrentPosition exampleCurrentPosition = new CurrentPosition();
+        Query query = new Query();
+        Criteria criteria = new Criteria();
         if (Objects.nonNull(pi)) {
-            exampleCurrentPosition.setPi(pi);
+            criteria.and("pi").is(pi);
         }
-        Example<CurrentPosition> example = Example.of(exampleCurrentPosition);
-        Optional<CurrentPosition> optional = currentPositionDao.findOne(example);
-        if (optional.isPresent()) {
-            CurrentPosition currentPosition = optional.get();
-            return currentPosition;
-        }
-        return null;
+        query.addCriteria(criteria);
+        CurrentPosition currentPosition = mongoTemplate.findOne(query,CurrentPosition.class);
+        return currentPosition;
     }
 
     @Override
     public CurrentPosition findByTagId(Long tagId) {
-        CurrentPosition exampleCurrentPosition = new CurrentPosition();
+        Query query = new Query();
+        Criteria criteria = new Criteria();
         if (Objects.nonNull(tagId)) {
-            exampleCurrentPosition.setTi(tagId);
+            criteria.and("ti").is(tagId);
         }
-        Example<CurrentPosition> example = Example.of(exampleCurrentPosition);
-        Optional<CurrentPosition> optional = currentPositionDao.findOne(example);
-        if (optional.isPresent()) {
-            CurrentPosition currentPosition = optional.get();
-            return currentPosition;
-        }
-        return null;
+        query.addCriteria(criteria);
+        CurrentPosition currentPosition = mongoTemplate.findOne(query,CurrentPosition.class);
+        return currentPosition;
     }
 
     @Override

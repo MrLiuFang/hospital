@@ -26,6 +26,7 @@ import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.WashEventDao;
 import com.lion.event.entity.CurrentPosition;
+import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.WashEvent;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.WashEventService;
@@ -47,6 +48,7 @@ import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
+import lombok.extern.java.Log;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.bson.Document;
@@ -55,6 +57,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -79,6 +82,7 @@ import java.util.List;
  * @Date 2021/5/1 下午6:11
  **/
 @Service
+@Log
 public class WashEventServiceImpl implements WashEventService {
 
     @Autowired
@@ -443,23 +447,25 @@ public class WashEventServiceImpl implements WashEventService {
     public void updateWashTime(UserLastWashDto userLastWashDto) {
         if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && Objects.nonNull(userLastWashDto.getUserId()) ) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("pi").is(userLastWashDto.getUserId()).and("ddt").is(userLastWashDto.getDateTime()));
-            Update update = new Update();
-            update.set("t", userLastWashDto.getTime());
-            mongoTemplate.updateFirst(query, update, "wash_event");
+            Criteria criteria = new Criteria();
+            criteria.and("pi").is(userLastWashDto.getUserId());
+            criteria.and("ddt").is(userLastWashDto.getDateTime());
+            criteria.and("sdt").is(userLastWashDto.getSystemDateTime());
+            query.addCriteria(criteria);
+            WashEvent washEvent = mongoTemplate.findOne(query, WashEvent.class);
+            if (Objects.nonNull(washEvent)) {
+                Query queryUpdate = new Query();
+                queryUpdate.addCriteria(Criteria.where("_id").is(washEvent.get_id()));
+                Update update = new Update();
+                update.set("t", userLastWashDto.getTime());
+                mongoTemplate.updateFirst(queryUpdate, update, "wash_event");
 
-            WashEvent exampleWashEvent = new WashEvent();
-            exampleWashEvent.setPi(userLastWashDto.getUserId());
-            exampleWashEvent.setDdt(userLastWashDto.getDateTime());
-            Example<WashEvent> example = Example.of(exampleWashEvent);
-            Optional<WashEvent> optional = washEventDao.findOne(example);
-            if (optional.isPresent()) {
-                WashEvent washEvent = optional.get();
                 if (Objects.nonNull(washEvent.getWi())) {
                     Wash wash = redisUtil.getWashById(washEvent.getWi());
                     if (Objects.nonNull(wash)) {
                         if (userLastWashDto.getTime()<wash.getDuration()) {
                             //doto 给硬件发消息
+                            log.info("给硬件发送消息-洗手时长不够");
                             SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
                             systemAlarmDto.setDateTime(LocalDateTime.now());
                             systemAlarmDto.setType(Type.STAFF);

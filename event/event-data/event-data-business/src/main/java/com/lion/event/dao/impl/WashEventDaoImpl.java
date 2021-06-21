@@ -42,7 +42,7 @@ public class WashEventDaoImpl implements WashEventDaoEx {
         criteria.and("ui").is(uuid);
         query.addCriteria(criteria);
         WashEvent washEvent = mongoTemplate.findOne(query, WashEvent.class);
-        if (Objects.nonNull(washEvent) && Objects.equals(true,washEvent.getIa()) ) {
+        if (Objects.nonNull(washEvent) && Objects.equals(true,washEvent.getIa()) && washEvent.getWt().isAfter(LocalDateTime.parse("9997-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) ) {
             query = new Query();
             query.addCriteria(Criteria.where("_id").is(washEvent.get_id()));
             Update update = new Update();
