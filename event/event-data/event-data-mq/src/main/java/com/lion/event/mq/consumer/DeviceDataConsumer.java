@@ -30,6 +30,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -68,7 +70,8 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
             DeviceDataDto deviceDataDto = jacksonObjectMapper.readValue(msg, DeviceDataDto.class);
-            deviceDataDto.setSystemDateTime(LocalDateTime.now());
+            DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            deviceDataDto.setSystemDateTime(LocalDateTime.parse(LocalDateTime.now().format(df),df));
             Device monitor = null;
             Device star = null;
             Tag tag = null;

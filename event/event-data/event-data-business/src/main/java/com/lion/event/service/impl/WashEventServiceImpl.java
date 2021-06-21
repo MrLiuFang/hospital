@@ -58,6 +58,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
+import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -72,6 +73,7 @@ import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
@@ -446,12 +448,11 @@ public class WashEventServiceImpl implements WashEventService {
     @Override
     public void updateWashTime(UserLastWashDto userLastWashDto) {
         if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && Objects.nonNull(userLastWashDto.getUserId()) ) {
-            Query query = new Query();
-            Criteria criteria = new Criteria();
-            criteria.and("pi").is(userLastWashDto.getUserId());
-            criteria.and("ddt").is(userLastWashDto.getDateTime());
-            criteria.and("sdt").is(userLastWashDto.getSystemDateTime());
-            query.addCriteria(criteria);
+            Document match = new Document();
+            match.put("pi",userLastWashDto.getUserId());
+            match.put("ddt",userLastWashDto.getDateTime());
+            match.put("sdt",userLastWashDto.getSystemDateTime());
+            Query query = new BasicQuery(match);
             WashEvent washEvent = mongoTemplate.findOne(query, WashEvent.class);
             if (Objects.nonNull(washEvent)) {
                 Query queryUpdate = new Query();
@@ -459,7 +460,6 @@ public class WashEventServiceImpl implements WashEventService {
                 Update update = new Update();
                 update.set("t", userLastWashDto.getTime());
                 mongoTemplate.updateFirst(queryUpdate, update, "wash_event");
-
                 if (Objects.nonNull(washEvent.getWi())) {
                     Wash wash = redisUtil.getWashById(washEvent.getWi());
                     if (Objects.nonNull(wash)) {

@@ -41,7 +41,7 @@ public class DeviceDataServiceImpl implements DeviceDataService {
             endDateTime = LocalDateTime.now();
             startDateTime = endDateTime.minusDays(30);
         }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
-            endDateTime = startDateTime.plusMinutes(30);
+            endDateTime = startDateTime.plusDays(30);
         }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
             startDateTime = endDateTime.minusDays(30);
         }
