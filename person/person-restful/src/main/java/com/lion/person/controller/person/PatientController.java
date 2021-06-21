@@ -140,7 +140,7 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     }
 
     @PutMapping("/advance/over/temp/leave")
-    @ApiOperation(value = "提前结束临时离开权限")
+    @ApiOperation(value = "提前结束临时离开权限(取消/返回)")
     public IResultData advanceOverTempLeave(@RequestBody @Validated AdvanceOverTempLeaveDto advanceOverTempLeaveDto) {
         tempLeaveService.advanceOverTempLeave(advanceOverTempLeaveDto);
         ResultData resultData = ResultData.instance();

@@ -17,6 +17,7 @@ import java.util.List;
 @Data
 @ApiModel
 public class AdvanceOverTempLeaveDto {
+
     @ApiModelProperty(value = "患者id")
     @NotNull(message = "患者id不能为空")
     @Size(min = 1,message = "患者id不能为空")
