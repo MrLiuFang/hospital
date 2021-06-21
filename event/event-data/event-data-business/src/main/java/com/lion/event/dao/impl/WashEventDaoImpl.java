@@ -69,6 +69,9 @@ public class WashEventDaoImpl implements WashEventDaoEx {
         group = BasicDBObjectUtil.put(group,"$group","allNoWash",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$gte",new Object[]{"$wt",wt}) })).append("then",1).append("else",0))));//错过洗手
 
         BasicDBObject match = new BasicDBObject();
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime)) {
             match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime).append("$lte",endDateTime));
         }else if (Objects.nonNull(startDateTime) && Objects.isNull(endDateTime)) {
@@ -142,6 +145,9 @@ public class WashEventDaoImpl implements WashEventDaoEx {
         group = BasicDBObjectUtil.put(group,"$group","allNoAlarm",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",false})})).append("then",1).append("else",0))));//合规
 
         BasicDBObject match = new BasicDBObject();
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime)) {
             match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime).append("$lte",endDateTime));
         }else if (Objects.nonNull(startDateTime) && Objects.isNull(endDateTime)) {

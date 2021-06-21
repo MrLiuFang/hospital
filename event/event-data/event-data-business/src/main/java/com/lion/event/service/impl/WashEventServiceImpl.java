@@ -1,12 +1,19 @@
 package com.lion.event.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import com.lion.common.constants.TopicConstants;
+import com.lion.common.dto.SystemAlarmDto;
+import com.lion.common.dto.UserLastWashDto;
+import com.lion.common.enums.Type;
 import com.lion.common.enums.WashEventType;
 import com.lion.common.expose.file.FileExposeService;
+import com.lion.common.utils.RedisUtil;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
@@ -18,10 +25,13 @@ import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.WashEventDao;
+import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.WashEvent;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.WashEventService;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.SystemAlarmType;
+import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.WashUser;
@@ -38,13 +48,17 @@ import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.bson.Document;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletOutputStream;
@@ -114,6 +128,15 @@ public class WashEventServiceImpl implements WashEventService {
 
     @DubboReference
     private AssetsExposeService assetsExposeService;
+
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
+
+    @Autowired
+    private ObjectMapper jacksonObjectMapper;
+
+    @Autowired
+    private RedisUtil redisUtil;
 
     private final String FONT = "simsun.ttc";
 
@@ -242,6 +265,9 @@ public class WashEventServiceImpl implements WashEventService {
         }
         if (Objects.nonNull(userIds) && userIds.size()>0){
             criteria.and("pi").in(userIds);
+        }
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
             criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
@@ -411,6 +437,48 @@ public class WashEventServiceImpl implements WashEventService {
         document.close();
         servletOutputStream.flush();
         servletOutputStream.close();
+    }
+
+    @Override
+    public void updateWashTime(UserLastWashDto userLastWashDto) {
+        if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && Objects.nonNull(userLastWashDto.getUserId()) ) {
+            Query query = new Query();
+            query.addCriteria(Criteria.where("pi").is(userLastWashDto.getUserId()).and("ddt").is(userLastWashDto.getDateTime()));
+            Update update = new Update();
+            update.set("t", userLastWashDto.getTime());
+            mongoTemplate.updateFirst(query, update, "wash_event");
+
+            WashEvent exampleWashEvent = new WashEvent();
+            exampleWashEvent.setPi(userLastWashDto.getUserId());
+            exampleWashEvent.setDdt(userLastWashDto.getDateTime());
+            Example<WashEvent> example = Example.of(exampleWashEvent);
+            Optional<WashEvent> optional = washEventDao.findOne(example);
+            if (optional.isPresent()) {
+                WashEvent washEvent = optional.get();
+                if (Objects.nonNull(washEvent.getWi())) {
+                    Wash wash = redisUtil.getWashById(washEvent.getWi());
+                    if (Objects.nonNull(wash)) {
+                        if (userLastWashDto.getTime()<wash.getDuration()) {
+                            //doto 给硬件发消息
+                            SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+                            systemAlarmDto.setDateTime(LocalDateTime.now());
+                            systemAlarmDto.setType(Type.STAFF);
+                            systemAlarmDto.setTagId(userLastWashDto.getTagId());
+                            systemAlarmDto.setRegionId(washEvent.getRi());
+                            systemAlarmDto.setPeopleId(washEvent.getPi());
+                            systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
+                            systemAlarmDto.setUuid(UUID.randomUUID().toString());
+                            systemAlarmDto.setSystemAlarmType(SystemAlarmType.WDDBZSXSC);
+                            try {
+                                rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private ListUserWashMonitorVo init(LocalDateTime startDateTime, LocalDateTime endDateTime,Long userId,Document document){

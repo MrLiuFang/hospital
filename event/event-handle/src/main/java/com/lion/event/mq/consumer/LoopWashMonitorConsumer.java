@@ -149,11 +149,13 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
 
     private void recordWashEvent(Long userId,LocalDateTime wt,LoopWashDto loopWashDto,Wash wash,UserLastWashDto userLastWashDto) throws JsonProcessingException {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + userId);
-        WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null , null,null);
+        WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null , userLastWashDto.getDateTime(),userLastWashDto.getSystemDateTime());
         WashEventDto washEventDto = new WashEventDto();
+        BeanUtils.copyProperties(washRecordDto,washEventDto);
         washEventDto.setIa(false);
         washEventDto.setWet(WashEventType.LOOP.getKey());
         washEventDto.setWt(null);
+        washEventDto.setWi(wash.getId());
         BeanUtils.copyProperties(washRecordDto,washEventDto);
         rocketMQTemplate.syncSend(TopicConstants.WASH_EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washEventDto)).build());
 
@@ -161,15 +163,17 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
 
     private void recordWashEvent(Long userId,LocalDateTime wt,SystemAlarmType systemAlarmType,LoopWashDto loopWashDto,Wash wash,UserLastWashDto userLastWashDto) throws JsonProcessingException {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + userId);
-        WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null , null,null);
+        WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null , userLastWashDto.getDateTime(),userLastWashDto.getSystemDateTime());
         WashEventDto washEventDto = new WashEventDto();
+        BeanUtils.copyProperties(washRecordDto,washEventDto);
         washEventDto.setIa(true);
         washEventDto.setWet(WashEventType.LOOP.getKey());
         washEventDto.setAt(systemAlarmType.getKey());
+        washEventDto.setWi(wash.getId());
         if (Objects.nonNull(wt)){
             washEventDto.setWt(wt);
         }
-        BeanUtils.copyProperties(washRecordDto,washEventDto);
+
         rocketMQTemplate.syncSend(TopicConstants.WASH_EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washEventDto)).build());
 
         //系统内警告
@@ -185,12 +189,14 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
         rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
 
         //给硬件发送数据
-        LoopWashDeviceAlarmDto loopWashDeviceAlarmDto = new LoopWashDeviceAlarmDto();
-        loopWashDeviceAlarmDto.setUserId(userId);
-        loopWashDeviceAlarmDto.setUuid(loopWashDto.getUuid());
-        loopWashDeviceAlarmDto.setDeviceDelayAlarmDateTime(LocalDateTime.now());
-        loopWashDeviceAlarmDto.setStartAlarmDateTime(loopWashDeviceAlarmDto.getDeviceDelayAlarmDateTime());
-        loopWashDeviceAlarmDto.setEndAlarmDateTime(loopWashDeviceAlarmDto.getDeviceDelayAlarmDateTime().plusMinutes(wash.getInterval()));
-        rocketMQTemplate.syncSend(TopicConstants.LOOP_WASH_DEVICE_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(loopWashDeviceAlarmDto)).build());
+        if (Objects.equals(wash.getRemind(),true)) {
+            LoopWashDeviceAlarmDto loopWashDeviceAlarmDto = new LoopWashDeviceAlarmDto();
+            loopWashDeviceAlarmDto.setUserId(userId);
+            loopWashDeviceAlarmDto.setUuid(loopWashDto.getUuid());
+            loopWashDeviceAlarmDto.setDeviceDelayAlarmDateTime(LocalDateTime.now().plusMinutes(wash.getOvertimeRemind()));
+            loopWashDeviceAlarmDto.setStartAlarmDateTime(loopWashDeviceAlarmDto.getDeviceDelayAlarmDateTime());
+            loopWashDeviceAlarmDto.setEndAlarmDateTime(loopWashDeviceAlarmDto.getDeviceDelayAlarmDateTime().plusMinutes(wash.getInterval()));
+            rocketMQTemplate.syncSend(TopicConstants.LOOP_WASH_DEVICE_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(loopWashDeviceAlarmDto)).build());
+        }
     }
 }

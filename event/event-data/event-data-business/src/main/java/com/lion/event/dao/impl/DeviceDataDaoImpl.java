@@ -32,6 +32,9 @@ public class DeviceDataDaoImpl implements DeviceDataDaoEx {
         if (Objects.nonNull(starCode)) {
             criteria.and("sc").is(starCode);
         }
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
             criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
         }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {

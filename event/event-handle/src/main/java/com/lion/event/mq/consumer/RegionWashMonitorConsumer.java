@@ -117,45 +117,8 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                     return;
                                 }
                             }
+                            washEventDto.setWi(wash.getId());
                             recordWashEvent(washEventDto);
-
-
-
-                            //                        else if (Objects.equals(wash.getType(), WashRuleType.LOOP)){
-    //                            UserLastWashDto previous = userLastWashDto.getPrevious();
-    //                            if (wash.getDuration()>userLastWashDto.getTime()){
-    //                                // TODO: 2021/4/25 推送洗手时间不够告警
-    //                                log.info("推送洗手时间不够告警");
-    //                            }
-    //                            Duration duration = Duration.between( userLastWashDto.getDateTime(),LocalDateTime.now());
-    //                            if (duration.toMinutes()>wash.getInterval()){
-    //                                // TODO: 2021/4/25 推送洗手间隔警告
-    //                                log.info("推送洗手间隔警告:1");
-    //                            }else {
-    //                                if (Objects.nonNull(previous)) {
-    //                                    Duration duration1 = Duration.between(previous.getDateTime(),userLastWashDto.getDateTime());
-    //                                    if (duration1.toMinutes() > wash.getInterval()) {
-    //                                        // TODO: 2021/4/25 推送洗手间隔警告
-    //                                        log.info("推送洗手间隔警告:2");
-    //                                    }
-    //                                }
-    //                            }
-    //
-    //                            if (userLastWashDto.getDateTime().plusMinutes(wash.getInterval()).isAfter(LocalDateTime.now())){
-    //                                try {
-    //                                    RegionWashDelayDto regionWashDelayDto = new RegionWashDelayDto();
-    //                                    regionWashDelayDto.setUserId(userCurrentRegionDto.getUserId());
-    //                                    regionWashDelayDto.setRegionId(userCurrentRegionDto.getRegionId());
-    //                                    regionWashDelayDto.setDelayDateTime(userLastWashDto.getDateTime().plusMinutes(wash.getInterval()));
-    //                                    Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashDelayDto.getDelayDateTime());
-    //                                    if (delayLevel > -1) {
-    //                                        rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashDelayDto)).build(), 1000, delayLevel);
-    //                                    }
-    //                                } catch (JsonProcessingException e) {
-    //                                    e.printStackTrace();
-    //                                }
-    //                            }
-    //                        }
                         }
                     }
                 }
@@ -178,6 +141,18 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
         }
         recordWashEvent(washEventDto);
         sendAlarmToTag(userCurrentRegionDto.getUserId(),wash,userCurrentRegionDto.getUuid(),systemAlarmType, userCurrentRegionDto,tagId );
+
+        //系统内警告
+        SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+        systemAlarmDto.setDateTime(LocalDateTime.now());
+        systemAlarmDto.setType(Type.STAFF);
+        systemAlarmDto.setTagId(tagId);
+        systemAlarmDto.setRegionId(Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null);
+        systemAlarmDto.setPeopleId(userCurrentRegionDto.getUserId());
+        systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
+        systemAlarmDto.setUuid(userCurrentRegionDto.getUuid());
+        systemAlarmDto.setSystemAlarmType(systemAlarmType);
+        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
     }
 
     /**
@@ -185,7 +160,6 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
      * @param userId
      * @param wash
      * @param userCurrentRegionDto
-     * @param tag
      */
     private void sendAlarmToTag(Long userId, Wash wash, String uuid, SystemAlarmType systemAlarmType, UserCurrentRegionDto userCurrentRegionDto, Long tagId) throws JsonProcessingException {
         if (Objects.equals(wash.getRemind(),true)) {
@@ -194,17 +168,6 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                 // TODO: 2021/5/17 给设备发送数据
                 log.info("给"+user.getTagCode()+"发送设备警报");
             }
-            //系统内警告
-            SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
-            systemAlarmDto.setDateTime(LocalDateTime.now());
-            systemAlarmDto.setType(Type.STAFF);
-            systemAlarmDto.setTagId(tagId);
-            systemAlarmDto.setRegionId(Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null);
-            systemAlarmDto.setPeopleId(userId);
-            systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-            systemAlarmDto.setUuid(uuid);
-            systemAlarmDto.setSystemAlarmType(systemAlarmType);
-            rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
         }
     }
 

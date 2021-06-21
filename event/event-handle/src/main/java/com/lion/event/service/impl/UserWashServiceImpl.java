@@ -204,6 +204,7 @@ public class UserWashServiceImpl implements UserWashService {
                 Duration duration = Duration.between(userLastWashDto.getDateTime(), LocalDateTime.now());
                 userLastWashDto.setTime(Long.valueOf(duration.toMillis()).intValue()/1000);
                 redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+user.getId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                //更新时手时长
 
             }
         }

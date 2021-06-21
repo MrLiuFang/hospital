@@ -162,6 +162,16 @@ public class TopicConstants {
     public static final String UPDATE_STATE = "update_state";
 
     /**
+     * 更新洗手时长
+     */
+    public static final String UPDATE_WASH_TIME = "update_wash_time";
+
+    /**
+     * 更新洗手时长
+     */
+    public static final String UPDATE_WASH_TIME_CONSUMER_GROUP = "update_wash_time_consumer_group";
+
+    /**
      * 更新状态
      */
     public static final String UPDATE_STATE_CONSUMER_GROUP = "update_state_consumer_group";

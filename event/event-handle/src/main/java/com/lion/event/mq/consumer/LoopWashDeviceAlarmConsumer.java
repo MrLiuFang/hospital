@@ -78,7 +78,7 @@ public class LoopWashDeviceAlarmConsumer implements RocketMQListener<MessageExt>
                 return;
             }
             list.forEach(wash -> {
-                if (Objects.equals(wash.getType(), WashRuleType.LOOP)) {
+                if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.equals(wash.getRemind(),true)) {
                     Duration duration = Duration.between(LocalDateTime.now(), loopWashDeviceAlarmDto.getDeviceDelayAlarmDateTime());
                     long millis = duration.toMillis();
                     if (millis<1000){
@@ -99,7 +99,7 @@ public class LoopWashDeviceAlarmConsumer implements RocketMQListener<MessageExt>
                             return;
                         }
                     }
-                    delay(loopWashDeviceAlarmDto);
+                    //delay(loopWashDeviceAlarmDto);
                 }
             });
         }catch (Exception exception) {

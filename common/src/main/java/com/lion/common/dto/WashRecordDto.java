@@ -23,17 +23,14 @@ public class WashRecordDto implements Serializable {
     @ApiModelProperty(value = "用于与洗手事件唯一关联标识(区域洗手),定时洗手没有此关联")
     private String ui;
 
-
+    @ApiModelProperty(value = "洗手规则Id")
+    private Long wi;
 
     @ApiModelProperty(value = "员工id/患者id/流动人员id")
     private Long pi;
 
-    /**
-     * 员工类型(com.lion.upms.entity.enums.UserType)
-     */
-    @ApiModelProperty(value = "员工类型")
+    @ApiModelProperty(value = "员工类型 com.lion.upms.entity.enums.UserType")
     private int py;
-
 
     @ApiModelProperty(value = "员工所在的科室id")
     private Long pdi;

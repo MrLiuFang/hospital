@@ -164,7 +164,8 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         BasicDBObject match = new BasicDBObject();
         LocalDateTime now = LocalDateTime.now();
         match = BasicDBObjectUtil.put(match,"$match","di",new BasicDBObject("$eq",departmentId) );
-        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",LocalDateTime.of(now.toLocalDate(), LocalTime.MIN) ).append("$lte",now));
+//        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",LocalDateTime.of(now.toLocalDate(), LocalTime.MIN) ).append("$lte",now));
+        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",now.toLocalDate().minusDays(30) ).append("$lte",now));
         pipeline.add(match);
         BasicDBObject group = new BasicDBObject();
         group = BasicDBObjectUtil.put(group,"$group","_id","$di");
@@ -193,6 +194,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         }
         if (Objects.nonNull(ua)) {
             criteria.and("ua").is(ua?1:0);
+        }
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
             criteria.andOperator(Criteria.where("dt").gte(startDateTime), Criteria.where("dt").lte(endDateTime));
@@ -232,6 +236,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         }
         if (Objects.nonNull(tagIds) && tagIds.size()>0) {
             criteria.and("ti").in(tagIds);
+        }
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
             criteria.andOperator(Criteria.where("dt").gte(startDateTime), Criteria.where("dt").lte(endDateTime));

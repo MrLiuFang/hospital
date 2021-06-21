@@ -78,6 +78,9 @@ public class PositionServiceImpl implements PositionService {
         if (Objects.nonNull(ai)) {
             criteria.and("ai").is(ai);
         }
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
             criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
         }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
@@ -121,6 +124,9 @@ public class PositionServiceImpl implements PositionService {
         Criteria criteria = new Criteria();
         if (tagIds.size()>0) {
             criteria.and("ti").in(tagIds);
+        }
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
             criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));

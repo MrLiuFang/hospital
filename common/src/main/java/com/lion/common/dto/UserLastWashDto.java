@@ -39,7 +39,7 @@ public class UserLastWashDto implements Serializable {
     private Long tagId;
 
     /**
-     * 最后洗手发生时间
+     * 最后洗手发生时间(设备时间)
      */
     private LocalDateTime dateTime;
 

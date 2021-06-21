@@ -1,6 +1,7 @@
 package com.lion.event.service;
 
 import com.itextpdf.text.DocumentException;
+import com.lion.common.dto.UserLastWashDto;
 import com.lion.common.enums.WashEventType;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
@@ -120,4 +121,10 @@ public interface WashEventService {
      * @param lionPage
      */
     public void washEventRegionRatioExport(Long buildFloorId, Long regionId, Long departmentId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException;
+
+    /**
+     * 更新洗手时长
+     * @param userLastWashDto
+     */
+    public void updateWashTime(UserLastWashDto userLastWashDto);
 }

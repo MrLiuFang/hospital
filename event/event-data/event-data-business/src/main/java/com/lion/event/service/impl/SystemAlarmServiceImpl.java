@@ -237,6 +237,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
             criteria.and("pi").is(pi);
         }
         criteria.and("ua").is(false ? 1 : 0);
+        criteria.and("ddt").gte(LocalDateTime.now().minusDays(30));
         query.addCriteria(criteria);
         query.with(lionPage);
         query.with(Sort.by(Sort.Direction.DESC,"ddt"));
