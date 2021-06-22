@@ -37,7 +37,7 @@ public class AssetsDaoImpl implements AssetsDaoEx {
         }
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
             sb.append(" and a.departmentId in :departmentIds ");
-            searchParameter.put("departmentId",departmentIds);
+            searchParameter.put("departmentIds",departmentIds);
         }
         if (Objects.nonNull(type)) {
             sb.append(" and a.type = :type ");

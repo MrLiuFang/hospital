@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @author Mr.Liu
@@ -17,9 +18,9 @@ import javax.validation.constraints.NotNull;
 @ApiModel
 public class ReturnAssetsBorrowDto {
 
-    @ApiModelProperty(value = "资产借用id")
+    @ApiModelProperty(value = "资产借用id(不是资产id)assetsBorrowId")
     @NotNull(message = "id不能为空")
-    private Long assetsBorrowId;
+    private List<Long> assetsBorrowIds;
 
     @ApiModelProperty(value = "归还人编号")
     @NotNull(message = "归还人编号不能为空")

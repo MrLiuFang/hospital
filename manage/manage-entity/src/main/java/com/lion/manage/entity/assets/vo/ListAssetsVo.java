@@ -19,4 +19,7 @@ public class ListAssetsVo extends Assets {
 
     @ApiModelProperty(value = "科室名称")
     private String departmentName;
+
+    @ApiModelProperty(value = "标签码")
+    private String tagCode;
 }

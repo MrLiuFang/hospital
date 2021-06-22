@@ -26,7 +26,7 @@ public class AddAssetsBorrowDto {
 
     @ApiModelProperty(value = "借用资产id")
     @Size(min = 1,message = "请选择要借用的资产")
-    private List<Long> assestsIds;
+    private List<Long> assetsIds;
 
     @ApiModelProperty(value = "借用科室Id")
     @NotNull(message = "资产id不能为空")

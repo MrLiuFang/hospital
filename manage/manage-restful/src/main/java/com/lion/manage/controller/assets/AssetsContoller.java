@@ -8,6 +8,10 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
+import com.lion.device.entity.tag.Tag;
+import com.lion.device.entity.tag.TagAssets;
+import com.lion.device.expose.tag.TagAssetsExposeService;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.dto.*;
@@ -36,6 +40,7 @@ import com.lion.utils.CurrentUserUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.catalina.authenticator.SingleSignOnSessionKey;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +105,12 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @DubboReference
     private DepartmentExposeService departmentExposeService;
 
+    @DubboReference
+    private TagAssetsExposeService tagAssetsExposeService;
+
+    @DubboReference
+    private TagExposeService tagExposeService;
+
     @PostMapping("/add")
     @ApiOperation(value = "新增资产")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class})AddAssetsDto addAssetsDto){
@@ -150,6 +161,13 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
                 Department department = departmentService.findById(assets.getDepartmentId());
                 if (Objects.nonNull(department)){
                     listAssetsVo.setDepartmentName(department.getName());
+                    TagAssets tagAssets = tagAssetsExposeService.find(assets.getId());
+                    if (Objects.nonNull(tagAssets)) {
+                        Tag tag = tagExposeService.findById(tagAssets.getTagId());
+                        if (Objects.nonNull(tag)) {
+                            listAssetsVo.setTagCode(tag.getTagCode());
+                        }
+                    }
                 }
             }
             listAssetsVos.add(listAssetsVo);

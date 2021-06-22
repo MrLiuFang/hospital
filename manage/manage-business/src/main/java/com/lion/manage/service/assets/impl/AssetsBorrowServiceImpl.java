@@ -118,8 +118,8 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
     @Override
     @Transactional
     public void add(AddAssetsBorrowDto addAssetsBorrowDto) {
-        if (Objects.nonNull(addAssetsBorrowDto.getAssestsIds()) && addAssetsBorrowDto.getAssestsIds().size()>0) {
-            addAssetsBorrowDto.getAssestsIds().forEach(assetsId->{
+        if (Objects.nonNull(addAssetsBorrowDto.getAssetsIds()) && addAssetsBorrowDto.getAssetsIds().size()>0) {
+            addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
                 AssetsBorrow assetsBorrow = assetsBorrowDao.findFirstByAssetsIdAndReturnUserIdIsNull(assetsId);
                 if (Objects.nonNull(assetsBorrow)) {
                     Assets assets = assetsService.findById(assetsId);
@@ -138,10 +138,10 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
             if (Objects.isNull(wardRoomSickbed)) {
                 BusinessException.throwException("借用床位不存在");
             }
-            addAssetsBorrowDto.getAssestsIds().forEach(assetsId->{
+            addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
                 assertAssetsExist(assetsId);
             });
-            addAssetsBorrowDto.getAssestsIds().forEach(assetsId->{
+            addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
                 AssetsBorrow assetsBorrow = new AssetsBorrow();
                 assetsBorrow.setAssetsId(assetsId);
                 assetsBorrow.setBorrowDepartmentId(department.getId());
@@ -151,10 +151,11 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
                 assetsBorrow.setEndDateTime(addAssetsBorrowDto.getEndDateTime());
                 save(assetsBorrow);
 
-                UpdateAssetsDto updateAssetsDto = new UpdateAssetsDto();
-                updateAssetsDto.setId(assetsBorrow.getAssetsId());
-                updateAssetsDto.setUseState(AssetsUseState.NOT_USED);
-                assetsService.update(updateAssetsDto);
+                Assets assets = assetsService.findById(assetsBorrow.getAssetsId());
+                if (Objects.nonNull(assets)) {
+                    assets.setUseState(AssetsUseState.USEING);
+                    assetsService.update(assets);
+                }
             });
         }
 
@@ -230,29 +231,36 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
     @Override
     @Transactional
     public void returnAssetsBorrow(ReturnAssetsBorrowDto returnAssetsBorrowDto) {
-        AssetsBorrow assetsBorrow = new AssetsBorrow();
+
         User user = userExposeService.find(returnAssetsBorrowDto.getNumber());
         if (Objects.isNull(user)) {
             BusinessException.throwException("归还人编号不存在");
         }
-        assetsBorrow.setId(returnAssetsBorrowDto.getAssetsBorrowId());
-        assetsBorrow.setReturnUserId(user.getId());
-        assetsBorrow.setReturnTime(LocalDateTime.now());
-        update(assetsBorrow);
 
-        assetsBorrow = findById(returnAssetsBorrowDto.getAssetsBorrowId());
-        if (Objects.nonNull(assetsBorrow)) {
-            UpdateAssetsDto updateAssetsDto = new UpdateAssetsDto();
-            updateAssetsDto.setId(assetsBorrow.getAssetsId());
-            updateAssetsDto.setUseState(AssetsUseState.NOT_USED);
-            assetsService.update(updateAssetsDto);
+        if (Objects.nonNull(returnAssetsBorrowDto.getAssetsBorrowIds()) && returnAssetsBorrowDto.getAssetsBorrowIds().size()>0) {
+            returnAssetsBorrowDto.getAssetsBorrowIds().forEach(id->{
+                AssetsBorrow assetsBorrow = new AssetsBorrow();
+                assetsBorrow.setId(id);
+                assetsBorrow.setReturnUserId(user.getId());
+                assetsBorrow.setReturnTime(LocalDateTime.now());
+                update(assetsBorrow);
+
+                assetsBorrow = findById(id);
+                if (Objects.nonNull(assetsBorrow)) {
+                    Assets assets = assetsService.findById(assetsBorrow.getAssetsId());
+                    if (Objects.nonNull(assets)) {
+                        assets.setUseState(AssetsUseState.NOT_USED);
+                        assetsService.update(assets);
+                    }
+                }
+            });
         }
     }
 
     private void assertAssetsExist(Long id) {
         Assets assets = this.assetsService.findById(id);
         if (Objects.isNull(assets) ){
-            BusinessException.throwException(id+"该资产不存在");
+            BusinessException.throwException(assets.getCode()+"该资产不存在");
         }
     }
 
