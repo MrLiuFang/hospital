@@ -1,5 +1,6 @@
 package com.lion.person.entity.person.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.core.persistence.Validator;
 import com.lion.person.entity.enums.Gender;
 import com.lion.person.entity.person.TempLeave;
@@ -11,6 +12,8 @@ import javax.persistence.Column;
 import javax.persistence.Convert;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import java.time.LocalDate;
 
 /**
  * @description:
@@ -26,6 +29,12 @@ public class ListTempLeaveVo extends TempLeave {
 
     @ApiModelProperty(value = "年龄")
     private Integer age;
+
+    @ApiModelProperty(value = "出生日期")
+    private LocalDate birthday;
+
+    @ApiModelProperty(value = "疾病")
+    private String disease;
 
     @ApiModelProperty(value = "病历号")
     private String medicalRecordNo;

@@ -267,6 +267,11 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
             SystemAlarmDetailsVo vo = new SystemAlarmDetailsVo();
             BeanUtils.copyProperties(systemAlarm,vo);
             vo.setType(Type.instance(systemAlarm.getTy()));
+            SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
+            if (Objects.nonNull(systemAlarmType)) {
+                vo.setAlarmCode(systemAlarmType.getName());
+                vo.setAlarmContent(systemAlarmType.getDesc());
+            }
             if (Objects.equals(systemAlarm.getTy(),Type.STAFF.getKey())) {
                 User user = userExposeService.findById(systemAlarm.getPi());
                 if (Objects.nonNull(user)){

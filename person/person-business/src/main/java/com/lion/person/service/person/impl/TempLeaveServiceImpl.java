@@ -120,6 +120,8 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
                     Period period = Period.between(patient.getBirthday(), LocalDate.now());
                     vo.setAge(period.getYears());
                 }
+                vo.setBirthday(patient.getBirthday());
+                vo.setDisease(patient.getDisease());
                 vo.setMedicalRecordNo(patient.getMedicalRecordNo());
                 vo.setTagCode(patient.getTagCode());
                 vo.setHeadPortrait(patient.getHeadPortrait());

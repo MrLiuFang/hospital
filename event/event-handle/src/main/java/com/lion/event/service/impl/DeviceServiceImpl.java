@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.*;
+import com.lion.manage.entity.assets.AssetsBorrow;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
@@ -13,6 +14,8 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.event.service.CommonService;
 import com.lion.event.service.DeviceService;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.expose.assets.AssetsBorrowExposeService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -46,6 +49,9 @@ public class DeviceServiceImpl implements DeviceService {
     @Autowired
     private CommonService commonService;
 
+    @DubboReference
+    private AssetsBorrowExposeService assetsBorrowExposeService;
+
     @Override
     public void deviceEevent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag) throws JsonProcessingException {
         if (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH)  ) {
@@ -64,12 +70,18 @@ public class DeviceServiceImpl implements DeviceService {
      */
     private void assets(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag) throws JsonProcessingException {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
+        Assets assets = redisUtil.getAssets(tag.getId());
+        if (Objects.isNull(assets) || Objects.isNull(currentRegionDto)) {
+            return;
+        }
         if (Objects.nonNull(currentRegionDto)) {
-            Assets assets = redisUtil.getAssets(tag.getId());
-            if (Objects.isNull(assets)) {
-                return;
-            }
             commonService.position(deviceDataDto,assets,currentRegionDto.getRegionId(), tag);
+        }
+        if (!Objects.equals(assets.getRegionId(),currentRegionDto.getRegionId())) {
+            AssetsBorrow assetsBorrow = assetsBorrowExposeService.findNotReturn(assets.getId());
+            if (Objects.isNull(assetsBorrow)) {
+                systemAlarm(Type.ASSET,tag,assets,SystemAlarmType.WSQCCSSQY,currentRegionDto,deviceDataDto );
+            }
         }
     }
 
