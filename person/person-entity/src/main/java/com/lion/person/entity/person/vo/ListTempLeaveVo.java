@@ -31,6 +31,7 @@ public class ListTempLeaveVo extends TempLeave {
     private Integer age;
 
     @ApiModelProperty(value = "出生日期")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
     @ApiModelProperty(value = "疾病")
