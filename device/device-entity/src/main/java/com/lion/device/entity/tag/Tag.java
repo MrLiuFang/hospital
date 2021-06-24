@@ -46,7 +46,7 @@ public class Tag extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "标签用途")
     @Convert(converter = TagPurpose.TagPurposeConverter.class)
-    @NotNull(message = "标签用途不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "标签用途不能为空", groups = {Validator.Insert.class})
     @Column(name = "purpose")
     private TagPurpose purpose;
 
