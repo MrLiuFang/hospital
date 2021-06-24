@@ -103,4 +103,12 @@ public interface TagExposeService extends BaseService<Tag> {
      */
     public List<Long> find(TagType tagType);
 
+    /**
+     * 查询id
+     * @param tagType
+     * @param tagCode
+     * @return
+     */
+    public List<Long> find(TagType tagType,String tagCode);
+
 }

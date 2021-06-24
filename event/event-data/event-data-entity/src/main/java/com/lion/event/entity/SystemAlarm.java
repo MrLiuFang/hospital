@@ -28,9 +28,6 @@ public class SystemAlarm implements Serializable {
     @Id
     private String _id;
 
-    /**
-     * 唯一追踪标识
-     */
     @ApiModelProperty(value = "唯一追踪标识")
     private String ui;
 

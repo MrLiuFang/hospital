@@ -13,7 +13,6 @@ import com.lion.core.PageResultData;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.SystemAlarmDao;
-import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.ListSystemAlarmVo;
@@ -40,7 +39,6 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -201,7 +199,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, Long ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return alarmDao.list(lionPage,departmentIds,ua,ri , alarmType ,tagIds, startDateTime, endDateTime);
     }
 
@@ -221,6 +219,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         if (Objects.nonNull(ti)) {
             criteria.and("ti").is(ti);
         }
+        criteria.and("dt").gte(LocalDateTime.now().minusDays(30));
         query.addCriteria(criteria);
         SystemAlarm systemAlarm = mongoTemplate.findOne(query,SystemAlarm.class);
         return systemAlarm;
@@ -234,7 +233,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
             criteria.and("pi").is(pi);
         }
         criteria.and("ua").is(false ? 1 : 0);
-        criteria.and("ddt").gte(LocalDateTime.now().minusDays(30));
+        criteria.and("dt").gte(LocalDateTime.now().minusDays(30));
         query.addCriteria(criteria);
         query.with(lionPage);
         query.with(Sort.by(Sort.Direction.DESC,"ddt"));
@@ -312,6 +311,8 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 if (Objects.nonNull(tag)) {
                     vo.setTagCode(tag.getTagCode());
                     vo.setTitle(tag.getDeviceName());
+                    vo.setTagType(tag.getType());
+                    vo.setTagPurpose(tag.getPurpose());
                 }
             }
             if (Objects.equals(systemAlarm.getTy(),Type.ASSET.getKey())) {

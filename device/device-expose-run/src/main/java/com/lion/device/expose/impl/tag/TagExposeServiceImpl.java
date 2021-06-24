@@ -16,6 +16,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -107,5 +108,23 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     @Override
     public List<Long> find(TagType tagType) {
         return tagDao.findId(tagType);
+    }
+
+    @Override
+    public List<Long> find(TagType tagType, String tagCode) {
+        List<Long> list = new ArrayList<Long>();
+        if (Objects.nonNull(tagType) && Objects.nonNull(tagCode)) {
+            list = tagDao.findId(tagType,tagCode);
+        }else if (Objects.nonNull(tagType)){
+            list = tagDao.findId(tagType);
+        }else if (Objects.nonNull(tagCode)){
+            list = tagDao.findId(tagCode);
+        }
+        if (Objects.nonNull(tagType) || Objects.nonNull(tagCode)) {
+            if (list.size()<=0){
+                list.add(Long.MAX_VALUE);
+            }
+        }
+        return list;
     }
 }

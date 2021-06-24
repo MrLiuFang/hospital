@@ -119,7 +119,7 @@ public interface MapStatisticsService {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa,  Long ri,  Long di,  Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di,  Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      * 导出
@@ -134,5 +134,5 @@ public interface MapStatisticsService {
      * @param endDateTime
      * @param lionPage
      */
-    public void systemAlarmListExport(Boolean isAll, Boolean isUa,  Long ri,  Long di,  Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException;
+    public void systemAlarmListExport(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di,  Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException;
 }

@@ -57,4 +57,9 @@ public class UserLastWashDto implements Serializable {
      * 上次洗手
      */
     private UserLastWashDto previous;
+
+    /**
+     * 是否更新洗手时间
+     */
+    private Boolean isUpdateWashTime = false;
 }

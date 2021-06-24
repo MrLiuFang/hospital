@@ -43,7 +43,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -219,7 +218,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, Long ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
@@ -228,8 +227,8 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         if (Objects.nonNull(ua)) {
             criteria.and("ua").is(ua?1:0);
         }
-        if (Objects.nonNull(ri)) {
-            criteria.and("ri").is(ri);
+        if (Objects.nonNull(ri) && ri.size()>0) {
+            criteria.and("ri").in(ri);
         }
         if (Objects.nonNull(alarmType)) {
             criteria.and("ty").is(alarmType.getKey());
@@ -248,7 +247,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             criteria.and("dt").lte(endDateTime);
         }
         query.addCriteria(criteria);
-        long count = mongoTemplate.count(query, SystemAlarm.class);
+//        long count = mongoTemplate.count(query, SystemAlarm.class);
         query.with(lionPage);
         query.with(Sort.by(Sort.Direction.DESC,"sdt"));
         List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
@@ -328,7 +327,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                 list.add(vo);
             });
         }
-        return new PageResultData<>(list,lionPage,count);
+        return new PageResultData<>(list,lionPage,0L);
     }
 
     @Override

@@ -177,6 +177,7 @@ public class UserWashServiceImpl implements UserWashService {
                 userLastWashDto.setPrevious(previous);
             }
             userLastWashDto.setUserId(user.getId());
+            userLastWashDto.setIsUpdateWashTime(false);
             userLastWashDto.setUuid(userCurrentRegionDto.getUuid());
             userLastWashDto.setMonitorId(Objects.isNull(monitor)?null:monitor.getId());
             userLastWashDto.setStarId(Objects.isNull(star)?null:star.getId());
@@ -186,12 +187,12 @@ public class UserWashServiceImpl implements UserWashService {
             redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+user.getId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
 
             //记录用户当前区域的洗手记录
-            if (Objects.nonNull(userCurrentRegionDto) ){
-                UserCurrentRegionDto.WashRecord washRecord = new UserCurrentRegionDto.WashRecord();
-                washRecord.setDateTime(userLastWashDto.getDateTime());
-                washRecord.setDeviceId(Objects.isNull(userLastWashDto.getMonitorId())?userLastWashDto.getStarId():userLastWashDto.getMonitorId());
-                userCurrentRegionDto.setWashRecord(washRecord);
-            }
+//            if (Objects.nonNull(userCurrentRegionDto) ){
+//                UserCurrentRegionDto.WashRecord washRecord = new UserCurrentRegionDto.WashRecord();
+//                washRecord.setDateTime(userLastWashDto.getDateTime());
+//                washRecord.setDeviceId(Objects.isNull(userLastWashDto.getMonitorId())?userLastWashDto.getStarId():userLastWashDto.getMonitorId());
+//                userCurrentRegionDto.setWashRecord(washRecord);
+//            }
 
             //记录洗手
             WashRecordDto washRecordDto = washCommon.init(user.getId(),Objects.isNull(userCurrentRegionDto)?null:userCurrentRegionDto.getRegionId()

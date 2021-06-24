@@ -1,11 +1,17 @@
 package com.lion.event.entity.vo;
 
 import com.lion.common.enums.Type;
+import com.lion.core.persistence.Validator;
+import com.lion.device.entity.enums.TagPurpose;
+import com.lion.device.entity.enums.TagType;
 import com.lion.event.entity.SystemAlarm;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -52,6 +58,12 @@ public class SystemAlarmDetailsVo extends SystemAlarm {
 
     @ApiModelProperty(value = "标签编码")
     private String tagCode;
+
+    @ApiModelProperty(value = "标签分类")
+    private TagType tagType;
+
+    @ApiModelProperty(value = "标签用途")
+    private TagPurpose tagPurpose;
 
     @ApiModelProperty(value = "设备名称")
     private String deviceName;

@@ -120,4 +120,10 @@ public interface TagDao extends BaseDao<Tag> {
 
     @Query( " select t.id from Tag t where t.type = :tagType ")
     public List<Long> findId(@Param("tagType")TagType tagType);
+
+    @Query( " select t.id from Tag t where t.type = :tagType and t.tagCode = :tagCode ")
+    public List<Long> findId(@Param("tagType")TagType tagType,@Param("tagCode")String tagCode);
+
+    @Query( " select t.id from Tag t where t.tagCode = :tagCode ")
+    public List<Long> findId(@Param("tagCode")String tagCode);
 }

@@ -116,10 +116,10 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 if (Objects.isNull(user)) {
                     patient = redisUtil.getPatientByTagId(tag.getId());
                 }
-                if (Objects.isNull(patient)) {
+                if (Objects.isNull(patient) && Objects.isNull(user)) {
                     temporaryPerson = redisUtil.getTemporaryPersonByTagId(tag.getId());
                 }
-                if (Objects.isNull(temporaryPerson)) {
+                if (Objects.isNull(temporaryPerson) && Objects.isNull(patient) && Objects.isNull(user)) {
                     assets = redisUtil.getAssets(tag.getId());
                 }
             }
@@ -134,8 +134,11 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                     if (Objects.nonNull(userLastWashDto)){
                         Duration duration = Duration.between(userLastWashDto.getDateTime(), LocalDateTime.now());
                         userLastWashDto.setTime(Long.valueOf(duration.toMillis()).intValue()/1000);
+                        if (Objects.equals(userLastWashDto.getIsUpdateWashTime(),false)) {
+                            rocketMQTemplate.syncSend(TopicConstants.UPDATE_WASH_TIME, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(userLastWashDto)).build());
+                        }
+                        userLastWashDto.setIsUpdateWashTime(true);
                         redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+user.getId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                        rocketMQTemplate.syncSend(TopicConstants.UPDATE_WASH_TIME, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(userLastWashDto)).build());
                     }
                 }
                 if(Objects.nonNull(deviceDataDto.getButtonId())) { //员工按钮事件记录
@@ -156,10 +159,10 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             }
 
             //低电量警报
-            if (deviceDataDto.getMonitorBattery() <=1){
+            if (deviceDataDto.getMonitorBattery() <=1 && Objects.nonNull(monitor) ){
                 batteryAlarmService.deviceLowBatteryAlarm(monitor,deviceDataDto);
             }
-            if (deviceDataDto.getTagBattery() <=1){
+            if (deviceDataDto.getTagBattery() <=1 && Objects.nonNull(tag)){
                 if (Objects.nonNull(user)) {
                     batteryAlarmService.userLowBatteryAlarm(user,deviceDataDto,tag);
                 }else if (Objects.nonNull(assets)) {
