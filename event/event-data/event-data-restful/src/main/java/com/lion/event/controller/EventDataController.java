@@ -291,7 +291,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     }
 
     @GetMapping("/alarm/list")
-    @ApiOperation(value = "地图监控警告列表(只获取负责科室的警告)不返回总行数")
+    @ApiOperation(value = "地图监控警告列表(只获取负责科室的警告)默认30天内数据")
     public IPageResultData<List<SystemAlarmVo>> systemAlarmList(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                 LionPage lionPage){
@@ -299,7 +299,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     }
 
     @GetMapping("/alarm/list1")
-    @ApiOperation(value = "警告记录(查看所有)不返回总行数")
+    @ApiOperation(value = "警告记录(查看所有)默认30天内数据")
     public IPageResultData<List<SystemAlarmVo>> systemAlarmList1(@ApiParam("区域id") @RequestParam(value = "ri",required = false) List<Long> ri, @ApiParam("科室id") Long di, @ApiParam("警报来源") Type alarmType,@ApiParam("标签属性") TagType tagType,@ApiParam("标签码") String tagCode,
                                                                 @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
@@ -308,7 +308,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     }
 
     @GetMapping("/alarm/list1/export")
-    @ApiOperation(value = "警告记录导出(查看所有)")
+    @ApiOperation(value = "警告记录导出(查看所有)默认30天内数据")
     public void systemAlarmList1Export(@ApiParam("区域id") @RequestParam(value = "ri",required = false) List<Long> ri, @ApiParam("科室id") Long di, @ApiParam("警报来源") Type alarmType,@ApiParam("标签属性") TagType tagType,@ApiParam("标签码") String tagCode,
                                                                  @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                  @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
