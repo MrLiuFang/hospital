@@ -23,8 +23,10 @@ import com.lion.event.service.SystemAlarmService;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
+import com.lion.manage.expose.rule.AlarmExposeService;
 import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.RestrictedArea;
@@ -92,6 +94,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @DubboReference
     private FileExposeService fileExposeService;
+
+    @DubboReference
+    private AlarmExposeService alarmExposeService;
 
     @Override
     public void save(SystemAlarm systemAlarm) {
@@ -323,6 +328,19 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                     vo.setTitle(assets.getName());
                     vo.setImg(assets.getImg());
                     vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
+                }
+            }
+            if (Objects.nonNull(systemAlarm.getAli())) {
+                Alarm alarm = alarmExposeService.findById(systemAlarm.getAli());
+                if (Objects.nonNull(alarm)){
+                    vo.setBlueCode(alarm.getBlueCode());
+                }
+            }
+            if (Objects.nonNull(systemAlarm.getUui())) {
+                User user = userExposeService.findById(systemAlarm.getUui());
+                if (Objects.nonNull(user)) {
+                    vo.setUuHeadPortrait(user.getHeadPortrait());
+                    vo.setUuHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                 }
             }
             return vo;

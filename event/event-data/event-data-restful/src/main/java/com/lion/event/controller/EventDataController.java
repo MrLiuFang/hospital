@@ -362,7 +362,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     }
 
     @GetMapping("/tag/position")
-    @ApiOperation(value = "标签位置(不返回总行数)")
+    @ApiOperation(value = "标签位置列表(不返回总行数)")
     public IPageResultData<List<ListPositionVo>> tagPosition(@ApiParam("标签类型") TagPurpose tagPurpose, @ApiParam("区域")Long regionId, @ApiParam("科室")Long departmentId, @ApiParam("设备名称/标签名称")String deviceName, @ApiParam("标签编码")String tagCode,
                                                        @ApiParam(value = "开始进入时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                        @ApiParam(value = "结束进入时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,

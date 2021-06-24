@@ -35,7 +35,7 @@ public class SystemAlarmVo extends SystemAlarm {
     @ApiModelProperty(value = "警告内容编码(com.lion.manage.entity.enums.SystemAlarmType 获取该字典)")
     private String alarmCode;
 
-    @ApiModelProperty(value = "警告人姓名/资产名称/tag名成.......")
+    @ApiModelProperty(value = "警告人姓名/资产名称/tag名称.......")
     private String title;
 
     @ApiModelProperty(value = "图片ID")

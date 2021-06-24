@@ -77,4 +77,12 @@ public class SystemAlarmDetailsVo extends SystemAlarm {
     @ApiModelProperty(value = "资产编号")
     private String assetsCode;
 
+    @ApiModelProperty(value = "blueCode")
+    private String blueCode;
+
+    @ApiModelProperty(value = "处理人头像")
+    private Long uuHeadPortrait;
+
+    @ApiModelProperty(value = "处理人头像Url")
+    private String uuHeadPortraitUrl;
 }

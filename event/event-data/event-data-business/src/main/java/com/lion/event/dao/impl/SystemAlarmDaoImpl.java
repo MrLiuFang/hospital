@@ -256,6 +256,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             items.forEach(systemAlarm -> {
                 SystemAlarmVo vo = new SystemAlarmVo();
                 BeanUtils.copyProperties(systemAlarm,vo);
+                vo.setUa(Objects.equals(systemAlarm.getUa(),1));
                 vo.setType(Type.instance(systemAlarm.getTy()));
                 vo.setDeviceDateTime(systemAlarm.getDt());
                 vo.setSortDateTime(systemAlarm.getSdt());

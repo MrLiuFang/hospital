@@ -174,7 +174,7 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     }
 
     @GetMapping("/log/list")
-    @ApiOperation(value = "医护汇报列表")
+    @ApiOperation(value = "患者日志")
     public IPageResultData<List<ListPatientLogVo>> listLog(@ApiParam(value = "患者id") @NotNull(message = "患者不能为空") Long patientId,LionPage lionPage) {
         return patientLogService.list(patientId, lionPage);
     }
