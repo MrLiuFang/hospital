@@ -92,7 +92,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         assertDepartmentExist(assets.getDepartmentId());
         assets = this.save(assets);
         if (Objects.nonNull(addAssetsDto.getTagCode())) {
-            tagAssetsExposeService.relation(assets.getId(), addAssetsDto.getTagCode(), addAssetsDto.getDepartmentId());
+            tagAssetsExposeService.relation(assets.getId(), addAssetsDto.getTagCode(), assets.getDepartmentId());
         }
         persistenceRedis(assets,addAssetsDto.getTagCode());
     }
@@ -116,7 +116,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             redisTemplate.delete(RedisConstants.TAG_ASSETS + tag.getId());
         }
         if (Objects.nonNull(updateAssetsDto.getTagCode())) {
-            tagAssetsExposeService.relation(assets.getId(), updateAssetsDto.getTagCode(), updateAssetsDto.getDepartmentId());
+            tagAssetsExposeService.relation(assets.getId(), updateAssetsDto.getTagCode(), assets.getDepartmentId());
             persistenceRedis(assets,updateAssetsDto.getTagCode());
         }else {
             tagAssetsExposeService.deleteByAssetsId(assets.getId());
