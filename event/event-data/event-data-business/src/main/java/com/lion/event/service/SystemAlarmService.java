@@ -10,6 +10,7 @@ import com.lion.event.entity.vo.ListSystemAlarmVo;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.entity.vo.SystemAlarmDetailsVo;
 import com.lion.event.entity.vo.SystemAlarmVo;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -108,10 +109,13 @@ public interface SystemAlarmService {
     /**
      * 列表
      * @param pi
+     * @param ri
+     * @param startDateTime
+     * @param endDateTime
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListSystemAlarmVo>> list(Long pi, LionPage lionPage);
+    public IPageResultData<List<ListSystemAlarmVo>> list(Long pi,Long ri,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      * 警告详情

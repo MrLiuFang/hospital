@@ -231,14 +231,26 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     }
 
     @Override
-    public IPageResultData<List<ListSystemAlarmVo>> list(Long pi, LionPage lionPage) {
+    public IPageResultData<List<ListSystemAlarmVo>> list(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(pi)) {
             criteria.and("pi").is(pi);
         }
+        if (Objects.nonNull(ri)) {
+            criteria.and("ri").is(ri);
+        }
         criteria.and("ua").is(false ? 1 : 0);
-        criteria.and("dt").gte(LocalDateTime.now().minusDays(30));
+        if (Objects.isNull(startDateTime)){
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            criteria.andOperator(Criteria.where("dt").gte(startDateTime), Criteria.where("dt").lte(endDateTime));
+        }else if (Objects.nonNull(startDateTime)) {
+            criteria.and("dt").gte(startDateTime);
+        }else if (Objects.nonNull(endDateTime)) {
+            criteria.and("dt").lte(endDateTime);
+        }
         query.addCriteria(criteria);
         query.with(lionPage);
         query.with(Sort.by(Sort.Direction.DESC,"ddt"));
