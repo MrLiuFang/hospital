@@ -235,19 +235,20 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/assets/position")
     @ApiOperation(value = "地图监控资产轨迹(不返回总行数)")
-    public IPageResultData<List<Position>> assetsPosition(@ApiParam("资产id") @NotNull(message = "资产id不能为空") Long assetsId,
+    public IPageResultData<List<Position>> assetsPosition(@ApiParam("资产id") @NotNull(message = "资产id不能为空") Long assetsId,@ApiParam("区域id")  Long regionId,
                                                           @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                           @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                           LionPage lionPage) {
-        return positionService.list(null,assetsId,startDateTime ,endDateTime, lionPage);
+        return positionService.list(null,assetsId,regionId , startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/staff/position")
     @ApiOperation(value = "地图监控员工轨迹(不返回总行数)")
-    public IPageResultData<List<Position>> staffPosition(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId,@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+    public IPageResultData<List<Position>> staffPosition(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId,@ApiParam("区域id")  Long regionId,
+                                                         @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                          @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                          LionPage lionPage) {
-        return positionService.list(userId,null,startDateTime,endDateTime , lionPage);
+        return positionService.list(userId,null,regionId , startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/staff/system/alarm")
@@ -258,10 +259,11 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/patient/position")
     @ApiOperation(value = "地图监控患者轨迹(不返回总行数)")
-    public IPageResultData<List<Position>> patientPosition(@ApiParam("患者id") @NotNull(message = "患者id不能为空") Long positionId,@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+    public IPageResultData<List<Position>> patientPosition(@ApiParam("患者id") @NotNull(message = "患者id不能为空") Long patientId,@ApiParam("区域id") Long regionId,
+                                                            @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                            @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                            LionPage lionPage) {
-        return positionService.list(positionId, null,startDateTime,endDateTime , lionPage);
+        return positionService.list(patientId, null,regionId , startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/patient/system/alarm")
@@ -272,10 +274,11 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/temporary/person/position")
     @ApiOperation(value = "地图监控流动人员轨迹(不返回总行数)")
-    public IPageResultData<List<Position>> temporaryPersonPosition(@ApiParam("流动人员id") @NotNull(message = "流动人员id不能为空") Long temporaryPersonId,@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+    public IPageResultData<List<Position>> temporaryPersonPosition(@ApiParam("流动人员id") @NotNull(message = "流动人员id不能为空") Long temporaryPersonId,@ApiParam("区域id") Long regionId,
+                                                                   @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                    @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                    LionPage lionPage) {
-        return positionService.list(temporaryPersonId,null,startDateTime,endDateTime , lionPage);
+        return positionService.list(temporaryPersonId,null,regionId , startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/temporary/person/system/alarm")
@@ -356,9 +359,10 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/person/all/region")
     @ApiOperation(value = "病人或流动人员所到区域")
-    public IResultData<List<String>> personAllRegion(@ApiParam("病人或流动人员id")@NotNull(message = "病人或流动人员不能为空") Long personId,@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+    public IResultData<List<String>> personAllRegion(@ApiParam("病人或流动人员id")@NotNull(message = "病人或流动人员不能为空") Long personId,@ApiParam("区域")Long regionId,
+                                                     @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                      @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime ) {
-        return ResultData.instance().setData(positionService.personAllRegion(personId, startDateTime, endDateTime));
+        return ResultData.instance().setData(positionService.personAllRegion(personId,regionId , startDateTime, endDateTime));
     }
 
     @GetMapping("/tag/position")

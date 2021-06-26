@@ -1,12 +1,10 @@
 package com.lion.event.service;
 
 import com.lion.core.IPageResultData;
-import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.vo.ListPositionVo;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,22 +39,24 @@ public interface PositionService {
     /**
      * 查询轨迹
      * @param pi
-     * @param ai
+     * @param adi
+     * @param ri
      * @param startDateTime
      * @param endDateTime
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<Position>> list(Long pi,Long ai, LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<Position>> list(Long pi, Long adi,Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      * 病人/流动人员所到区域
      * @param personId
+     * @param regionId
      * @param startDateTime
      * @param endDateTime
      * @return
      */
-    public List<String> personAllRegion(Long personId, LocalDateTime startDateTime,LocalDateTime endDateTime );
+    public List<String> personAllRegion(Long personId,Long regionId, LocalDateTime startDateTime,LocalDateTime endDateTime );
 
     /**
      * 标签位置

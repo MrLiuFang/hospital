@@ -69,7 +69,7 @@ public class PositionDaoImpl implements PositionDaoEx {
     }
 
     @Override
-    public List<String> personAllRegion(Long personId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public List<String> personAllRegion(Long personId, Long regionId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<Bson> pipeline = new ArrayList<Bson>();
         BasicDBObject group = new BasicDBObject();
         group = BasicDBObjectUtil.put(group,"$group","_id","$rn"); //区域
@@ -84,6 +84,9 @@ public class PositionDaoImpl implements PositionDaoEx {
         }
         if (Objects.nonNull(personId)){
             match = BasicDBObjectUtil.put(match,"$match","pi",personId );
+        }
+        if (Objects.nonNull(regionId)){
+            match = BasicDBObjectUtil.put(match,"$match","ri",regionId );
         }
         pipeline.add(match);
         pipeline.add(group);

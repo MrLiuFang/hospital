@@ -1,6 +1,5 @@
 package com.lion.event.dao;
 
-import com.lion.common.enums.Type;
 import com.lion.event.entity.Position;
 
 import java.time.LocalDateTime;
@@ -26,9 +25,10 @@ public interface PositionDaoEx {
     /**
      * 病人/流动人员所到区域
      * @param personId
+     * @param regionId
      * @param startDateTime
      * @param endDateTime
      * @return
      */
-    public List<String> personAllRegion(Long personId, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    public List<String> personAllRegion(Long personId,Long regionId,LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

@@ -25,7 +25,6 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import javax.naming.directory.SearchControls;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -69,14 +68,17 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public IPageResultData<List<Position>> list(Long pi, Long ai, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<Position>> list(Long pi, Long adi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(pi)) {
             criteria.and("pi").is(pi);
         }
-        if (Objects.nonNull(ai)) {
-            criteria.and("ai").is(ai);
+        if (Objects.nonNull(adi)) {
+            criteria.and("adi").is(adi);
+        }
+        if (Objects.nonNull(ri)) {
+            criteria.and("ri").is(ri);
         }
         if (Objects.isNull(startDateTime)) {
             startDateTime = LocalDateTime.now().minusDays(30);
@@ -99,8 +101,8 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public List<String> personAllRegion(Long personId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return positionDao.personAllRegion(personId, startDateTime, endDateTime);
+    public List<String> personAllRegion(Long personId, Long regionId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return positionDao.personAllRegion(personId,regionId , startDateTime, endDateTime);
     }
 
     @Override

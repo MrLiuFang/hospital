@@ -10,6 +10,7 @@ import com.lion.common.dto.UserTagButtonRecordDto;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.TagRuleEffect;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagRule;
 import com.lion.event.service.CommonService;
@@ -62,22 +63,22 @@ public class UserButtonServiceImpl implements UserButtonService {
         commonService.position(deviceDataDto,user,currentRegionDto.getRegionId(),tag );
         if (Objects.equals(1,deviceDataDto.getButtonId())) {
             record(currentRegionDto,user,tagRule.getGreenButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
-            if (Objects.equals(tagRule.getGreenButtonTip(),true)) {
+            if (Objects.equals(tagRule.getGreenButtonTip(),true) && Objects.equals(tagRule.getGreenButton(), TagRuleEffect.EMPLOYEE_CALL)) {
                 systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto);
             }
         }else if (Objects.equals(2,deviceDataDto.getButtonId())) {
             record(currentRegionDto,user,tagRule.getRedButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
-            if (Objects.equals(tagRule.getRedButtonTip(),true)) {
+            if (Objects.equals(tagRule.getRedButtonTip(),true) && Objects.equals(tagRule.getGreenButton(), TagRuleEffect.EMPLOYEE_CALL)) {
                 systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto);
             }
         }else if (Objects.equals(3,deviceDataDto.getButtonId())) {
             record(currentRegionDto,user,tagRule.getYellowButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
-            if (Objects.equals(tagRule.getYellowButton(),true)) {
+            if (Objects.equals(tagRule.getYellowButton(),true) && Objects.equals(tagRule.getGreenButton(), TagRuleEffect.EMPLOYEE_CALL)) {
                 systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto);
             }
         }else if (Objects.equals(4,deviceDataDto.getButtonId())) {
             record(currentRegionDto,user,tagRule.getBottomButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
-            if (Objects.equals(tagRule.getBottomButton(),true)) {
+            if (Objects.equals(tagRule.getBottomButton(),true) && Objects.equals(tagRule.getGreenButton(), TagRuleEffect.EMPLOYEE_CALL)) {
                 systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto);
             }
         }
