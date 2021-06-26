@@ -319,6 +319,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             User nurse = userExposeService.findById(patientNurse.getNurseId());
             PatientDetailsVo.NurseVo nurseVo = new PatientDetailsVo.NurseVo();
             if (Objects.nonNull(nurse)){
+                nurseVo.setNurseId(nurse.getId());
                 nurseVo.setNurseName(nurse.getName());
                 nurseVo.setNurseHeadPortrait(nurse.getHeadPortrait());
                 nurseVo.setNurseHeadPortraitUrl(fileExposeService.getUrl(nurse.getHeadPortrait()));
@@ -332,6 +333,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             User doctor = userExposeService.findById(patientDoctor.getDoctorId());
             PatientDetailsVo.DoctorVo doctorVo = new PatientDetailsVo.DoctorVo();
             if (Objects.nonNull(doctor)){
+                doctorVo.setDoctorId(doctor.getId());
                 doctorVo.setDoctorName(doctor.getName());
                 doctorVo.setDoctorHeadPortrait(doctor.getHeadPortrait());
                 doctorVo.setDoctorHeadPortraitUrl(fileExposeService.getUrl(doctor.getHeadPortrait()));

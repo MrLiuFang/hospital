@@ -55,6 +55,10 @@ public class PatientDetailsVo extends Patient {
     @Data
     @ApiModel
     public static class DoctorVo {
+
+        @ApiModelProperty(value = "负责医生id")
+        private Long doctorId;
+
         @ApiModelProperty(value = "负责医生姓名")
         private String doctorName;
 
@@ -68,6 +72,10 @@ public class PatientDetailsVo extends Patient {
     @Data
     @ApiModel
     public static class NurseVo {
+
+        @ApiModelProperty(value = "负责护士id")
+        private Long nurseId;
+
         @ApiModelProperty(value = "负责护士姓名")
         private String nurseName;
 
