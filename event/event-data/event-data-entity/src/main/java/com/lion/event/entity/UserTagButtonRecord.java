@@ -7,6 +7,8 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.io.Serializable;
+
 /**
  * @description:
  * @author: Mr.Liu
@@ -15,8 +17,9 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Data
 @Document(value = "user_tag_button_record")
 @ApiModel
-public class UserTagButtonRecord extends UserTagButtonRecordDto {
+public class UserTagButtonRecord extends UserTagButtonRecordDto implements Serializable {
 
+    private static final long serialVersionUID = -8445564254600194613L;
     @Id
     private String _id;
 

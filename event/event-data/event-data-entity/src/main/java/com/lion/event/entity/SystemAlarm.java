@@ -103,23 +103,6 @@ public class SystemAlarm implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime udt;
 
-
-    @ApiModelProperty(value = "汇报人id")
-    private Long rui;
-
-    @ApiModelProperty(value = "汇报人姓名")
-    private String run;
-
-    @ApiModelProperty(value = "汇报员工编号")
-    private Integer rnu;
-
-    @ApiModelProperty(value = "员工汇报内容")
-    private String re;
-
-    @ApiModelProperty(value = "汇报时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime rdt;
-
     public void setUa(Boolean ua) {
         this.ua = ua ? 1 : 0;
     }
