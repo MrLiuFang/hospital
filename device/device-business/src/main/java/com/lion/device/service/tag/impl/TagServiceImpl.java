@@ -1,6 +1,7 @@
 package com.lion.device.service.tag.impl;
 
 import com.lion.common.constants.RedisConstants;
+import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
@@ -15,7 +16,12 @@ import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.*;
 import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
+import com.lion.device.entity.tag.vo.DetailsTagVo;
 import com.lion.device.entity.tag.vo.ListTagVo;
+import com.lion.device.expose.tag.TagAssetsExposeService;
+import com.lion.device.expose.tag.TagPatientExposeService;
+import com.lion.device.expose.tag.TagPostdocsExposeService;
+import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.assets.Assets;
@@ -87,6 +93,21 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 
     @DubboReference
     private AssetsExposeService assetsExposeService;
+
+    @DubboReference
+    private TagUserExposeService tagUserExposeService;
+
+    @DubboReference
+    private TagPatientExposeService tagPatientExposeService;
+
+    @DubboReference
+    private TagPostdocsExposeService tagPostdocsExposeService;
+
+    @DubboReference
+    private TagAssetsExposeService tagAssetsExposeService;
+
+    @DubboReference
+    private FileExposeService fileExposeService;
 
     @Override
     public void add(AddTagDto addTagDto) {
@@ -237,6 +258,57 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     @Override
     public List<Long> allId() {
         return tagDao.allId();
+    }
+
+    @Override
+    public DetailsTagVo details(Long id) {
+        Tag tag = findById(id);
+        if (Objects.isNull(tag)) {
+            return null;
+        }
+        DetailsTagVo vo = new DetailsTagVo();
+        BeanUtils.copyProperties(tag,vo);
+        TagUser tagUser = tagUserExposeService.find(tag.getId());
+        if (Objects.nonNull(tagUser)){
+            User user = userExposeService.findById(tagUser.getUserId());
+            if (Objects.nonNull(user)){
+                vo.setBindingName(user.getName());
+                vo.setImg(user.getHeadPortrait());
+                vo.setImgUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+            }
+            return vo;
+        }
+        TagAssets tagAssets = tagAssetsExposeService.findByTagId(tag.getId());
+        if (Objects.nonNull(tagAssets)) {
+            Assets assets = assetsExposeService.findById(tagAssets.getAssetsId());
+            if (Objects.nonNull(assets)) {
+                vo.setBindingName(assets.getName());
+                vo.setImg(assets.getImg());
+                vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
+            }
+            return vo;
+        }
+        TagPatient tagPatient = tagPatientExposeService.find(tag.getId());
+        if (Objects.nonNull(tagPatient)) {
+            Patient patient = patientExposeService.findById(tagPatient.getPatientId());
+            if (Objects.nonNull(patient)) {
+                vo.setBindingName(patient.getName());
+                vo.setImg(patient.getHeadPortrait());
+                vo.setImgUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
+            }
+            return vo;
+        }
+        TagPostdocs tagPostdocs = tagPostdocsExposeService.find(tag.getId());
+        if (Objects.nonNull(tagPostdocs)) {
+            TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(tagPostdocs.getPostdocsId());
+            if (Objects.nonNull(temporaryPerson)) {
+                vo.setBindingName(temporaryPerson.getName());
+                vo.setImg(temporaryPerson.getHeadPortrait());
+                vo.setImgUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
+            }
+            return vo;
+        }
+        return vo;
     }
 
     private void assertDeviceCodeExist(String deviceCode, Long id) {

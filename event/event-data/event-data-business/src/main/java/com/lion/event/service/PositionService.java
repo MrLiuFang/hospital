@@ -1,5 +1,6 @@
 package com.lion.event.service;
 
+import com.lion.common.dto.UpdatePositionLeaveTimeDto;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.device.entity.enums.TagPurpose;
@@ -71,4 +72,10 @@ public interface PositionService {
      * @return
      */
      public IPageResultData<List<ListPositionVo>> tagPosition(TagPurpose tagPurpose, Long regionId,Long departmentId,String deviceName,String tagCode,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+
+    /**
+     * 更新患者离开区域时间
+     * @param dto
+     */
+    public void updatePositionLeaveTime(UpdatePositionLeaveTimeDto dto);
 }

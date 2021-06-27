@@ -1,5 +1,6 @@
 package com.lion.event.service.impl;
 
+import com.lion.common.dto.UpdatePositionLeaveTimeDto;
 import com.lion.common.enums.Type;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -10,21 +11,26 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.PositionDao;
 import com.lion.event.entity.Position;
+import com.lion.event.entity.WashRecord;
 import com.lion.event.entity.vo.ListPositionVo;
 import com.lion.event.service.CurrentPositionService;
 import com.lion.event.service.PositionService;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.bson.Document;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -158,5 +164,24 @@ public class PositionServiceImpl implements PositionService {
             returnList.add(vo);
         });
         return new PageResultData(returnList,lionPage,0L);
+    }
+
+    @Override
+    public void updatePositionLeaveTime(UpdatePositionLeaveTimeDto dto) {
+        Document match = new Document();
+        match.put("pi",dto.getPi());
+        match.put("ddt",dto.getPddt());
+        match.put("sdt",dto.getPsdt());
+        Query query = new BasicQuery(match);
+        Position position = mongoTemplate.findOne(query, Position.class);
+        if (Objects.nonNull(position)) {
+            Query queryUpdate = new Query();
+            queryUpdate.addCriteria(Criteria.where("_id").is(position.get_id()));
+            Update update = new Update();
+            Duration duration = Duration.between(dto.getPddt(),dto.getCddt());
+            update.set("t", Integer.valueOf(String.valueOf(duration.toMinutes())));
+            update.set("ldt", dto.getCddt());
+            mongoTemplate.updateFirst(queryUpdate, update, "position");
+        }
     }
 }

@@ -196,4 +196,14 @@ public class TopicConstants {
      */
     public static final String RECYCLING_BOX_CONSUMER_GROUP ="recycling_box_consumer_group";
 
+    /**
+     * 更新患者区域离开时间
+     */
+    public static final String UPDATE_POSITION_LEAVE_TIME = "update_position_leave_time";
+
+    /**
+     * 更新患者区域离开时间
+     */
+    public static final String UPDATE_POSITION_LEAVE_TIME_CONSUMER_GROUP = "update_position_leave_time_consumer_group";
+
 }

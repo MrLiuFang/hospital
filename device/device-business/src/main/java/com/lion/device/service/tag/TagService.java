@@ -10,8 +10,10 @@ import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
+import com.lion.device.entity.tag.vo.DetailsTagVo;
 import com.lion.device.entity.tag.vo.ListTagVo;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -59,4 +61,11 @@ public interface TagService extends BaseService<Tag> {
      * @return
      */
     public List<Long> allId();
+
+    /**
+     * 详情
+     * @param id
+     * @return
+     */
+    public DetailsTagVo details(Long id);
 }

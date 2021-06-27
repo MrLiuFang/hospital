@@ -65,4 +65,11 @@ public class PositionDto implements Serializable {
     @ApiModelProperty(value = "系统接受到时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sdt;
+
+    @ApiModelProperty(value = "离开时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime ldt;
+
+    @ApiModelProperty(value = "时长(分钟)")
+    private Integer t;
 }

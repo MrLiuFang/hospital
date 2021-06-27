@@ -13,6 +13,8 @@ public class RedisConstants {
 
     public static String LAST_DATA = "last_data_";
 
+    public static String LAST_REGION = "last_region_";
+
     /**
      * 温湿标签最后的记录
      */

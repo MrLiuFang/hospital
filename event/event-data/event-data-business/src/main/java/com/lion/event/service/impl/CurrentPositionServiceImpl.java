@@ -83,6 +83,18 @@ public class CurrentPositionServiceImpl implements CurrentPositionService {
     }
 
     @Override
+    public CurrentPosition findByAssetsId(Long assetsId) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.nonNull(assetsId)) {
+            criteria.and("adi").is(assetsId);
+        }
+        query.addCriteria(criteria);
+        CurrentPosition currentPosition = mongoTemplate.findOne(query,CurrentPosition.class);
+        return currentPosition;
+    }
+
+    @Override
     public Map<Long, RegionStatisticsDetails> groupCount(Long buildFloorId, Map<Long, RegionStatisticsDetails> map) {
         return currentPositionDao.groupCount(buildFloorId, map);
     }

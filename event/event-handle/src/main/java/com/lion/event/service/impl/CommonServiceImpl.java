@@ -4,10 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
-import com.lion.common.dto.CurrentRegionDto;
-import com.lion.common.dto.DeviceDataDto;
-import com.lion.common.dto.PositionDto;
-import com.lion.common.dto.SystemAlarmDto;
+import com.lion.common.dto.*;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
@@ -30,6 +27,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -50,6 +48,9 @@ public class CommonServiceImpl implements CommonService {
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
 
+    @Autowired
+    private CommonService commonService;
+
 
     @Override
     public void position(DeviceDataDto deviceDataDto, User user, Long regionId, Tag tag) throws JsonProcessingException {
@@ -60,6 +61,28 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void position(DeviceDataDto deviceDataDto, Patient patient, Long regionId, Tag tag) throws JsonProcessingException {
         position(Type.PATIENT,patient.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+        CurrentRegionDto currentRegionDto = commonService.currentRegion(deviceDataDto);
+        if (Objects.nonNull(currentRegionDto)) {
+            CurrentRegionDto lastCurrentRegionDto = (CurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.LAST_REGION + patient.getId());
+            if (Objects.nonNull(lastCurrentRegionDto) && !Objects.equals(currentRegionDto.getRegionId(), lastCurrentRegionDto.getRegionId())){
+                if (Objects.nonNull(lastCurrentRegionDto.getTime()) && Objects.nonNull(lastCurrentRegionDto.getSystemDateTime())) {
+                    UpdatePositionLeaveTimeDto dto = new UpdatePositionLeaveTimeDto();
+                    dto.setPi(patient.getId());
+                    dto.setPddt(lastCurrentRegionDto.getTime());
+                    dto.setPsdt(lastCurrentRegionDto.getSystemDateTime());
+                    dto.setCddt(deviceDataDto.getTime());
+                    dto.setCsdt(deviceDataDto.getSystemDateTime());
+                    try {
+                        rocketMQTemplate.syncSend(TopicConstants.UPDATE_POSITION_LEAVE_TIME, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(dto)).build());
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            currentRegionDto.setTime(deviceDataDto.getTime());
+            currentRegionDto.setSystemDateTime(deviceDataDto.getSystemDateTime());
+            redisTemplate.opsForValue().set(RedisConstants.LAST_REGION + patient.getId(), currentRegionDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        }
         penaltyZoneAlarm(Type.PATIENT,patient.getId(),regionId,tag.getId());
     }
 

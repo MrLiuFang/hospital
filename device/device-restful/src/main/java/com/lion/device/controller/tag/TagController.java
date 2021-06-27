@@ -87,9 +87,9 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/details")
     @ApiOperation(value = "标签详情")
-    public IResultData<Tag> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsTagVo> details(@NotNull(message = "id不能为空") Long id){
         ResultData resultData = ResultData.instance();
-        resultData.setData(tagService.findById(id));
+        resultData.setData(tagService.details(id));
         return resultData;
     }
 

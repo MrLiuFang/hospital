@@ -3,6 +3,7 @@ package com.lion.event.service;
 import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
+import org.checkerframework.checker.units.qual.C;
 
 import java.util.Map;
 
@@ -32,6 +33,13 @@ public interface CurrentPositionService  {
      * @return
      */
     public CurrentPosition findByTagId(Long tagId);
+
+    /**
+     * 资产当前位置
+     * @param assetsId
+     * @return
+     */
+    public CurrentPosition findByAssetsId(Long assetsId);
 
     /**
      * 根据区域统计区域的员工，患者，标签……数量

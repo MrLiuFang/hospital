@@ -1,5 +1,8 @@
 package com.lion.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.common.enums.Hygiene;
+import com.lion.common.enums.Type;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -21,4 +24,10 @@ public class CurrentRegionDto implements Serializable {
 
     @ApiModelProperty(value = "第一次进入时间")
     private LocalDateTime firstEntryTime;
+
+    @ApiModelProperty(value = "设备产生的时间")
+    private LocalDateTime time;
+
+    @ApiModelProperty(value = "系统接收到的时间")
+    private LocalDateTime systemDateTime;
 }

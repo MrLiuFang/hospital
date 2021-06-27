@@ -101,6 +101,12 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return ResultData.instance().setData(currentPositionService.findByTagId(tagId));
     }
 
+    @GetMapping("/assets/current/region")
+    @ApiOperation(value = "资产当前位置")
+    public IResultData<CurrentPosition> assetsCurrentPosition(@ApiParam(value = "资产id") @NotNull(message = "资产id不能为空") Long assetsId) {
+        return ResultData.instance().setData(currentPositionService.findByAssetsId(assetsId));
+    }
+
     @GetMapping("/wash/list")
     @ApiOperation(value = "用户洗手记录(不返回总行数，数据量大查询总行数费时，不给时间范围默认查询一周内的数据，以提高性能)")
     public IPageResultData<List<WashRecord>> washList(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId,
