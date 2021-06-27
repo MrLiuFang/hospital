@@ -46,7 +46,7 @@ public class CctvExposeServiceImpl extends BaseServiceImpl<Cctv> implements Cctv
                 update(cctv);
             });
         }
-        if(Objects.nonNull(oldCctvIds)) {
+        if(Objects.nonNull(newCctvIds)) {
             newCctvIds.forEach(id -> {
                 Cctv cctv = findById(id);
                 cctv.setBuildId(buildId);

@@ -33,12 +33,14 @@ public class RegionExposeObjectServiceImpl extends BaseServiceImpl<RegionExposeO
             return;
         }
         List<RegionExposeObject> regionExposeObjects = new ArrayList<>();
-        list.forEach(exposeObject -> {
-            RegionExposeObject regionExposeObject = new RegionExposeObject();
-            regionExposeObject.setRegionId(regionId);
-            regionExposeObject.setExposeObject(exposeObject);
-            save(regionExposeObject);
-        });
+        if (Objects.nonNull(list) && list.size()>0) {
+            list.forEach(exposeObject -> {
+                RegionExposeObject regionExposeObject = new RegionExposeObject();
+                regionExposeObject.setRegionId(regionId);
+                regionExposeObject.setExposeObject(exposeObject);
+                save(regionExposeObject);
+            });
+        }
     }
 
     @Override
