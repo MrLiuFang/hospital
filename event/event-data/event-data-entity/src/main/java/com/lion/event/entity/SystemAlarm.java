@@ -1,6 +1,7 @@
 package com.lion.event.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.common.enums.SystemAlarmState;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -58,8 +59,8 @@ public class SystemAlarm implements Serializable {
     @ApiModelProperty(value = "警告类型(com.lion.manage.entity.enums.SystemAlarmType)")
     private Integer sat;
 
-    @ApiModelProperty(value = "是否已知熟（处理）(1=已处理,0=未处理)")
-    private Integer ua = false ? 1 : 0;
+    @ApiModelProperty(value = "警告状态（com.lion.manage.entity.enums.SystemAlarmState)（0, 未处理),(1, 已处理(熟知)操作员处理),(2, 主动呼叫),(3, 取消呼叫),(4, 警告熟知(员工通过按钮熟知)")
+    private Integer ua;
 
     @ApiModelProperty(value = "建筑id")
     private Long bui;
@@ -72,6 +73,9 @@ public class SystemAlarm implements Serializable {
 
     @ApiModelProperty(value = "楼层名称")
     private String bfn;
+
+    @ApiModelProperty(value = "警告所属科室id")
+    private Long sdi;
 
     @ApiModelProperty(value = "科室id")
     private Long di;
@@ -103,8 +107,8 @@ public class SystemAlarm implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime udt;
 
-    public void setUa(Boolean ua) {
-        this.ua = ua ? 1 : 0;
+    public void setUa(SystemAlarmState state) {
+        this.ua = state.getKey();
     }
 
 }

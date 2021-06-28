@@ -6,11 +6,15 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.dto.UpdateStateDto;
+import com.lion.common.enums.SystemAlarmState;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.MessageDelayUtil;
 import com.lion.common.utils.RedisUtil;
+import com.lion.device.entity.device.Device;
+import com.lion.device.entity.tag.Tag;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.service.SystemAlarmService;
+import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
@@ -18,6 +22,8 @@ import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.TemporaryPerson;
+import com.lion.upms.entity.user.User;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
@@ -114,7 +120,7 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                     if (Objects.nonNull(systemAlarmDto.getType())) {
                         newSystemAlarm.setTy(systemAlarmDto.getType().getKey());
                     }
-                    newSystemAlarm.setUa(false);
+                    newSystemAlarm.setUa(SystemAlarmState.UNTREATED);
                     newSystemAlarm.setUi(systemAlarmDto.getUuid());
                     newSystemAlarm.setDt(systemAlarmDto.getDateTime());
                     newSystemAlarm.setSdt( systemAlarmDto.getDateTime() );
@@ -139,6 +145,35 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                         if (Objects.nonNull(department)) {
                             newSystemAlarm.setDi(department.getId());
                             newSystemAlarm.setDn(department.getName());
+                        }
+                    }
+                    if (Objects.equals(newSystemAlarm.getTy(),Type.STAFF.getKey())) {
+                        User user = redisUtil.getUserById(newSystemAlarm.getPi()) ;
+                        if (Objects.nonNull(user)) {
+                            Department department = redisUtil.getDepartmentByUserId(user.getId());
+                            newSystemAlarm.setSdi(department.getId());
+                        }
+                    }else if (Objects.equals(newSystemAlarm.getTy(),Type.PATIENT.getKey())) {
+                        Patient patient = redisUtil.getPatient(newSystemAlarm.getPi());
+                        if (Objects.nonNull(patient)) {
+                            newSystemAlarm.setSdi(patient.getDepartmentId());
+                        }
+                    }else if (Objects.equals(newSystemAlarm.getTy(),Type.MIGRANT.getKey())) {
+                        TemporaryPerson temporaryPerson = redisUtil.getTemporaryPerson(newSystemAlarm.getPi());
+                        if (Objects.nonNull(temporaryPerson)) {
+                            newSystemAlarm.setSdi(temporaryPerson.getDepartmentId());
+                        }
+                    }else if (Objects.equals(newSystemAlarm.getTy(),Type.ASSET.getKey())) {
+                        Assets assets = redisUtil.getAssets(newSystemAlarm.getTi());
+                        if (Objects.nonNull(assets)){
+                            newSystemAlarm.setSdi(assets.getDepartmentId());
+                        }
+                    }else if (Objects.equals(newSystemAlarm.getTy(),Type.DEVICE.getKey())) {
+
+                    }else if (Objects.equals(newSystemAlarm.getTy(),Type.HUMIDITY.getKey()) || Objects.equals(newSystemAlarm.getTy(),Type.TEMPERATURE.getKey()) ) {
+                        Tag tag = redisUtil.getTagById(newSystemAlarm.getTi());
+                        if (Objects.nonNull(tag)) {
+                            newSystemAlarm.setSdi(tag.getDepartmentId());
                         }
                     }
                     systemAlarmService.save(newSystemAlarm);

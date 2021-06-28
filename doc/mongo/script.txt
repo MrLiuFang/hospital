@@ -81,6 +81,12 @@ db.runCommand({
 })
 
 db.runCommand({
+    shardcollection : "hospital.system_alarm_report",
+    key : {_id: 1}
+})
+
+
+db.runCommand({
     shardcollection : "hospital.position",
     key : {_id: 1}
 })

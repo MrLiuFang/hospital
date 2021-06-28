@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.DeviceGroup;
+import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionExposeObject;
 import io.swagger.annotations.ApiModel;
@@ -30,6 +31,5 @@ public class DetailsRegionVo extends Region {
     private List<Cctv> cctvs;
 
     @ApiModelProperty(value = "公开对象")
-    @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-    private List<RegionExposeObject> exposeObjects;
+    private List<ExposeObject> exposeObjects;
 }

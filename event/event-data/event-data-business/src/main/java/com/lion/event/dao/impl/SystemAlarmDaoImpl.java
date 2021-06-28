@@ -1,6 +1,7 @@
 package com.lion.event.dao.impl;
 
 import com.lion.common.constants.RedisConstants;
+import com.lion.common.enums.SystemAlarmState;
 import com.lion.common.enums.Type;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.BasicDBObjectUtil;
@@ -104,7 +105,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             Query query = new Query();
             query.addCriteria(Criteria.where("_id").is(id));
             Update update = new Update();
-            update.set("ua", true?1:0);
+            update.set("ua", SystemAlarmState.PROCESSED.getKey());
             update.set("uui",userId);
             update.set("uun",userName);
             update.set("udt",LocalDateTime.now());
@@ -162,12 +163,12 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         List<Bson> pipeline = new ArrayList<Bson>();
         BasicDBObject match = new BasicDBObject();
         LocalDateTime now = LocalDateTime.now();
-        match = BasicDBObjectUtil.put(match,"$match","di",new BasicDBObject("$eq",departmentId) );
+        match = BasicDBObjectUtil.put(match,"$match","sdi",new BasicDBObject("$eq",departmentId) );
 //        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",LocalDateTime.of(now.toLocalDate(), LocalTime.MIN) ).append("$lte",now));
         match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",now.toLocalDate().minusDays(30) ).append("$lte",now));
         pipeline.add(match);
         BasicDBObject group = new BasicDBObject();
-        group = BasicDBObjectUtil.put(group,"$group","_id","$di");
+        group = BasicDBObjectUtil.put(group,"$group","_id","$sdi");
         group = BasicDBObjectUtil.put(group,"$group","allAlarmCount",new BasicDBObject("$sum",1));
         group = BasicDBObjectUtil.put(group,"$group","unalarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ua",false?1:0})})).append("then",1).append("else",0))));
         group = BasicDBObjectUtil.put(group,"$group","alarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ua",true?1:0})})).append("then",1).append("else",0))));
@@ -191,8 +192,10 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         }else {
             return null;
         }
-        if (Objects.nonNull(ua)) {
-            criteria.and("ua").is(ua?1:0);
+        if (Objects.equals(false,ua)) {
+            criteria.and("ua").in(SystemAlarmState.CALL.getKey(),SystemAlarmState.UNTREATED.getKey());
+        }else if (Objects.equals(true,ua)) {
+            criteria.and("ua").in(SystemAlarmState.CANCEL_CALL.getKey(),SystemAlarmState.PROCESSED.getKey(),SystemAlarmState.WELL_KNOWN.getKey());
         }
         if (Objects.isNull(startDateTime)) {
             startDateTime = LocalDateTime.now().minusDays(30);
@@ -222,10 +225,12 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
-            criteria.and("di").in(departmentIds);
+            criteria.and("sdi").in(departmentIds);
         }
-        if (Objects.nonNull(ua)) {
-            criteria.and("ua").is(ua?1:0);
+        if ( Objects.equals(ua,false)) {
+            criteria.and("ua").in(SystemAlarmState.CALL.getKey(),SystemAlarmState.UNTREATED.getKey());
+        }else if (Objects.equals(ua,true)) {
+            criteria.and("ua").in(SystemAlarmState.CANCEL_CALL.getKey(),SystemAlarmState.PROCESSED.getKey(),SystemAlarmState.WELL_KNOWN.getKey());
         }
         if (Objects.nonNull(ri) && ri.size()>0) {
             criteria.and("ri").in(ri);
@@ -256,7 +261,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             items.forEach(systemAlarm -> {
                 SystemAlarmVo vo = new SystemAlarmVo();
                 BeanUtils.copyProperties(systemAlarm,vo);
-                vo.setUa(Objects.equals(systemAlarm.getUa(),1));
+                vo.setUa(SystemAlarmState.instance(systemAlarm.getUa()));
                 vo.setType(Type.instance(systemAlarm.getTy()));
                 vo.setDeviceDateTime(systemAlarm.getDt());
                 vo.setSortDateTime(systemAlarm.getSdt());

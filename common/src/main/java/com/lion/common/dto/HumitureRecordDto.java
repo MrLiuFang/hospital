@@ -36,6 +36,9 @@ public class HumitureRecordDto implements Serializable {
     @ApiModelProperty(value = "楼层名称")
     private String bfn;
 
+    @ApiModelProperty(value = "所属科室id")
+    private Long sdi;
+
     @ApiModelProperty(value = "科室id")
     private Long di;
 

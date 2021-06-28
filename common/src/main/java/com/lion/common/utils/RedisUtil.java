@@ -547,6 +547,30 @@ public class RedisUtil {
         return device;
     }
 
+    public Tag getTagById(Long id){
+        if (Objects.isNull(id)){
+            return null;
+        }
+        Object obj = redisTemplate.opsForValue().get(RedisConstants.TAG+id);
+        Tag tag = null;
+
+        if (Objects.nonNull(obj) && !(obj instanceof Tag)){
+            redisTemplate.delete(RedisConstants.TAG+id);
+            obj = null;
+        }
+        if (Objects.nonNull(obj)){
+            tag = (Tag) obj;
+        }
+
+        if (Objects.isNull(tag)){
+            tag = tagExposeService.findById(id);
+            if (Objects.nonNull(tag)){
+                redisTemplate.opsForValue().set(RedisConstants.TAG+id,tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            }
+        }
+        return tag;
+    }
+
     public Tag getTag(String tagCode) {
         if (!StringUtils.hasText(tagCode)){
             return null;

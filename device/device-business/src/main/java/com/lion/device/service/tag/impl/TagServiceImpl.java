@@ -219,6 +219,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                     User user = userExposeService.findById(tagUser.getUserId());
                     if (Objects.nonNull(user)) {
                         vo.setBindingName(user.getName()+":"+user.getNumber());
+                        vo.setBindingId(user.getId());
 //                        Department department = departmentUserExposeService.findDepartment(user.getId());
 //                        if (Objects.nonNull(department)) {
 //                            vo.setDepartmentName(department.getName());
@@ -231,6 +232,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                     Patient patient = patientExposeService.findById(tagPatient.getPatientId());
                     if (Objects.nonNull(patient)) {
                         vo.setBindingName(patient.getName());
+                        vo.setBindingId(patient.getId());
                     }
                 }
             }else if (Objects.equals(tag.getPurpose(),TagPurpose.POSTDOCS)) {
@@ -239,6 +241,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                     TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(tagPostdocs.getPostdocsId());
                     if (Objects.nonNull(temporaryPerson)) {
                         vo.setBindingName(temporaryPerson.getName());
+                        vo.setBindingId(temporaryPerson.getId());
                     }
                 }
             }else if (Objects.equals(tag.getPurpose(),TagPurpose.ASSETS)) {
@@ -247,6 +250,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                     Assets assets = assetsExposeService.findById(tagAssets.getAssetsId());
                     if (Objects.nonNull(assets)){
                         vo.setBindingName(assets.getName());
+                        vo.setBindingId(assets.getId());
                     }
                 }
             }
@@ -275,6 +279,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 vo.setBindingName(user.getName());
                 vo.setImg(user.getHeadPortrait());
                 vo.setImgUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                vo.setBindingId(user.getId());
             }
             return vo;
         }
@@ -285,6 +290,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 vo.setBindingName(assets.getName());
                 vo.setImg(assets.getImg());
                 vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
+                vo.setBindingId(assets.getId());
             }
             return vo;
         }
@@ -295,6 +301,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 vo.setBindingName(patient.getName());
                 vo.setImg(patient.getHeadPortrait());
                 vo.setImgUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
+                vo.setBindingId(patient.getId());
             }
             return vo;
         }
@@ -305,6 +312,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 vo.setBindingName(temporaryPerson.getName());
                 vo.setImg(temporaryPerson.getHeadPortrait());
                 vo.setImgUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
+                vo.setBindingId(temporaryPerson.getId());
             }
             return vo;
         }

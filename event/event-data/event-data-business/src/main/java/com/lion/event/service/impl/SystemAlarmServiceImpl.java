@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.dto.UpdateStateDto;
+import com.lion.common.enums.SystemAlarmState;
 import com.lion.common.enums.Type;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.IPageResultData;
@@ -19,6 +20,7 @@ import com.lion.event.entity.vo.ListSystemAlarmVo;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.entity.vo.SystemAlarmDetailsVo;
 import com.lion.event.entity.vo.SystemAlarmVo;
+import com.lion.event.service.SystemAlarmReportService;
 import com.lion.event.service.SystemAlarmService;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.SystemAlarmType;
@@ -97,6 +99,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @DubboReference
     private AlarmExposeService alarmExposeService;
+
+    @Autowired
+    private SystemAlarmReportService systemAlarmReportService;
 
     @Override
     public void save(SystemAlarm systemAlarm) {
@@ -240,7 +245,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         if (Objects.nonNull(ri)) {
             criteria.and("ri").is(ri);
         }
-        criteria.and("ua").is(false ? 1 : 0);
+        criteria.and("ua").in(SystemAlarmState.UNTREATED.getKey(),SystemAlarmState.CALL.getKey());
         if (Objects.isNull(startDateTime)){
             startDateTime = LocalDateTime.now().minusDays(30);
         }
@@ -355,6 +360,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                     vo.setUuHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                 }
             }
+            vo.setSystemAlarmReportDetailsVos(systemAlarmReportService.list(vo.get_id()));
             return vo;
         }
         return null;

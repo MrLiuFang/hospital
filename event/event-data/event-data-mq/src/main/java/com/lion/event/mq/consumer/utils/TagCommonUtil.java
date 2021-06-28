@@ -2,6 +2,7 @@ package com.lion.event.mq.consumer.utils;
 
 import com.lion.common.dto.HumitureRecordDto;
 import com.lion.common.utils.RedisUtil;
+import com.lion.device.entity.tag.Tag;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
@@ -45,6 +46,12 @@ public class TagCommonUtil {
             if (Objects.nonNull(department)) {
                 humitureRecordDto.setDi(department.getId());
                 humitureRecordDto.setDn(department.getName());
+            }
+        }
+        if (Objects.nonNull(humitureRecordDto.getTi())) {
+            Tag tag = redisUtil.getTagById(humitureRecordDto.getTi()) ;
+            if (Objects.nonNull(tag)){
+                humitureRecordDto.setSdi(tag.getDepartmentId());
             }
         }
         return humitureRecordDto;

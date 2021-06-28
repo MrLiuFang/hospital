@@ -14,6 +14,9 @@ import lombok.Data;
 @ApiModel
 public class ListTagVo extends Tag {
 
+    @ApiModelProperty(value = "绑定Id")
+    private Long bindingId;
+
     @ApiModelProperty(value = "绑定对象")
     private String bindingName;
 

@@ -16,6 +16,9 @@ import lombok.Data;
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"lastDataTime","deviceState","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class DetailsTagVo extends Tag {
 
+    @ApiModelProperty(value = "绑定Id")
+    private Long bindingId;
+
     @ApiModelProperty(value = "绑定对象")
     private String bindingName;
 

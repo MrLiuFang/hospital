@@ -12,8 +12,10 @@ import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
+import com.lion.manage.entity.region.RegionExposeObject;
 import com.lion.manage.entity.region.dto.AddRegionDto;
 import com.lion.manage.entity.region.dto.UpdateRegionCoordinatesDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
@@ -140,7 +142,12 @@ public class RegionController extends BaseControllerImpl implements BaseControll
             if (cctvIds.size()>0) {
                 detailsRegionVo.setCctvs(cctvExposeService.find(cctvIds));
             }
-            detailsRegionVo.setExposeObjects(regionExposeObjectService.find(region.getId()));
+            List<RegionExposeObject> regionExposeObjectList = regionExposeObjectService.find(region.getId());
+            List<ExposeObject> exposeObjectList = new ArrayList<>();
+            regionExposeObjectList.forEach(regionExposeObject -> {
+                exposeObjectList.add(regionExposeObject.getExposeObject());
+            });
+            detailsRegionVo.setExposeObjects(exposeObjectList);
             resultData.setData(detailsRegionVo);
         }
         return resultData;

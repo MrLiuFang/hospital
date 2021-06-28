@@ -83,6 +83,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @Autowired
     private UserTagButtonRecordService userTagButtonRecordService;
 
+    @Autowired
+    private SystemAlarmReportService systemAlarmReportService;
+
     @GetMapping("/user/current/region")
     @ApiOperation(value = "员工当前位置")
     public IResultData<CurrentRegionVo> userCurrentRegion(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId) {
@@ -169,7 +172,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @PutMapping("/alarm/report")
     @ApiOperation(value = "添加汇报")
     public IResultData alarmReport(@RequestBody @Validated AlarmReportDto alarmReportDto) {
-        systemAlarmService.alarmReport(alarmReportDto);
+        systemAlarmReportService.alarmReport(alarmReportDto);
         return ResultData.instance();
     }
 
