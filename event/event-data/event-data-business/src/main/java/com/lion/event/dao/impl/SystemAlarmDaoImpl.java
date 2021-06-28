@@ -227,9 +227,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
             criteria.and("sdi").in(departmentIds);
         }
-        if ( Objects.equals(ua,false)) {
+        if (Objects.nonNull(ua) && Objects.equals(ua,false)) {
             criteria.and("ua").in(SystemAlarmState.CALL.getKey(),SystemAlarmState.UNTREATED.getKey());
-        }else if (Objects.equals(ua,true)) {
+        }else if (Objects.nonNull(ua) && Objects.equals(ua,true)) {
             criteria.and("ua").in(SystemAlarmState.CANCEL_CALL.getKey(),SystemAlarmState.PROCESSED.getKey(),SystemAlarmState.WELL_KNOWN.getKey());
         }
         if (Objects.nonNull(ri) && ri.size()>0) {

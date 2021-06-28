@@ -143,20 +143,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 query.addCriteria(criteria);
                 SystemAlarm systemAlarm = mongoTemplate.findOne(query,SystemAlarm.class);
                 if (Objects.nonNull(systemAlarm)) {
-                    UpdateStateDto updateStateDto = new UpdateStateDto();
-                    updateStateDto.setType(Type.instance(systemAlarm.getTy()));
-                    updateStateDto.setState(1);
-                    if (Objects.equals(Type.STAFF,updateStateDto.getType()) || Objects.equals(Type.PATIENT,updateStateDto.getType()) || Objects.equals(Type.MIGRANT,updateStateDto.getType())) {
-                        updateStateDto.setId(systemAlarm.getPi());
-                    }else if (Objects.equals(Type.ASSET,updateStateDto.getType())) {
-                        updateStateDto.setId(systemAlarm.getAi());
-                    }else if (Objects.equals(Type.DEVICE,updateStateDto.getType())) {
-                        updateStateDto.setId(systemAlarm.getDvi());
-                    }else if (Objects.equals(Type.HUMIDITY,updateStateDto.getType()) || Objects.equals(Type.TEMPERATURE,updateStateDto.getType())) {
-                        updateStateDto.setId(systemAlarm.getTi());
-                    }
-                    alarmDao.unalarm(uuid, id, userId, user.getName());
-                    rocketMQTemplate.syncSend(TopicConstants.UPDATE_STATE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(updateStateDto)).build());
+                    updateDeviceState(systemAlarm);
                 }
             }
         }
@@ -396,6 +383,27 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
             update.set("ua", systemAlarmDto.getState().getKey());
             mongoTemplate.updateFirst(queryUpdate, update, "system_alarm");
             redisTemplate.opsForValue().set(RedisConstants.UNALARM+systemAlarm.getUi(),true,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            updateDeviceState(systemAlarm);
         });
+    }
+
+    private void updateDeviceState(SystemAlarm systemAlarm ){
+        UpdateStateDto updateStateDto = new UpdateStateDto();
+        updateStateDto.setType(Type.instance(systemAlarm.getTy()));
+        updateStateDto.setState(1);
+        if (Objects.equals(Type.STAFF,updateStateDto.getType()) || Objects.equals(Type.PATIENT,updateStateDto.getType()) || Objects.equals(Type.MIGRANT,updateStateDto.getType())) {
+            updateStateDto.setId(systemAlarm.getPi());
+        }else if (Objects.equals(Type.ASSET,updateStateDto.getType())) {
+            updateStateDto.setId(systemAlarm.getAi());
+        }else if (Objects.equals(Type.DEVICE,updateStateDto.getType())) {
+            updateStateDto.setId(systemAlarm.getDvi());
+        }else if (Objects.equals(Type.HUMIDITY,updateStateDto.getType()) || Objects.equals(Type.TEMPERATURE,updateStateDto.getType())) {
+            updateStateDto.setId(systemAlarm.getTi());
+        }
+        try {
+            rocketMQTemplate.syncSend(TopicConstants.UPDATE_STATE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(updateStateDto)).build());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 }
