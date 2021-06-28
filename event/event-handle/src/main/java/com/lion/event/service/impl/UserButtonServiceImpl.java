@@ -3,10 +3,8 @@ package com.lion.event.service.impl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.TopicConstants;
-import com.lion.common.dto.CurrentRegionDto;
-import com.lion.common.dto.DeviceDataDto;
-import com.lion.common.dto.SystemAlarmDto;
-import com.lion.common.dto.UserTagButtonRecordDto;
+import com.lion.common.dto.*;
+import com.lion.common.enums.SystemAlarmState;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
@@ -63,25 +61,37 @@ public class UserButtonServiceImpl implements UserButtonService {
         commonService.position(deviceDataDto,user,currentRegionDto.getRegionId(),tag );
         if (Objects.equals(1,deviceDataDto.getButtonId())) {
             record(currentRegionDto,user,tagRule.getGreenButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
-            if (Objects.equals(tagRule.getGreenButtonTip(),true) && Objects.equals(tagRule.getGreenButton(), TagRuleEffect.EMPLOYEE_CALL)) {
-                systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto);
-            }
+            event(tagRule.getGreenButtonTip(),tagRule.getGreenButton(),tag,currentRegionDto,user);
         }else if (Objects.equals(2,deviceDataDto.getButtonId())) {
             record(currentRegionDto,user,tagRule.getRedButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
-            if (Objects.equals(tagRule.getRedButtonTip(),true) && Objects.equals(tagRule.getGreenButton(), TagRuleEffect.EMPLOYEE_CALL)) {
-                systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto);
-            }
+            event(tagRule.getRedButtonTip(),tagRule.getRedButton(),tag,currentRegionDto,user);
         }else if (Objects.equals(3,deviceDataDto.getButtonId())) {
             record(currentRegionDto,user,tagRule.getYellowButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
-            if (Objects.equals(tagRule.getYellowButton(),true) && Objects.equals(tagRule.getGreenButton(), TagRuleEffect.EMPLOYEE_CALL)) {
-                systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto);
-            }
+            event(tagRule.getYellowButtonTip(),tagRule.getYellowButton(),tag,currentRegionDto,user);
         }else if (Objects.equals(4,deviceDataDto.getButtonId())) {
             record(currentRegionDto,user,tagRule.getBottomButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
-            if (Objects.equals(tagRule.getBottomButton(),true) && Objects.equals(tagRule.getGreenButton(), TagRuleEffect.EMPLOYEE_CALL)) {
-                systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto);
-            }
+            event(tagRule.getBottomButtonTip(),tagRule.getBottomButton(),tag,currentRegionDto,user);
         }
+    }
+
+    private void event(Boolean buttonTip,TagRuleEffect tagRuleEffect,Tag tag,CurrentRegionDto currentRegionDto,User user) throws JsonProcessingException {
+        if (Objects.equals(buttonTip,true) && Objects.equals(tagRuleEffect, TagRuleEffect.EMPLOYEE_CALL)) {
+            systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto);
+        }else if (Objects.equals(tagRuleEffect, TagRuleEffect.ALARM_KNOW) || Objects.equals(tagRuleEffect, TagRuleEffect.CANCEL)) {
+            systemAlarmUpdateState(user,currentRegionDto,tagRuleEffect);
+        }
+    }
+
+    private void systemAlarmUpdateState(User user,CurrentRegionDto currentRegionDto,TagRuleEffect tagRuleEffect) throws JsonProcessingException {
+        SystemAlarmHandleDto dto = new SystemAlarmHandleDto();
+        if (Objects.equals(tagRuleEffect,TagRuleEffect.CANCEL)) {
+            dto.setState(SystemAlarmState.CANCEL_CALL);
+        }else if (Objects.equals(tagRuleEffect,TagRuleEffect.ALARM_KNOW)) {
+            dto.setState(SystemAlarmState.WELL_KNOWN);
+        }
+        dto.setPeopleId(user.getId());
+        dto.setRegionId(currentRegionDto.getRegionId());
+        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM_HANDLE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(dto)).build());
     }
 
     private void record(CurrentRegionDto currentRegionDto,User user,String buttonName,Integer buttonId,Tag tag,DeviceDataDto deviceDataDto) throws JsonProcessingException {

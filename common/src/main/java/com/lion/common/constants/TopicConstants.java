@@ -61,6 +61,17 @@ public class TopicConstants {
     public static final String SYSTEM_ALARM_CONSUMER_GROUP = "system_alarm_consumer_group";
 
     /**
+     * 系统内警告处理
+     */
+    public static final String SYSTEM_ALARM_HANDLE = "system_alarm_handle";
+
+    /**
+     * 系统内警告处理
+     */
+    public static final String SYSTEM_ALARM_HANDLE_CONSUMER_GROUP = "system_alarm_handle_consumer_group";
+
+
+    /**
      * 设备数据
      */
     public static final String DEVICE_DATA = "device_data";

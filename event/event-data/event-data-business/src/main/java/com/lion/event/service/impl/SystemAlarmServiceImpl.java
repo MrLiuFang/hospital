@@ -2,8 +2,10 @@ package com.lion.event.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.SystemAlarmDto;
+import com.lion.common.dto.SystemAlarmHandleDto;
 import com.lion.common.dto.UpdateStateDto;
 import com.lion.common.enums.SystemAlarmState;
 import com.lion.common.enums.Type;
@@ -47,11 +49,14 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -102,6 +107,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Autowired
     private SystemAlarmReportService systemAlarmReportService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public void save(SystemAlarm systemAlarm) {
@@ -364,5 +372,30 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
             return vo;
         }
         return null;
+    }
+
+    @Override
+    public void updateState(SystemAlarmHandleDto systemAlarmDto) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.nonNull(systemAlarmDto.getPeopleId())) {
+            criteria.and("pi").is(systemAlarmDto.getPeopleId());
+        }
+        if (Objects.equals(systemAlarmDto.getState(),SystemAlarmState.CANCEL_CALL)) {
+            criteria.and("ua").is(SystemAlarmState.CALL.getKey());
+        }else if (Objects.equals(systemAlarmDto.getState(),SystemAlarmState.WELL_KNOWN)) {
+            criteria.and("ua").is(SystemAlarmState.UNTREATED.getKey());
+        }
+        criteria.and("dt").gte(LocalDateTime.now().minusDays(30));
+        query.addCriteria(criteria);
+        List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
+        items.forEach(systemAlarm -> {
+            Query queryUpdate = new Query();
+            queryUpdate.addCriteria(Criteria.where("_id").is(systemAlarm.get_id()));
+            Update update = new Update();
+            update.set("ua", systemAlarmDto.getState().getKey());
+            mongoTemplate.updateFirst(queryUpdate, update, "system_alarm");
+            redisTemplate.opsForValue().set(RedisConstants.UNALARM+systemAlarm.getUi(),true,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        });
     }
 }

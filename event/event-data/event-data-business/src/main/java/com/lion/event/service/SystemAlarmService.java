@@ -1,6 +1,7 @@
 package com.lion.event.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.lion.common.dto.SystemAlarmHandleDto;
 import com.lion.common.enums.Type;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
@@ -123,4 +124,10 @@ public interface SystemAlarmService {
      * @return
      */
     public SystemAlarmDetailsVo details(String id);
+
+    /**
+     * 更新警告状态
+     * @param systemAlarmDto
+     */
+    public void updateState(SystemAlarmHandleDto systemAlarmDto);
 }
