@@ -44,9 +44,6 @@ public class CurrentPositionServiceImpl implements CurrentPositionService {
         if (Objects.nonNull(position.getAdi())) {
             criteria.and("adi").is(position.getAdi());
         }
-        if (Objects.nonNull(position.getAdi())) {
-            criteria.and("adi").is(position.getAdi());
-        }
         if (Objects.nonNull(position.getTi())) {
             criteria.and("ti").is(position.getTi());
         }
