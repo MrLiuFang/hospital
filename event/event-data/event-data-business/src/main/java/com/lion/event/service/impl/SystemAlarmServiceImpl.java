@@ -142,6 +142,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 }
                 query.addCriteria(criteria);
                 SystemAlarm systemAlarm = mongoTemplate.findOne(query,SystemAlarm.class);
+                alarmDao.unalarm(uuid, id, userId, user.getName());
                 if (Objects.nonNull(systemAlarm)) {
                     updateDeviceState(systemAlarm);
                 }
