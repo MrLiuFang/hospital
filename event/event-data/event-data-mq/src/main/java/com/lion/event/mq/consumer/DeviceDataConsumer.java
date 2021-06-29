@@ -78,6 +78,8 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             Tag tag = null;
 
             DeviceData deviceData = new DeviceData();
+            deviceData.setDdt(deviceDataDto.getTime());
+            deviceData.setSdt(deviceDataDto.getSystemDateTime());
             if (Objects.nonNull(deviceDataDto.getMonitorId())) {
                 monitor = redisUtil.getDevice(deviceDataDto.getMonitorId());
                 if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getId())) {
