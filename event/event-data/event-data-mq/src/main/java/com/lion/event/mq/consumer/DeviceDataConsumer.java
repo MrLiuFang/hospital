@@ -7,6 +7,7 @@ import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
 import com.lion.common.constants.TopicConstants;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.device.DeviceExposeService;
@@ -75,97 +76,52 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             Device monitor = null;
             Device star = null;
             Tag tag = null;
-            User user = null;
-            Region monitorRegion = null;
-            Region starRegion = null;
-            Region region = null;
+
             DeviceData deviceData = new DeviceData();
             if (Objects.nonNull(deviceDataDto.getMonitorId())) {
                 monitor = redisUtil.getDevice(deviceDataDto.getMonitorId());
                 if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getId())) {
                     redisTemplate.opsForValue().set(RedisConstants.LAST_DATA+String.valueOf(monitor.getId()),LocalDateTime.now(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    deviceData.setMi(monitor.getId());
+                    deviceData.setMc(monitor.getCode());
+                    deviceData.setMn(monitor.getName());
                 }
             }
             if (Objects.nonNull(deviceDataDto.getStarId())) {
                 star = redisUtil.getDevice(deviceDataDto.getStarId());
                 if (Objects.nonNull(star) && Objects.nonNull(star.getId())) {
                     redisTemplate.opsForValue().set(RedisConstants.LAST_DATA+String.valueOf(star.getId()),LocalDateTime.now(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    deviceData.setSi(star.getId());
+                    deviceData.setSc(star.getCode());
+                    deviceData.setSn(star.getName());
                 }
             }
             if (Objects.nonNull(deviceDataDto.getTagId())) {
                 tag = redisUtil.getTag(deviceDataDto.getTagId());
                 if (Objects.nonNull(tag) && Objects.nonNull(tag.getId())) {
                     redisTemplate.opsForValue().set(RedisConstants.LAST_DATA+String.valueOf(tag.getId()),LocalDateTime.now(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    deviceData.setTi(tag.getId());
+                    deviceData.setTc(tag.getTagCode());
+                    deviceData.setTn(tag.getDeviceName());
                 }
             }
-//            if (Objects.nonNull(tag)){
-//                user = redisUtil.getUser(tag.getId());
-//            }
-            if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getId())) {
-                monitorRegion = redisUtil.getRegion(monitor.getId());
-            }
-            if (Objects.nonNull(star) && Objects.nonNull(star.getId())) {
-                starRegion = redisUtil.getRegion(star.getId());
-            }
-            region = Objects.isNull(monitorRegion)?starRegion:monitorRegion;
-//            if (Objects.nonNull(tag)){
-//                user = redisUtil.getUser(tag.getId());
-//                Patient patient = null;
-//                if (Objects.isNull(user)) {
-//                    patient = redisUtil.getPatientByTagId(tag.getId());
-//                }
-//                if (Objects.isNull(patient)) {
-//                    TemporaryPerson temporaryPerson = redisUtil.getTemporaryPersonByTagId(tag.getId());
-//                }
-//            }
 
-            if (Objects.nonNull(monitor)) {
-                deviceData.setMc(deviceDataDto.getMonitorId());
-                deviceData.setMb(deviceDataDto.getMonitorBattery());
-                deviceData.setMcl(monitor.getDeviceClassify().getKey());
-                deviceData.setMn(monitor.getName());
-                deviceData.setMt(monitor.getDeviceType().getKey());
+            if (Objects.nonNull(deviceDataDto.getButtonId())) {
+                deviceData.setE("标签按钮");
             }
-            if (Objects.nonNull(star)){
-                deviceData.setSc(deviceDataDto.getStarId());
-                deviceData.setScl(star.getDeviceClassify().getKey());
-                deviceData.setSn(star.getName());
-                deviceData.setSt(star.getDeviceType().getKey());
-            }
-            if (Objects.nonNull(tag)){
-                deviceData.setBi(deviceDataDto.getButtonId());
-                deviceData.setTb(deviceDataDto.getTagBattery());
-                deviceData.setTc(deviceDataDto.getTagId());
-                deviceData.setTyp(tag.getType().getKey());
-                deviceData.setTp(tag.getPurpose().getKey());
-                deviceData.setTn(tag.getDeviceName());
-            }
-            if (Objects.nonNull(region)){
-                deviceData.setRi(region.getId());
-                deviceData.setRn(region.getName());
-                Build build = redisUtil.getBuild(region.getBuildId());
-                if (Objects.nonNull(build)){
-                    deviceData.setBui(build.getId());
-                    deviceData.setBun(build.getName());
-                }
-                BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)){
-                    deviceData.setBfi(buildFloor.getId());
-                    deviceData.setBfn(buildFloor.getName());
-                }
-                Department department = redisUtil.getDepartment(region.departmentId);
-                if (Objects.nonNull(department)){
-                    deviceData.setDi(department.getId());
-                    deviceData.setDn(department.getName());
-                }
 
+            if (Objects.nonNull(deviceDataDto.getTemperature()) || Objects.nonNull(deviceDataDto.getHumidity())) {
+                deviceData.setE("温湿");
             }
-            deviceData.setW(deviceDataDto.getWarning());
-            deviceData.setT(deviceDataDto.getTemperature());
-            deviceData.setH(deviceDataDto.getHumidity());
-            deviceData.setDdt(deviceDataDto.getTime());
-            deviceData.setSdt(deviceDataDto.getSystemDateTime());
-            deviceData.setBi(deviceDataDto.getButtonId());
+
+            if (Objects.equals(monitor.getDeviceClassify(), DeviceClassify.HAND_WASHING)) {
+                deviceData.setE("洗手");
+            }
+
+            if (Objects.equals(monitor.getDeviceClassify(), DeviceClassify.RECYCLING_BOX)) {
+                deviceData.setE("回收标签");
+            }
+
             deviceDataService.save(deviceData);
 
         }catch (Exception exception){

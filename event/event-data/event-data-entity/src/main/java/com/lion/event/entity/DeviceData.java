@@ -25,103 +25,35 @@ public class DeviceData implements Serializable {
     @Id
     private String _id;
 
-    @ApiModelProperty(value = "员工/患者/流动人员id")
-    private Long pi;
+    @ApiModelProperty(value = "tag id")
+    private Long ti;
 
-    //类型 (com.lion.common.enums.Type)
-    @ApiModelProperty(value = "数据类型")
-    private Integer typ;
-
-    @ApiModelProperty(value = "Star code")
-    private String sc;
-
-    @ApiModelProperty(value = "Star名称")
-    private String sn;
-
-    //Star大类(com.lion.device.entity.enums.DeviceClassify)
-    @ApiModelProperty(value = "Star大类")
-    private Integer scl;
-
-    //star类型(com.lion.device.entity.enums.DeviceType)
-    @ApiModelProperty(value = "star类型")
-    private Integer st;
-
-    @ApiModelProperty(value = "Monitor code")
-    private String mc;
-
-    @ApiModelProperty(value = "Monitor名称")
-    private String mn;
-
-    //Monitor大类(com.lion.device.entity.enums.DeviceClassify)
-    @ApiModelProperty(value = "Monitor大类")
-    private Integer mcl;
-
-    //Monitor类型(com.lion.device.entity.enums.DeviceType)
-    @ApiModelProperty(value = "Monitor类型")
-    private Integer mt;
-
-    //0=正常
-    //1=少於 90 天
-    //2=少於 30 天
-    @ApiModelProperty(value = "Monitor 的電量")
-    private Integer mb;
-
-    @ApiModelProperty(value = "Tag code")
+    @ApiModelProperty(value = "tag code")
     private String tc;
 
-    //Tag名称
-    @ApiModelProperty(value = "Tag名称")
+    @ApiModelProperty(value = "tag name")
     private String tn;
 
-    //tag类型(com.lion.device.entity.enums.TagType)
-    @ApiModelProperty(value = "tag类型")
-    private Integer tt;
+    @ApiModelProperty(value = "monitor id")
+    private Long mi;
 
-    //tag用途(com.lion.device.entity.enums.TagPurpose)
-    @ApiModelProperty(value = "tag用途")
-    private Integer tp;
+    @ApiModelProperty(value = "monitor code")
+    private String mc;
 
-    //0=正常
-    //1=少於 90 天
-    //2=少於 30 天
-    @ApiModelProperty(value = "Tag 的電量")
-    private Integer tb;
+    @ApiModelProperty(value = "monitor name")
+    private String mn;
 
-    @ApiModelProperty(value = "Tag 按下按鈕 1-4")
-    private Integer bi;
+    @ApiModelProperty(value = "star id")
+    private Long si;
 
-    @ApiModelProperty(value = "溫度")
-    private BigDecimal t;
+    @ApiModelProperty(value = "star code")
+    private String sc;
 
-    @ApiModelProperty(value = "湿度")
-    private BigDecimal h;
+    @ApiModelProperty(value = "star name")
+    private String sn;
 
-    @ApiModelProperty(value = "警告")
-    private String w;
-
-    @ApiModelProperty(value = "建筑id")
-    private Long bui;
-
-    @ApiModelProperty(value = "建筑名称")
-    private String bun;
-
-    @ApiModelProperty(value = "楼层id")
-    private Long bfi;
-
-    @ApiModelProperty(value = "楼层名称")
-    private String bfn;
-
-    @ApiModelProperty(value = "科室id")
-    private Long di;
-
-    @ApiModelProperty(value = "科室名称")
-    private String dn;
-
-    @ApiModelProperty(value = "区域id")
-    private Long ri;
-
-    @ApiModelProperty(value = "区域名称")
-    private String rn;
+    @ApiModelProperty(value = "事件")
+    private String e;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @ApiModelProperty(value = "设备产生時間")

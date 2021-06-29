@@ -21,7 +21,6 @@ import com.lion.event.entity.dto.UnalarmDto;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
 import com.lion.upms.entity.enums.UserType;
-import com.sun.org.apache.regexp.internal.RE;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -119,13 +118,13 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return washService.list(userId, startDateTime, endDateTime, lionPage);
     }
 
-    @GetMapping("/star/data/list")
-    @ApiOperation(value = "star记录(不返回总行数，数据量大查询总行数费时，不给时间范围默认查询一周内的数据，以提高性能)")
-    public IPageResultData<List<DeviceData>> starList(@ApiParam(value = "starId") @NotNull(message = "starid不能为空") Long starId,
+    @GetMapping("/device/data/list")
+    @ApiOperation(value = "设备事件记录(不返回总行数)")
+    public IPageResultData<List<DeviceData>> starList(@ApiParam(value = "starId")  Long starId,@ApiParam(value = "monitorId")  Long monitorId,
                                                       @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                       @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                       LionPage lionPage) {
-        return deviceDataService.list(starId, startDateTime, endDateTime, lionPage);
+        return deviceDataService.list(starId, monitorId, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/wash/ratio")

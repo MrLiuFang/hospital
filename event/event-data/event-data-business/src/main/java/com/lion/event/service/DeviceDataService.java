@@ -23,10 +23,11 @@ public interface DeviceDataService {
     /**
      * 列表
      * @param starId
+     * @param monitorId
      * @param startDateTime
      * @param endDateTime
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<DeviceData>> list(Long starId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<DeviceData>> list(Long starId,Long monitorId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

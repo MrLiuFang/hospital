@@ -36,19 +36,10 @@ public class DeviceDataServiceImpl implements DeviceDataService {
     }
 
     @Override
-    public IPageResultData<List<DeviceData>> list(Long starId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
-            endDateTime = LocalDateTime.now();
-            startDateTime = endDateTime.minusDays(30);
-        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
-            endDateTime = startDateTime.plusDays(30);
-        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
-            startDateTime = endDateTime.minusDays(30);
+    public IPageResultData<List<DeviceData>> list(Long starId, Long monitorId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
         }
-        Device device = deviceExposeService.findById(starId);
-        if (Objects.nonNull(device)){
-            return deviceDataDao.list(device.getCode(),startDateTime,endDateTime,lionPage);
-        }
-        return new PageResultData<>();
+        return deviceDataDao.list(starId, monitorId , startDateTime, endDateTime, lionPage);
     }
 }

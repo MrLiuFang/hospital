@@ -16,11 +16,13 @@ public interface DeviceDataDaoEx {
 
     /**
      * 列表
-     * @param starCode
+     *
+     * @param starId
+     * @param monitorId
      * @param startDateTime
      * @param endDateTime
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<DeviceData>> list(String starCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<DeviceData>> list(Long starId,Long monitorId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

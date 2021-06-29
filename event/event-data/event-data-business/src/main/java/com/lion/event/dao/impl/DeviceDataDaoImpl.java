@@ -26,14 +26,14 @@ public class DeviceDataDaoImpl implements DeviceDataDaoEx {
 
 
     @Override
-    public IPageResultData<List<DeviceData>> list(String starCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<DeviceData>> list(Long starId, Long monitorId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Query query = new Query();
         Criteria criteria = new Criteria();
-        if (Objects.nonNull(starCode)) {
-            criteria.and("sc").is(starCode);
+        if (Objects.nonNull(starId)) {
+            criteria.and("si").is(starId);
         }
-        if (Objects.isNull(startDateTime)) {
-            startDateTime = LocalDateTime.now().minusDays(30);
+        if (Objects.nonNull(monitorId)) {
+            criteria.and("mi").is(monitorId);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
             criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
