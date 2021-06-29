@@ -32,7 +32,7 @@ public class UserWashDetailsVo extends User {
     private BigDecimal conformance = new BigDecimal(0);
 
     @ApiModelProperty(value = "洗手事件列表（不返回总行数）")
-    private IPageResultData<List<UserWashEvent>> userWashEvent;
+    private List<UserWashEvent> userWashEvent;
 
     @Data
     @ApiModel
@@ -46,6 +46,9 @@ public class UserWashDetailsVo extends User {
 
         @ApiModelProperty(value = "是否合规")
         private Boolean isConformance;
+
+        @ApiModelProperty(value = "洗手时长(秒)")
+        private Integer time;
 
         @ApiModelProperty(value = "时间")
         @JsonFormat(

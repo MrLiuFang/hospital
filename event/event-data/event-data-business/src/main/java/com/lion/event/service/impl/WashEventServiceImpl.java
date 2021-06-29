@@ -208,13 +208,14 @@ public class WashEventServiceImpl implements WashEventService {
         List<UserWashDetailsVo.UserWashEvent> pageList = new ArrayList<>();
         list.forEach(event -> {
             UserWashDetailsVo.UserWashEvent userWashEvent = new UserWashDetailsVo.UserWashEvent();
-            userWashEvent.setDateTime(event.getSdt());
+            userWashEvent.setDateTime(event.getAdt());
             userWashEvent.setDeviceName(event.getDvn());
             userWashEvent.setRegionName(event.getRn());
             userWashEvent.setIsConformance(!event.getIa());
+            userWashEvent.setTime(event.getT());
             pageList.add(userWashEvent);
         });
-        vo.setUserWashEvent(new PageResultData<>(pageList,lionPage,0L));
+        vo.setUserWashEvent(pageList);
         return vo;
     }
 

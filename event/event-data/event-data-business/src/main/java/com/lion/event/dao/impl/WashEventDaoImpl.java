@@ -182,11 +182,11 @@ public class WashEventDaoImpl implements WashEventDaoEx {
             criteria.and("pi").is(userId);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
-            criteria.andOperator( Criteria.where("sdt").gte(startDateTime) ,Criteria.where("sdt").lte(endDateTime));
+            criteria.andOperator( Criteria.where("adt").gte(startDateTime) ,Criteria.where("adt").lte(endDateTime));
         }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
-            criteria.and("sdt").gte(startDateTime);
+            criteria.and("adt").gte(startDateTime);
         }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
-            criteria.and("sdt").lte(endDateTime);
+            criteria.and("adt").lte(endDateTime);
         }
         query.addCriteria(criteria);
         query.with(lionPage);

@@ -118,7 +118,6 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                     return;
                                 }
                             }
-
                             recordWashEvent(washEventDto);
                         }
                     }
