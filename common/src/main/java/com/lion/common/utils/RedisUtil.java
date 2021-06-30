@@ -893,7 +893,7 @@ public class RedisUtil {
             tagRuleId = null;
         }
         if (Objects.nonNull(tagRuleId)) {
-            tagRule = (TagRule) redisTemplate.opsForValue().get(RedisConstants.USER_TAG_RULE+(Long)tagRuleId);
+            tagRule = (TagRule) redisTemplate.opsForValue().get(RedisConstants.TAG_RULE+(Long)tagRuleId);
         }
 
         if (Objects.isNull(tagRule)){

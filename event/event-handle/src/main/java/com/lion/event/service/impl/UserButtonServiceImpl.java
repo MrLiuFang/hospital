@@ -77,7 +77,8 @@ public class UserButtonServiceImpl implements UserButtonService {
     private void event(Boolean buttonTip,TagRuleEffect tagRuleEffect,Tag tag,CurrentRegionDto currentRegionDto,User user) throws JsonProcessingException {
         if (Objects.equals(buttonTip,true) && Objects.equals(tagRuleEffect, TagRuleEffect.EMPLOYEE_CALL)) {
             systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto);
-        }else if (Objects.equals(tagRuleEffect, TagRuleEffect.ALARM_KNOW) || Objects.equals(tagRuleEffect, TagRuleEffect.CANCEL)) {
+        }
+        if (Objects.equals(tagRuleEffect, TagRuleEffect.ALARM_KNOW) || Objects.equals(tagRuleEffect, TagRuleEffect.CANCEL)) {
             systemAlarmUpdateState(user,currentRegionDto,tagRuleEffect);
         }
     }
