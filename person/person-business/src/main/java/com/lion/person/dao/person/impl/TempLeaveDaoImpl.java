@@ -31,7 +31,7 @@ public class TempLeaveDaoImpl implements TempLeaveDaoEx {
         sb.append("select tl from TempLeave tl join Patient p on tl.patientId = p.id where 1=1 ");
         if (StringUtils.hasText(tagCode)) {
             sb.append(" and p.tagCode like :tagCode ");
-            searchParameter.put("tagCode","%"+tagCode+"%");
+            searchParameter.put("tagCode",tagCode);
         }
         if (Objects.nonNull(departmentId)) {
             sb.append(" and p.departmentId = :departmentId ");

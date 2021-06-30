@@ -21,9 +21,9 @@ public interface SystemAlarmDaoEx {
 
     /**
      * 更新显示排序时间
-     * @param uuid
+     * @param id
      */
-    public void updateSdt(String uuid);
+    public void updateSdt(String id);
 
     /**
      * 根据UUID 查询
@@ -42,12 +42,11 @@ public interface SystemAlarmDaoEx {
 
     /**
      * 解除警告
-     * @param uuid
      * @param id
      * @param userId
      * @param userName
      */
-    void unalarm(String uuid,String id,Long userId,String userName);
+    void unalarm(String id,Long userId,String userName);
 
     /**
      * 添加汇报

@@ -50,7 +50,7 @@ public class HumitureRecordServiceImpl implements HumitureRecordService {
     public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Map<String, Object> searchParameter = new HashMap<>();
         if (StringUtils.hasText(deviceCode)){
-            searchParameter.put(SearchConstant.LIKE+"_deviceCode","%"+deviceCode+"%");
+            searchParameter.put(SearchConstant.LIKE+"_deviceCode",deviceCode);
         }
         List<Tag> tagList = tagExposeService.find(searchParameter);
         List<Long> tagIds = new ArrayList<>();

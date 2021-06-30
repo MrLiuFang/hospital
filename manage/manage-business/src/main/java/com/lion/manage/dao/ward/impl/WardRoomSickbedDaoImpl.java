@@ -41,7 +41,7 @@ public class WardRoomSickbedDaoImpl implements WardRoomSickbedDaoEx {
         }
         if (StringUtils.hasText(bedCode)) {
             sb.append(" and wrs.bedCode like :bedCode ");
-            searchParameter.put("bedCode","%"+bedCode+"%");
+            searchParameter.put("bedCode",bedCode);
         }
         sb.append(" order by wrs.createDateTime ");
         return (Page<WardRoomSickbed>) baseDao.findNavigator(lionPage, sb.toString(), searchParameter);

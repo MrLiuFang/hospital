@@ -118,10 +118,10 @@ public class PositionServiceImpl implements PositionService {
             searchParameter.put(SearchConstant.EQUAL+"_tagPurpose",tagPurpose);
         }
         if (StringUtils.hasText(deviceName)){
-            searchParameter.put(SearchConstant.LIKE+"_deviceName","%"+deviceName+"%");
+            searchParameter.put(SearchConstant.LIKE+"_deviceName",deviceName);
         }
         if (StringUtils.hasText(tagCode)){
-            searchParameter.put(SearchConstant.LIKE+"_tagCode","%"+tagCode+"%");
+            searchParameter.put(SearchConstant.LIKE+"_tagCode",tagCode);
         }
         List<Tag> tagList = tagExposeService.find(searchParameter);
         List<Long> tagIds = new ArrayList<>();

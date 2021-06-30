@@ -99,7 +99,6 @@ public class BatteryAlarmServiceImpl implements BatteryAlarmService {
         systemAlarmDto.setPeopleId(peopleId);
         systemAlarmDto.setSystemAlarmType(SystemAlarmType.BQDCBZ);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-        systemAlarmDto.setUuid(UUID.randomUUID().toString());
         systemAlarmDto.setRegionId(currentRegionDto.getRegionId());
         try {
             rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());

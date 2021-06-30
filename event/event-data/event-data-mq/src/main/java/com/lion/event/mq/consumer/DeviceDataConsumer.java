@@ -116,11 +116,11 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 deviceData.setE("温湿");
             }
 
-            if (Objects.equals(monitor.getDeviceClassify(), DeviceClassify.HAND_WASHING)) {
+            if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.HAND_WASHING)) {
                 deviceData.setE("洗手");
             }
 
-            if (Objects.equals(monitor.getDeviceClassify(), DeviceClassify.RECYCLING_BOX)) {
+            if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.RECYCLING_BOX)) {
                 deviceData.setE("回收标签");
             }
 

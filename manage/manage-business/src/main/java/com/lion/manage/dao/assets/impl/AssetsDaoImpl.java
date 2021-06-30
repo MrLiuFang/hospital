@@ -33,7 +33,7 @@ public class AssetsDaoImpl implements AssetsDaoEx {
         sb.append(" select new com.lion.core.persistence.curd.MoreEntity(a,ab) from Assets a join AssetsBorrow ab on a.id = ab.assetsId where 1=1");
         if (StringUtils.hasText(name)){
             sb.append(" and a.name like :name ");
-            searchParameter.put("name","%"+name+"%");
+            searchParameter.put("name",name);
         }
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
             sb.append(" and a.departmentId in :departmentIds ");

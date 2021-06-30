@@ -40,9 +40,10 @@ public class WorkExposeServiceImpl extends BaseServiceImpl<Work> implements Work
 
     @Override
     public Map<String, Object> find(Long departmentId, String name, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, int page, int size) {
-        Map<String,Object> map = userExposeService.find(departmentId,name,userType,null,1, 999999999);
+        Map<String,Object> map = userExposeService.find(departmentId,name,userType,null,0, 999999999);
         List<User> userList = (List<User>) map.get("list");
         List<Long> userListId = new ArrayList<>();
+        userListId.add(Long.MAX_VALUE);
         userList.forEach(user -> {
             userListId.add(user.getId());
         });

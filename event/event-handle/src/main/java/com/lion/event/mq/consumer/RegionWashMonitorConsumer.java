@@ -150,7 +150,6 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
         systemAlarmDto.setRegionId(Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null);
         systemAlarmDto.setPeopleId(userCurrentRegionDto.getUserId());
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-        systemAlarmDto.setUuid(userCurrentRegionDto.getUuid());
         systemAlarmDto.setSystemAlarmType(systemAlarmType);
         rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
     }

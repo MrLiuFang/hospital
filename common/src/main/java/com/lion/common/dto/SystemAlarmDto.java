@@ -23,9 +23,9 @@ public class SystemAlarmDto implements Serializable {
 
     private static final long serialVersionUID = -4723208189836453408L;
     /**
-     * 唯一追踪标识
+     * 唯一追踪标识 查入mongo后得到
      */
-    private String uuid = UUID.randomUUID().toString();
+    private String id;
 
     /**
      * 警告类型（com.lion.common.enums.Type）

@@ -83,11 +83,10 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     private TemporaryPersonExposeService temporaryPersonExposeService;
 
     @Override
-    public void updateSdt(String uuid) {
-        SystemAlarm systemAlarm = findUuid(uuid);
-        if (Objects.nonNull(systemAlarm)) {
+    public void updateSdt(String id) {
+        if (StringUtils.hasText(id)) {
             Query query = new Query();
-            query.addCriteria(Criteria.where("_id").is(systemAlarm.get_id()));
+            query.addCriteria(Criteria.where("_id").is(id));
             Update update = new Update();
             update.set("sdt", LocalDateTime.now());
             mongoTemplate.updateFirst(query, update, "system_alarm");
@@ -95,12 +94,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
-    public void unalarm(String uuid, String id, Long userId, String userName) {
-        SystemAlarm systemAlarm =null;
-        if (!StringUtils.hasText(id) && StringUtils.hasText(uuid)) {
-            systemAlarm = findUuid(uuid);
-            id = systemAlarm.get_id();
-        }
+    public void unalarm(String id, Long userId, String userName) {
         if (StringUtils.hasText(id)) {
             Query query = new Query();
             query.addCriteria(Criteria.where("_id").is(id));
@@ -110,8 +104,8 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             update.set("uun",userName);
             update.set("udt",LocalDateTime.now());
             mongoTemplate.updateFirst(query, update, "system_alarm");
+            redisTemplate.opsForValue().set(RedisConstants.UNALARM+id,true,24, TimeUnit.DAYS);
         }
-        redisTemplate.opsForValue().set(RedisConstants.UNALARM+uuid,true,24, TimeUnit.DAYS);
     }
 
     @Override

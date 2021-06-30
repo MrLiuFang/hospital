@@ -11,7 +11,6 @@ import com.lion.event.entity.vo.ListSystemAlarmVo;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.entity.vo.SystemAlarmDetailsVo;
 import com.lion.event.entity.vo.SystemAlarmVo;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,27 +23,21 @@ import java.util.Map;
  **/
 public interface SystemAlarmService {
 
-    public void save(SystemAlarm systemAlarm);
+    public SystemAlarm save(SystemAlarm systemAlarm);
 
     /**
      * 更新显示排序时间
-     * @param uuid
+     * @param id
      */
-    public void updateSdt(String uuid);
+    public void updateSdt(String id);
 
-    /**
-     * 跟据uuid查询
-     * @param uuid
-     * @return
-     */
-    public SystemAlarm find(String uuid);
+
 
     /**
      * 解除警告
-     * @param uuid
      * @param id
      */
-    void unalarm(String uuid,String id) throws JsonProcessingException;
+    void unalarm(String id) throws JsonProcessingException;
 
     /**
      * 添加汇报

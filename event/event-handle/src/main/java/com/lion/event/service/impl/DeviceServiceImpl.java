@@ -100,22 +100,22 @@ public class DeviceServiceImpl implements DeviceService {
         humitureRecord(tag,currentRegionDto,deviceDataDto);
         if (Objects.nonNull(tag.getMaxHumidity()) && Objects.nonNull(deviceDataDto.getHumidity())) {
             if (deviceDataDto.getHumidity().compareTo(tag.getMaxHumidity()) == 1) {
-                systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.WDGDG,currentRegionDto,deviceDataDto );
+                systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGDG,currentRegionDto,deviceDataDto );
             }
         }
         if (Objects.nonNull(tag.getMinHumidity()) && Objects.nonNull(deviceDataDto.getHumidity())) {
             if (deviceDataDto.getHumidity().compareTo(tag.getMinHumidity()) == -1) {
-                systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.WDGDG,currentRegionDto,deviceDataDto );
+                systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGDG,currentRegionDto,deviceDataDto );
             }
         }
         if (Objects.nonNull(tag.getMaxTemperature()) && Objects.nonNull(deviceDataDto.getTemperature())) {
             if (deviceDataDto.getTemperature().compareTo(tag.getMaxTemperature()) == 1) {
-                systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGDG,currentRegionDto,deviceDataDto );
+                systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.WDGDG,currentRegionDto,deviceDataDto );
             }
         }
         if (Objects.nonNull(tag.getMinTemperature()) && Objects.nonNull(deviceDataDto.getTemperature())) {
             if (deviceDataDto.getTemperature().compareTo(tag.getMinTemperature()) == -1) {
-                systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.SDGDG,currentRegionDto,deviceDataDto );
+                systemAlarm(Type.HUMIDITY,tag,null,SystemAlarmType.WDGDG,currentRegionDto,deviceDataDto );
             }
         }
     }
@@ -157,7 +157,6 @@ public class DeviceServiceImpl implements DeviceService {
         }
         systemAlarmDto.setSystemAlarmType(systemAlarmType);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-        systemAlarmDto.setUuid(UUID.randomUUID().toString());
         systemAlarmDto.setRegionId(Objects.isNull(systemAlarmDto)?null:currentRegionDto.getRegionId());
         rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
     }

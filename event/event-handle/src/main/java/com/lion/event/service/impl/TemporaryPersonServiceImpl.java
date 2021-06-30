@@ -70,7 +70,6 @@ public class TemporaryPersonServiceImpl implements TemporaryPersonService {
             systemAlarmDto.setPeopleId(temporaryPerson.getId());
             systemAlarmDto.setSystemAlarmType(SystemAlarmType.CCXDFW);
             systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-            systemAlarmDto.setUuid(UUID.randomUUID().toString());
             systemAlarmDto.setRegionId(currentRegionDto.getRegionId());
             rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
         }

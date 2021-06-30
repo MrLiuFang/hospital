@@ -112,37 +112,33 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     private RedisTemplate redisTemplate;
 
     @Override
-    public void save(SystemAlarm systemAlarm) {
-        alarmDao.save(systemAlarm);
+    public SystemAlarm save(SystemAlarm systemAlarm) {
+        return alarmDao.save(systemAlarm);
     }
 
     @Override
-    public void updateSdt(String uuid) {
-        alarmDao.updateSdt(uuid);
+    public void updateSdt(String id) {
+        alarmDao.updateSdt(id);
     }
 
-    @Override
-    public SystemAlarm find(String uuid) {
-        return alarmDao.findUuid(uuid);
-    }
 
     @Override
-    public void unalarm(String uuid, String id) throws JsonProcessingException {
+    public void unalarm(String id) throws JsonProcessingException {
         Long userId = CurrentUserUtil.getCurrentUserId();
         if (Objects.nonNull(userId)) {
             User user = userExposeService.findById(userId);
             if (Objects.nonNull(user)) {
                 Query query = new Query();
                 Criteria criteria = new Criteria();
-                if (Objects.nonNull(uuid)) {
-                    criteria.and("ui").is(uuid);
-                }
+//                if (Objects.nonNull(uuid)) {
+//                    criteria.and("ui").is(uuid);
+//                }
                 if (Objects.nonNull(id)) {
                     criteria.and("_id").is(id);
                 }
                 query.addCriteria(criteria);
                 SystemAlarm systemAlarm = mongoTemplate.findOne(query,SystemAlarm.class);
-                alarmDao.unalarm(uuid, id, userId, user.getName());
+                alarmDao.unalarm( id, userId, user.getName());
                 if (Objects.nonNull(systemAlarm)) {
                     updateDeviceState(systemAlarm);
                 }
@@ -183,7 +179,6 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
             }
             systemAlarmDto.setSystemAlarmType(SystemAlarmType.instance(systemAlarm.getSat()));
             systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-            systemAlarmDto.setUuid(UUID.randomUUID().toString());
             systemAlarmDto.setRegionId(systemAlarm.getRi());
             rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
         }
@@ -383,7 +378,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
             Update update = new Update();
             update.set("ua", systemAlarmDto.getState().getKey());
             mongoTemplate.updateFirst(queryUpdate, update, "system_alarm");
-            redisTemplate.opsForValue().set(RedisConstants.UNALARM+systemAlarm.getUi(),true,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.UNALARM+systemAlarm.get_id(),true,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             updateDeviceState(systemAlarm);
         });
     }

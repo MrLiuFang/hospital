@@ -161,7 +161,6 @@ public class CommonServiceImpl implements CommonService {
         systemAlarmDto.setPeopleId(pi);
         systemAlarmDto.setSystemAlarmType(SystemAlarmType.JRJQ);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-        systemAlarmDto.setUuid(UUID.randomUUID().toString());
         systemAlarmDto.setRegionId(ri);
         if (Objects.equals(type,Type.STAFF)) {
             if (!exposeObjects.contains(ExposeObject.STAFF)) {

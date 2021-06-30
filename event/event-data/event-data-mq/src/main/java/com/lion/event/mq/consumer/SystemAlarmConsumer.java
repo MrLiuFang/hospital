@@ -71,13 +71,11 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
             SystemAlarmDto systemAlarmDto = jacksonObjectMapper.readValue(msg, SystemAlarmDto.class);
-            if (Objects.isNull(systemAlarmDto.getUuid())) {
-                return;
-            }
-            Boolean b = (Boolean) redisTemplate.opsForValue().get(RedisConstants.UNALARM+systemAlarmDto.getUuid());
+
+            Boolean b = (Boolean) redisTemplate.opsForValue().get(RedisConstants.UNALARM+systemAlarmDto.getId());
             if (Objects.equals(b,true)){
                 log.info("系统内解除警告");
-                redisTemplate.delete(RedisConstants.UNALARM+systemAlarmDto.getUuid());
+                redisTemplate.delete(RedisConstants.UNALARM+systemAlarmDto.getId());
                 return;
             }
 //            SystemAlarm systemAlarm = systemAlarmService.find(systemAlarmDto.getUuid());
@@ -99,7 +97,7 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                 }
                 if (systemAlarmDto.getCount()>1){
                     systemAlarmDto.setCount(systemAlarmDto.getCount()+1);
-                    systemAlarmService.updateSdt(systemAlarmDto.getUuid());
+                    systemAlarmService.updateSdt(systemAlarmDto.getId());
                     log.info("系统内触发警告");
                 }else {
                     log.info("系统内触发警告");
@@ -121,7 +119,6 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                         newSystemAlarm.setTy(systemAlarmDto.getType().getKey());
                     }
                     newSystemAlarm.setUa(SystemAlarmState.UNTREATED);
-                    newSystemAlarm.setUi(systemAlarmDto.getUuid());
                     newSystemAlarm.setDt(systemAlarmDto.getDateTime());
                     newSystemAlarm.setSdt( systemAlarmDto.getDateTime() );
                     if (Objects.nonNull(alarm)) {
@@ -176,7 +173,8 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                             newSystemAlarm.setSdi(tag.getDepartmentId());
                         }
                     }
-                    systemAlarmService.save(newSystemAlarm);
+                    newSystemAlarm = systemAlarmService.save(newSystemAlarm);
+                    systemAlarmDto.setId(newSystemAlarm.get_id());
                     systemAlarmDto.setCount(systemAlarmDto.getCount() + 1);
 
                     UpdateStateDto updateStateDto = new UpdateStateDto();

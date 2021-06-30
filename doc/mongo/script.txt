@@ -124,16 +124,15 @@ db.wash_event.createIndex( { "pi":1 }, { sparse: true } )
 db.wash_event.createIndex( { "di":1 }, { sparse: true } )
 db.wash_event.createIndex( { "ri":1 }, { sparse: true } )
 db.wash_event.createIndex( { "ui":1 }, { sparse: true } )
-db.wash_event.createIndex( { "ddt":1 }, { sparse: true } )
+db.wash_event.createIndex( { "ddt":-1 }, { sparse: true } )
 
 db.system_alarm.createIndex( { "pi":1 }, { sparse: true } )
-db.system_alarm.createIndex( { "ai":1 }, { sparse: true } )
 db.system_alarm.createIndex( { "dvi":1 }, { sparse: true } )
-db.system_alarm.createIndex( { "ti":1 }, { sparse: true } )
 db.system_alarm.createIndex( { "ti":1 }, { sparse: true } )
 db.system_alarm.createIndex( { "di":1 }, { sparse: true } )
 db.system_alarm.createIndex( { "ri":1 }, { sparse: true } )
-db.system_alarm.createIndex( { "ddt":1 }, { sparse: true } )
+db.system_alarm.createIndex( { "ddt":-1 }, { sparse: true } )
+db.system_alarm.createIndex( { "sdt":-1 }, { sparse: true } )
 
 db.wash_event.stats();
 

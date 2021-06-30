@@ -227,8 +227,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         BeanUtils.copyProperties(updateUserDto,user);
         if (Objects.equals(updateUserDto.getIsCreateAccount(),true)){
             User tmp = findById(user.getId());
-            if (!StringUtils.hasText(tmp.getPassword())) {
-                if (!StringUtils.hasText(tmp.getEmail()) && !StringUtils.hasText(user.getEmail())) {
+            if (!StringUtils.hasText(tmp.getPassword()) && !StringUtils.hasText(tmp.getUsername())) {
+                if (!StringUtils.hasText(tmp.getEmail())) {
                     BusinessException.throwException("该用户没有email无法创建账号");
                 }else {
                     user.setUsername(StringUtils.hasText(user.getEmail())?user.getEmail():tmp.getEmail());

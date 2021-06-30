@@ -146,13 +146,13 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         }
         if (StringUtils.hasText(name)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name","%"+name+"%");
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }
         if (Objects.nonNull(isLeave)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_isLeave",isLeave);
         }
         if (StringUtils.hasText(tagCode)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_tagCode","%"+tagCode+"%");
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_tagCode",tagCode);
         }
         if (Objects.nonNull(startDateTime)) {
             jpqlParameter.setSearchParameter(SearchConstant.GREATER_THAN_OR_EQUAL_TO+"_createDateTime",startDateTime);

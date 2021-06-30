@@ -202,7 +202,7 @@ public class WashEventServiceImpl implements WashEventService {
         }
         List<Document> userWash = washEventDao.eventCount(startDateTime,endDateTime,null,null, userId , null);
         if (Objects.nonNull(userWash) && userWash.size()>0) {
-            vo.setConformance(new BigDecimal(userWash.get(0).getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP));
+            vo.setConformance(new BigDecimal(userWash.get(0).getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)));
         }
         List<WashEvent> list = washEventDao.userWashDetails(userId,startDateTime,endDateTime,lionPage);
         List<UserWashDetailsVo.UserWashEvent> pageList = new ArrayList<>();
@@ -474,7 +474,6 @@ public class WashEventServiceImpl implements WashEventService {
                             systemAlarmDto.setRegionId(washEvent.getRi());
                             systemAlarmDto.setPeopleId(washEvent.getPi());
                             systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-                            systemAlarmDto.setUuid(UUID.randomUUID().toString());
                             systemAlarmDto.setSystemAlarmType(SystemAlarmType.WDDBZSXSC);
                             try {
                                 rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
@@ -491,9 +490,9 @@ public class WashEventServiceImpl implements WashEventService {
     private ListUserWashMonitorVo init(LocalDateTime startDateTime, LocalDateTime endDateTime,Long userId,Document document){
         ListUserWashMonitorVo vo = new ListUserWashMonitorVo();
         if (Objects.nonNull(document)) {
-            BigDecimal allViolationRatio = new BigDecimal(document.getDouble("allViolationRatio")).setScale(2, BigDecimal.ROUND_HALF_UP);
-            BigDecimal allNoWashRatio = new BigDecimal(document.getDouble("allNoWashRatio")).setScale(2, BigDecimal.ROUND_HALF_UP);
-            BigDecimal allNoAlarmRatio = new BigDecimal(document.getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP);
+            BigDecimal allViolationRatio = new BigDecimal(document.getDouble("allViolationRatio")).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+            BigDecimal allNoWashRatio = new BigDecimal(document.getDouble("allNoWashRatio")).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+            BigDecimal allNoAlarmRatio = new BigDecimal(document.getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
             vo.setViolation(allViolationRatio);
             vo.setNoWash(allNoWashRatio);
             vo.setConformance(allNoAlarmRatio);
@@ -518,9 +517,9 @@ public class WashEventServiceImpl implements WashEventService {
     private ListWashMonitorVo.Ratio init(String name, Double violation, Double noWash, Double conformance) {
         ListWashMonitorVo.Ratio ratio = new ListWashMonitorVo.Ratio();
         ratio.setName(name);
-        ratio.setViolation(new BigDecimal(violation).setScale(2, BigDecimal.ROUND_HALF_UP));
-        ratio.setNoWash(new BigDecimal(noWash).setScale(2, BigDecimal.ROUND_HALF_UP));
-        ratio.setConformance(new BigDecimal(conformance).setScale(2, BigDecimal.ROUND_HALF_UP));
+        ratio.setViolation(new BigDecimal(violation).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")));
+        ratio.setNoWash(new BigDecimal(noWash).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")));
+        ratio.setConformance(new BigDecimal(conformance).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")));
         return ratio;
     }
 

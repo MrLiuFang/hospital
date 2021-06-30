@@ -116,7 +116,6 @@ public class UserButtonServiceImpl implements UserButtonService {
         }
         systemAlarmDto.setSystemAlarmType(systemAlarmType);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-        systemAlarmDto.setUuid(UUID.randomUUID().toString());
         systemAlarmDto.setRegionId(Objects.isNull(systemAlarmDto)?null:currentRegionDto.getRegionId());
         rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
     }

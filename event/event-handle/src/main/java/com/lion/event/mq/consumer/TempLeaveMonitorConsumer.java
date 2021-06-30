@@ -82,7 +82,6 @@ public class TempLeaveMonitorConsumer implements RocketMQListener<MessageExt> {
                     systemAlarmDto.setPeopleId(tempLeaveMonitorDto.getPatientId());
                     systemAlarmDto.setSystemAlarmType(SystemAlarmType.CCXDFW);
                     systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-                    systemAlarmDto.setUuid(UUID.randomUUID().toString());
                     systemAlarmDto.setRegionId(currentRegionDto.getRegionId());
                     rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
                 } else {

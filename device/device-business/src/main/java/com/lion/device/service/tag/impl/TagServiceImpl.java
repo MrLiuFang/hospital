@@ -182,7 +182,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     public IPageResultData<List<ListTagVo>> list(Long departmentId, TagUseState useState, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(tagCode)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_tagCode","%"+tagCode+"%");
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_tagCode",tagCode);
         }
         if (Objects.nonNull(departmentId)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);

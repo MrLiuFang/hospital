@@ -29,9 +29,6 @@ public class SystemAlarm implements Serializable {
     @Id
     private String _id;
 
-    @ApiModelProperty(value = "唯一追踪标识")
-    private String ui;
-
     @ApiModelProperty(value = "警告类型(com.lion.common.enums.Type)")
     private Integer ty;
 

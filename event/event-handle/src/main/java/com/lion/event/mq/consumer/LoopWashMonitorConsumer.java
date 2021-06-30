@@ -185,7 +185,6 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
         systemAlarmDto.setPeopleId(userId);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
         systemAlarmDto.setSystemAlarmType(systemAlarmType);
-        systemAlarmDto.setUuid(loopWashDto.getUuid());
         rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
 
         //给硬件发送数据
