@@ -77,6 +77,9 @@ public class PatientServiceImpl implements PatientService {
     @Override
     public void patientEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient) throws JsonProcessingException {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
+        if (Objects.isNull(currentRegionDto)){
+            return;
+        }
         redisTemplate.opsForValue().set(RedisConstants.PATIENT_CURRENT_REGION,currentRegionDto,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         commonService.position(deviceDataDto,patient,Objects.nonNull(currentRegionDto)?currentRegionDto.getRegionId():null,tag );
         PatientTransfer patientTransfer = patientTransferExposeService.find(patient.getId());
