@@ -72,11 +72,13 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
             String msg = new String(body);
             SystemAlarmDto systemAlarmDto = jacksonObjectMapper.readValue(msg, SystemAlarmDto.class);
 
-            Boolean b = (Boolean) redisTemplate.opsForValue().get(RedisConstants.UNALARM+systemAlarmDto.getId());
-            if (Objects.equals(b,true)){
-                log.info("系统内解除警告");
-                redisTemplate.delete(RedisConstants.UNALARM+systemAlarmDto.getId());
-                return;
+            if (Objects.nonNull(systemAlarmDto.getId())) {
+                Boolean b = (Boolean) redisTemplate.opsForValue().get(RedisConstants.UNALARM + systemAlarmDto.getId());
+                if (Objects.equals(b, true)) {
+                    log.info("系统内解除警告");
+                    redisTemplate.delete(RedisConstants.UNALARM + systemAlarmDto.getId());
+                    return;
+                }
             }
 //            SystemAlarm systemAlarm = systemAlarmService.find(systemAlarmDto.getUuid());
 //            if (Objects.nonNull(systemAlarm)) {
