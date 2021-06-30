@@ -215,8 +215,9 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
         }else if (Objects.equals(systemAlarmDto.getType(), Type.PATIENT)){
             Patient patient = redisUtil.getPatient(systemAlarmDto.getPeopleId());
             alarm = redisUtil.getAlarm(AlarmClassify.PATIENT,systemAlarmDto.getSystemAlarmType(),patient.getLevel());
-        }
-        else if (Objects.equals(systemAlarmDto.getType(), Type.DEVICE)){
+        }else if (Objects.equals(systemAlarmDto.getType(), Type.MIGRANT)){
+            alarm = redisUtil.getAlarm(AlarmClassify.POSTDOCS,systemAlarmDto.getSystemAlarmType(),null);
+        }else if (Objects.equals(systemAlarmDto.getType(), Type.DEVICE)){
             alarm = redisUtil.getAlarm(AlarmClassify.DEVICE,systemAlarmDto.getSystemAlarmType(),null);
         }
         return alarm;
