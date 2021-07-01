@@ -1,6 +1,7 @@
 package com.lion.manage.expose.department.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.manage.dao.department.DepartmentDao;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
@@ -29,6 +30,9 @@ public class DepartmentExposeServiceImpl extends BaseServiceImpl<Department> imp
 
     @DubboReference
     private RoleExposeService roleExposeService;
+
+    @Autowired
+    private DepartmentDao departmentDao;
 
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
@@ -67,5 +71,10 @@ public class DepartmentExposeServiceImpl extends BaseServiceImpl<Department> imp
 //            departmentIds.add(Long.MAX_VALUE);
 //        }
         return departmentIds;
+    }
+
+    @Override
+    public Department find(Long deviceGroupId) {
+        return null;
     }
 }

@@ -87,9 +87,6 @@ public class BatteryAlarmServiceImpl implements BatteryAlarmService {
 
     private void systemAlarm(Type type,Long tagId,Long peopleId,Long deviceId,Long assetsId,DeviceDataDto deviceDataDto)  {
         CurrentRegionDto currentRegionDto = commonService.currentRegion(deviceDataDto);
-        if (Objects.isNull(currentRegionDto)){
-            return;
-        }
         SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
         systemAlarmDto.setDateTime(LocalDateTime.now());
         systemAlarmDto.setDeviceId(deviceId);
@@ -99,7 +96,7 @@ public class BatteryAlarmServiceImpl implements BatteryAlarmService {
         systemAlarmDto.setPeopleId(peopleId);
         systemAlarmDto.setSystemAlarmType(SystemAlarmType.BQDCBZ);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-        systemAlarmDto.setRegionId(currentRegionDto.getRegionId());
+        systemAlarmDto.setRegionId(Objects.nonNull(currentRegionDto)?currentRegionDto.getRegionId():null);
         try {
             rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
         } catch (JsonProcessingException e) {

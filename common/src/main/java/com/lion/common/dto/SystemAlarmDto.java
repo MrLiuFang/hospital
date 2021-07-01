@@ -1,5 +1,6 @@
 package com.lion.common.dto;
 
+import com.lion.common.enums.SystemAlarmState;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.common.enums.Type;
 import io.swagger.annotations.ApiModel;
@@ -31,6 +32,7 @@ public class SystemAlarmDto implements Serializable {
      * 警告类型（com.lion.common.enums.Type）
      */
     private Type type;
+
 
     /**
      * 员工/患者/流动人员id

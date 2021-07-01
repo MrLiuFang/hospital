@@ -110,13 +110,15 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         BeanUtils.copyProperties(addWashDto,wash);
         assertNameExist(wash.getName(),null);
         assertEnteringTime(wash,false);
-        assertLoopWashExist(wash.getIsAllUser(),wash.getId());
+        if (Objects.equals(addWashDto.getType(),WashRuleType.LOOP)) {
+            assertLoopWashExist(wash.getIsAllUser(), wash.getId());
+        }
         wash = save(wash);
         if (Objects.equals(wash.getType(), WashRuleType.REGION)){
             washRegionService.add(addWashDto.getRegionId(),wash.getId());
             washDeviceService.add(addWashDto.getDeviceId(),wash.getId());
         }
-        if (Objects.equals(wash.getIsAllUser(),false)){
+        if (Objects.isNull(wash.getIsAllUser()) || Objects.equals(wash.getIsAllUser(),false)){
             washUserService.add(addWashDto.getUserId(),wash);
         }
         if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.nonNull(addWashDto.getDeviceTypes()) && addWashDto.getDeviceTypes().size()>0){
@@ -132,13 +134,15 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         BeanUtils.copyProperties(updateWashDto,wash);
         assertNameExist(wash.getName(),wash.getId());
         assertEnteringTime(wash,true);
-        assertLoopWashExist(wash.getIsAllUser(),wash.getId());
+        if (Objects.equals(updateWashDto.getType(),WashRuleType.LOOP)) {
+            assertLoopWashExist(wash.getIsAllUser(), wash.getId());
+        }
         update(wash);
         if (Objects.equals(wash.getType(), WashRuleType.REGION)){
             washRegionService.add(updateWashDto.getRegionId(),wash.getId());
             washDeviceService.add(updateWashDto.getDeviceId(),wash.getId());
         }
-        if (Objects.equals(wash.getIsAllUser(),false)){
+        if (Objects.isNull(wash.getIsAllUser()) || Objects.equals(wash.getIsAllUser(),false)){
             washUserService.add(updateWashDto.getUserId(),wash);
         }
         if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.nonNull(updateWashDto.getDeviceTypes()) && updateWashDto.getDeviceTypes().size()>0){

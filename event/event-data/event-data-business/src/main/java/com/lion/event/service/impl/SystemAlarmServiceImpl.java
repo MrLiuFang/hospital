@@ -13,7 +13,9 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
+import com.lion.device.entity.device.Device;
 import com.lion.device.entity.tag.Tag;
+import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.SystemAlarmDao;
 import com.lion.event.entity.SystemAlarm;
@@ -41,6 +43,7 @@ import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
+import lombok.extern.java.Log;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
@@ -64,6 +67,7 @@ import java.util.concurrent.TimeUnit;
  * @Date 2021/5/1 下午6:07
  **/
 @Service
+@Log
 public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Autowired
@@ -107,6 +111,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Autowired
     private SystemAlarmReportService systemAlarmReportService;
+
+    @DubboReference
+    private DeviceExposeService deviceExposeService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -326,6 +333,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                     vo.setTitle(tag.getDeviceName());
                     vo.setTagType(tag.getType());
                     vo.setTagPurpose(tag.getPurpose());
+                    vo.setBattery(tag.getBattery());
                 }
             }
             if (Objects.equals(systemAlarm.getTy(),Type.ASSET.getKey())) {
@@ -336,6 +344,16 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                     vo.setTitle(assets.getName());
                     vo.setImg(assets.getImg());
                     vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
+                }
+            }
+            if (Objects.equals(systemAlarm.getTy(),Type.DEVICE.getKey())) {
+                Device device = deviceExposeService.findById(systemAlarm.getDvi());
+                if (Objects.nonNull(device)) {
+                    vo.setBattery(device.getBattery());
+                    vo.setDeviceName(device.getName());
+                    vo.setDeviceCode(device.getCode());
+                    vo.setImg(device.getImg());
+                    vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
                 }
             }
             if (Objects.nonNull(systemAlarm.getAli())) {
@@ -361,18 +379,26 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     public void updateState(SystemAlarmHandleDto systemAlarmDto) {
         Query query = new Query();
         Criteria criteria = new Criteria();
-        if (Objects.nonNull(systemAlarmDto.getPeopleId())) {
-            criteria.and("pi").is(systemAlarmDto.getPeopleId());
-        }
         if (Objects.equals(systemAlarmDto.getState(),SystemAlarmState.CANCEL_CALL)) {
-            criteria.and("ua").is(SystemAlarmState.CALL.getKey());
+            log.info("20");
+            if (Objects.nonNull(systemAlarmDto.getPeopleId())) {
+                log.info("21");
+                criteria.and("pi").is(systemAlarmDto.getPeopleId());
+                criteria.and("ua").is(SystemAlarmState.CALL.getKey());
+            }
         }else if (Objects.equals(systemAlarmDto.getState(),SystemAlarmState.WELL_KNOWN)) {
-            criteria.and("ua").is(SystemAlarmState.UNTREATED.getKey());
+            log.info("22");
+            if (Objects.nonNull(systemAlarmDto.getRegionId())) {
+                log.info("23");
+                criteria.and("ri").is(systemAlarmDto.getRegionId());
+                criteria.and("ua").is(SystemAlarmState.UNTREATED.getKey());
+            }
         }
         criteria.and("dt").gte(LocalDateTime.now().minusDays(30));
         query.addCriteria(criteria);
         List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
         items.forEach(systemAlarm -> {
+            log.info(String.valueOf(systemAlarm.getPi()));
             Query queryUpdate = new Query();
             queryUpdate.addCriteria(Criteria.where("_id").is(systemAlarm.get_id()));
             Update update = new Update();

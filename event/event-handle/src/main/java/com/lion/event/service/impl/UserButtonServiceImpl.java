@@ -16,6 +16,7 @@ import com.lion.event.service.UserButtonService;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.upms.entity.user.User;
+import lombok.extern.java.Log;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.support.MessageBuilder;
@@ -31,6 +32,7 @@ import java.util.UUID;
  * @time: 2021/6/15 上午11:29
  */
 @Service
+@Log
 public class UserButtonServiceImpl implements UserButtonService {
 
     @Autowired
@@ -49,26 +51,33 @@ public class UserButtonServiceImpl implements UserButtonService {
     public void tagButtonEvent(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, User user) throws JsonProcessingException {
         TagRule tagRule = redisUtil.getTagRule(user.getId());
         if (Objects.isNull(tagRule)) {
+            log.info("1");
             return;
         }
         if (Objects.isNull(deviceDataDto.getButtonId())) {
+            log.info("2");
             return;
         }
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
         if (Objects.isNull(currentRegionDto)) {
+            log.info("3");
             return;
         }
         commonService.position(deviceDataDto,user,currentRegionDto.getRegionId(),tag );
         if (Objects.equals(1,deviceDataDto.getButtonId())) {
+            log.info("4");
             record(currentRegionDto,user,tagRule.getGreenButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
             event(tagRule.getGreenButtonTip(),tagRule.getGreenButton(),tag,currentRegionDto,user);
         }else if (Objects.equals(2,deviceDataDto.getButtonId())) {
+            log.info("5");
             record(currentRegionDto,user,tagRule.getRedButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
             event(tagRule.getRedButtonTip(),tagRule.getRedButton(),tag,currentRegionDto,user);
         }else if (Objects.equals(3,deviceDataDto.getButtonId())) {
+            log.info("6");
             record(currentRegionDto,user,tagRule.getYellowButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
             event(tagRule.getYellowButtonTip(),tagRule.getYellowButton(),tag,currentRegionDto,user);
         }else if (Objects.equals(4,deviceDataDto.getButtonId())) {
+            log.info("7");
             record(currentRegionDto,user,tagRule.getBottomButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
             event(tagRule.getBottomButtonTip(),tagRule.getBottomButton(),tag,currentRegionDto,user);
         }
@@ -76,9 +85,11 @@ public class UserButtonServiceImpl implements UserButtonService {
 
     private void event(Boolean buttonTip,TagRuleEffect tagRuleEffect,Tag tag,CurrentRegionDto currentRegionDto,User user) throws JsonProcessingException {
         if (Objects.equals(buttonTip,true) && Objects.equals(tagRuleEffect, TagRuleEffect.EMPLOYEE_CALL)) {
-            systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto);
+            log.info("8");
+            systemAlarm(Type.STAFF,tag,SystemAlarmType.ZDHJ,currentRegionDto,user);
         }
         if (Objects.equals(tagRuleEffect, TagRuleEffect.ALARM_KNOW) || Objects.equals(tagRuleEffect, TagRuleEffect.CANCEL)) {
+            log.info("9");
             systemAlarmUpdateState(user,currentRegionDto,tagRuleEffect);
         }
     }
@@ -86,13 +97,16 @@ public class UserButtonServiceImpl implements UserButtonService {
     private void systemAlarmUpdateState(User user,CurrentRegionDto currentRegionDto,TagRuleEffect tagRuleEffect) throws JsonProcessingException {
         SystemAlarmHandleDto dto = new SystemAlarmHandleDto();
         if (Objects.equals(tagRuleEffect,TagRuleEffect.CANCEL)) {
+            log.info("13");
             dto.setState(SystemAlarmState.CANCEL_CALL);
         }else if (Objects.equals(tagRuleEffect,TagRuleEffect.ALARM_KNOW)) {
+            log.info("14");
             dto.setState(SystemAlarmState.WELL_KNOWN);
         }
         dto.setPeopleId(user.getId());
         dto.setRegionId(currentRegionDto.getRegionId());
         rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM_HANDLE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(dto)).build());
+        log.info("10");
     }
 
     private void record(CurrentRegionDto currentRegionDto,User user,String buttonName,Integer buttonId,Tag tag,DeviceDataDto deviceDataDto) throws JsonProcessingException {
@@ -105,13 +119,15 @@ public class UserButtonServiceImpl implements UserButtonService {
         userTagButtonRecordDto.setDdt(deviceDataDto.getTime());
         userTagButtonRecordDto.setSdt(deviceDataDto.getSystemDateTime());
         rocketMQTemplate.syncSend(TopicConstants.BUTTON_RECORD, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(userTagButtonRecordDto)).build());
+        log.info("11");
     }
 
-    private void systemAlarm(Type type, Tag tag, SystemAlarmType systemAlarmType, CurrentRegionDto currentRegionDto) throws JsonProcessingException {
+    private void systemAlarm(Type type, Tag tag, SystemAlarmType systemAlarmType, CurrentRegionDto currentRegionDto,User user) throws JsonProcessingException {
         //系统内警告
         SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
         systemAlarmDto.setDateTime(LocalDateTime.now());
         systemAlarmDto.setType(type);
+        systemAlarmDto.setPeopleId(user.getId());
         if (Objects.nonNull(tag)){
             systemAlarmDto.setTagId(tag.getId());
         }
@@ -119,5 +135,6 @@ public class UserButtonServiceImpl implements UserButtonService {
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
         systemAlarmDto.setRegionId(Objects.isNull(systemAlarmDto)?null:currentRegionDto.getRegionId());
         rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+        log.info("12");
     }
 }

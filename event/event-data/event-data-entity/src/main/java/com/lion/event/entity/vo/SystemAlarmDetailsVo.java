@@ -86,6 +86,9 @@ public class SystemAlarmDetailsVo extends SystemAlarm {
     @ApiModelProperty(value = "处理人头像Url")
     private String uuHeadPortraitUrl;
 
+    @ApiModelProperty(value = "电量")
+    private Integer battery;
+
     @ApiModelProperty(value = "汇报")
     private List<SystemAlarmReportDetailsVo> systemAlarmReportDetailsVos;
 

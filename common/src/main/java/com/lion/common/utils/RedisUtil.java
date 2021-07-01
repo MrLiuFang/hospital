@@ -265,6 +265,17 @@ public class RedisUtil {
         }
         return patient;
     }
+    public Department getDepartmentByDeviceId(Long deviceId) {
+        if (Objects.isNull(deviceId)){
+            return null;
+        }
+        DeviceGroupDevice deviceGroupDevice = deviceGroupDeviceExposeService.findByDeviceId(deviceId);
+        if (Objects.nonNull(deviceGroupDevice)) {
+            Department department = departmentExposeService.find(deviceGroupDevice.getDeviceGroupId());
+            return department;
+        }
+        return null;
+    }
 
     public Department getDepartmentByUserId(Long userId) {
         if (Objects.isNull(userId)){

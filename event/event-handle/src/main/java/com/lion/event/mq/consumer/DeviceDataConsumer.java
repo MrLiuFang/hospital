@@ -126,9 +126,10 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
 
             if (Objects.nonNull(user)){
                 //进行洗手事件处理
-                if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.HAND_WASHING)) {
+                if (Objects.nonNull(monitor)|| Objects.nonNull(star)) {
                     userWashService.userWashEevent(deviceDataDto, monitor, star, tag, user);
-                }else {
+                }
+                if ((Objects.nonNull(monitor) && !Objects.equals(monitor.getDeviceClassify(), DeviceClassify.HAND_WASHING)) || Objects.isNull(monitor)){
                     //记录洗手时长
                     UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
                     if (Objects.nonNull(userLastWashDto)){
