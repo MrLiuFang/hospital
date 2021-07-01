@@ -13,7 +13,7 @@ import java.util.Objects;
  **/
 public enum Type implements IEnum {
 
-    ASSET(0, "设备(资产等等)"),
+    ASSET(0, "资产)"),
     STAFF(1, "员工"),
     TEMPERATURE(2, "温度仪"),
     ERU(3, "eru"),

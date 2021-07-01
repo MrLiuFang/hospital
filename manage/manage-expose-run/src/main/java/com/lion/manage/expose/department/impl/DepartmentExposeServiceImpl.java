@@ -75,6 +75,6 @@ public class DepartmentExposeServiceImpl extends BaseServiceImpl<Department> imp
 
     @Override
     public Department find(Long deviceGroupId) {
-        return null;
+        return departmentDao.findByDeviceGroupId(deviceGroupId);
     }
 }
