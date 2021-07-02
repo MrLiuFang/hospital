@@ -49,6 +49,12 @@ public class DepartmentTagStatisticsDetailsVo {
     @Data
     public static class TagVo extends Tag {
 
+        @ApiModelProperty(value = "上次温度")
+        private BigDecimal previousTemperature;
+
+        @ApiModelProperty(value = "上次湿度")
+        private BigDecimal previousHumidity;
+
         @ApiModelProperty(value = "当前温度")
         private BigDecimal temperature;
 
@@ -58,6 +64,10 @@ public class DepartmentTagStatisticsDetailsVo {
         @ApiModelProperty(value = "数据记录时间")
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime dataDateTime;
+
+        @ApiModelProperty(value = "上次数据记录时间")
+        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+        private LocalDateTime previousDataDateTime;
     }
 
 }

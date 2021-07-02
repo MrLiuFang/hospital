@@ -8,6 +8,7 @@ import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagRuleEffect;
 import com.lion.device.entity.enums.TagType;
 import com.lion.event.dao.UserTagButtonRecordDao;
+import com.lion.event.entity.HumitureRecord;
 import com.lion.event.entity.RecyclingBoxRecord;
 import com.lion.event.entity.UserTagButtonRecord;
 import com.lion.event.entity.vo.ListRecyclingBoxRecordVo;
@@ -18,6 +19,7 @@ import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -91,5 +93,24 @@ public class UserTagButtonRecordServiceImpl implements UserTagButtonRecordServic
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,lionPage,0L);
+    }
+
+    @Override
+    public UserTagButtonRecord findLsat(Long userId) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.nonNull(userId)) {
+            criteria.and("pi").is(userId);
+        }
+        LocalDateTime now = LocalDateTime.now();
+        criteria.andOperator( Criteria.where("ddt").gte(now.minusDays(30)) ,Criteria.where("ddt").lte(now));
+        query.addCriteria(criteria);
+        PageRequest pageRequest = PageRequest.of(0,1,Sort.by(Sort.Order.desc("ddt")));
+        query.with(pageRequest);
+        List<UserTagButtonRecord> items = mongoTemplate.find(query, UserTagButtonRecord.class);
+        if (Objects.nonNull(items) && items.size()>0){
+            return items.get(0);
+        }
+        return null;
     }
 }

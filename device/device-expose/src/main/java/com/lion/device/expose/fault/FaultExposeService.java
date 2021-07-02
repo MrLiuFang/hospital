@@ -12,4 +12,11 @@ import com.lion.device.entity.fault.vo.FaultDetailsVo;
 public interface FaultExposeService extends BaseService<Fault> {
 
     public FaultDetailsVo findLast(Long relationId);
+
+    /**
+     * 统计未处理的故障
+     * @param relationId
+     * @return
+     */
+    public int countFault(Long relationId);
 }

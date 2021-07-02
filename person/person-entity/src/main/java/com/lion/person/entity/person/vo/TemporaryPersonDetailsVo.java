@@ -1,5 +1,6 @@
 package com.lion.person.entity.person.vo;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.person.entity.person.TemporaryPerson;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -15,6 +16,10 @@ import java.util.List;
  */
 @Data
 @ApiModel
+@JsonIgnoreProperties(
+        ignoreUnknown = true,
+        value = {"updateDateTime", "createUserId", "updateUserId"}
+)
 public class TemporaryPersonDetailsVo extends TemporaryPerson {
 
     @ApiModelProperty(value = "头像")

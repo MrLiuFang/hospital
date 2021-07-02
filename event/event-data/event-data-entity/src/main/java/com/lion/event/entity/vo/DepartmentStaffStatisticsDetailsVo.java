@@ -69,7 +69,10 @@ public class DepartmentStaffStatisticsDetailsVo {
         private String headPortraitUrl;
 
         @ApiModelProperty(value = "最近的按钮事件")
-        private TagRuleEffect tagRuleEffect;
+        private String tagRuleEffect;
+
+        @ApiModelProperty(value = "按钮id（1，2，3，4-绿，红，黄，底部）")
+        private Integer buttonId;
 
         @ApiModelProperty(value = "最近的按钮事件时间")
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
@@ -77,5 +80,8 @@ public class DepartmentStaffStatisticsDetailsVo {
 
         @ApiModelProperty(value = "标签电量")
         private Integer battery;
+
+        @ApiModelProperty("标签编码")
+        private String tagCode;
     }
 }

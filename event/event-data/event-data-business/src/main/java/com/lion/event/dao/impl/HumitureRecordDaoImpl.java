@@ -34,7 +34,7 @@ public class HumitureRecordDaoImpl implements HumitureRecordDaoEx {
     private ObjectMapper jacksonObjectMapper;
 
     @Override
-    public HumitureRecord find(Long tagId) {
+    public HumitureRecord find(Long tagId,Boolean isPrevious) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(tagId)) {
@@ -43,11 +43,15 @@ public class HumitureRecordDaoImpl implements HumitureRecordDaoEx {
         LocalDateTime now = LocalDateTime.now();
         criteria.andOperator( Criteria.where("ddt").gte(now.minusDays(30)) ,Criteria.where("ddt").lte(now));
         query.addCriteria(criteria);
-        PageRequest pageRequest = PageRequest.of(0,1,Sort.by(Sort.Order.desc("ddt")));
+        PageRequest pageRequest = PageRequest.of(0,2,Sort.by(Sort.Order.desc("ddt")));
         query.with(pageRequest);
         List<HumitureRecord> items = mongoTemplate.find(query, HumitureRecord.class);
         if (Objects.nonNull(items) && items.size()>0){
-            return items.get(0);
+            if (isPrevious && items.size()==2) {
+                return items.get(1);
+            }else {
+                return items.get(0);
+            }
         }
         return null;
     }

@@ -67,5 +67,8 @@ public class DepartmentAssetsStatisticsDetailsVo {
 
         @ApiModelProperty(value = "标签电量")
         private Integer battery;
+
+        @ApiModelProperty(value = "是否有未处理的故障")
+        private Boolean isFault;
     }
 }

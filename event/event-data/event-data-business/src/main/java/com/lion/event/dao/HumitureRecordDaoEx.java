@@ -14,6 +14,6 @@ public interface HumitureRecordDaoEx {
      * @param tagId
      * @return
      */
-    public HumitureRecord find(Long tagId);
+    public HumitureRecord find(Long tagId,Boolean isPrevious);
 
 }

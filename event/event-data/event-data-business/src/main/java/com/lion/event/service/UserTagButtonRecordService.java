@@ -30,4 +30,6 @@ public interface UserTagButtonRecordService  {
      * @return
      */
     IPageResultData<List<ListUserTagButtonRecordVo>> list( TagRuleEffect tagRuleEffect,String name,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+
+    public UserTagButtonRecord findLsat(Long userId);
 }

@@ -25,4 +25,11 @@ public interface FaultDao extends BaseDao<Fault> {
      * @return
      */
     public int countByIsSolveAndType(Boolean isSolve,FaultType type);
+
+    /**
+     * 统计未处理的故障
+     * @param relationId
+     * @return
+     */
+    public int countByRegionIdAndIsSolveIsFalse(Long relationId);
 }

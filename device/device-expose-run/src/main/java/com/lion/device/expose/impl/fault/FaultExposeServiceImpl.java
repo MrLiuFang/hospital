@@ -37,4 +37,9 @@ public class FaultExposeServiceImpl extends BaseServiceImpl<Fault> implements Fa
         }
         return null;
     }
+
+    @Override
+    public int countFault(Long relationId) {
+        return faultDao.countByRegionIdAndIsSolveIsFalse(relationId);
+    }
 }

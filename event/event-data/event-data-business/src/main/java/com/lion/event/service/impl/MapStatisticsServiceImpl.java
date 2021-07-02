@@ -33,11 +33,9 @@ import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.event.dao.HumitureRecordDao;
 import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.HumitureRecord;
+import com.lion.event.entity.UserTagButtonRecord;
 import com.lion.event.entity.vo.*;
-import com.lion.event.service.CurrentPositionService;
-import com.lion.event.service.MapStatisticsService;
-import com.lion.event.service.PositionService;
-import com.lion.event.service.SystemAlarmService;
+import com.lion.event.service.*;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -174,6 +172,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     private DeviceGroupDeviceExposeService deviceGroupDeviceExposeService;
 
     @Autowired
+    private UserTagButtonRecordService userTagButtonRecordService;
+
+    @Autowired
     private HttpServletResponse response;
 
     private final String FONT = "simsun.ttc";
@@ -271,7 +272,14 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                         Tag tag = tagExposeService.findById(tagUser.getTagId());
                         if (Objects.nonNull(tag)){
                             staff.setBattery(tag.getBattery());
+                            staff.setTagCode(tag.getTagCode());
                         }
+                    }
+                    UserTagButtonRecord userTagButtonRecord = userTagButtonRecordService.findLsat(user.getId());
+                    if (Objects.nonNull(userTagButtonRecord)) {
+                        staff.setTagRuleEffect(userTagButtonRecord.getBn());
+                        staff.setTagRuleEffectDateTime(userTagButtonRecord.getDdt());
+                        staff.setButtonId(userTagButtonRecord.getBi());
                     }
                     listStaff.add(staff);
                 }
@@ -305,6 +313,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     TagAssets tagAssets = tagAssetsExposeService.find(a.getId());
                     if (Objects.nonNull(tagAssets)) {
                         Tag tag = tagExposeService.findById(tagAssets.getTagId());
+                        assetsVo.setIsFault(faultExposeService.countFault(tagAssets.getAssetsId())>0);
                         if (Objects.nonNull(tag)) {
                             assetsVo.setBattery(tag.getBattery());
                             assetsVo.setTagCode(tag.getTagCode());
@@ -343,17 +352,17 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 tagList.forEach(tag -> {
                     DepartmentTagStatisticsDetailsVo.TagVo vo = new DepartmentTagStatisticsDetailsVo.TagVo();
                     BeanUtils.copyProperties(tag, vo);
-                    HumitureRecord record = humitureRecordDao.find(tag.getId());
+                    HumitureRecord record = humitureRecordDao.find(tag.getId(),false);
                     if (Objects.nonNull(record)) {
-                        if (Objects.nonNull(record.getT())) {
-                            vo.setTemperature(record.getT());
-                        }
-                        if (Objects.nonNull(record.getH())) {
-                            vo.setHumidity(record.getH());
-                        }
-                        if (Objects.nonNull(record.getDdt())) {
-                            vo.setDataDateTime(record.getDdt());
-                        }
+                        vo.setTemperature(record.getT());
+                        vo.setHumidity(record.getH());
+                        vo.setDataDateTime(record.getDdt());
+                    }
+                    HumitureRecord previousRecord = humitureRecordDao.find(tag.getId(),true);
+                    if (Objects.nonNull(previousRecord)) {
+                        vo.setPreviousTemperature(record.getT());
+                        vo.setPreviousHumidity(record.getH());
+                        vo.setPreviousDataDateTime(record.getDdt());
                     }
                     tagVos.add(vo);
                 });
