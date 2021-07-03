@@ -44,6 +44,9 @@ public class DepartmentTemporaryPersonStatisticsDetailsVo {
     @Data
     public static class TemporaryPersonVo{
 
+        @ApiModelProperty(value = "id")
+        private Long id;
+
         @ApiModelProperty(value = "头像（文件id）")
         private Long headPortrait;
 

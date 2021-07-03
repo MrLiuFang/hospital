@@ -400,6 +400,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     if (Objects.nonNull(wardRoomSickbed)) {
                         vo.setBedCode(wardRoomSickbed.getBedCode());
                     }
+                    vo.setId(patient.getId());
                     vo.setName(patient.getName());
                     vo.setTagCode(patient.getTagCode());
                     vo.setHeadPortrait(patient.getHeadPortrait());
@@ -438,6 +439,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     }
                     vo.setName(temporaryPerson.getName());
                     vo.setTagCode(temporaryPerson.getTagCode());
+                    vo.setId(temporaryPerson.getId());
                     vo.setHeadPortrait(temporaryPerson.getHeadPortrait());
                     vo.setHeadPortraitUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
                     temporaryPersonVos.add(vo);

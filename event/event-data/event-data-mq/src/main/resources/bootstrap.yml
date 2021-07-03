@@ -14,9 +14,6 @@ spring:
           - data-id: lion-common.${spring.cloud.nacos.config.file-extension}
             refresh: true
             group: GLOBAL_GROUP
-          - data-id: lion-oauth2-resource-server-common.${spring.cloud.nacos.config.file-extension}
-            refresh: true
-            group: GLOBAL_GROUP
           - data-id: lion-sentinel-common.${spring.cloud.nacos.config.file-extension}
             refresh: true
             group: GLOBAL_GROUP
@@ -24,8 +21,5 @@ spring:
             refresh: true
             group: GLOBAL_GROUP
           - data-id: lion-redis-common.${spring.cloud.nacos.config.file-extension}
-            refresh: true
-            group: GLOBAL_GROUP
-          - data-id: lion-zookeeper-common.${spring.cloud.nacos.config.file-extension}
             refresh: true
             group: GLOBAL_GROUP

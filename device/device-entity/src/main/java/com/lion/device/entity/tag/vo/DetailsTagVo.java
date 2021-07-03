@@ -6,6 +6,10 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 /**
  * @description:
  * @author: Mr.Liu
@@ -27,4 +31,18 @@ public class DetailsTagVo extends Tag {
 
     @ApiModelProperty(value = "绑定对象图片Url")
     private String imgUrl;
+
+    @ApiModelProperty(value = "部门名称")
+    private String departmentName;
+
+    @ApiModelProperty(value = "当前温度")
+    private BigDecimal temperature;
+
+    @ApiModelProperty(value = "当前湿度")
+    private BigDecimal humidity;
+
+    @ApiModelProperty(value = "温湿度获取时间")
+    private LocalDateTime dateTime;
+
+
 }

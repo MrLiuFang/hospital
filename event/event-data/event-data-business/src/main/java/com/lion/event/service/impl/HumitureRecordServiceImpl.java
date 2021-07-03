@@ -14,6 +14,7 @@ import com.lion.event.service.HumitureRecordService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -96,5 +97,24 @@ public class HumitureRecordServiceImpl implements HumitureRecordService {
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,lionPage,0L);
+    }
+
+    @Override
+    public HumitureRecord findLast(Long tagId) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.nonNull(tagId)) {
+            criteria.and("ti").is(tagId);
+        }
+        LocalDateTime now = LocalDateTime.now();
+        criteria.andOperator( Criteria.where("ddt").gte(now.minusDays(30)) ,Criteria.where("ddt").lte(now));
+        query.addCriteria(criteria);
+        PageRequest pageRequest = PageRequest.of(0,1,Sort.by(Sort.Order.desc("ddt")));
+        query.with(pageRequest);
+        List<HumitureRecord> items = mongoTemplate.find(query, HumitureRecord.class);
+        if (Objects.nonNull(items) && items.size()>0){
+            return items.get(0);
+        }
+        return null;
     }
 }

@@ -23,6 +23,8 @@ import com.lion.device.expose.tag.TagPatientExposeService;
 import com.lion.device.expose.tag.TagPostdocsExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.device.service.tag.TagService;
+import com.lion.event.entity.HumitureRecord;
+import com.lion.event.expose.service.HumitureRecordExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.department.Department;
@@ -108,6 +110,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 
     @DubboReference
     private FileExposeService fileExposeService;
+
+    @DubboReference
+    private HumitureRecordExposeService humitureRecordExposeService;
 
     @Override
     public void add(AddTagDto addTagDto) {
@@ -315,6 +320,15 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 vo.setBindingId(temporaryPerson.getId());
             }
             return vo;
+        }
+
+        if (Objects.equals(tag.getPurpose(),TagPurpose.THERMOHYGROGRAPH)) {
+            HumitureRecord humitureRecord = humitureRecordExposeService.findLast(tag.getId());
+            if (Objects.nonNull(humitureRecord)) {
+                vo.setHumidity(humitureRecord.getH());
+                vo.setTemperature(humitureRecord.getT());
+                vo.setDateTime(humitureRecord.getDdt());
+            }
         }
         return vo;
     }

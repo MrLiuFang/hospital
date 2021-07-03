@@ -42,8 +42,8 @@ public class WashDeviceTypeServiceImpl extends BaseServiceImpl<WashDeviceType> i
                         save(type);
                     }
                 });
-                redisTemplate.opsForList().leftPushAll(RedisConstants.WASH_DEVICE_TYPE+washId,typeList);
-                redisTemplate.expire(RedisConstants.WASH_DEVICE_TYPE+washId,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForList().leftPushAll(RedisConstants.WASH_DEVICE_TYPE + washId, typeList);
+                redisTemplate.expire(RedisConstants.WASH_DEVICE_TYPE + washId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             }
         }
 

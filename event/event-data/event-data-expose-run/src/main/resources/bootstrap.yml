@@ -14,19 +14,10 @@ spring:
           - data-id: lion-common.${spring.cloud.nacos.config.file-extension}
             refresh: true
             group: GLOBAL_GROUP
-          - data-id: lion-datasource-common.${spring.cloud.nacos.config.file-extension}
-            refresh: true
-            group: GLOBAL_GROUP
-          - data-id: lion-jpa-common.${spring.cloud.nacos.config.file-extension}
-            refresh: true
-            group: GLOBAL_GROUP
           - data-id: lion-sentinel-common.${spring.cloud.nacos.config.file-extension}
             refresh: true
             group: GLOBAL_GROUP
           - data-id: lion-dubbo-common.${spring.cloud.nacos.config.file-extension}
-            refresh: true
-            group: GLOBAL_GROUP
-          - data-id: lion-seata-common.${spring.cloud.nacos.config.file-extension}
             refresh: true
             group: GLOBAL_GROUP
           - data-id: lion-redis-common.${spring.cloud.nacos.config.file-extension}

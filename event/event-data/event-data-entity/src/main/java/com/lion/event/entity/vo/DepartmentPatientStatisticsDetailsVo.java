@@ -45,6 +45,9 @@ public class DepartmentPatientStatisticsDetailsVo {
     @Data
     public static class PatientVo{
 
+        @ApiModelProperty(value = "患者id")
+        private Long id;
+
         @ApiModelProperty(value = "头像（文件id）")
         private Long headPortrait;
 

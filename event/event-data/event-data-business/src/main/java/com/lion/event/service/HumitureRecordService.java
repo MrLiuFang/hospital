@@ -28,4 +28,11 @@ public interface HumitureRecordService {
      * @return
      */
     public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+
+    /**
+     * 查询最后的记录
+     * @param tagId
+     * @return
+     */
+    public HumitureRecord findLast(Long tagId);
 }
