@@ -236,6 +236,12 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return ResultData.instance().setData(mapStatisticsService.patientDetails(patientId));
     }
 
+    @GetMapping("/temporary/person/details")
+    @ApiOperation(value = "地图监控流动人员详情")
+    public IResultData<TemporaryPersonDetailsVo> TemporaryPersonDetails(@ApiParam("流动人员id") @NotNull(message = "流动人员id不能为空") Long temporaryPersonId) {
+        return ResultData.instance().setData(mapStatisticsService.temporaryPersonDetails(temporaryPersonId));
+    }
+
     @GetMapping("/staff/details")
     @ApiOperation(value = "地图监控员工详情")
     public IResultData<StaffDetailsVo> staffDetails(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId) {

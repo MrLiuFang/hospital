@@ -215,6 +215,26 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
+    public SystemAlarm findLast(Long pi) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.nonNull(pi)) {
+            criteria.and("pi").is(pi);
+        }else {
+            return null;
+        }
+        criteria.and("dt").gte(LocalDateTime.now().minusDays(30));
+        query.addCriteria(criteria);
+        PageRequest pageRequest = PageRequest.of(0,1, Sort.by(Sort.Direction.DESC,"dt"));
+        query.with(pageRequest);
+        List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
+        if (Objects.nonNull(items) && items.size()>0){
+            return items.get(0);
+        }
+        return null;
+    }
+
+    @Override
     public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         Query query = new Query();
         Criteria criteria = new Criteria();

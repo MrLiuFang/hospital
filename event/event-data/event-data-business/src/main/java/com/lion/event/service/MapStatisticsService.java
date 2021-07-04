@@ -104,6 +104,13 @@ public interface MapStatisticsService {
     public PatientDetailsVo patientDetails(Long patientId);
 
     /**
+     * 流动人员详情
+     * @param temporaryPersonId
+     * @return
+     */
+    public TemporaryPersonDetailsVo temporaryPersonDetails(Long temporaryPersonId);
+
+    /**
      * 获取警告列表
      *
      *

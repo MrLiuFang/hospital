@@ -1,10 +1,15 @@
 package com.lion.event.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lion.event.entity.CurrentPosition;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.person.entity.person.Patient;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -14,6 +19,10 @@ import java.util.List;
  */
 @Data
 @ApiModel
+@JsonIgnoreProperties(
+        ignoreUnknown = true,
+        value = { "updateDateTime", "createUserId", "updateUserId"}
+)
 public class PatientDetailsVo extends Patient {
 
     @ApiModelProperty(value = "最后为值（当前位置）")
@@ -28,12 +37,27 @@ public class PatientDetailsVo extends Patient {
     @ApiModelProperty(value = "负责医生")
     private List<PatientDetailsVo.DoctorVo> doctorVos;
 
+    @ApiModelProperty(value = "限制区域")
+    private List<RestrictedAreaVo> restrictedAreaVos;
+
     @ApiModelProperty(value = "床位")
     private String bedCode;
 
     @ApiModelProperty(value = "标签电量")
     private Integer battery;
 
+    @ApiModelProperty(value = "警告")
+    private String alarm;
+
+    @ApiModelProperty(value = "警告编码")
+    private SystemAlarmType alarmType;
+
+    @ApiModelProperty(value = "警告时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime alarmDataTime;
+
+    @ApiModelProperty(value = "警告id")
+    private String alarmId;
 
     @Data
     @ApiModel

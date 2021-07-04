@@ -77,6 +77,13 @@ public interface SystemAlarmService {
     public List<SystemAlarm> find(Long userId ,Boolean ua, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
     /**
+     * 查找最后的警告
+     * @param pi
+     * @return
+     */
+    public SystemAlarm findLast(Long pi);
+
+    /**
      * 警告列表
      * @param lionPage
      * @param departmentIds

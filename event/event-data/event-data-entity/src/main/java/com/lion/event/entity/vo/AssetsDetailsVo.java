@@ -21,8 +21,8 @@ import java.util.List;
 @ApiModel
 public class AssetsDetailsVo extends Assets {
 
-    @ApiModelProperty(value = "行动轨迹（365天的数据）")
-    private List<Position> positions;
+//    @ApiModelProperty(value = "行动轨迹（30天的数据）")
+//    private List<Position> positions;
 
     @ApiModelProperty(value = "使用登记(无数据-使用登记功能木有)")
     private List<Object> useRecord;

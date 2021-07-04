@@ -1,12 +1,15 @@
 package com.lion.event.entity.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.SystemAlarm;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.upms.entity.user.User;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -21,12 +24,6 @@ public class StaffDetailsVo extends User {
     @ApiModelProperty(value = "最后为值（当前位置）")
     private CurrentRegionVo currentRegionVo;
 
-//    @ApiModelProperty(value = "行动轨迹（当天（00:00:00 - 23:59:59））")
-//    private List<Position> positions;
-//
-//    @ApiModelProperty(value = "警告信息（当天未处理的警告（00:00:00 - 23:59:59）")
-//    private List<SystemAlarm> systemAlarms;
-
     @ApiModelProperty(value = "电量(0=正常,1=少於90 天,2=少於30天)")
     private Integer battery;
 
@@ -35,6 +32,19 @@ public class StaffDetailsVo extends User {
 
     @ApiModelProperty(value = "科室名称")
     private String departmentName;
+
+    @ApiModelProperty(value = "警告")
+    private String alarm;
+
+    @ApiModelProperty(value = "警告编码")
+    private SystemAlarmType alarmType;
+
+    @ApiModelProperty(value = "警告时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime alarmDataTime;
+
+    @ApiModelProperty(value = "警告id")
+    private String alarmId;
 
     @ApiModelProperty(value = "负责的科室")
     private List<DepartmentResponsibleVo> departmentResponsibleVos;

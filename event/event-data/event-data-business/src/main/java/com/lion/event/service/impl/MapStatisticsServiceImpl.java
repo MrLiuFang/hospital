@@ -33,6 +33,7 @@ import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.event.dao.HumitureRecordDao;
 import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.HumitureRecord;
+import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.UserTagButtonRecord;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
@@ -40,6 +41,7 @@ import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.expose.assets.AssetsExposeService;
@@ -50,15 +52,10 @@ import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
+import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.enums.State;
-import com.lion.person.entity.person.Patient;
-import com.lion.person.entity.person.PatientDoctor;
-import com.lion.person.entity.person.PatientNurse;
-import com.lion.person.entity.person.TemporaryPerson;
-import com.lion.person.expose.person.PatientDoctorExposeService;
-import com.lion.person.expose.person.PatientExposeService;
-import com.lion.person.expose.person.PatientNurseExposeService;
-import com.lion.person.expose.person.TemporaryPersonExposeService;
+import com.lion.person.entity.person.*;
+import com.lion.person.expose.person.*;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
@@ -173,6 +170,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Autowired
     private UserTagButtonRecordService userTagButtonRecordService;
+
+    @DubboReference
+    private RestrictedAreaExposeServiceService restrictedAreaExposeServiceService;
 
     @Autowired
     private HttpServletResponse response;
@@ -501,6 +501,14 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 staffDetailsVo.setBattery(tag.getBattery());
             }
         }
+        SystemAlarm systemAlarm =  systemAlarmService.findLast(userId);
+        if (Objects.nonNull(systemAlarm)) {
+            SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
+            staffDetailsVo.setAlarm(systemAlarmType.getDesc());
+            staffDetailsVo.setAlarmType(systemAlarmType);
+            staffDetailsVo.setAlarmDataTime(systemAlarm.getDt());
+            staffDetailsVo.setAlarmId(systemAlarm.get_id());
+        }
         Department department = departmentUserExposeService.findDepartment(userId);
         if (Objects.nonNull(department)){
             staffDetailsVo.setDepartmentId(department.getId());
@@ -580,7 +588,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             }
         }
         LocalDateTime now = LocalDateTime.now();
-        assetsDetailsVo.setPositions(positionService.findByAssetsId(assets.getId(),now.minusDays(30),now));
+//        assetsDetailsVo.setPositions(positionService.findByAssetsId(assets.getId(),now.minusDays(30),now));
         assetsDetailsVo.setFaultRecord(faultExposeService.findLast(assets.getId()));
         return assetsDetailsVo;
     }
@@ -590,10 +598,19 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         PatientDetailsVo vo = new PatientDetailsVo();
         Patient patient = patientExposeService.findById(patientId);
         BeanUtils.copyProperties(patient,vo);
-        Tag tag = tagExposeService.findById(patient.getTagCode());
+        Tag tag = tagExposeService.find(patient.getTagCode());
         if (Objects.nonNull(tag)) {
             vo.setBattery(tag.getBattery());
         }
+        SystemAlarm systemAlarm =  systemAlarmService.findLast(patientId);
+        if (Objects.nonNull(systemAlarm)) {
+            SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
+            vo.setAlarm(systemAlarmType.getDesc());
+            vo.setAlarmType(systemAlarmType);
+            vo.setAlarmDataTime(systemAlarm.getDt());
+            vo.setAlarmId(systemAlarm.get_id());
+        }
+        vo.setRestrictedAreaVos(this.restrictedArea(patientId,PersonType.PATIENT));
         WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
         if (Objects.nonNull(wardRoomSickbed)) {
             vo.setBedCode(wardRoomSickbed.getBedCode());
@@ -626,6 +643,30 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             }
         });
         vo.setDoctorVos(doctorVos);
+        return vo;
+    }
+
+    @Override
+    public TemporaryPersonDetailsVo temporaryPersonDetails(Long temporaryPersonId) {
+        TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(temporaryPersonId);
+        if (Objects.isNull(temporaryPerson)) {
+            return null;
+        }
+        TemporaryPersonDetailsVo vo = new TemporaryPersonDetailsVo();
+        BeanUtils.copyProperties(temporaryPerson,vo);
+        Tag tag = tagExposeService.find(temporaryPerson.getTagCode());
+        if (Objects.nonNull(tag)) {
+            vo.setBattery(tag.getBattery());
+        }
+        SystemAlarm systemAlarm =  systemAlarmService.findLast(temporaryPersonId);
+        if (Objects.nonNull(systemAlarm)) {
+            SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
+            vo.setAlarm(systemAlarmType.getDesc());
+            vo.setAlarmType(systemAlarmType);
+            vo.setAlarmDataTime(systemAlarm.getDt());
+            vo.setAlarmId(systemAlarm.get_id());
+        }
+        vo.setRestrictedAreaVos(this.restrictedArea(temporaryPersonId,PersonType.TEMPORARY_PERSON));
         return vo;
     }
 
@@ -703,6 +744,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     private CurrentRegionVo convertVo(CurrentRegionDto currentRegionDto){
         CurrentRegionVo vo = new CurrentRegionVo();
+        if (Objects.isNull(currentRegionDto)) {
+            return null;
+        }
         vo.setFirstEntryTime(currentRegionDto.getFirstEntryTime());
         Region region = redisUtil.getRegionById(currentRegionDto.getRegionId());
         if (Objects.nonNull(region)) {
@@ -725,5 +769,30 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             }
         }
         return vo;
+    }
+
+
+    private List<RestrictedAreaVo> restrictedArea(Long pi,PersonType personType){
+        List<RestrictedArea> restrictedAreaList = restrictedAreaExposeServiceService.find(pi, personType);
+        List<RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
+        restrictedAreaList.forEach(restrictedArea -> {
+            RestrictedAreaVo restrictedAreaVo = new RestrictedAreaVo();
+            Region region = regionExposeService.findById(restrictedArea.getRegionId());
+            if (Objects.nonNull(region)){
+                restrictedAreaVo.setRegionName(region.getName());
+                restrictedAreaVo.setRegionId(region.getId());
+                restrictedAreaVo.setRemark(region.getRemarks());
+                Build build = buildExposeService.findById(region.getBuildId());
+                if (Objects.nonNull(build)){
+                    restrictedAreaVo.setBuildName(build.getName());
+                }
+                BuildFloor buildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
+                if (Objects.nonNull(buildFloor)) {
+                    restrictedAreaVo.setBuildFloorName(buildFloor.getName());
+                }
+                restrictedAreaVoList.add(restrictedAreaVo);
+            }
+        });
+        return restrictedAreaVoList;
     }
 }
