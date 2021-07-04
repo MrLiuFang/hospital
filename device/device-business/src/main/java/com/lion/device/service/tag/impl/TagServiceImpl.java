@@ -321,7 +321,10 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             }
             return vo;
         }
-
+        Department department = departmentExposeService.findById(tag.getDepartmentId());
+        if (Objects.nonNull(department)) {
+            vo.setDepartmentName(department.getName());
+        }
         if (Objects.equals(tag.getPurpose(),TagPurpose.THERMOHYGROGRAPH)) {
             HumitureRecord humitureRecord = humitureRecordExposeService.findLast(tag.getId());
             if (Objects.nonNull(humitureRecord)) {
