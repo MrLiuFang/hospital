@@ -85,7 +85,7 @@ public class MonitorController {
         vo.setNormalCount(vo.getNormalCount()+ids.size());
         ids.forEach(id->{
             Device device = deviceService.findById(id);
-            if (Objects.isNull(device.getLastDataTime()) ){
+            if (Objects.nonNull(device.getLastDataTime()) ){
                 Duration duration = Duration.between(device.getLastDataTime(),LocalDateTime.now());
                 if (duration.toMinutes()>120) {
                     vo.setOfflineCount(vo.getOfflineCount() + 1);
