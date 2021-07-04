@@ -2,6 +2,7 @@ package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lion.core.persistence.Validator;
 import com.lion.event.entity.CurrentPosition;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.person.entity.person.Patient;
@@ -9,6 +10,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -58,6 +61,25 @@ public class PatientDetailsVo extends Patient {
 
     @ApiModelProperty(value = "警告id")
     private String alarmId;
+
+    @ApiModelProperty(value = "汇报时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime reportDataTime;
+
+    @ApiModelProperty(value = "汇报内容")
+    private String reportContent;
+
+    @ApiModelProperty(value = "汇报员工ID")
+    private Long reportUserId;
+
+    @ApiModelProperty(value = "汇报员工姓名")
+    private String reportUserName;
+
+    @ApiModelProperty(value = "汇报员工头像")
+    private Long reportUserHeadPortrait;
+
+    @ApiModelProperty(value = "汇报员工头像url")
+    private String reportUserHeadPortraitUrl;
 
     @Data
     @ApiModel

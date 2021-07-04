@@ -10,18 +10,26 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.cctv.CctvDao;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.dao.tag.TagDao;
+import com.lion.device.entity.device.DeviceGroup;
+import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.State;
+import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
+import com.lion.device.expose.device.DeviceGroupExposeService;
 import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.service.device.DeviceService;
 import com.lion.device.entity.device.Device;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
+import com.lion.manage.expose.department.DepartmentExposeService;
+import com.lion.manage.expose.region.RegionExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -29,6 +37,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -65,6 +75,18 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 
     @DubboReference
     private FileExposeService fileExposeService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
+    @DubboReference
+    private DeviceGroupDeviceExposeService deviceGroupDeviceExposeService;
+
+    @DubboReference
+    private DeviceGroupExposeService deviceGroupExposeService;
+
+    @DubboReference
+    private RegionExposeService regionExposeService;
 
     @Override
     public void update(Device entity) {
@@ -167,10 +189,25 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
             vo.setBuildFloorName(Objects.isNull(buildFloor)?"":buildFloor.getName());
             vo.setClassify(device.getDeviceClassify());
             vo.setCode(device.getCode());
-            vo.setDepartmentName("");
+            vo.setName(device.getName());
+            DeviceGroupDevice deviceGroupDevice = deviceGroupDeviceExposeService.findByDeviceId(device.getId());
+            if (Objects.nonNull(deviceGroupDevice)) {
+                DeviceGroup deviceGroup = deviceGroupExposeService.findById(deviceGroupDevice.getDeviceGroupId());
+                Region region = regionExposeService.find(deviceGroup.getId());
+                if (Objects.nonNull(region)) {
+                    Department department = departmentExposeService.findById(region.departmentId);
+                    if (Objects.nonNull(department)) {
+                        vo.setDepartmentName(department.getName());
+                    }
+                }
+            }
             vo.setImg(device.getImg());
             vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
             vo.setState(device.getDeviceState());
+            if (Objects.nonNull(device.getLastDataTime())) {
+                Duration duration = Duration.between(device.getLastDataTime(), LocalDateTime.now());
+                vo.setIsOnline(duration.toMinutes()<120);
+            }
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());

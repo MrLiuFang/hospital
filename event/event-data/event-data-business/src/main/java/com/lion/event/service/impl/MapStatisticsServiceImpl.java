@@ -174,6 +174,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @DubboReference
     private RestrictedAreaExposeServiceService restrictedAreaExposeServiceService;
 
+    @DubboReference
+    private PatientReportExposeService patientReportExposeService;
+
     @Autowired
     private HttpServletResponse response;
 
@@ -609,6 +612,18 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             vo.setAlarmType(systemAlarmType);
             vo.setAlarmDataTime(systemAlarm.getDt());
             vo.setAlarmId(systemAlarm.get_id());
+        }
+        PatientReport patientReport = patientReportExposeService.findLast(patientId);
+        if (Objects.nonNull(patientReport)) {
+            vo.setReportContent(patientReport.getContent());
+            vo.setReportDataTime(patientReport.getCreateDateTime());
+            User user = userExposeService.findById(patientReport.getReportUserId());
+            if (Objects.nonNull(user)) {
+                vo.setReportUserId(user.getId());
+                vo.setReportUserName(user.getName());
+                vo.setReportUserHeadPortrait(user.getHeadPortrait());
+                vo.setReportUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+            }
         }
         vo.setRestrictedAreaVos(this.restrictedArea(patientId,PersonType.PATIENT));
         WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());

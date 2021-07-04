@@ -42,6 +42,9 @@ public class ListDeviceMonitorVo {
     @ApiModelProperty(value = "状态")
     private State state;
 
+    @ApiModelProperty(value = "是否在线")
+    private Boolean isOnline =false;
+
     @ApiModelProperty(value = "电量")
     private Integer battery;
 

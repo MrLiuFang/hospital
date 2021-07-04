@@ -5,6 +5,7 @@ import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.core.ResultData;
+import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.vo.DeviceMonitorTopVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
 import com.lion.device.entity.enums.State;
@@ -62,7 +63,9 @@ public class MonitorController {
     @ApiOperation(value = "设备监控顶部")
     public IResultData<DeviceMonitorTopVo> top(){
         DeviceMonitorTopVo deviceMonitorTopVo = new DeviceMonitorTopVo();
-        deviceMonitorTopVo = calculation(deviceService.allId(), deviceMonitorTopVo);
+        List<Long> ids = deviceService.allId();
+        deviceMonitorTopVo.setNormalCount(ids.size());
+        deviceMonitorTopVo = calculation(ids, deviceMonitorTopVo);
 //        deviceMonitorTopVo = calculation(assetsExposeService.allId(), deviceMonitorTopVo);
 //        deviceMonitorTopVo = calculation(tagService.allId(), deviceMonitorTopVo);
 //        deviceMonitorTopVo = calculation(cctvService.allId(), deviceMonitorTopVo);
@@ -81,10 +84,16 @@ public class MonitorController {
     private DeviceMonitorTopVo calculation(List<Long> ids, DeviceMonitorTopVo vo){
         vo.setNormalCount(vo.getNormalCount()+ids.size());
         ids.forEach(id->{
-            LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA+id);
-            if (Objects.isNull(dateTime) || Duration.between(dateTime,LocalDateTime.now()).toMillis()>7200000){
-                vo.setOfflineCount(vo.getOfflineCount()+1);
-                vo.setNormalCount(vo.getNormalCount()-1);
+            Device device = deviceService.findById(id);
+            if (Objects.isNull(device.getLastDataTime()) ){
+                Duration duration = Duration.between(device.getLastDataTime(),LocalDateTime.now());
+                if (duration.toMinutes()>120) {
+                    vo.setOfflineCount(vo.getOfflineCount() + 1);
+                    vo.setNormalCount(vo.getNormalCount() - 1);
+                }
+            }else {
+                vo.setOfflineCount(vo.getOfflineCount() + 1);
+                vo.setNormalCount(vo.getNormalCount() - 1);
             }
         });
         return vo;
