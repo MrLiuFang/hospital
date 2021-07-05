@@ -82,7 +82,6 @@ public class MonitorController {
     }
 
     private DeviceMonitorTopVo calculation(List<Long> ids, DeviceMonitorTopVo vo){
-        vo.setNormalCount(vo.getNormalCount()+ids.size());
         ids.forEach(id->{
             Device device = deviceService.findById(id);
             if (Objects.nonNull(device.getLastDataTime()) ){
