@@ -17,7 +17,7 @@ public class DepartmentStatisticsDetailsVo {
     private Long departmentId;
 
     @ApiModelProperty(value = "科室名称")
-    private Long departmentName;
+    private String departmentName;
 
     @ApiModelProperty(value = "低电量设备")
     private Integer lowPowerDeviceCount;

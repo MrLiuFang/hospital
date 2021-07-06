@@ -217,29 +217,34 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         List<DepartmentStatisticsDetailsVo> returnList = new ArrayList<>();
         list.forEach(departmentId -> {
             DepartmentStatisticsDetailsVo departmentStatisticsDetailsVo = new DepartmentStatisticsDetailsVo();
-            List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);
-            List<Long> deviceGroupIds = new ArrayList<>();
-            regionList.forEach(region -> {
-                if (Objects.nonNull(region.getDeviceGroupId())) {
-                    deviceGroupIds.add(region.getDeviceGroupId());
+            Department department = departmentExposeService.findById(departmentId);
+            if (Objects.nonNull(department)) {
+                departmentStatisticsDetailsVo.setDepartmentId(departmentId);
+                departmentStatisticsDetailsVo.setDepartmentName(department.getName());
+                List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);
+                List<Long> deviceGroupIds = new ArrayList<>();
+                regionList.forEach(region -> {
+                    if (Objects.nonNull(region.getDeviceGroupId())) {
+                        deviceGroupIds.add(region.getDeviceGroupId());
+                    }
+                });
+                departmentStatisticsDetailsVo.setLowPowerDeviceCount(deviceExposeService.countDevice(deviceGroupIds, 1));
+                departmentStatisticsDetailsVo.setLowPowerTagCount(tagExposeService.countTag(departmentId, 1));
+                Map<String, Integer> map = systemAlarmService.groupCount(departmentId);
+                if (map.containsKey("allAlarmCount")) {
+                    departmentStatisticsDetailsVo.setAllAlarmCount(map.get("allAlarmCount"));
                 }
-            });
-            departmentStatisticsDetailsVo.setLowPowerDeviceCount(deviceExposeService.countDevice(deviceGroupIds,1));
-            departmentStatisticsDetailsVo.setLowPowerTagCount(tagExposeService.countTag(departmentId,1));
-            Map<String,Integer> map = systemAlarmService.groupCount(departmentId);
-            if (map.containsKey("allAlarmCount")) {
-                departmentStatisticsDetailsVo.setAllAlarmCount(map.get("allAlarmCount"));
+                if (map.containsKey("unalarmCount")) {
+                    departmentStatisticsDetailsVo.setUnalarmCount(map.get("unalarmCount"));
+                }
+                if (map.containsKey("alarmCount")) {
+                    departmentStatisticsDetailsVo.setAlarmCount(map.get("alarmCount"));
+                }
+                departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(departmentId, null));
+                departmentStatisticsDetailsVo.setTagCount(tagExposeService.countTag(departmentId));
+                departmentStatisticsDetailsVo.setCctvCount(cctvExposeService.count(departmentId));
+                returnList.add(departmentStatisticsDetailsVo);
             }
-            if (map.containsKey("unalarmCount")) {
-                departmentStatisticsDetailsVo.setUnalarmCount(map.get("unalarmCount"));
-            }
-            if (map.containsKey("alarmCount")) {
-                departmentStatisticsDetailsVo.setAlarmCount(map.get("alarmCount"));
-            }
-            departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(departmentId, null));
-            departmentStatisticsDetailsVo.setTagCount(tagExposeService.countTag(departmentId));
-            departmentStatisticsDetailsVo.setCctvCount(cctvExposeService.count(departmentId));
-            returnList.add(departmentStatisticsDetailsVo);
         });
         return returnList;
     }

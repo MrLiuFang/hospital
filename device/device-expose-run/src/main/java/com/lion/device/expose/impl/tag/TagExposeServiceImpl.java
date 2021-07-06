@@ -74,7 +74,7 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
 
     @Override
     public Integer countTag(Long departmentId) {
-        return tagDao.countByDepartmentId(departmentId);
+        return tagDao.countByDepartmentIdAndPurpose(departmentId,TagPurpose.THERMOHYGROGRAPH);
     }
 
     @Override
