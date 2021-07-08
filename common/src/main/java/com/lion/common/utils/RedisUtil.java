@@ -689,7 +689,9 @@ public class RedisUtil {
                 list.add(wash.getId());
                 redisTemplate.opsForValue().set(RedisConstants.WASH + wash.getId(), wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });
-            redisTemplate.opsForList().leftPushAll(RedisConstants.ALL_USER_LOOP_WASH,list);
+            if (Objects.nonNull(list) && list.size()>0) {
+                redisTemplate.opsForList().leftPushAll(RedisConstants.ALL_USER_LOOP_WASH, list);
+            }
         }
 
         return washList;

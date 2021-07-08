@@ -79,7 +79,7 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
                 return;
             }
             list.forEach(wash -> {
-                if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.nonNull(wash.getInterval()) && wash.getInterval()>1) {
+                if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.nonNull(wash.getInterval()) && wash.getInterval()>=1) {
                     if (Objects.isNull(loopWashDto.getMonitorDelayDateTime())) {
                         loopWashDto.setMonitorDelayDateTime(loopWashDto.getStartWorkDateTime().plusMinutes(wash.getInterval()));
                         loopWashDto.setStartWashDateTime(loopWashDto.getStartWorkDateTime().plusMinutes(wash.getInterval()-1));
@@ -149,7 +149,7 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
 
     private void recordWashEvent(Long userId,LocalDateTime wt,LoopWashDto loopWashDto,Wash wash,UserLastWashDto userLastWashDto) throws JsonProcessingException {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + userId);
-        WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null , userLastWashDto.getDateTime(),userLastWashDto.getSystemDateTime());
+        WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null ,Objects.nonNull(userLastWashDto)?userLastWashDto.getDateTime():null,Objects.nonNull(userLastWashDto)?userLastWashDto.getSystemDateTime():null);
         WashEventDto washEventDto = new WashEventDto();
         BeanUtils.copyProperties(washRecordDto,washEventDto);
         washEventDto.setIa(false);
@@ -163,7 +163,7 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
 
     private void recordWashEvent(Long userId,LocalDateTime wt,SystemAlarmType systemAlarmType,LoopWashDto loopWashDto,Wash wash,UserLastWashDto userLastWashDto) throws JsonProcessingException {
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + userId);
-        WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null , userLastWashDto.getDateTime(),userLastWashDto.getSystemDateTime());
+        WashRecordDto washRecordDto = washCommon.init(userId,Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null,null,null , Objects.nonNull(userLastWashDto)?userLastWashDto.getDateTime():null,Objects.nonNull(userLastWashDto)?userLastWashDto.getSystemDateTime():null);
         WashEventDto washEventDto = new WashEventDto();
         BeanUtils.copyProperties(washRecordDto,washEventDto);
         washEventDto.setIa(true);
@@ -180,7 +180,7 @@ public class LoopWashMonitorConsumer implements RocketMQListener<MessageExt> {
         SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
         systemAlarmDto.setDateTime(LocalDateTime.now());
         systemAlarmDto.setType(Type.STAFF);
-        systemAlarmDto.setTagId(userLastWashDto.getTagId());
+        systemAlarmDto.setTagId(Objects.isNull(userLastWashDto)?null:userLastWashDto.getTagId());
         systemAlarmDto.setRegionId(Objects.nonNull(userCurrentRegionDto)?userCurrentRegionDto.getRegionId():null);
         systemAlarmDto.setPeopleId(userId);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());

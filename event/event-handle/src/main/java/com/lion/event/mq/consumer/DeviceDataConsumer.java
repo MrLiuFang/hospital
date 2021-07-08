@@ -160,10 +160,10 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             }
 
             //低电量警报
-            if (Objects.nonNull(deviceDataDto.getMonitorBattery()) && deviceDataDto.getMonitorBattery() <=1 && Objects.nonNull(monitor) ){
+            if (Objects.nonNull(deviceDataDto.getMonitorBattery()) && deviceDataDto.getMonitorBattery() ==2 && Objects.nonNull(monitor) ){
                 batteryAlarmService.deviceLowBatteryAlarm(monitor,deviceDataDto);
             }
-            if (Objects.nonNull(deviceDataDto.getTagBattery()) && deviceDataDto.getTagBattery() <=1 && Objects.nonNull(tag)){
+            if (Objects.nonNull(deviceDataDto.getTagBattery()) && deviceDataDto.getTagBattery() ==2 && Objects.nonNull(tag)){
                 if (Objects.nonNull(user)) {
                     batteryAlarmService.userLowBatteryAlarm(user,deviceDataDto,tag);
                 }else if (Objects.nonNull(assets)) {

@@ -68,40 +68,41 @@ public class LoopWashDeviceAlarmConsumer implements RocketMQListener<MessageExt>
             if (Objects.isNull(state) || Objects.equals(RedisConstants.USER_WORK_STATE_END,state) || !Objects.equals(uuid,loopWashDeviceAlarmDto.getUuid())) {
                 return;
             }
-            List<Wash> list = redisUtil.getLoopWash();
-            if (Objects.isNull(list) || list.size()<=0) {
-                if (Objects.nonNull(loopWashDeviceAlarmDto.getUserId())) {
-                    list = redisUtil.getLoopWashByUserId(loopWashDeviceAlarmDto.getUserId());
-                }
-            }
-            if (Objects.nonNull(list) && list.size()<=0) {
-                return;
-            }
-            list.forEach(wash -> {
-                if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.equals(wash.getRemind(),true)) {
-                    Duration duration = Duration.between(LocalDateTime.now(), loopWashDeviceAlarmDto.getDeviceDelayAlarmDateTime());
-                    long millis = duration.toMillis();
-                    if (millis<1000){
-                        UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+loopWashDeviceAlarmDto.getUserId());
-                        if (Objects.isNull(userLastWashDto)) {
-                            log.info("给硬件发送提醒("+loopWashDeviceAlarmDto.getCount()+"次)");
-                        }else {
-                            Boolean b = washRuleUtil.judgeDevideType(userLastWashDto.getMonitorId(),wash);
-                            if (!b){
-                                log.info("给硬件发送提醒("+loopWashDeviceAlarmDto.getCount()+"次)");
-                            }else {
-                                return;
-                            }
-                        }
-                        loopWashDeviceAlarmDto.setDeviceDelayAlarmDateTime(LocalDateTime.now().plusMinutes(wash.getOvertimeRemind()));
-                        loopWashDeviceAlarmDto.setCount(loopWashDeviceAlarmDto.getCount()+1);
-                        if (loopWashDeviceAlarmDto.getDeviceDelayAlarmDateTime().isAfter(loopWashDeviceAlarmDto.getEndAlarmDateTime())) {
-                            return;
-                        }
-                    }
-                    //delay(loopWashDeviceAlarmDto);
-                }
-            });
+            log.info("给硬件发送提醒");
+//            List<Wash> list = redisUtil.getLoopWash();
+//            if (Objects.isNull(list) || list.size()<=0) {
+//                if (Objects.nonNull(loopWashDeviceAlarmDto.getUserId())) {
+//                    list = redisUtil.getLoopWashByUserId(loopWashDeviceAlarmDto.getUserId());
+//                }
+//            }
+//            if (Objects.nonNull(list) && list.size()<=0) {
+//                return;
+//            }
+//            list.forEach(wash -> {
+//                if (Objects.equals(wash.getType(), WashRuleType.LOOP) && Objects.equals(wash.getRemind(),true)) {
+//                    Duration duration = Duration.between(LocalDateTime.now(), loopWashDeviceAlarmDto.getDeviceDelayAlarmDateTime());
+//                    long millis = duration.toMillis();
+//                    if (millis<1000){
+//                        UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+loopWashDeviceAlarmDto.getUserId());
+//                        if (Objects.isNull(userLastWashDto)) {
+//                            log.info("给硬件发送提醒("+loopWashDeviceAlarmDto.getCount()+"次)");
+//                        }else {
+//                            Boolean b = washRuleUtil.judgeDevideType(userLastWashDto.getMonitorId(),wash);
+//                            if (!b){
+//                                log.info("给硬件发送提醒("+loopWashDeviceAlarmDto.getCount()+"次)");
+//                            }else {
+//                                return;
+//                            }
+//                        }
+//                        loopWashDeviceAlarmDto.setDeviceDelayAlarmDateTime(LocalDateTime.now().plusMinutes(wash.getOvertimeRemind()));
+//                        loopWashDeviceAlarmDto.setCount(loopWashDeviceAlarmDto.getCount()+1);
+//                        if (loopWashDeviceAlarmDto.getDeviceDelayAlarmDateTime().isAfter(loopWashDeviceAlarmDto.getEndAlarmDateTime())) {
+//                            return;
+//                        }
+//                    }
+//                    //delay(loopWashDeviceAlarmDto);
+//                }
+//            });
         }catch (Exception exception) {
             exception.printStackTrace();
         }
