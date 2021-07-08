@@ -13,6 +13,7 @@ import com.lion.event.service.CommonService;
 import com.lion.event.service.TemporaryPersonService;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.person.entity.enums.PersonType;
+import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.RestrictedArea;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.RestrictedAreaExposeService;
@@ -76,5 +77,24 @@ public class TemporaryPersonServiceImpl implements TemporaryPersonService {
             systemAlarmDto.setRegionId(currentRegionDto.getRegionId());
             rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
         }
+
+        if (Objects.nonNull(deviceDataDto.getButtonId()) && Objects.equals(deviceDataDto.getButtonId(),1)){
+            systemAlarm(tag,currentRegionDto,temporaryPerson);
+        }
+    }
+
+    private void systemAlarm(Tag tag,  CurrentRegionDto currentRegionDto, TemporaryPerson temporaryPerson) throws JsonProcessingException {
+        //系统内警告
+        SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+        systemAlarmDto.setDateTime(LocalDateTime.now());
+        systemAlarmDto.setType(Type.MIGRANT);
+        systemAlarmDto.setPeopleId(temporaryPerson.getId());
+        if (Objects.nonNull(tag)){
+            systemAlarmDto.setTagId(tag.getId());
+        }
+        systemAlarmDto.setSystemAlarmType(SystemAlarmType.ZDHJ);
+        systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
+        systemAlarmDto.setRegionId(Objects.isNull(systemAlarmDto)?null:currentRegionDto.getRegionId());
+        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
     }
 }

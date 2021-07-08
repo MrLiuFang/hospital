@@ -177,10 +177,13 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
                 detailsAssetsVo.setRegionName(region.getName());
             }
         }
-        Tag tag = tagExposeService.findById(assets.getId());
-        if (Objects.nonNull(tag)){
-            detailsAssetsVo.setTagCode(tag.getTagCode());
-            detailsAssetsVo.setTagId(tag.getId());
+        TagAssets tagAssets = tagAssetsExposeService.find(assets.getId());
+        if (Objects.nonNull(tagAssets)) {
+            Tag tag = tagExposeService.findById(tagAssets.getTagId());
+            if (Objects.nonNull(tag)) {
+                detailsAssetsVo.setTagCode(tag.getTagCode());
+                detailsAssetsVo.setTagId(tag.getId());
+            }
         }
         return detailsAssetsVo;
     }

@@ -15,7 +15,6 @@ import java.util.Objects;
  * @date 2021/4/9下午4:39
  */
 public enum WashDeviceType implements IEnum {
-
     DISINFECTION_GEL(0, "免洗消毒凝胶"),
     LIQUID_SOAP(1, "洗手液"),
     ALCOHOL(2, "酒精"),

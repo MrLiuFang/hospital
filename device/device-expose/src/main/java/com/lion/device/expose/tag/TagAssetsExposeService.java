@@ -46,4 +46,5 @@ public interface TagAssetsExposeService extends BaseService<TagAssets> {
      * @return
      */
     public TagAssets findByTagId(Long tagId);
+
 }

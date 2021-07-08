@@ -1,5 +1,6 @@
 package com.lion.device.entity.tag.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.device.entity.tag.Tag;
 import io.swagger.annotations.ApiModel;
@@ -42,6 +43,7 @@ public class DetailsTagVo extends Tag {
     private BigDecimal humidity;
 
     @ApiModelProperty(value = "温湿度获取时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dateTime;
 
 

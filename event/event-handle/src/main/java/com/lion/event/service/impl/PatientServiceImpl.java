@@ -26,6 +26,7 @@ import com.lion.person.expose.person.PatientExposeService;
 import com.lion.person.expose.person.PatientTransferExposeService;
 import com.lion.person.expose.person.RestrictedAreaExposeService;
 import com.lion.person.expose.person.TempLeaveExposeService;
+import com.lion.upms.entity.user.User;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -129,9 +130,28 @@ public class PatientServiceImpl implements PatientService {
             rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
         }
 
+        if (Objects.nonNull(deviceDataDto.getButtonId()) && Objects.equals(deviceDataDto.getButtonId(),1)){
+            systemAlarm(tag,currentRegionDto,patient);
+        }
+
 //        if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.RECYCLING_BOX)) {
 //            patientExposeService.updateIsWaitLeave(patient.getId(),true);
 //        }
+    }
+
+    private void systemAlarm(Tag tag,  CurrentRegionDto currentRegionDto, Patient patient) throws JsonProcessingException {
+        //系统内警告
+        SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+        systemAlarmDto.setDateTime(LocalDateTime.now());
+        systemAlarmDto.setType(Type.PATIENT);
+        systemAlarmDto.setPeopleId(patient.getId());
+        if (Objects.nonNull(tag)){
+            systemAlarmDto.setTagId(tag.getId());
+        }
+        systemAlarmDto.setSystemAlarmType(SystemAlarmType.ZDHJ);
+        systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
+        systemAlarmDto.setRegionId(Objects.isNull(systemAlarmDto)?null:currentRegionDto.getRegionId());
+        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
     }
 
 
