@@ -15,11 +15,16 @@ import java.util.Objects;
  * @date 2021/4/9下午4:39
  */
 public enum WashDeviceType implements IEnum {
-    DISINFECTION_GEL(0, "免洗消毒凝胶"),
-    LIQUID_SOAP(1, "洗手液"),
-    ALCOHOL(2, "酒精"),
-    WASHING_FOAM(3, "洗手泡沫"),
-    WATER(4, "清水");
+//    DISINFECTION_GEL(0, "免洗消毒凝胶"),
+//    LIQUID_SOAP(1, "洗手液"),
+//    ALCOHOL(2, "酒精"),
+//    WASHING_FOAM(3, "洗手泡沫"),
+//    WATER(4, "清水");
+    WATER(2, "清水"),
+    DISINFECTANT_GEL(3, "免洗消毒凝膠"),
+    LIQUID_SOAP(4, "洗手液"),
+    ALCOHOL(5, "酒精"),
+    WASHING_FOAM(6, "洗手泡沫");
     private final int key;
 
     private final String desc;

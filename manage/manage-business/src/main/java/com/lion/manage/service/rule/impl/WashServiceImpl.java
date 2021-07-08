@@ -300,7 +300,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         }
 
         if (Objects.equals(wash.getType(),WashRuleType.LOOP)) {
-            if (wash.getIsAllUser()){
+            if (Objects.nonNull(wash.getIsAllUser()) && wash.getIsAllUser()){
                 List<Long> list = redisTemplate.opsForList().range(RedisConstants.ALL_USER_LOOP_WASH,0,-1);
                 if (Objects.isNull(list)){
                     list = new ArrayList<Long>();

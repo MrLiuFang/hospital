@@ -42,7 +42,7 @@ public class WashRuleUtil {
                     if (Objects.equals(device.getDeviceType(),DeviceType.ALCOHOL)){
                         return true;
                     }
-                }else if (Objects.equals(washDeviceType,WashDeviceType.DISINFECTION_GEL)) {
+                }else if (Objects.equals(washDeviceType,WashDeviceType.DISINFECTANT_GEL)) {
                     if (Objects.equals(device.getDeviceType(),DeviceType.DISINFECTANT_GEL)){
                         return true;
                     }
