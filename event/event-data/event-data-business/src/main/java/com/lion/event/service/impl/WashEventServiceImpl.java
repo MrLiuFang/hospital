@@ -225,8 +225,12 @@ public class WashEventServiceImpl implements WashEventService {
         Long totalElements = (Long) map.get("totalElements");
         List<Work> list = (List<Work>) map.get("list");
         List<ListUserWashMonitorVo> returnList = new ArrayList<>();
+        List<Long> tmp = new ArrayList<>();
         list.forEach(work -> {
             if (Objects.nonNull(work.getStartWorkTime())) {
+                if (!list.contains(work.getUserId())) {
+                    tmp.add(work.getUserId());
+                }
                 ListUserWashMonitorVo vo = null;
                 LocalDateTime localDateTime = Objects.isNull(work.getEndWorkTime()) ? LocalDateTime.of(work.getStartWorkTime().toLocalDate(), LocalTime.MAX) : work.getEndWorkTime();
                 List<Document> documentList = washEventDao.eventCount(work.getStartWorkTime(), localDateTime, null, null, work.getUserId(), null);
@@ -237,6 +241,23 @@ public class WashEventServiceImpl implements WashEventService {
                     vo = init(work.getStartWorkTime(), work.getEndWorkTime(), work.getUserId(), null);
                 }
                 List<WashUser> washUserList = washUserExposeService.find(work.getUserId());
+                if (Objects.isNull(washUserList) || washUserList.size() <= 0) {
+                    List<Wash> washList = washExposeService.findLoopWash(true);
+                    if (Objects.isNull(washList) || washList.size() <= 0) {
+                        if (Objects.nonNull(vo)) {
+                            vo.setIsExistWashRule(false);
+                        }
+                    }
+                }
+                returnList.add(vo);
+            }
+        });
+        Map<String,Object> map1 = userExposeService.find(departmentId,userName,userType,null,0, 999999999);
+        List<User> userList = (List<User>) map1.get("list");
+        userList.forEach(user -> {
+            if (!tmp.contains(user.getId())) {
+                ListUserWashMonitorVo vo = init(null, null, user.getId(), null);
+                List<WashUser> washUserList = washUserExposeService.find(user.getId());
                 if (Objects.isNull(washUserList) || washUserList.size() <= 0) {
                     List<Wash> washList = washExposeService.findLoopWash(true);
                     if (Objects.isNull(washList) || washList.size() <= 0) {

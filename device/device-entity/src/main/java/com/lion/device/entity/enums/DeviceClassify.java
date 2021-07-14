@@ -24,6 +24,7 @@ public enum DeviceClassify implements IEnum {
     HAND_WASHING(4, "hand washing"),
     RECYCLING_BOX(5, "回收箱");
 
+
     private final int key;
 
     private final String desc;

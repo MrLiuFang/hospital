@@ -21,7 +21,8 @@ public enum TagType implements IEnum {
     BUTTON(2, "按钮"),
     BABY(3, "婴儿"),
     STAFF(4, "职员"),
-    TEMPERATURE_HUMIDITY(5, "温湿");
+    TEMPERATURE_HUMIDITY(5, "温湿"),
+    PREVENT_FALLING(6, "放脱标签");
 
     private final int key;
 
