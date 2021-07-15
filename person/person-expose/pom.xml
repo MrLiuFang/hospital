@@ -13,6 +13,11 @@
 
 	<dependencies>
 		<dependency>
+			<groupId>io.seata</groupId>
+			<artifactId>seata-spring-boot-starter</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>com.lion</groupId>
 			<artifactId>person-entity</artifactId>
 			<version>${project.parent.version}</version>
