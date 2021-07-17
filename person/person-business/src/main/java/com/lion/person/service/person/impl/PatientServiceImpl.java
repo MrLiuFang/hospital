@@ -425,7 +425,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         }
         patient.setWardId(ward.getId());
         patient.setRoomId(wardRoom.getId());
-        patient.setDepartmentId(ward.getDepartmentId());
+        if (!Objects.equals(ward.getDepartmentId(),patient.getDepartmentId())) {
+            BusinessException.throwException("该表患者与床位不在同一科室");
+        }
         return patient;
     }
 

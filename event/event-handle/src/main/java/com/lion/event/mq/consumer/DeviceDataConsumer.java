@@ -89,6 +89,7 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
         try {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
+            log.info(msg);
             DeviceDataDto deviceDataDto = jacksonObjectMapper.readValue(msg, DeviceDataDto.class);
             DateTimeFormatter df = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             deviceDataDto.setSystemDateTime(LocalDateTime.parse(LocalDateTime.now().format(df),df));
