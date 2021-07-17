@@ -108,13 +108,13 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                 if(Objects.nonNull(userCurrentRegionDto.getFirstEntryTime()) &&
                                         !userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusMinutes(wash.getAfterEnteringTime())) &&
                                         !userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime())){
-                                    alarm(washEventDto,true,SystemAlarmType.WXYBZDXSSBXS,null,userCurrentRegionDto,userLastWashDto,wash,regionWashMonitorDelayDto.getTagId() );
+                                    alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,userLastWashDto,wash,regionWashMonitorDelayDto.getTagId() );
                                     return;
                                 }
                                 //判断有没有在规定的洗手设备洗手
                                 Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(),wash);
                                 if (Objects.equals(b,false)){
-                                    alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,wash,regionWashMonitorDelayDto.getTagId() );
+                                    alarm(washEventDto,true,SystemAlarmType.WXYBZDXSSBXS,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,wash,regionWashMonitorDelayDto.getTagId() );
                                     return;
                                 }
                             }

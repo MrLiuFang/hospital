@@ -83,7 +83,7 @@ public class UserWashServiceImpl implements UserWashService {
             if (Objects.nonNull(list) && list.size() > 0) {
                 list.forEach(wash -> {
                     //如果是全部用户
-                    if (wash.getIsAllUser()) {
+                    if (Objects.nonNull(wash.getIsAllUser()) && wash.getIsAllUser()) {
                         try {
 //                            log.info("推送延迟检测命令");
                             rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
