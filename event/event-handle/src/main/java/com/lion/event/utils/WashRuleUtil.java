@@ -26,7 +26,7 @@ public class WashRuleUtil {
         List<Device> washDevice = redisUtil.getWashDevice(wash.getId());
         Device device = redisUtil.getDevice(deviceId);
         for (Device obj : washDevice){
-            if (Objects.equals(obj,device)) {
+            if (Objects.equals(obj.getId(),device.getId())) {
                 return true;
             }
         };

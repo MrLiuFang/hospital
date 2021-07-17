@@ -90,7 +90,27 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                 if (duration.toMinutes() > wash.getBeforeEnteringTime()){
                                     alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,userLastWashDto,wash,regionWashMonitorDelayDto.getTagId() );
                                     return;
+                                }else {
+                                    if (userLastWashDto.getTime()<wash.getDuration()) {
+                                        //doto 给硬件发消息
+                                        log.info("给硬件发送消息-洗手时长不够");
+                                        SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+                                        systemAlarmDto.setDateTime(LocalDateTime.now());
+                                        systemAlarmDto.setType(Type.STAFF);
+                                        systemAlarmDto.setTagId(userLastWashDto.getTagId());
+                                        systemAlarmDto.setRegionId(userCurrentRegionDto.getRegionId());
+                                        systemAlarmDto.setPeopleId(userLastWashDto.getUserId());
+                                        systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
+                                        systemAlarmDto.setSystemAlarmType(SystemAlarmType.WDDBZSXSC);
+                                        try {
+                                            rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+                                        } catch (JsonProcessingException e) {
+                                            e.printStackTrace();
+                                        }
+                                        return;
+                                    }
                                 }
+
                                 //判断是否用规定的洗手设备洗手
                                 Boolean b = washRuleUtil.judgeDevide(userLastWashDto.getMonitorId(),wash);
                                 if (Objects.equals(b,false)){
@@ -105,9 +125,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                     return;
                                 }
                                 //超过时间范围(未洗手)
-                                if(Objects.nonNull(userCurrentRegionDto.getFirstEntryTime()) &&
-                                        !userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusMinutes(wash.getAfterEnteringTime())) &&
-                                        !userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime())){
+                                if(!(userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusMinutes(wash.getAfterEnteringTime())) && userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime()))){
                                     alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,userLastWashDto,wash,regionWashMonitorDelayDto.getTagId() );
                                     return;
                                 }

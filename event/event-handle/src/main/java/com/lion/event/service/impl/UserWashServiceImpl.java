@@ -118,10 +118,10 @@ public class UserWashServiceImpl implements UserWashService {
      */
     private UserCurrentRegionDto recordUserCurrentRegion(User user, Region monitorRegion, Region starRegion, DeviceDataDto deviceDataDto,Tag tag) throws JsonProcessingException {
         Region region = Objects.isNull(monitorRegion)?starRegion:monitorRegion;
-//        if (Objects.isNull(region)){
-//            return null;
-//        }
         UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION+user.getId());
+        if (Objects.isNull(region)){
+            return userCurrentRegionDto;
+        }
         String uuid = UUID.randomUUID().toString();
         if (Objects.isNull(userCurrentRegionDto)){
             userCurrentRegionDto  = new UserCurrentRegionDto();
