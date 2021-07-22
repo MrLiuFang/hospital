@@ -130,7 +130,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         LocalDateTime now = LocalDateTime.now();
         match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",now.minusDays(30)).append("$lte",now));
         match = BasicDBObjectUtil.put(match,"$match","bfi",new BasicDBObject("$eq",buildFloorId) );
-        match = BasicDBObjectUtil.put(match,"$match","ua",new BasicDBObject("$in",new Integer[]{0,2}) );
+        match = BasicDBObjectUtil.put(match,"$match","ua",new BasicDBObject("$in",new Integer[]{SystemAlarmState.UNTREATED.getKey(),SystemAlarmState.CALL.getKey()}) );
         pipeline.add(match);
         BasicDBObject group = new BasicDBObject();
         group = BasicDBObjectUtil.put(group,"$group","_id","$ri");
