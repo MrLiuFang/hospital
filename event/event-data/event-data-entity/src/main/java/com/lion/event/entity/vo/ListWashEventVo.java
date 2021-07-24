@@ -23,7 +23,7 @@ public class ListWashEventVo {
     private String name;
 
     @ApiModelProperty(value = "科室")
-    private String departmentDame;
+    private String departmentName;
 
     @ApiModelProperty(value = "工号")
     private Integer number;
@@ -43,4 +43,7 @@ public class ListWashEventVo {
 
     @ApiModelProperty(value = "是否合规")
     private Boolean ia;
+
+    @ApiModelProperty(value = "洗手时长")
+    private Integer time;
 }

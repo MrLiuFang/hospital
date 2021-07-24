@@ -320,8 +320,9 @@ public class WashEventServiceImpl implements WashEventService {
                 vo.setNumber(user.getNumber());
                 vo.setGender(user.getGender());
             }
-            vo.setDepartmentDame(washEvent.getDn());
+            vo.setDepartmentName(washEvent.getDn());
             vo.setIa(washEvent.getIa());
+            vo.setTime(washEvent.getT());
             vo.setUseDateTime(washEvent.getDdt());
             Device device = deviceExposeService.findById(washEvent.getDvi());
             if (Objects.nonNull(device)){
@@ -374,7 +375,7 @@ public class WashEventServiceImpl implements WashEventService {
         for (ListWashEventVo listWashEventVo : list) {
             table.addCell(new Paragraph(listWashEventVo.getName(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getNumber())?"":String.valueOf(listWashEventVo.getNumber()), fontChinese));
-            table.addCell(new Paragraph(listWashEventVo.getDepartmentDame(), fontChinese));
+            table.addCell(new Paragraph(listWashEventVo.getDepartmentName(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUserType())?"":listWashEventVo.getUserType().getDesc(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getGender())?"":listWashEventVo.getGender().getDesc(), fontChinese));
             table.addCell(new Paragraph(listWashEventVo.getDeviceName(), fontChinese));
