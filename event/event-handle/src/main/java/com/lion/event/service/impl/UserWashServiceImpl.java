@@ -69,16 +69,15 @@ public class UserWashServiceImpl implements UserWashService {
         if (Objects.isNull(userCurrentRegionDto)){
             return;
         }
-        String uuid = UUID.randomUUID().toString();
-        userWashEevent(user,monitor,star,tag , deviceDataDto, userCurrentRegionDto);
 
         //判断是否从X区域进入X区域，如果是就进行新的洗手事件监控
         if (Objects.nonNull(userCurrentRegionDto) && userCurrentRegionDto.getCurrentRegionEvent()==1 && !Objects.equals(userCurrentRegionDto.getRegionId(),userCurrentRegionDto.getPreviousRegionId())) {
             List<Wash> list = redisUtil.getWash(userCurrentRegionDto.getRegionId());
+            String uuid = UUID.randomUUID().toString();
             RegionWashMonitorDelayDto regionWashMonitorDelayDto = new RegionWashMonitorDelayDto();
             regionWashMonitorDelayDto.setUserId(user.getId());
+            regionWashMonitorDelayDto.setMonitorId(uuid);
             regionWashMonitorDelayDto.setRegionId(userCurrentRegionDto.getRegionId());
-            regionWashMonitorDelayDto.setUuid(userCurrentRegionDto.getUuid());
             regionWashMonitorDelayDto.setTagId(tag.getId());
             if (Objects.nonNull(list) && list.size() > 0) {
                 list.forEach(wash -> {
@@ -86,6 +85,7 @@ public class UserWashServiceImpl implements UserWashService {
                     if (Objects.nonNull(wash.getIsAllUser()) && wash.getIsAllUser()) {
                         try {
 //                            log.info("推送延迟检测命令");
+                            redisTemplate.opsForValue().set(RedisConstants.WAH_MONITOR+user.getId(),userCurrentRegionDto.getRegionId()+"_"+uuid,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
                             rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
                         } catch (JsonProcessingException e) {
                             e.printStackTrace();
@@ -95,6 +95,7 @@ public class UserWashServiceImpl implements UserWashService {
                         if (Objects.nonNull(wash1)) {
                             try {
 //                                log.info("推送延迟检测命令");
+                                redisTemplate.opsForValue().set(RedisConstants.WAH_MONITOR+user.getId(),userCurrentRegionDto.getRegionId()+"_"+uuid,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
                                 rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
                             } catch (JsonProcessingException e) {
                                 e.printStackTrace();
@@ -104,6 +105,8 @@ public class UserWashServiceImpl implements UserWashService {
                 });
             }
         }
+
+        userWashEevent(user,monitor,star,tag , deviceDataDto, userCurrentRegionDto);
     }
 
     /**
@@ -198,6 +201,27 @@ public class UserWashServiceImpl implements UserWashService {
             WashRecordDto washRecordDto = washCommon.init(user.getId(),Objects.isNull(userCurrentRegionDto)?null:userCurrentRegionDto.getRegionId()
                     ,device.getId(),userCurrentRegionDto.getUuid(),deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
             rocketMQTemplate.syncSend(TopicConstants.WASH_RECORD, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washRecordDto)).build());
+
+
+            List<Wash> list = redisUtil.getWash(userCurrentRegionDto.getRegionId());
+            list.forEach(wash -> {
+                if (Objects.nonNull(wash.getAfterEnteringTime()) && wash.getAfterEnteringTime()>0 ) {
+                    String str = (String) redisTemplate.opsForValue().get(RedisConstants.WAH_MONITOR+user.getId());
+                    if (Objects.isNull(str)) {
+                        return;
+                    }
+                    redisTemplate.delete(RedisConstants.WAH_MONITOR+user.getId());
+                    WashEventDto washEventDto = new WashEventDto();
+                    BeanUtils.copyProperties(washRecordDto,washEventDto);
+                    washEventDto.setWi(wash.getId());
+                    try {
+                        rocketMQTemplate.syncSend(TopicConstants.WASH_EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washEventDto)).build());
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
         }
     }
 }

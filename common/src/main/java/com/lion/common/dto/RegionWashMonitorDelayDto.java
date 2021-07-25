@@ -31,12 +31,13 @@ public class RegionWashMonitorDelayDto implements Serializable {
     private Long regionId;
 
     /**
-     * 唯一事件标识
-     */
-    private String uuid;
-
-    /**
      * 标签ID
      */
     private Long tagId;
+
+    /**
+     * 监控唯一标识码 - uuid
+     */
+    private String monitorId;
+
 }

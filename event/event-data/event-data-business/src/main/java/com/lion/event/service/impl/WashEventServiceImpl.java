@@ -482,11 +482,12 @@ public class WashEventServiceImpl implements WashEventService {
                 queryUpdate.addCriteria(Criteria.where("_id").is(washEvent.get_id()));
                 Update update = new Update();
                 update.set("t", userLastWashDto.getTime());
-                mongoTemplate.updateFirst(queryUpdate, update, "wash_event");
                 if (Objects.nonNull(washEvent.getWi())) {
                     Wash wash = redisUtil.getWashById(washEvent.getWi());
                     if (Objects.nonNull(wash)) {
                         if (userLastWashDto.getTime()<wash.getDuration()) {
+                            update.set("ia",true);
+                            update.set("at",SystemAlarmType.WDDBZSXSC.getKey());
                             //doto 给硬件发消息
                             log.info("给硬件发送消息-洗手时长不够");
                             SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
@@ -505,6 +506,7 @@ public class WashEventServiceImpl implements WashEventService {
                         }
                     }
                 }
+                mongoTemplate.updateFirst(queryUpdate, update, "wash_event");
             }
         }
     }

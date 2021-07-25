@@ -68,8 +68,18 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
             if (Objects.nonNull(regionWashMonitorDelayDto) && Objects.nonNull(regionWashMonitorDelayDto.getUserId())) {
                 UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + regionWashMonitorDelayDto.getUserId());
                 if (Objects.nonNull(userCurrentRegionDto)) {
+                    String str = (String) redisTemplate.opsForValue().get(RedisConstants.WAH_MONITOR+regionWashMonitorDelayDto.getUserId());
+                    if (Objects.isNull(str)) {
+                        return;
+                    }
+                    String regionId = str.split("_")[0];
+                    String uuid = str.split("_")[1];
+                    if (!(Objects.equals(regionId,regionWashMonitorDelayDto.getRegionId()) && Objects.equals(uuid,regionWashMonitorDelayDto.getMonitorId()))) {
+                        return;
+                    }
                     //判断用户是否从X区域离开 如果离开就不进行洗手检测
                     if (Objects.nonNull(userCurrentRegionDto.getRegionId()) && Objects.equals(userCurrentRegionDto.getRegionId(),regionWashMonitorDelayDto.getRegionId())) {
+                        redisTemplate.delete(RedisConstants.WAH_MONITOR+regionWashMonitorDelayDto.getUserId());
                         List<Wash> washList = redisUtil.getWash(regionWashMonitorDelayDto.getRegionId());
                         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
                         for (Wash wash :washList){

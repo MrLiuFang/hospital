@@ -246,6 +246,11 @@ public class RedisConstants {
     public static final String USER_TAG_RULE = "user_tag_rule_";
 
     /**
+     * 洗手监控(key:userId,value:region_id)
+     */
+    public static final String WAH_MONITOR = "wah_monitor_";
+
+    /**
      * 按钮规则(key:tagRuleId,value:tagRule)
      */
     public static final String TAG_RULE = "tag_rule_";
