@@ -83,6 +83,11 @@ public class PatientServiceImpl implements PatientService {
         }
         redisTemplate.opsForValue().set(RedisConstants.PATIENT_CURRENT_REGION,currentRegionDto,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         commonService.position(deviceDataDto,patient,Objects.nonNull(currentRegionDto)?currentRegionDto.getRegionId():null,tag );
+        if (Objects.nonNull(deviceDataDto.getButtonId()) && Objects.equals(deviceDataDto.getButtonId(),1)){
+            systemAlarm(tag,SystemAlarmType.ZDHJ,currentRegionDto,patient);
+        }else if (Objects.nonNull(deviceDataDto.getButtonId()) && Objects.equals(deviceDataDto.getButtonId(),4)){
+            systemAlarm(tag,SystemAlarmType.WJSQQXBQ,currentRegionDto,patient);
+        }
         PatientTransfer patientTransfer = patientTransferExposeService.find(patient.getId());
         List<TempLeave> tempLeaves =tempLeaveExposeService.find(patient.getId());
         List<RestrictedArea> restrictedAreas = restrictedAreaExposeService.find(patient.getId(), PersonType.PATIENT );
@@ -119,19 +124,7 @@ public class PatientServiceImpl implements PatientService {
         }
 
         if (isLeaveRestrictedArea){
-            SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
-            systemAlarmDto.setDateTime(LocalDateTime.now());
-            systemAlarmDto.setType(Type.PATIENT);
-            systemAlarmDto.setTagId(tag.getId());
-            systemAlarmDto.setPeopleId(patient.getId());
-            systemAlarmDto.setSystemAlarmType(SystemAlarmType.CCXDFW);
-            systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-            systemAlarmDto.setRegionId(currentRegionDto.getRegionId());
-            rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-        }
-
-        if (Objects.nonNull(deviceDataDto.getButtonId()) && Objects.equals(deviceDataDto.getButtonId(),1)){
-            systemAlarm(tag,currentRegionDto,patient);
+            systemAlarm(tag,SystemAlarmType.CCXDFW,currentRegionDto,patient);
         }
 
 //        if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.RECYCLING_BOX)) {
@@ -139,18 +132,17 @@ public class PatientServiceImpl implements PatientService {
 //        }
     }
 
-    private void systemAlarm(Tag tag,  CurrentRegionDto currentRegionDto, Patient patient) throws JsonProcessingException {
-        //系统内警告
+    private void systemAlarm(Tag tag, SystemAlarmType systemAlarmType, CurrentRegionDto currentRegionDto, Patient patient) throws JsonProcessingException {
         SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
         systemAlarmDto.setDateTime(LocalDateTime.now());
         systemAlarmDto.setType(Type.PATIENT);
-        systemAlarmDto.setPeopleId(patient.getId());
         if (Objects.nonNull(tag)){
             systemAlarmDto.setTagId(tag.getId());
         }
-        systemAlarmDto.setSystemAlarmType(SystemAlarmType.ZDHJ);
+        systemAlarmDto.setPeopleId(patient.getId());
+        systemAlarmDto.setSystemAlarmType(systemAlarmType);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-        systemAlarmDto.setRegionId(Objects.isNull(systemAlarmDto)?null:currentRegionDto.getRegionId());
+        systemAlarmDto.setRegionId(currentRegionDto.getRegionId());
         rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
     }
 
