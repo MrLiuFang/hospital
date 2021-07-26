@@ -83,9 +83,9 @@ public class PatientServiceImpl implements PatientService {
         }
         redisTemplate.opsForValue().set(RedisConstants.PATIENT_CURRENT_REGION,currentRegionDto,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         commonService.position(deviceDataDto,patient,Objects.nonNull(currentRegionDto)?currentRegionDto.getRegionId():null,tag );
-        if (Objects.nonNull(deviceDataDto.getButtonId()) && Objects.equals(deviceDataDto.getButtonId(),1)){
+        if (Objects.equals(deviceDataDto.getButtonId(),1)){
             systemAlarm(tag,SystemAlarmType.ZDHJ,currentRegionDto,patient);
-        }else if (Objects.nonNull(deviceDataDto.getButtonId()) && Objects.equals(deviceDataDto.getButtonId(),4)){
+        }else if (Objects.equals(deviceDataDto.getButtonId(),4)){
             systemAlarm(tag,SystemAlarmType.WJSQQXBQ,currentRegionDto,patient);
         }
         PatientTransfer patientTransfer = patientTransferExposeService.find(patient.getId());
@@ -142,7 +142,7 @@ public class PatientServiceImpl implements PatientService {
         systemAlarmDto.setPeopleId(patient.getId());
         systemAlarmDto.setSystemAlarmType(systemAlarmType);
         systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-        systemAlarmDto.setRegionId(currentRegionDto.getRegionId());
+        systemAlarmDto.setRegionId(Objects.isNull(currentRegionDto)?null:currentRegionDto.getRegionId());
         rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
     }
 

@@ -123,6 +123,8 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 if (Objects.isNull(temporaryPerson) && Objects.isNull(patient) && Objects.isNull(user)) {
                     assets = redisUtil.getAssets(tag.getId());
                 }
+            }else {
+                return;
             }
 
             if (Objects.nonNull(user)){
@@ -147,24 +149,21 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                     userButtonService.tagButtonEvent(deviceDataDto,monitor,star,tag,user);
                 }
             }
-            if (Objects.nonNull(star) && Objects.nonNull(tag) && Objects.nonNull(patient)  ) { //处理患者数据
+            if (Objects.nonNull(patient)  ) { //处理患者数据
                 patientService.patientEvent(deviceDataDto,monitor,star,tag,patient);
-            }
-            if (Objects.nonNull(star) && Objects.nonNull(tag) && Objects.nonNull(temporaryPerson)) { //处理流动人员数据
+            }else if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
                 temporaryPersonService.temporaryPersonEvent(deviceDataDto,monitor,star,tag,temporaryPerson);
-            }
-            if (Objects.nonNull(star) && Objects.nonNull(tag) && (Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
+            }else if ((Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
                 deviceService.deviceEevent(deviceDataDto,monitor,star,tag);
-            }
-            if (Objects.nonNull(star) && Objects.nonNull(tag) && Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
+            }else if (Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
                 recyclingBoxService.event(deviceDataDto,monitor,star,tag,patient,temporaryPerson);
             }
 
             //低电量警报
-            if (Objects.nonNull(deviceDataDto.getMonitorBattery()) && deviceDataDto.getMonitorBattery() ==2 && Objects.nonNull(monitor) ){
+            if (Objects.equals(deviceDataDto.getMonitorBattery(),2) && Objects.nonNull(monitor) ){
                 batteryAlarmService.deviceLowBatteryAlarm(monitor,deviceDataDto);
             }
-            if (Objects.nonNull(deviceDataDto.getTagBattery()) && deviceDataDto.getTagBattery() ==2 && Objects.nonNull(tag)){
+            if (Objects.equals(deviceDataDto.getTagBattery(),2) && Objects.nonNull(tag)){
                 if (Objects.nonNull(user)) {
                     batteryAlarmService.userLowBatteryAlarm(user,deviceDataDto,tag);
                 }else if (Objects.nonNull(assets)) {
