@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -54,13 +53,13 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public void position(DeviceDataDto deviceDataDto, User user, Long regionId, Tag tag) throws JsonProcessingException {
-        position(Type.STAFF,user.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+        position(Type.STAFF,user.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime(), deviceDataDto.getMonitorId());
         penaltyZoneAlarm(Type.STAFF,user.getId(),regionId,tag.getId());
     }
 
     @Override
     public void position(DeviceDataDto deviceDataDto, Patient patient, Long regionId, Tag tag) throws JsonProcessingException {
-        position(Type.PATIENT,patient.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+        position(Type.PATIENT,patient.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime(),deviceDataDto.getMonitorId() );
         CurrentRegionDto currentRegionDto = commonService.currentRegion(deviceDataDto);
         if (Objects.nonNull(currentRegionDto)) {
             CurrentRegionDto lastCurrentRegionDto = (CurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.LAST_REGION + patient.getId());
@@ -88,22 +87,22 @@ public class CommonServiceImpl implements CommonService {
 
     @Override
     public void position(DeviceDataDto deviceDataDto, TemporaryPerson temporaryPerson, Long regionId, Tag tag) throws JsonProcessingException {
-        position(Type.MIGRANT,temporaryPerson.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+        position(Type.MIGRANT,temporaryPerson.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime(), deviceDataDto.getMonitorId());
         penaltyZoneAlarm(Type.MIGRANT,temporaryPerson.getId(),regionId,tag.getId());
     }
 
     @Override
     public void position(DeviceDataDto deviceDataDto, Tag tag, Long regionId) throws JsonProcessingException {
         if (Objects.equals(deviceDataDto.getTagType(),Type.HUMIDITY)) {
-            position(Type.HUMIDITY, null, regionId, null, tag.getId(), deviceDataDto.getTime(), deviceDataDto.getSystemDateTime());
+            position(Type.HUMIDITY, null, regionId, null, tag.getId(), deviceDataDto.getTime(), deviceDataDto.getSystemDateTime(), deviceDataDto.getMonitorId());
         }else if (Objects.equals(deviceDataDto.getTagType(),Type.TEMPERATURE)) {
-            position(Type.TEMPERATURE, null, regionId, null, Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(), deviceDataDto.getSystemDateTime());
+            position(Type.TEMPERATURE, null, regionId, null, Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(), deviceDataDto.getSystemDateTime(), deviceDataDto.getMonitorId());
         }
     }
 
     @Override
     public void position(DeviceDataDto deviceDataDto, Assets assets, Long regionId, Tag tag) throws JsonProcessingException {
-        position(Type.ASSET,null,regionId,assets.getId(),Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+        position(Type.ASSET,null,regionId,assets.getId(),Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime(), deviceDataDto.getMonitorId());
     }
 
     @Override
@@ -151,41 +150,40 @@ public class CommonServiceImpl implements CommonService {
             return;
         }
         if (Objects.equals(region.isPublic,true)) {
-            return;
-        }
-        List<ExposeObject> exposeObjects = redisTemplate.opsForList().range(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(),0,-1);
-        SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
-        systemAlarmDto.setDateTime(LocalDateTime.now());
-        systemAlarmDto.setType(type);
-        systemAlarmDto.setTagId(ti);
-        systemAlarmDto.setPeopleId(pi);
-        systemAlarmDto.setSystemAlarmType(SystemAlarmType.JRJQ);
-        systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-        systemAlarmDto.setRegionId(ri);
-        if (Objects.equals(type,Type.STAFF)) {
-            if (!exposeObjects.contains(ExposeObject.STAFF)) {
-                try {
-                    rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+            List<ExposeObject> exposeObjects = redisTemplate.opsForList().range(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(),0,-1);
+            SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+            systemAlarmDto.setDateTime(LocalDateTime.now());
+            systemAlarmDto.setType(type);
+            systemAlarmDto.setTagId(ti);
+            systemAlarmDto.setPeopleId(pi);
+            systemAlarmDto.setSystemAlarmType(SystemAlarmType.JRJQ);
+            systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
+            systemAlarmDto.setRegionId(ri);
+            if (Objects.equals(type,Type.STAFF)) {
+                if (!exposeObjects.contains(ExposeObject.STAFF)) {
+                    try {
+                        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        }
-        if (Objects.equals(type,Type.PATIENT)) {
-            if (!exposeObjects.contains(ExposeObject.PATIENT)) {
-                try {
-                    rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+            if (Objects.equals(type,Type.PATIENT)) {
+                if (!exposeObjects.contains(ExposeObject.PATIENT)) {
+                    try {
+                        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        }
-        if (Objects.equals(type,Type.MIGRANT)) {
-            if (!exposeObjects.contains(ExposeObject.POSTDOCS)) {
-                try {
-                    rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
+            if (Objects.equals(type,Type.MIGRANT)) {
+                if (!exposeObjects.contains(ExposeObject.POSTDOCS)) {
+                    try {
+                        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+                    } catch (JsonProcessingException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -201,9 +199,10 @@ public class CommonServiceImpl implements CommonService {
      * @param ti 标签id(温度)
      * @param ddt 设备产生的时间
      * @param sdt 系统接收到的时间
+     * @param monitorId
      * @throws JsonProcessingException
      */
-    private void position(Type type, Long pi, Long ri, Long adi, Long ti, LocalDateTime ddt, LocalDateTime sdt) throws JsonProcessingException {
+    private void position(Type type, Long pi, Long ri, Long adi, Long ti, LocalDateTime ddt, LocalDateTime sdt,String monitorId) throws JsonProcessingException {
         if (Objects.isNull(ri)){
             return;
         }
@@ -220,6 +219,15 @@ public class CommonServiceImpl implements CommonService {
         }
         if (Objects.nonNull(ti)) {
             positionDto.setTi(ti);
+        }
+        Device device = redisUtil.getDevice(monitorId);
+        if (Objects.nonNull(device)) {
+            if (Objects.nonNull(device.getX())){
+                positionDto.setX(device.getX());
+            }
+            if (Objects.nonNull(device.getY())){
+                positionDto.setY(device.getY());
+            }
         }
         positionDto.setDdt(ddt);
         positionDto.setSdt(sdt);
