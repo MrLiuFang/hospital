@@ -25,6 +25,7 @@ import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
+import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
@@ -111,6 +112,9 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @DubboReference
     private TagExposeService tagExposeService;
 
+    @DubboReference
+    private DepartmentUserExposeService departmentUserExposeService;
+
     @PostMapping("/add")
     @ApiOperation(value = "新增资产")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class})AddAssetsDto addAssetsDto){
@@ -121,7 +125,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/list")
     @ApiOperation(value = "资产列表")
-    public IPageResultData<List<ListAssetsVo>> list(@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code,
+    public IPageResultData<List<ListAssetsVo>> list(@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code,@ApiParam(value = "科室id")Long departmentId,Boolean isMyDepartment,
                                                   @ApiParam(value = "资产分类") AssetsType type, @ApiParam(value = "使用状态") AssetsUseState useState, LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
@@ -136,6 +140,15 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
         }
         if (Objects.nonNull(useState)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_useState",useState);
+        }
+        if (Objects.equals(isMyDepartment,true)) {
+            Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
+            if (Objects.nonNull(department)){
+                departmentId = department.getId();
+            }
+        }
+        if (Objects.nonNull(departmentId)) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);

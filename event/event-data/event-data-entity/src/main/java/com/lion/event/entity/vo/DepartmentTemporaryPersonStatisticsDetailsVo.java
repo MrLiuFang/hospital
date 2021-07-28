@@ -1,5 +1,6 @@
 package com.lion.event.entity.vo;
 
+import com.lion.person.entity.enums.State;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -61,6 +62,9 @@ public class DepartmentTemporaryPersonStatisticsDetailsVo {
 
         @ApiModelProperty(value = "标签电量")
         private Integer battery;
+
+        @ApiModelProperty(value = "是否异常")
+        private com.lion.person.entity.enums.State deviceState = State.NORMAL;
 
     }
 }

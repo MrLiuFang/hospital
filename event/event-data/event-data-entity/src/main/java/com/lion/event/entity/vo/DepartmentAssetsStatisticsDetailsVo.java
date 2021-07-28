@@ -1,6 +1,7 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
 import com.lion.manage.entity.assets.Assets;

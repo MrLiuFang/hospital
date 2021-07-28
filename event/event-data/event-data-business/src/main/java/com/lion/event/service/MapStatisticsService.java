@@ -37,43 +37,49 @@ public interface MapStatisticsService {
      * 科室员工统计
      * @return
      * @param name
+     * @param regionId
      */
-    public DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetails(String name);
+    public DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetails(String name,Long regionId);
 
     /**
      * 科室资产统计
      * @return
      * @param keyword
+     * @param regionId
      */
-    public DepartmentAssetsStatisticsDetailsVo departmentAssetsStatisticsDetails(String keyword);
+    public DepartmentAssetsStatisticsDetailsVo departmentAssetsStatisticsDetails(String keyword,Long regionId);
 
     /**
      * 科室标签统计
      * @param keyword
+     * @param regionId
      * @return
      */
-    public DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetails(String keyword);
+    public DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetails(String keyword,Long regionId);
 
     /**
      *
      * @param name
+     * @param regionId
      * @return
      */
-    public DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetails(String name);
+    public DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetails(String name,Long regionId);
 
     /**
      *
      * @param name
+     * @param regionId
      * @return
      */
-    public DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetails(String name);
+    public DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetails(String name,Long regionId);
 
     /**
      *
      * @param name
+     * @param regionId
      * @return
      */
-    public DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetails(String name);
+    public DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetails(String name,Long regionId);
 
     /**
      * 员工详情

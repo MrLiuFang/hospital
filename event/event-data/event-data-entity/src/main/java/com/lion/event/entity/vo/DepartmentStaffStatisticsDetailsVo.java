@@ -2,11 +2,14 @@ package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.device.entity.enums.TagRuleEffect;
+import com.lion.upms.entity.enums.State;
 import com.lion.upms.entity.enums.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.persistence.Convert;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -83,5 +86,8 @@ public class DepartmentStaffStatisticsDetailsVo {
 
         @ApiModelProperty("标签编码")
         private String tagCode;
+
+        @ApiModelProperty(value = "是否异常")
+        private State deviceState = State.NORMAL;
     }
 }

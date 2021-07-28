@@ -196,38 +196,38 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/department/staff/statistics/details")
     @ApiOperation(value = "地图监控科室员工统计(左边列表)")
-    public IResultData<DepartmentStaffStatisticsDetailsVo> departmentStaffStatisticsDetails(@ApiParam(value = "姓名") String name) {
-        return ResultData.instance().setData(mapStatisticsService.departmentStaffStatisticsDetails(name));
+    public IResultData<DepartmentStaffStatisticsDetailsVo> departmentStaffStatisticsDetails(@ApiParam(value = "姓名") String name,@ApiParam(value = "区域id") Long regionId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentStaffStatisticsDetails(name, regionId));
     }
 
     @GetMapping("/department/assets/statistics/details")
     @ApiOperation(value = "地图监控科室资产统计(左边列表)")
-    public IResultData<DepartmentAssetsStatisticsDetailsVo> departmentAssetsStatisticsDetails(@ApiParam(value = "名称/资产编码") String keyword) {
-        return ResultData.instance().setData(mapStatisticsService.departmentAssetsStatisticsDetails(keyword));
+    public IResultData<DepartmentAssetsStatisticsDetailsVo> departmentAssetsStatisticsDetails(@ApiParam(value = "名称/资产编码") String keyword,@ApiParam(value = "区域id") Long regionId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentAssetsStatisticsDetails(keyword, regionId));
     }
 
     @GetMapping("/department/tag/statistics/details")
     @ApiOperation(value = "地图监控科室温标签统计(左边列表)")
-    public IResultData<DepartmentTagStatisticsDetailsVo> departmentTagStatisticsDetails(@ApiParam(value = "名称/标签编码") String keyword) {
-        return ResultData.instance().setData(mapStatisticsService.departmentTagStatisticsDetails(keyword));
+    public IResultData<DepartmentTagStatisticsDetailsVo> departmentTagStatisticsDetails(@ApiParam(value = "名称/标签编码") String keyword,@ApiParam(value = "区域id") Long regionId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentTagStatisticsDetails(keyword, regionId));
     }
 
     @GetMapping("/department/patient/statistics/details")
     @ApiOperation(value = "地图监控患者统计(左边列表)")
-    public IResultData<DepartmentPatientStatisticsDetailsVo> departmentPatientStatisticsDetails(@ApiParam(value = "姓名") String name) {
-        return ResultData.instance().setData(mapStatisticsService.departmentPatientStatisticsDetails(name));
+    public IResultData<DepartmentPatientStatisticsDetailsVo> departmentPatientStatisticsDetails(@ApiParam(value = "姓名") String name,@ApiParam(value = "区域id") Long regionId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentPatientStatisticsDetails(name, regionId));
     }
 
     @GetMapping("/department/temporary/person/statistics/details")
     @ApiOperation(value = "地图监控流动人员统计(左边列表)")
-    public IResultData<DepartmentTemporaryPersonStatisticsDetailsVo> departmentTemporaryPersonStatisticsDetails(@ApiParam(value = "姓名") String name) {
-        return ResultData.instance().setData(mapStatisticsService.departmentTemporaryPersonStatisticsDetails(name));
+    public IResultData<DepartmentTemporaryPersonStatisticsDetailsVo> departmentTemporaryPersonStatisticsDetails(@ApiParam(value = "姓名") String name,@ApiParam(value = "区域id") Long regionId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentTemporaryPersonStatisticsDetails(name, regionId));
     }
 
     @GetMapping("/department/device/group/statistics/details")
     @ApiOperation(value = "地图监控监控器列表(左边列表)")
-    public IResultData<DepartmentDeviceGroupStatisticsDetailsVo> departmentDeviceGroupStatisticsDetails(@ApiParam(value = "设备组名称") String name){
-        return ResultData.instance().setData(mapStatisticsService.departmentDeviceGroupStatisticsDetails(name));
+    public IResultData<DepartmentDeviceGroupStatisticsDetailsVo> departmentDeviceGroupStatisticsDetails(@ApiParam(value = "设备组名称") String name,@ApiParam(value = "区域id") Long regionId){
+        return ResultData.instance().setData(mapStatisticsService.departmentDeviceGroupStatisticsDetails(name, regionId));
     }
 
     @GetMapping("/patient/details")

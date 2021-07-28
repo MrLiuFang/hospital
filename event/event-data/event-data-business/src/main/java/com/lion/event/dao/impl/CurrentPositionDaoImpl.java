@@ -76,4 +76,6 @@ public class CurrentPositionDaoImpl implements CurrentPositionDaoEx {
         return map;
     }
 
+
+
 }
