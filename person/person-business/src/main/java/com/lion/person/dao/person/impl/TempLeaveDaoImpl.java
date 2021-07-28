@@ -28,7 +28,8 @@ public class TempLeaveDaoImpl implements TempLeaveDaoEx {
     public Page list(String tagCode, Long departmentId, Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> searchParameter = new HashMap<String, Object>();
-        sb.append("select tl from TempLeave tl join Patient p on tl.patientId = p.id where 1=1 ");
+        sb.append("select tl from TempLeave tl join Patient p on tl.patientId = p.id where tl.isClosure=false and tl.endDateTime >= :now ");
+        searchParameter.put("now",LocalDateTime.now());
         if (StringUtils.hasText(tagCode)) {
             sb.append(" and p.tagCode like :tagCode ");
             searchParameter.put("tagCode",tagCode);

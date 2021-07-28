@@ -128,7 +128,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(d->{
             Department department = this.findById(d.getId());
-            if (Objects.nonNull(department) && !Objects.equals(department.getParentId(),0L) ) {
+            if (Objects.nonNull(department) ) {
                 deleteById(d.getId());
                 departmentUserDao.deleteByDepartmentId(d.getId());
                 departmentResponsibleUserDao.deleteByDepartmentId(d.getId());

@@ -61,7 +61,7 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
             BusinessException.throwException("该标签不存在");
         }
         if (Objects.equals(tag.getState(), TagState.DISABLE)) {
-            BusinessException.throwException("该表标签处于停用状态，可能在回收箱中！");
+            BusinessException.throwException("该表标签处于停用状态，可能在回收箱中,未消毒");
         }
         if (!Objects.equals(departmentId,tag.getDepartmentId())) {
             BusinessException.throwException("该表标签患者不在同一科室不能绑定");

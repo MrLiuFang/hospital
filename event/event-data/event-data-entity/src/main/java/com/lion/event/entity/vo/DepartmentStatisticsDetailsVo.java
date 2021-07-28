@@ -13,48 +13,48 @@ import lombok.Data;
 @ApiModel
 public class DepartmentStatisticsDetailsVo {
 
-    @ApiModelProperty(value = "科室id")
-    private Long departmentId;
+//    @ApiModelProperty(value = "科室id")
+//    private Long departmentId;
 
     @ApiModelProperty(value = "科室名称")
     private String departmentName;
 
     @ApiModelProperty(value = "低电量设备")
-    private Integer lowPowerDeviceCount;
+    private Integer lowPowerDeviceCount = 0;
 
     @ApiModelProperty(value = "低电量标签")
-    private Integer lowPowerTagCount;
+    private Integer lowPowerTagCount = 0;
 
     @ApiModelProperty(value = "今日收到警告数量")
-    private Integer alarmCount;
+    private Integer alarmCount = 0;
 
     @ApiModelProperty(value = "未处理警告数量")
-    private Integer unalarmCount;
+    private Integer unalarmCount = 0;
 
     @ApiModelProperty(value = "今日警告数量")
-    private Integer allAlarmCount;
+    private Integer allAlarmCount = 0;
 
     @ApiModelProperty(value = "当前在线员工")
-    private Integer onlineStaffCount;
+    private Integer onlineStaffCount = 0;
 
     @ApiModelProperty(value = "当前监控的资产")
-    private Integer assetsCount;
+    private Integer assetsCount = 0;
 
     @ApiModelProperty(value = "温湿标签")
-    private Integer tagCount;
+    private Integer tagCount = 0;
 
     @ApiModelProperty(value = "组网设备")
-    private Integer cctvCount;
+    private Integer cctvCount = 0;
 
     @ApiModelProperty(value = "组网设备异常")
-    private Integer cctvAlarmCount;
+    private Integer cctvAlarmCount = 0;
 
     @ApiModelProperty(value = "患者数量")
-    private Integer patientCount;
+    private Integer patientCount= 0;
 
     @ApiModelProperty(value = "患者异常数量")
-    private Integer patientAlarmCount;
+    private Integer patientAlarmCount= 0;
 
     @ApiModelProperty(value = "故障申报")
-    private Integer faultCount;
+    private Integer faultCount= 0;
 }

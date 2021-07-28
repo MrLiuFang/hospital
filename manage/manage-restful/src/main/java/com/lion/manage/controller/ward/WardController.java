@@ -16,13 +16,16 @@ import com.lion.manage.entity.ward.dto.UpdateWardDto;
 import com.lion.manage.entity.ward.vo.DetailsWardRoomVo;
 import com.lion.manage.entity.ward.vo.DetailsWardVo;
 import com.lion.manage.entity.ward.vo.ListWardVo;
+import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
 import com.lion.manage.service.ward.WardService;
+import com.lion.utils.CurrentUserUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -57,6 +60,9 @@ public class WardController extends BaseControllerImpl implements BaseController
 
     @Autowired
     private DepartmentService departmentService;
+
+    @DubboReference
+    private DepartmentUserExposeService departmentUserExposeService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增病房")
@@ -146,7 +152,13 @@ public class WardController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/sickbed/list")
     @ApiOperation(value = "病床列表")
-    public IPageResultData<List<WardRoomSickbed>> sickbedList(@ApiParam(value = "床位编码")String bedCode,@ApiParam(value = "科室")Long departmentId,@ApiParam(value = "病房")Long wardId,@ApiParam(value = "病房房间")Long wardRoomId,LionPage lionPage) {
+    public IPageResultData<List<WardRoomSickbed>> sickbedList(@ApiParam(value = "床位编码")String bedCode,@ApiParam("是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室")Long departmentId,@ApiParam(value = "病房")Long wardId,@ApiParam(value = "病房房间")Long wardRoomId,LionPage lionPage) {
+        if (Objects.equals(isMyDepartment,true)) {
+            Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
+            if (Objects.nonNull(department)) {
+                departmentId = department.getId();
+            }
+        }
         return (IPageResultData<List<WardRoomSickbed>>) wardRoomSickbedService.list(bedCode, departmentId, wardId, wardRoomId, lionPage);
     }
 

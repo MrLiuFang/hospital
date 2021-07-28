@@ -215,14 +215,14 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public List<DepartmentStatisticsDetailsVo> departmentStatisticsDetails() {
+    public DepartmentStatisticsDetailsVo departmentStatisticsDetails() {
         List<Long> list = departmentExposeService.responsibleDepartment(null);
         List<DepartmentStatisticsDetailsVo> returnList = new ArrayList<>();
         list.forEach(departmentId -> {
             DepartmentStatisticsDetailsVo departmentStatisticsDetailsVo = new DepartmentStatisticsDetailsVo();
             Department department = departmentExposeService.findById(departmentId);
             if (Objects.nonNull(department)) {
-                departmentStatisticsDetailsVo.setDepartmentId(departmentId);
+//                departmentStatisticsDetailsVo.setDepartmentId(departmentId);
                 departmentStatisticsDetailsVo.setDepartmentName(department.getName());
                 List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);
                 List<Long> deviceGroupIds = new ArrayList<>();
@@ -249,7 +249,24 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 returnList.add(departmentStatisticsDetailsVo);
             }
         });
-        return returnList;
+        DepartmentStatisticsDetailsVo returnVo = new DepartmentStatisticsDetailsVo();
+        returnList.forEach(o->{
+            returnVo.setDepartmentName(o.getDepartmentName()+"/");
+            returnVo.setAssetsCount(returnVo.getAssetsCount()+o.getAssetsCount());
+            returnVo.setAlarmCount(returnVo.getAlarmCount()+o.getAlarmCount());
+            returnVo.setAllAlarmCount(returnVo.getAllAlarmCount()+o.getAllAlarmCount());
+            returnVo.setCctvCount(returnVo.getCctvCount()+o.getCctvCount());
+            returnVo.setFaultCount(returnVo.getFaultCount()+o.getFaultCount());
+            returnVo.setPatientCount(returnVo.getPatientCount()+o.getPatientCount());
+            returnVo.setLowPowerDeviceCount(returnVo.getLowPowerDeviceCount()+o.getLowPowerDeviceCount());
+            returnVo.setLowPowerTagCount(returnVo.getLowPowerTagCount()+o.getLowPowerTagCount());
+            returnVo.setTagCount(returnVo.getTagCount()+o.getTagCount());
+            returnVo.setUnalarmCount(returnVo.getUnalarmCount()+o.getUnalarmCount());
+            returnVo.setCctvAlarmCount(returnVo.getCctvAlarmCount()+o.getCctvAlarmCount());
+            returnVo.setOnlineStaffCount(returnVo.getOnlineStaffCount()+o.getOnlineStaffCount());
+            returnVo.setPatientAlarmCount(returnVo.getPatientAlarmCount()+o.getPatientAlarmCount());
+        });
+        return returnVo;
     }
 
     @Override

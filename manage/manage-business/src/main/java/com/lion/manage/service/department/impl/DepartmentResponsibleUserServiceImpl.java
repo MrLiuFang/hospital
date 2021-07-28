@@ -38,12 +38,14 @@ public class DepartmentResponsibleUserServiceImpl extends BaseServiceImpl<Depart
 
     @Override
     public void save(List<Long> responsible, Long departmentId) {
-        responsible.forEach(id->{
-            DepartmentResponsibleUser departmentResponsibleUser = new DepartmentResponsibleUser();
-            departmentResponsibleUser.setDepartmentId(departmentId);
-            departmentResponsibleUser.setUserId(id);
-            departmentResponsibleUserDao.save(departmentResponsibleUser);
-        });
+        if (Objects.nonNull(responsible) && responsible.size()>0) {
+            responsible.forEach(id -> {
+                DepartmentResponsibleUser departmentResponsibleUser = new DepartmentResponsibleUser();
+                departmentResponsibleUser.setDepartmentId(departmentId);
+                departmentResponsibleUser.setUserId(id);
+                departmentResponsibleUserDao.save(departmentResponsibleUser);
+            });
+        }
     }
 
     @Override

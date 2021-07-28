@@ -29,9 +29,8 @@ public interface MapStatisticsService {
     /**
      * 科室统计
      * @return
-     * @param name
      */
-    public List<DepartmentStatisticsDetailsVo> departmentStatisticsDetails();
+    public DepartmentStatisticsDetailsVo departmentStatisticsDetails();
 
     /**
      * 科室员工统计

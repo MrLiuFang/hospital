@@ -88,7 +88,13 @@ public class UserController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/list")
     @ApiOperation(value = "用户列表")
-    public IPageResultData<List<ListUserVo>> list(@ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户") UserType userType,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId, LionPage lionPage){
+    public IPageResultData<List<ListUserVo>> list(@ApiParam(value = "是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户") UserType userType,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId, LionPage lionPage){
+        if (Objects.equals(isMyDepartment,true)) {
+            Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
+            if (Objects.nonNull(department)) {
+                departmentId = department.getId();
+            }
+        }
         return userService.list(departmentId, userType, number, name, roleId, lionPage);
     }
 
