@@ -91,6 +91,10 @@ public class Device extends BaseEntity implements Serializable {
     @Column(name = "build_floor_id")
     private Long buildFloorId;
 
+    @ApiModelProperty(value = "区域id可空(安装位置)")
+    @Column(name = "region_id")
+    private Long regionId;
+
     @ApiModelProperty(value = "地图X坐标(安装位置)")
     @Column(name = "x")
     private String x;

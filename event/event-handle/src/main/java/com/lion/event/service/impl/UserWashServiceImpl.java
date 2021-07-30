@@ -64,6 +64,9 @@ public class UserWashServiceImpl implements UserWashService {
         if (Objects.nonNull(star) && Objects.nonNull(star.getId())) {
             starRegion = redisUtil.getRegion(star.getId());
         }
+        if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getRegionId())) {
+            monitorRegion = redisUtil.getRegionById(monitor.getRegionId());
+        }
         //记录当前用户所在区域
         UserCurrentRegionDto userCurrentRegionDto = recordUserCurrentRegion(user,monitorRegion,starRegion, deviceDataDto, tag);
         if (Objects.isNull(userCurrentRegionDto)){
