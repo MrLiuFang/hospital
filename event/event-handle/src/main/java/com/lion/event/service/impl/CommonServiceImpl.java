@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -222,10 +223,10 @@ public class CommonServiceImpl implements CommonService {
         }
         Device device = redisUtil.getDevice(monitorId);
         if (Objects.nonNull(device)) {
-            if (Objects.nonNull(device.getX())){
+            if (StringUtils.hasText(device.getX())){
                 positionDto.setX(device.getX());
             }
-            if (Objects.nonNull(device.getY())){
+            if (StringUtils.hasText(device.getY())){
                 positionDto.setY(device.getY());
             }
         }

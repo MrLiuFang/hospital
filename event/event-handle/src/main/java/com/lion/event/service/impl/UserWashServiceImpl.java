@@ -64,7 +64,7 @@ public class UserWashServiceImpl implements UserWashService {
         if (Objects.nonNull(star) && Objects.nonNull(star.getId())) {
             starRegion = redisUtil.getRegion(star.getId());
         }
-        if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getRegionId())) {
+        if (Objects.isNull(monitorRegion) && Objects.nonNull(monitor) && Objects.nonNull(monitor.getRegionId())) {
             monitorRegion = redisUtil.getRegionById(monitor.getRegionId());
         }
         //记录当前用户所在区域
@@ -74,7 +74,7 @@ public class UserWashServiceImpl implements UserWashService {
         }
 
         //判断是否从X区域进入X区域，如果是就进行新的洗手事件监控
-        if (Objects.nonNull(userCurrentRegionDto) && userCurrentRegionDto.getCurrentRegionEvent()==1 && !Objects.equals(userCurrentRegionDto.getRegionId(),userCurrentRegionDto.getPreviousRegionId())) {
+        if ( Objects.nonNull(userCurrentRegionDto) && userCurrentRegionDto.getCurrentRegionEvent()==1 && !Objects.equals(userCurrentRegionDto.getRegionId(),userCurrentRegionDto.getPreviousRegionId())) {
             List<Wash> list = redisUtil.getWash(userCurrentRegionDto.getRegionId());
             String uuid = UUID.randomUUID().toString();
             RegionWashMonitorDelayDto regionWashMonitorDelayDto = new RegionWashMonitorDelayDto();
