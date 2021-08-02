@@ -40,6 +40,12 @@ public class CurrentRegionVo {
     @ApiModelProperty(value = "科室名称")
     private String departmentName;
 
+    @ApiModelProperty(value = "科室名称")
+    private String x;
+
+    @ApiModelProperty(value = "科室名称")
+    private String y;
+
     @ApiModelProperty(value = "进入时间")
     @JsonFormat(
             pattern = "YYYY-MM-dd HH:mm:ss"

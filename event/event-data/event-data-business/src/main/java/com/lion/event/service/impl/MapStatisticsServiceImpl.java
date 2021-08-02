@@ -606,18 +606,10 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Override
     public CurrentRegionVo userCurrentRegion(Long userId) {
-        UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION+userId);
-        if (Objects.isNull(userCurrentRegionDto)) {
-            CurrentPosition currentPosition = currentPositionService.find(userId);
-            if (Objects.nonNull(currentPosition)){
-                userCurrentRegionDto = new UserCurrentRegionDto();
-                userCurrentRegionDto.setUserId(userId);
-                userCurrentRegionDto.setRegionId(currentPosition.getRi());
-            }
-        }
-        if (Objects.nonNull(userCurrentRegionDto)){
-            CurrentRegionVo vo = convertVo(userCurrentRegionDto);
-            vo.setFirstEntryTime(userCurrentRegionDto.getFirstEntryTime());
+        CurrentPosition currentPosition = currentPositionService.find(userId);
+        if (Objects.nonNull(currentPosition)){
+            CurrentRegionVo vo = convertVo(currentPosition);
+            vo.setFirstEntryTime(currentPosition.getDdt());
             return vo;
         }
         return null;
@@ -851,6 +843,25 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 vo.setDepartmentName(department.getName());
             }
         }
+        return vo;
+    }
+
+    private CurrentRegionVo convertVo(CurrentPosition currentPosition){
+        CurrentRegionVo vo = new CurrentRegionVo();
+        if (Objects.isNull(currentPosition)) {
+            return null;
+        }
+        vo.setFirstEntryTime(currentPosition.getDdt());
+        vo.setBuildId(currentPosition.getBfi());
+        vo.setBuildName(currentPosition.getBfn());
+        vo.setBuildFloorId(currentPosition.getBui());
+        vo.setBuildFloorName(currentPosition.getBun());
+        vo.setDepartmentId(currentPosition.getDi());
+        vo.setDepartmentName(currentPosition.getDn());
+        vo.setRegionId(currentPosition.getRi());
+        vo.setRegionName(currentPosition.getRn());
+        vo.setX(currentPosition.getX());
+        vo.setY(currentPosition.getY());
         return vo;
     }
 
