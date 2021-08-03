@@ -852,10 +852,10 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             return null;
         }
         vo.setFirstEntryTime(currentPosition.getDdt());
-        vo.setBuildId(currentPosition.getBfi());
-        vo.setBuildName(currentPosition.getBfn());
-        vo.setBuildFloorId(currentPosition.getBui());
-        vo.setBuildFloorName(currentPosition.getBun());
+        vo.setBuildId(currentPosition.getBui());
+        vo.setBuildName(currentPosition.getBun());
+        vo.setBuildFloorId(currentPosition.getBfi());
+        vo.setBuildFloorName(currentPosition.getBfn());
         vo.setDepartmentId(currentPosition.getDi());
         vo.setDepartmentName(currentPosition.getDn());
         vo.setRegionId(currentPosition.getRi());
