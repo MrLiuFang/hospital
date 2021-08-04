@@ -81,19 +81,22 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
             });
         }
 
-        list.forEach(wardRoom -> {
-            Boolean isDelete = true;
-            for (WardRoom wr : wardRoomDto) {
-                if (Objects.equals(wardRoom.getCode(), wr.getCode())) {
-                    isDelete = false;
+        if (Objects.nonNull(list) && list.size()>0) {
+            list.forEach(wardRoom -> {
+                Boolean isDelete = true;
+                if (Objects.nonNull(wardRoomDto) && wardRoomDto.size()>0) {
+                    for (WardRoom wr : wardRoomDto) {
+                        if (Objects.equals(wardRoom.getCode(), wr.getCode())) {
+                            isDelete = false;
+                        }
+                    }
+                    if (isDelete) {
+                        deleteById(wardRoom.getId());
+                        wardRoomSickbedDao.deleteByWardRoomId(wardRoom.getId());
+                    }
                 }
-            }
-            if (isDelete) {
-                deleteById(wardRoom.getId());
-                wardRoomSickbedDao.deleteByWardRoomId(wardRoom.getId());
-            }
-        });
-
+            });
+        }
     }
 
     @Override

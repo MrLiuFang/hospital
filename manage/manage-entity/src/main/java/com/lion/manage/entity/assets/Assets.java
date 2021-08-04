@@ -87,6 +87,10 @@ public class Assets extends BaseEntity implements Serializable {
     @Column(name = "img")
     private Long img;
 
+    @ApiModelProperty(value = "备注")
+    @Column(name = "remarks")
+    private String remarks;
+
     @ApiModelProperty(value = "设备状态")
     @Column(name = "device_state")
     @Convert(converter = com.lion.manage.entity.enums.State.StateConverter.class)

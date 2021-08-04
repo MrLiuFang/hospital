@@ -18,7 +18,10 @@ public enum AssetsType implements IEnum {
 
     AID(0, "急救设备"),
     NURSE(1, "护理设备"),
-    OTHER(2, "其它");
+    OTHER(2, "其它"),
+    PACEMAKER(3, "心脏起搏器"),
+    ELECTROCARDIOGRAPH(4, "心电图"),
+    DRIP_MONITOR(5, "自动滴流器");
     private final int key;
 
     private final String desc;

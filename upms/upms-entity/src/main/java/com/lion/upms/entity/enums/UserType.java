@@ -19,9 +19,10 @@ public enum UserType implements IEnum {
     DOCTOR(0, "医生"),
     NURSE(1, "护士"),
     SECURITY_STAFF(2, "保安"),
-    CLEANER(3, "保卫"),
+    CLEANER(3, "保洁人员"),
     REPAIR(4, "维修人员"),
-    OTHER(5, "其它");
+    OTHER(5, "其它"),
+    SUPPORT_WORKER(6, "护工");
 
     private final int key;
 
