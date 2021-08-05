@@ -21,7 +21,8 @@ public enum AssetsType implements IEnum {
     OTHER(2, "其它"),
     PACEMAKER(3, "心脏起搏器"),
     ELECTROCARDIOGRAPH(4, "心电图"),
-    DRIP_MONITOR(5, "自动滴流器");
+    DRIP_MONITOR(5, "自动滴流器"),
+    SPHYGMOMANOMETER(6, "血压计");
     private final int key;
 
     private final String desc;

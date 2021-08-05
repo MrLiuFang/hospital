@@ -3,7 +3,6 @@ package com.lion.event.service;
 import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
-import org.checkerframework.checker.units.qual.C;
 
 import java.util.Map;
 

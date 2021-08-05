@@ -8,7 +8,6 @@ import com.lion.common.dto.DeviceDataDto;
 import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.enums.Type;
 import com.lion.device.entity.device.Device;
-import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 import com.lion.event.service.BatteryAlarmService;
 import com.lion.event.service.CommonService;
@@ -18,14 +17,12 @@ import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
-import org.codehaus.jackson.map.ser.std.ObjectArraySerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * @description:

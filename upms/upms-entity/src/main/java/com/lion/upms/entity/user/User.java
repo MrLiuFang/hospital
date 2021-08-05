@@ -124,7 +124,7 @@ public class User extends BaseEntity implements Serializable {
     private Boolean isCredentialsNonExpired = false;
 
     @ApiModelProperty(hidden = true,value = "账号是否可用")
-    @JsonIgnore
+//    @JsonIgnore
     @Column(name = "is_nabled")
     private Boolean isEnabled = true;
 

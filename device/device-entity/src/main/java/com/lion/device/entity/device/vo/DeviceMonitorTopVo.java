@@ -3,7 +3,6 @@ package com.lion.device.entity.device.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.checkerframework.checker.units.qual.C;
 
 /**
  * @description:
