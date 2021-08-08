@@ -118,47 +118,44 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
     @Override
     @Transactional
     public void add(AddAssetsBorrowDto addAssetsBorrowDto) {
-        if (Objects.nonNull(addAssetsBorrowDto.getAssetsIds()) && addAssetsBorrowDto.getAssetsIds().size()>0) {
-            addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
-                AssetsBorrow assetsBorrow = assetsBorrowDao.findFirstByAssetsIdAndReturnUserIdIsNull(assetsId);
-                if (Objects.nonNull(assetsBorrow)) {
-                    Assets assets = assetsService.findById(assetsId);
-                    BusinessException.throwException((Objects.isNull(assets)?"":assets.getName())+"已借用,未归还");
-                }
-            });
-            User user = userExposeService.find(addAssetsBorrowDto.getBorrowUserNumber());
-            if (Objects.isNull(user)) {
-                BusinessException.throwException("借用人不存在");
+        addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
+            AssetsBorrow assetsBorrow = assetsBorrowDao.findFirstByAssetsIdAndReturnUserIdIsNull(assetsId);
+            if (Objects.nonNull(assetsBorrow)) {
+                Assets assets = assetsService.findById(assetsId);
+                BusinessException.throwException((Objects.isNull(assets)?"":assets.getName())+"已借用,未归还");
             }
-            Department department = departmentService.findById(addAssetsBorrowDto.getBorrowDepartmentId());
-            if (Objects.isNull(department)) {
-                BusinessException.throwException("借用科室不存在");
-            }
-            WardRoomSickbed wardRoomSickbed = wardRoomSickbedService.findById(addAssetsBorrowDto.getBorrowWardRoomSickbedId());
-            if (Objects.isNull(wardRoomSickbed)) {
-                BusinessException.throwException("借用床位不存在");
-            }
-            addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
-                assertAssetsExist(assetsId);
-            });
-            addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
-                AssetsBorrow assetsBorrow = new AssetsBorrow();
-                assetsBorrow.setAssetsId(assetsId);
-                assetsBorrow.setBorrowDepartmentId(department.getId());
-                assetsBorrow.setBorrowWardRoomSickbedId(wardRoomSickbed.getId());
-                assetsBorrow.setBorrowUserId(user.getId());
-                assetsBorrow.setStartDateTime(addAssetsBorrowDto.getStartDateTime());
-                assetsBorrow.setEndDateTime(addAssetsBorrowDto.getEndDateTime());
-                save(assetsBorrow);
-
-                Assets assets = assetsService.findById(assetsBorrow.getAssetsId());
-                if (Objects.nonNull(assets)) {
-                    assets.setUseState(AssetsUseState.USEING);
-                    assetsService.update(assets);
-                }
-            });
+        });
+        User user = userExposeService.find(addAssetsBorrowDto.getBorrowUserNumber());
+        if (Objects.isNull(user)) {
+            BusinessException.throwException("借用人不存在");
         }
+        Department department = departmentService.findById(addAssetsBorrowDto.getBorrowDepartmentId());
+        if (Objects.isNull(department)) {
+            BusinessException.throwException("借用科室不存在");
+        }
+        WardRoomSickbed wardRoomSickbed = wardRoomSickbedService.findById(addAssetsBorrowDto.getBorrowWardRoomSickbedId());
+        if (Objects.isNull(wardRoomSickbed)) {
+            BusinessException.throwException("借用床位不存在");
+        }
+        addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
+            assertAssetsExist(assetsId);
+        });
+        addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
+            AssetsBorrow assetsBorrow = new AssetsBorrow();
+            assetsBorrow.setAssetsId(assetsId);
+            assetsBorrow.setBorrowDepartmentId(department.getId());
+            assetsBorrow.setBorrowWardRoomSickbedId(wardRoomSickbed.getId());
+            assetsBorrow.setBorrowUserId(user.getId());
+            assetsBorrow.setStartDateTime(addAssetsBorrowDto.getStartDateTime());
+            assetsBorrow.setEndDateTime(addAssetsBorrowDto.getEndDateTime());
+            save(assetsBorrow);
 
+            Assets assets = assetsService.findById(assetsBorrow.getAssetsId());
+            if (Objects.nonNull(assets)) {
+                assets.setUseState(AssetsUseState.USEING);
+                assetsService.update(assets);
+            }
+        });
     }
 
     @Override

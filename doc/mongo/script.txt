@@ -111,6 +111,12 @@ db.runCommand({
     key : {_id: 1}
 })
 
+db.runCommand({
+    shardcollection : "hospital.recycling_box_record",
+    key : {_id: 1}
+})
+
+
 use hospital;
 db.wash_event.drop();
 db.system_alarm.drop();

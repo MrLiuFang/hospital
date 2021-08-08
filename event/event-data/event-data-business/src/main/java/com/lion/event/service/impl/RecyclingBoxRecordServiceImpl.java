@@ -58,10 +58,10 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
 
     @Override
     public IPageResultData<List<ListRecyclingBoxRecordVo>> list(Boolean isDisinfect, TagType tagType, String name, String code, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
+//        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         Query query = new Query();
         Criteria criteria = new Criteria();
-        criteria.and("di").in(departmentIds);
+//        criteria.and("di").in(departmentIds);
         if (Objects.nonNull(isDisinfect)){
             criteria.and("id").is(isDisinfect);
         }

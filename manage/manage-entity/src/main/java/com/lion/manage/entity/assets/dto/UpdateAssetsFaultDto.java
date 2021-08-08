@@ -12,6 +12,6 @@ import lombok.Data;
  */
 @Data
 @ApiModel
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"id","declarantUserId","declarantTime","describe","createDateTime","updateDateTime","createUserId","updateUserId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"finishTime","declarantUserId","declarantTime","describe","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class UpdateAssetsFaultDto extends AssetsFault {
 }

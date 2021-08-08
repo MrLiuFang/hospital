@@ -213,7 +213,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @PostMapping("/borrw/add")
     @ApiOperation(value = "新增资产借用")
-    public IResultData addBorrw(@RequestBody @Validated({Validator.Insert.class}) AddAssetsBorrowDto addAssetsBorrowDto){
+    public IResultData addBorrw(@RequestBody @Validated AddAssetsBorrowDto addAssetsBorrowDto){
         assetsBorrowService.add(addAssetsBorrowDto);
         return ResultData.instance();
     }
@@ -330,7 +330,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
             }
             Assets assets = assetsService.findById(assetsFault.getAssetsId());
             if (Objects.nonNull(assets)){
-                vo.setCode(assets.getCode());
+                vo.setDeviceCode(assets.getCode());
                 vo.setImg(assets.getImg());
                 vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
                 vo.setName(assets.getName());
