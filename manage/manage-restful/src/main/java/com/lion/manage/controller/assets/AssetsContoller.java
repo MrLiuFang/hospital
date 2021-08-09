@@ -27,6 +27,7 @@ import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.service.assets.AssetsBorrowService;
+import com.lion.manage.service.assets.AssetsFaultReportService;
 import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
 import com.lion.manage.service.build.BuildFloorService;
@@ -99,6 +100,9 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @DubboReference
     private RoleExposeService roleExposeService;
+
+    @Autowired
+    private AssetsFaultReportService assetsFaultReportService;
 
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
@@ -374,7 +378,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
             }
             Assets assets = assetsService.findById(assetsFault.getAssetsId());
             if (Objects.nonNull(assets)){
-                vo.setCode(assets.getCode());
+                vo.setDeviceCode(assets.getCode());
                 vo.setImg(assets.getImg());
                 vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
                 vo.setName(assets.getName());
@@ -402,7 +406,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @PutMapping("/fault/update")
     @ApiOperation(value = "修改资产故障")
-    public IResultData updateFault(@RequestBody @Validated({Validator.Update.class}) UpdateAssetsFaultDto updateAssetsFaultDto){
+    public IResultData updateFault(@RequestBody UpdateAssetsFaultDto updateAssetsFaultDto){
         assetsFaultService.update(updateAssetsFaultDto);
         return ResultData.instance();
     }
@@ -415,5 +419,40 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
         });
         ResultData resultData = ResultData.instance();
         return resultData;
+    }
+
+    @PostMapping("/fault/report/add")
+    @ApiOperation(value = "新增资产故障汇报")
+    public IResultData addFaultReport(@RequestBody @Validated({Validator.Insert.class}) AddAssetsFaultReportDto addAssetsFaultReportDto) {
+        this.assetsFaultReportService.save(addAssetsFaultReportDto);
+        return ResultData.instance();
+    }
+
+    @PutMapping("/fault/report/update")
+    @ApiOperation(value = "修改资产故障汇报")
+    public IResultData updateFaultReport(@RequestBody @Validated({Validator.Update.class}) AddAssetsFaultReportDto addAssetsFaultReportDto) {
+        this.assetsFaultReportService.update(addAssetsFaultReportDto);
+        return ResultData.instance();
+    }
+
+    @ApiOperation(value = "删除资产故障汇报")
+    @DeleteMapping("/fault/report/delete")
+    public IResultData deleteFaultReport(@RequestBody List<DeleteDto> deleteDtoList){
+        deleteDtoList.forEach(deleteDto -> {
+            assetsFaultReportService.deleteById(deleteDto.getId());
+        });
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @GetMapping("/fault/report/list")
+    @ApiOperation(value = "资产故障汇报列表")
+    public IPageResultData<List<ListAssetsFaultReportVo>> listFault(@ApiParam("资产故障ID") Long assetsFaultId,LionPage lionPage){
+        JpqlParameter jpqlParameter = new JpqlParameter();
+        if (Objects.nonNull(assetsFaultId)) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsFaultId",assetsFaultId);
+        }
+        lionPage.setJpqlParameter(jpqlParameter);
+        return (IPageResultData<List<ListAssetsFaultReportVo>>) assetsFaultReportService.findNavigator(lionPage);
     }
 }

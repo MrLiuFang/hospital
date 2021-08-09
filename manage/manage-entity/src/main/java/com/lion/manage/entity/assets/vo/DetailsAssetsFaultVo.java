@@ -33,7 +33,7 @@ public class DetailsAssetsFaultVo extends AssetsFault {
     private String name;
 
     @ApiModelProperty(value = "资产编号")
-    private String code;
+    private String deviceCode;
 
     @ApiModelProperty(value = "所属区域")
     private String regionName;
