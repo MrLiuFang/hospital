@@ -60,7 +60,7 @@ public interface RegionDao extends BaseDao<Region> {
      * 删除区域关联的设备组（将deviceGroupId字段置为null）
      * @param deviceGroupId
      */
-    @Query(" update Region set deviceGroupId = null where deviceGroupId = :deviceGroupId ")
+    @Query(" update Region set deviceGroupId = null  ,version=version +1 where deviceGroupId = :deviceGroupId ")
     @Modifying
     public void deleteDeviceGroup(Long deviceGroupId);
 }

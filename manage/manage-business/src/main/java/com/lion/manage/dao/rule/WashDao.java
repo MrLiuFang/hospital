@@ -53,7 +53,7 @@ public interface WashDao extends BaseDao<Wash> {
      * 设置检测时间为null
      * @return
      */
-    @Query( " update Wash set afterEnteringTime = null where id =:id " )
+    @Query( " update Wash set afterEnteringTime = null  ,version=version +1 where id =:id " )
     @Transactional
     @Modifying
     public int setAfterEnteringTimeIsNull(Long id);
@@ -62,7 +62,7 @@ public interface WashDao extends BaseDao<Wash> {
      * 设置检测时间为null
      * @return
      */
-    @Query( " update Wash set beforeEnteringTime = null where id =:id " )
+    @Query( " update Wash set beforeEnteringTime = null  ,version=version +1  where id =:id " )
     @Transactional
     @Modifying
     public int setBeforeEnteringTime(Long id);

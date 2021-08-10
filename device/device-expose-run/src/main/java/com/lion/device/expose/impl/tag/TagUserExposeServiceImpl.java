@@ -60,8 +60,12 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
             return;
         }
         Tag tag = tagDao.findFirstByTagCode(tagCode);
+        TagUser tagUser = tagUserDao.findFirstByUserIdAndUnbindingTimeIsNull(userId);
         if (Objects.isNull(tag)){
             BusinessException.throwException("该标签不存在");
+        }
+        if (Objects.nonNull(tagUser) && !Objects.equals(tag.getId(),tagUser.getTagId())) {
+            unbinding(userId,false);
         }
         if (Objects.equals(tag.getState(), TagState.DISABLE)) {
             BusinessException.throwException("该表标签处于停用状态，可能在回收箱中！");
@@ -72,9 +76,9 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         if (!Objects.equals(departmentId,tag.getDepartmentId())) {
             BusinessException.throwException("该表标签与员工不在同一科室不能绑定");
         }
-        TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
-        if (Objects.nonNull(tagUser)){
-            if (!Objects.equals( tagUser.getUserId(),userId)){
+        TagUser oldTagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
+        if (Objects.nonNull(oldTagUser)){
+            if (!Objects.equals( oldTagUser.getUserId(),userId)){
                 BusinessException.throwException("该标签已被其它用户绑定");
             }else {
                 return;

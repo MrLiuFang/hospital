@@ -1,18 +1,25 @@
 package com.lion.device.expose.impl.device;
 
 import com.lion.common.constants.RedisConstants;
+import com.lion.constant.SearchConstant;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.State;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.service.device.DeviceService;
+import org.apache.commons.lang3.ThreadUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -67,6 +74,30 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     @Override
     public void updateState(Long id, Integer state) {
         deviceDao.updateState(id, State.instance(state));
+    }
+
+    @Override
+    public List<Device> find(LocalDateTime startPreviousDisinfectDate, LocalDateTime endPreviousDisinfectDate, String name, String code) {
+        Map<String, Object> searchParameter = new HashMap<String, Object>();
+        if (Objects.nonNull(startPreviousDisinfectDate)) {
+            searchParameter.put(SearchConstant.GREATER_THAN_OR_EQUAL_TO+"_previousDisinfectDate",startPreviousDisinfectDate);
+        }
+        if (Objects.nonNull(endPreviousDisinfectDate)) {
+            searchParameter.put(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_previousDisinfectDate",endPreviousDisinfectDate);
+        }
+        if (StringUtils.hasText(name)) {
+            searchParameter.put(SearchConstant.LIKE+"_name",name);
+        }
+        if (StringUtils.hasText(code)) {
+            searchParameter.put(SearchConstant.LIKE+"_code",code);
+        }
+        searchParameter.put(SearchConstant.EQUAL+"_deviceClassify", DeviceClassify.RECYCLING_BOX);
+        return this.find(searchParameter);
+    }
+
+    @Override
+    public void updateDisinfectDate(Long id) {
+        this.deviceDao.updateDisinfectDate(id, LocalDate.now());
     }
 
     @Override

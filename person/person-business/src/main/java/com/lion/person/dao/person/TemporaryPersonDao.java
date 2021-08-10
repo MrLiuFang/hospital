@@ -20,17 +20,17 @@ public interface TemporaryPersonDao extends BaseDao<TemporaryPerson> {
 
     @Modifying
     @Transactional
-    @Query(" update TemporaryPerson set deviceState =:state where id = :id ")
+    @Query(" update TemporaryPerson set deviceState =:state  ,version=version +1 where id = :id ")
     public void updateState(@Param("id")Long id, @Param("state") State state);
 
     @Modifying
     @Transactional
-    @Query(" update TemporaryPerson  set lastDataTime =:dateTime where id = :id ")
+    @Query(" update TemporaryPerson  set lastDataTime =:dateTime ,version = version+1 where id = :id ")
     public void updateLastDataTime(@Param("id")Long id, @Param("dateTime")LocalDateTime dateTime);
 
     @Modifying
     @Transactional
-    @Query(" update TemporaryPerson  set isWaitLeave =:isWaitLeave where id = :id ")
+    @Query(" update TemporaryPerson  set isWaitLeave =:isWaitLeave ,version = version+1 where id = :id ")
     public void updateIsWaitLeave(@Param("id")Long id, @Param("isWaitLeave") Boolean isWaitLeave);
 
 

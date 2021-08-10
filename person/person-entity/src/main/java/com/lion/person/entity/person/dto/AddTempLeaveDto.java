@@ -23,6 +23,7 @@ public class AddTempLeaveDto {
 
     @ApiModelProperty(value = "患者id")
     @Size(min = 1,message = "请选择患者")
+    @NotNull(message = "请选择患者")
     private List<Long> patientIds;
 
     @ApiModelProperty(value = "员工编号")

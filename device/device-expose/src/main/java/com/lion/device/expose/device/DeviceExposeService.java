@@ -58,6 +58,22 @@ public interface DeviceExposeService extends BaseService<Device> {
      */
     public void updateState(Long id,Integer state);
 
+    /**
+     *
+     * @param startPreviousDisinfectDate
+     * @param endPreviousDisinfectDate
+     * @param name
+     * @param code
+     * @return
+     */
+    public List<Device> find(LocalDateTime startPreviousDisinfectDate, LocalDateTime endPreviousDisinfectDate, String name, String code);
+
+    /**
+     * 更新最后一次消毒时间
+     * @param id
+     */
+    public void updateDisinfectDate(Long id);
+
     public List<Long> allId();
 
 }

@@ -112,4 +112,9 @@ public class Device extends BaseEntity implements Serializable {
     @Column(name = "last_data_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastDataTime;
+
+    @ApiModelProperty(value = "上次消毒时间-回收箱特有字段")
+    @Column(name = "previous_disinfect_date")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDate previousDisinfectDate;
 }

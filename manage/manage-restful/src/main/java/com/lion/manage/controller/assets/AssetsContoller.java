@@ -406,7 +406,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @PutMapping("/fault/update")
     @ApiOperation(value = "修改资产故障")
-    public IResultData updateFault(@RequestBody UpdateAssetsFaultDto updateAssetsFaultDto){
+    public IResultData updateFault(@RequestBody @Validated({Validator.Update.class}) UpdateAssetsFaultDto updateAssetsFaultDto){
         assetsFaultService.update(updateAssetsFaultDto);
         return ResultData.instance();
     }

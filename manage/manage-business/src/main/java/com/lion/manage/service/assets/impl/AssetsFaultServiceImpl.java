@@ -54,12 +54,12 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
     public void update(UpdateAssetsFaultDto updateAssetsFaultDto) {
         AssetsFault assetsFault = new AssetsFault();
         BeanUtils.copyProperties(updateAssetsFaultDto,assetsFault);
-        assertUserExist(assetsFault.getDeclarantUserId());
-        assertAssetsExist(assetsFault.getAssetsId());
+//        assertUserExist(assetsFault.getDeclarantUserId());
+//        assertAssetsExist(assetsFault.getAssetsId());
         if (Objects.equals( assetsFault.getState(), AssetsFaultState.FINISH)) {
             assetsFault.setFinishTime(LocalDateTime.now());
         }
-        update(assetsFault);
+        super.update(assetsFault);
     }
 
     private void assertAssetsExist(Long id) {

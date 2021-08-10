@@ -63,13 +63,12 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
     private DepartmentExposeService departmentExposeService;
 
     @Override
+    @Transactional
     public void addTempLeave(AddTempLeaveDto addTempLeaveDto) {
         User user = userExposeService.find(addTempLeaveDto.getNumber());
         if (Objects.isNull(user)){
             BusinessException.throwException("该授权人不存在");
         }
-        TempLeave tempLeave = new TempLeave();
-        tempLeave.setUserId(user.getId());
         if (Objects.nonNull(addTempLeaveDto.getPatientIds()) && addTempLeaveDto.getPatientIds().size()>0) {
 //            addTempLeaveDto.getPatientIds().forEach(id ->{
 //                TempLeave temp = tempLeaveDao.findFirstByIsClosureAndOrPatientIdAndStartDateTimeGreaterThanEqualAndEndDateTimeLessThanEqual(false,id,addTempLeaveDto.getStartDateTime(),addTempLeaveDto.getEndDateTime());
@@ -81,6 +80,8 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
 //                }
 //            });
             addTempLeaveDto.getPatientIds().forEach(id ->{
+                TempLeave tempLeave = new TempLeave();
+                tempLeave.setUserId(user.getId());
                 tempLeave.setPatientId(id);
                 tempLeave.setStartDateTime(addTempLeaveDto.getStartDateTime());
                 tempLeave.setEndDateTime(addTempLeaveDto.getEndDateTime());

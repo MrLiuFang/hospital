@@ -105,17 +105,17 @@ public interface TagDao extends BaseDao<Tag> {
 
     @Modifying
     @Transactional
-    @Query(" update Tag set deviceState =:state where id = :id ")
+    @Query(" update Tag set deviceState =:state ,version=version +1 where id = :id ")
     public void updateDeviceState(@Param("id")Long id, @Param("state") State state);
 
     @Modifying
     @Transactional
-    @Query(" update Tag set state =:state where id = :id ")
+    @Query(" update Tag set state =:state ,version = version+1 where id = :id ")
     public void updateState(@Param("id")Long id, @Param("state") TagState state);
 
     @Modifying
     @Transactional
-    @Query(" update Tag  set lastDataTime =:dateTime where id = :id ")
+    @Query(" update Tag  set lastDataTime =:dateTime ,version = version+1 where id = :id ")
     public void updateLastDataTime(@Param("id")Long id, @Param("dateTime")LocalDateTime dateTime);
 
     @Query( " select t.id from Tag t where t.type = :tagType ")

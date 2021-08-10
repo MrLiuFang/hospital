@@ -93,13 +93,13 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
     public List<Long> allId();
 
     @Modifying
-    @Query(" update Assets  set deviceState =:state where id = :id ")
+    @Query(" update Assets  set deviceState =:state ,version = version+1 where id = :id ")
     @Transactional
     public void updateState(@Param("id")Long id, @Param("state") State state);
 
     @Modifying
     @Transactional
-    @Query(" update Assets  set lastDataTime =:dateTime where id = :id ")
+    @Query(" update Assets  set lastDataTime =:dateTime ,version = version+1 where id = :id ")
     public void updateLastDataTime(@Param("id")Long id, @Param("dateTime")LocalDateTime dateTime);
 
 }

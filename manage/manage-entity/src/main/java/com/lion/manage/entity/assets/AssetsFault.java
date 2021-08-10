@@ -38,7 +38,7 @@ public class AssetsFault extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 4868910888962338123L;
     @ApiModelProperty(value = "资产Id")
     @Column(name = "assets_id")
-    @NotNull(message = "资产id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "资产id不能为空", groups = {Validator.Insert.class})
     private Long assetsId;
 
     @ApiModelProperty(value = "故障编码")
@@ -64,7 +64,6 @@ public class AssetsFault extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "申报时间(yyyy-MM-dd HH:mm:ss)")
     @Column(name = "declarant_time",updatable = false)
-    @NotNull(message = "申报时间不能为空")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime declarantTime;
 

@@ -409,19 +409,28 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return humitureRecordService.temperatureHumidityList(regionId, departmentId, deviceCode, startDateTime, endDateTime, lionPage);
     }
 
-    @GetMapping("/recyclingBox/list")
+    @GetMapping("/recyclingBox/history/list")
     @ApiOperation(value = "回收箱历史记录(不返回总行数)")
-    public IPageResultData<List<ListRecyclingBoxRecordVo>> recyclingBoxRecordList(@ApiParam("是否消毒-true=历史记录,false=当前") Boolean isDisinfect, @ApiParam("标签类型")TagType tagType,@ApiParam("回收箱名称")String name,@ApiParam("回收箱编码")String code,@ApiParam("标签编码")String tagCode,
+    public IPageResultData<List<ListRecyclingBoxRecordVo>> recyclingBoxHistoryList(@ApiParam("是否消毒-true=历史记录,false=当前") Boolean isDisinfect, @ApiParam("标签类型")TagType tagType,@ApiParam("回收箱名称")String name,@ApiParam("回收箱编码")String code,@ApiParam("标签编码")String tagCode,
                                                                                   @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                   @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,LionPage lionPage){
         return recyclingBoxRecordService.list(isDisinfect, tagType, name, code, tagCode, startDateTime, endDateTime, lionPage);
     }
 
+    @GetMapping("/recyclingBox/current/list")
+    @ApiOperation(value = "回收箱当前(不返回总行数)")
+    public IPageResultData<List<ListRecyclingBoxCurrentVo>> recyclingBoxCurrentList(@ApiParam(value = "上次开始消毒时间(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime startPreviousDisinfectDate,
+                                                                                    @ApiParam(value = "上次结束消毒时间(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime endPreviousDisinfectDate,
+                                                                                    @ApiParam(value = "回收箱名称") String name,@ApiParam(value = "回收箱编号")String code,LionPage lionPage) {
+        return recyclingBoxRecordService.recyclingBoxCurrentList(startPreviousDisinfectDate, endPreviousDisinfectDate, name, code, lionPage);
+    }
+
+
 
     @PutMapping("/recyclingBox/disinfect")
-    @ApiOperation(value = "回收箱一键消毒(只处理负责科室的回收箱)")
-    public ResultData recyclingBoxDisinfect(){
-        recyclingBoxRecordService.disinfect();
+    @ApiOperation(value = "回收箱一键消毒")
+    public ResultData recyclingBoxDisinfect(@ApiParam(value = "回收箱id") @NotNull(message = "回收箱ID不能为空") Long recyclingBoxId){
+        recyclingBoxRecordService.disinfect(recyclingBoxId);
         return ResultData.instance();
     }
 

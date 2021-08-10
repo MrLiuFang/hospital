@@ -1,21 +1,26 @@
 package com.lion.event.service.impl;
 
+import com.lion.common.utils.BasicDBObjectUtil;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
+import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagState;
 import com.lion.device.entity.enums.TagType;
+import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.RecyclingBoxRecordDao;
 import com.lion.event.entity.RecyclingBoxRecord;
+import com.lion.event.entity.vo.ListRecyclingBoxCurrentVo;
 import com.lion.event.entity.vo.ListRecyclingBoxRecordVo;
 import com.lion.event.service.RecyclingBoxRecordService;
-import com.lion.manage.entity.department.Department;
 import com.lion.manage.expose.department.DepartmentExposeService;
-import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
-import com.lion.utils.CurrentUserUtil;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.AggregateIterable;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -50,6 +55,9 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
 
     @DubboReference
     private TagExposeService tagExposeService;
+
+    @DubboReference
+    private DeviceExposeService deviceExposeService;
 
     @Override
     public void save(RecyclingBoxRecord recyclingBoxRecord) {
@@ -107,22 +115,60 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
     }
 
     @Override
-    public void disinfect() {
-        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
+    public IPageResultData<List<ListRecyclingBoxCurrentVo>> recyclingBoxCurrentList(LocalDateTime startPreviousDisinfectDate, LocalDateTime endPreviousDisinfectDate, String name, String code, LionPage lionPage) {
+        List<Device> list = deviceExposeService.find(startPreviousDisinfectDate, endPreviousDisinfectDate, name, code);
+        List<Long> ids = new ArrayList<Long>();
+        list.forEach(device -> {
+            ids.add(device.getId());
+        });
+        List<Bson> pipeline = new ArrayList<Bson>();
+        BasicDBObject match = new BasicDBObject();
+        match = BasicDBObjectUtil.put(match,"$match","id", false);
+        if (ids.size()>0) {
+            match = BasicDBObjectUtil.put(match, "$match", "rbi", new BasicDBObject("$in",ids));
+        }
+        pipeline.add(match);
+        BasicDBObject group = new BasicDBObject();
+        group = BasicDBObjectUtil.put(group,"$group","_id","$rbi");
+        group = BasicDBObjectUtil.put(group,"$group","count",new BasicDBObject("$sum",1));
+        pipeline.add(group);
+        pipeline.add(new BasicDBObject("$skip",lionPage.getPageNumber()*lionPage.getPageNumber()));
+        pipeline.add(new BasicDBObject("$limit",lionPage.getPageSize()));
+        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("recycling_box_record").aggregate(pipeline);
+        List<ListRecyclingBoxCurrentVo> returnList = new ArrayList<>();
+        aggregateIterable.forEach(document -> {
+            ListRecyclingBoxCurrentVo vo = new ListRecyclingBoxCurrentVo();
+            Device device = deviceExposeService.findById(document.getLong("_id"));
+            if (Objects.nonNull(device)) {
+                vo.setCode(device.getCode());
+                vo.setName(device.getName());
+                vo.setCount(document.getInteger("count"));
+                vo.setRecyclingBoxId(device.getId());
+                vo.setPreviousDisinfectDate(device.getPreviousDisinfectDate());
+                returnList.add(vo);
+            }
+        });
+        return new PageResultData(returnList,lionPage,returnList.size());
+    }
+
+    @Override
+    public void disinfect(Long recyclingBoxId) {
+//        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         Query query = new Query();
         Criteria criteria = new Criteria();
-        criteria.and("di").in(departmentIds);
+//        criteria.and("di").in(departmentIds);
+        criteria.and("rbi").is(recyclingBoxId);
         criteria.and("id").is(false);
         query.addCriteria(criteria);
         List<RecyclingBoxRecord> items = mongoTemplate.find(query, RecyclingBoxRecord.class);
         items.forEach(recyclingBoxRecord -> {
             tagExposeService.updateState(recyclingBoxRecord.getTi(), TagState.NORMAL.getKey());
+            Criteria where = new Criteria();
+            where.and("_id").is(recyclingBoxRecord.get_id());
+            Update update = new Update();
+            update.set("id", true);
+            mongoTemplate.updateFirst(new Query(where),update,"recycling_box_record");
         });
-
-        Criteria where = new Criteria();
-        where.and("di").in(departmentIds);
-        Update update = new Update();
-        update.set("id", true);
-        mongoTemplate.updateMulti(new Query(where),update,"recycling_box_record");
+        deviceExposeService.updateDisinfectDate(recyclingBoxId);
     }
 }

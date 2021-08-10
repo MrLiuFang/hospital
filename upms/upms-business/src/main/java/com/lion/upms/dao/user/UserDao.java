@@ -61,12 +61,12 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
 
     @Modifying
     @Transactional
-    @Query(" update User  set deviceState =:state where id = :id ")
+    @Query(" update User  set deviceState =:state ,version = version+1 where id = :id ")
     public void updateSate(@Param("id") Long id, @Param("state") State state);
 
     @Modifying
     @Transactional
-    @Query(" update User  set lastDataTime =:dateTime where id = :id ")
+    @Query(" update User  set lastDataTime =:dateTime ,version = version+1 where id = :id ")
     public void updateLastDataTime(@Param("id") Long id, @Param("dateTime") LocalDateTime dateTime);
 
     @Query( " select id from User " )

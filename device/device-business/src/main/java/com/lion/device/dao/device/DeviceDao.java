@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -75,12 +76,16 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
 
     @Modifying
     @Transactional
-    @Query(" update Device  set lastDataTime =:dateTime where id = :id ")
+    @Query(" update Device  set lastDataTime =:dateTime ,version=version+1 where id = :id ")
     public void updateLastDataTime(@Param("id")Long id, @Param("dateTime")LocalDateTime dateTime);
 
     @Modifying
     @Transactional
-    @Query(" update Device set deviceState =:state where id = :id ")
+    @Query(" update Device set deviceState =:state ,version=version+1 where id = :id ")
     public void updateState(@Param("id")Long id,@Param("state") State state);
 
+    @Modifying
+    @Transactional
+    @Query(" update Device set previousDisinfectDate =:previousDisinfectDate ,version=version+1 where id = :id ")
+    public void updateDisinfectDate(@Param("id")Long id,@Param("previousDisinfectDate") LocalDate previousDisinfectDate);
 }
