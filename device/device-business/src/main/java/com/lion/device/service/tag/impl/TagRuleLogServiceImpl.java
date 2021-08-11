@@ -44,6 +44,7 @@ public class TagRuleLogServiceImpl extends BaseServiceImpl<TagRuleLog> implement
         tagRuleLog.setContent(content);
         tagRuleLog.setTagRuleId(tagRuleId);
         tagRuleLog.setUserId(CurrentUserUtil.getCurrentUserId());
+        tagRuleLog.setActionType(tagRuleLogType);
         save(tagRuleLog);
     }
 
