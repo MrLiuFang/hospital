@@ -1,6 +1,7 @@
 package com.lion.device.entity.tag.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.device.entity.enums.TagRuleLogType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -34,4 +35,7 @@ public class ListTagRuleLogVo  {
 
     @ApiModelProperty(value = "头像")
     private String headPortraitUrl;
+
+    @ApiModelProperty(value = "日志类型")
+    private TagRuleLogType actionType;
 }

@@ -76,6 +76,7 @@ public class TagRuleLogServiceImpl extends BaseServiceImpl<TagRuleLog> implement
                 vo.setName(user.getName());
                 vo.setHeadPortrait(user.getHeadPortrait());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                vo.setActionType(tagRuleLog.getActionType());
                 returnList.add(vo);
             }
 
