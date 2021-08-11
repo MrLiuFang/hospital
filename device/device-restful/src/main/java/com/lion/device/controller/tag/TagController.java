@@ -7,10 +7,7 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
-import com.lion.device.entity.enums.TagLogContent;
-import com.lion.device.entity.enums.TagPurpose;
-import com.lion.device.entity.enums.TagType;
-import com.lion.device.entity.enums.TagUseState;
+import com.lion.device.entity.enums.*;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagRule;
 import com.lion.device.entity.tag.TagRuleUser;
@@ -185,8 +182,8 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/rule/log/list")
     @ApiOperation(value = "标签规则日志列表")
-    public IPageResultData<List<ListTagRuleLogVo>> ruleLogList(@NotNull(message = "标签规则id不能为空") @ApiParam(value = "标签规则id") Long tagRuleId, LionPage lionPage){
-        return tagRuleLogService.list(tagRuleId, lionPage);
+    public IPageResultData<List<ListTagRuleLogVo>> ruleLogList(@ApiParam(value = "标签规则id") Long tagRuleId,@ApiParam(value = "开始时间")LocalDateTime startDateTime,@ApiParam(value = "结束时间") LocalDateTime endDateTime, @ApiParam(value = "结束时间") TagRuleLogType actionType, LionPage lionPage){
+        return tagRuleLogService.list(tagRuleId, startDateTime, endDateTime, actionType, lionPage);
     }
 
 }

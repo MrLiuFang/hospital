@@ -6,6 +6,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagRuleDao;
 import com.lion.device.dao.tag.TagRuleLogDao;
 import com.lion.device.dao.tag.TagRuleUserDao;
+import com.lion.device.entity.enums.TagRuleLogType;
 import com.lion.device.entity.tag.*;
 import com.lion.device.entity.tag.dto.AddTagRuleDto;
 import com.lion.device.entity.tag.dto.UpdateTagRuleDto;
@@ -58,7 +59,7 @@ public class TagRuleServiceImpl extends BaseServiceImpl<TagRule> implements TagR
         BeanUtils.copyProperties(addTagRuleDto,tagRule);
         tagRule = save(tagRule);
         tagRuleUserService.relationUser(addTagRuleDto.getUserIds(), Collections.EMPTY_LIST,Collections.EMPTY_LIST , tagRule.getId());
-        tagRuleLogService.add(tagRule.getId(),"新建规则");
+        tagRuleLogService.add(tagRule.getId(),"新建规则", TagRuleLogType.ADD);
         redisTemplate.opsForValue().set(RedisConstants.TAG_RULE+tagRule.getId(),tagRule,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
@@ -70,7 +71,7 @@ public class TagRuleServiceImpl extends BaseServiceImpl<TagRule> implements TagR
         assertNameExist(tagRule.getName(),tagRule.getId());
         update(tagRule);
         tagRuleUserService.relationUser(updateTagRuleDto.getNewUserIds(), updateTagRuleDto.getDeleteUserIds(),updateTagRuleDto.getAllUserIds() , tagRule.getId());
-        tagRuleLogService.add(tagRule.getId(),"修改规则");
+        tagRuleLogService.add(tagRule.getId(),"修改规则", TagRuleLogType.UPDATE);
         redisTemplate.opsForValue().set(RedisConstants.TAG_RULE+tagRule.getId(),tagRule,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 

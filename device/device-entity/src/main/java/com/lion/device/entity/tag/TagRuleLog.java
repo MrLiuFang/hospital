@@ -1,8 +1,7 @@
 package com.lion.device.entity.tag;
 
-import cn.hutool.cache.GlobalPruneTimer;
-import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
+import com.lion.device.entity.enums.TagRuleLogType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,11 +9,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
-import javax.validation.constraints.NotNull;
+import javax.persistence.*;
 import java.io.Serializable;
 
 /**
@@ -44,4 +39,9 @@ public class TagRuleLog extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "操作内容")
     @Column(name = "content")
     private String content;
+
+    @ApiModelProperty(value = "日志类型")
+    @Column(name = "action_type")
+    @Convert(converter = TagRuleLogType.TagRuleTypeConverter.class)
+    private TagRuleLogType actionType;
 }

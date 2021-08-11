@@ -7,8 +7,8 @@ import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.entity.enums.TagRuleLogType;
 import com.lion.device.entity.tag.TagRuleLog;
-import com.lion.device.entity.tag.TagRuleUser;
 import com.lion.device.entity.tag.vo.ListTagRuleLogVo;
 import com.lion.device.service.tag.TagRuleLogService;
 import com.lion.upms.entity.user.User;
@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,7 +39,7 @@ public class TagRuleLogServiceImpl extends BaseServiceImpl<TagRuleLog> implement
     private FileExposeService fileExposeService;
 
     @Override
-    public void add(Long tagRuleId, String content) {
+    public void add(Long tagRuleId, String content, TagRuleLogType tagRuleLogType) {
         TagRuleLog tagRuleLog  = new TagRuleLog();
         tagRuleLog.setContent(content);
         tagRuleLog.setTagRuleId(tagRuleId);
@@ -47,10 +48,19 @@ public class TagRuleLogServiceImpl extends BaseServiceImpl<TagRuleLog> implement
     }
 
     @Override
-    public IPageResultData<List<ListTagRuleLogVo>> list(Long tagRuleId, LionPage lionPage) {
+    public IPageResultData<List<ListTagRuleLogVo>> list(Long tagRuleId, LocalDateTime startDateTime, LocalDateTime endDateTime, TagRuleLogType tagRuleLogType, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.nonNull(tagRuleId)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_tagRuleId",tagRuleId);
+        }
+        if (Objects.nonNull(startDateTime)){
+            jpqlParameter.setSearchParameter(SearchConstant.GREATER_THAN_OR_EQUAL_TO+"_createDateTime",startDateTime);
+        }
+        if (Objects.nonNull(endDateTime)){
+            jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_createDateTime",endDateTime);
+        }
+        if (Objects.nonNull(tagRuleLogType)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_actionType",tagRuleLogType);
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
