@@ -157,7 +157,10 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
         Query query = new Query();
         Criteria criteria = new Criteria();
 //        criteria.and("di").in(departmentIds);
-        criteria.and("rbi").is(recyclingBoxId);
+        if (Objects.nonNull(recyclingBoxId)) {
+            criteria.and("rbi").is(recyclingBoxId);
+        }
+        criteria.and("ddt").gte(LocalDateTime.now().minusDays(30));
         criteria.and("id").is(false);
         query.addCriteria(criteria);
         List<RecyclingBoxRecord> items = mongoTemplate.find(query, RecyclingBoxRecord.class);

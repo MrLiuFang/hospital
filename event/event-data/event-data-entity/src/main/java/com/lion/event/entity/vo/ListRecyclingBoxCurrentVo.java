@@ -29,7 +29,7 @@ public class ListRecyclingBoxCurrentVo {
     private Integer count;
 
     @ApiModelProperty(value = "上次消毒时间")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate previousDisinfectDate;
 
 
