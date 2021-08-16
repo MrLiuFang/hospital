@@ -55,6 +55,7 @@ import org.bson.Document;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
@@ -221,54 +222,37 @@ public class WashEventServiceImpl implements WashEventService {
 
     @Override
     public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName, Long departmentId, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        Map<String,Object> map = workExposeService.find(departmentId,userName,userType,startDateTime,endDateTime,lionPage.getPageNumber(),lionPage.getPageSize());
-        Long totalElements = (Long) map.get("totalElements");
-        List<Work> list = (List<Work>) map.get("list");
+        PageResultData<Map<String,Object>> page = workExposeService.find(departmentId,userName,userType,startDateTime,endDateTime,lionPage);
+        Long totalElements = (Long) page.getTotalElements();
+        List<Map<String,Object>> list = page.getContent();
         List<ListUserWashMonitorVo> returnList = new ArrayList<>();
-//        List<Long> tmp = new ArrayList<>();
-        list.forEach(work -> {
-            if (Objects.nonNull(work.getStartWorkTime())) {
-//                if (!list.contains(work.getUserId())) {
-//                    tmp.add(work.getUserId());
-//                }
-                ListUserWashMonitorVo vo = null;
-                LocalDateTime localDateTime = Objects.isNull(work.getEndWorkTime()) ? LocalDateTime.of(work.getStartWorkTime().toLocalDate(), LocalTime.MAX) : work.getEndWorkTime();
-                List<Document> documentList = washEventDao.eventCount(work.getStartWorkTime(), localDateTime, null, null, work.getUserId(), null);
+        list.forEach(map -> {
+            ListUserWashMonitorVo vo = null;
+            LocalDateTime startWorkTime = Objects.isNull(map.get("start_work_time"))?null: (LocalDateTime) map.get("start_work_time");
+            LocalDateTime endWorkTime = Objects.isNull(map.get("end_work_time"))?null: (LocalDateTime) map.get("end_work_time");
+            Long userId = Long.valueOf(String.valueOf(map.get("id")) );
+            if (Objects.nonNull(startWorkTime)) {
+                List<Document> documentList = washEventDao.eventCount(startWorkTime, endWorkTime, null, null, userId, null);
                 if (Objects.nonNull(documentList) && documentList.size() > 0) {
                     Document document = documentList.get(0);
-                    vo = init(work.getStartWorkTime(), work.getEndWorkTime(), work.getUserId(), document);
+                    vo = init(startWorkTime, endWorkTime, userId, document);
                 } else {
-                    vo = init(work.getStartWorkTime(), work.getEndWorkTime(), work.getUserId(), null);
+                    vo = init(startWorkTime, endWorkTime, userId, null);
                 }
-                List<WashUser> washUserList = washUserExposeService.find(work.getUserId());
-                if (Objects.isNull(washUserList) || washUserList.size() <= 0) {
-                    List<Wash> washList = washExposeService.findLoopWash(true);
-                    if (Objects.isNull(washList) || washList.size() <= 0) {
-                        if (Objects.nonNull(vo)) {
-                            vo.setIsExistWashRule(false);
-                        }
+            }else {
+                vo = init(startWorkTime, endWorkTime, userId, null);
+            }
+            List<WashUser> washUserList = washUserExposeService.find(userId);
+            if (Objects.isNull(washUserList) || washUserList.size() <= 0) {
+                List<Wash> washList = washExposeService.findLoopWash(true);
+                if (Objects.isNull(washList) || washList.size() <= 0) {
+                    if (Objects.nonNull(vo)) {
+                        vo.setIsExistWashRule(false);
                     }
                 }
-                returnList.add(vo);
             }
+            returnList.add(vo);
         });
-//        Map<String,Object> map1 = userExposeService.find(departmentId,userName,userType,null,0, 999999999);
-//        List<User> userList = (List<User>) map1.get("list");
-//        userList.forEach(user -> {
-//            if (!tmp.contains(user.getId())) {
-//                ListUserWashMonitorVo vo = init(null, null, user.getId(), null);
-//                List<WashUser> washUserList = washUserExposeService.find(user.getId());
-//                if (Objects.isNull(washUserList) || washUserList.size() <= 0) {
-//                    List<Wash> washList = washExposeService.findLoopWash(true);
-//                    if (Objects.isNull(washList) || washList.size() <= 0) {
-//                        if (Objects.nonNull(vo)) {
-//                            vo.setIsExistWashRule(false);
-//                        }
-//                    }
-//                }
-//                returnList.add(vo);
-//            }
-//        });
         return new PageResultData<>(returnList,lionPage,totalElements);
     }
 

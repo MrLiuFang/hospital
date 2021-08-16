@@ -251,7 +251,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         });
         DepartmentStatisticsDetailsVo returnVo = new DepartmentStatisticsDetailsVo();
         returnList.forEach(o->{
-            returnVo.setDepartmentName(o.getDepartmentName()+"/");
+            returnVo.setDepartmentName((Objects.isNull(returnVo.getDepartmentName())?"":returnVo.getDepartmentName()+"/")+o.getDepartmentName());
             returnVo.setAssetsCount(returnVo.getAssetsCount()+o.getAssetsCount());
             returnVo.setAlarmCount(returnVo.getAlarmCount()+o.getAlarmCount());
             returnVo.setAllAlarmCount(returnVo.getAllAlarmCount()+o.getAllAlarmCount());

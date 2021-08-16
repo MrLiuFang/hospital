@@ -9,6 +9,7 @@ import com.lion.upms.entity.user.User;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,13 @@ public interface UserExposeService extends BaseService<User> {
     public User find(String username);
 
     public int count(List<Long> ids, State deviceState);
+
+    /**
+     * 统计用户类型
+     * @param userTypes
+     * @return
+     */
+    public int countInUserType(Collection<UserType> userTypes);
 
     /**
      * 根据员工编号查询

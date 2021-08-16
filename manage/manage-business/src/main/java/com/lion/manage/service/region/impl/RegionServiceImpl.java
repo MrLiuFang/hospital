@@ -143,11 +143,11 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @Override
     @Transactional
     public void updateCoordinates(UpdateRegionCoordinatesDto updateRegionCoordinatesDto) {
-        Region region = new Region();
-        BeanUtils.copyProperties(updateRegionCoordinatesDto,region);
-        if (Objects.isNull(region.getId())){
+        if (Objects.isNull(updateRegionCoordinatesDto.getId())){
             BusinessException.throwException("id不能为空");
         }
+        Region region = findById(updateRegionCoordinatesDto.getId());
+        region.setCoordinates(updateRegionCoordinatesDto.getCoordinates());
         update(region);
         redisTemplate.opsForValue().set(RedisConstants.REGION + region.getId(), region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }

@@ -1,7 +1,9 @@
 package com.lion.manage.expose.work.impl;
 
 import com.lion.constant.SearchConstant;
+import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.department.DepartmentUserDao;
@@ -39,18 +41,8 @@ public class WorkExposeServiceImpl extends BaseServiceImpl<Work> implements Work
     private UserExposeService userExposeService;
 
     @Override
-    public Map<String, Object> find(Long departmentId, String name, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, int page, int size) {
-        Map<String,Object> map = userExposeService.find(departmentId,name,userType,null,0, 999999999);
-        List<User> userList = (List<User>) map.get("list");
-        List<Long> userListId = new ArrayList<>();
-        userListId.add(Long.MAX_VALUE);
-        userList.forEach(user -> {
-            userListId.add(user.getId());
-        });
-        Page<Work> p = workDao.list(userListId,startDateTime,endDateTime,page,size);
-        Map<String,Object> returnMap = new HashMap<String,Object>();
-        returnMap.put("totalElements",p.getTotalElements());
-        returnMap.put("list",p.getContent());
-        return returnMap;
+    public PageResultData<Map<String, Object>> find(Long departmentId, String name, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        Page<Map<String, Object>> page = workDao.List(departmentId, name, userType, startDateTime, endDateTime, lionPage);
+        return new PageResultData(page.getContent(),lionPage,page.getTotalElements());
     }
 }

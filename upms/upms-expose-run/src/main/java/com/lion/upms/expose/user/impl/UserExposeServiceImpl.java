@@ -18,10 +18,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @description: 用户远程RPC接口暴露实现
@@ -53,6 +50,11 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
     @Override
     public int count(List<Long> ids, State deviceState) {
         return userDao.countByIdInAndAndDeviceState(ids,deviceState);
+    }
+
+    @Override
+    public int countInUserType(Collection<UserType> userTypes) {
+        return userDao.countByUserTypeIn(userTypes);
     }
 
     @Override

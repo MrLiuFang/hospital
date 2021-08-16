@@ -1,10 +1,13 @@
 package com.lion.manage.expose.work;
 
 import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.work.Work;
 import com.lion.upms.entity.enums.UserType;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,9 +27,8 @@ public interface WorkExposeService extends BaseService<Work> {
      * @param userType
      * @param startDateTime
      * @param endDateTime
-     * @param page
-     * @param size
+     * @param lionPage
      * @return
      */
-    public Map<String,Object> find(Long departmentId, String name, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, int page, int size);
+    public PageResultData<Map<String,Object>> find(Long departmentId, String name, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

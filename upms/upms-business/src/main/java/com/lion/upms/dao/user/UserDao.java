@@ -2,6 +2,7 @@ package com.lion.upms.dao.user;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.upms.entity.enums.State;
+import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -79,6 +81,13 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
      * @return
      */
     public int countByIdInAndAndDeviceState(List<Long> ids, State deviceState);
+
+    /**
+     * 统计用户类型
+     * @param userTypes
+     * @return
+     */
+    public int countByUserTypeIn(Collection<UserType> userTypes);
 
 
 }
