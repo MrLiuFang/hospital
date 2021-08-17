@@ -60,10 +60,27 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
     /**
      * 统计科室内的资产数量
      * @param departmentId
+     * @param ids
+     * @return
+     */
+    public int countByDepartmentIdAndIdIn(Long departmentId,List<Long> ids);
+
+    /**
+     * 统计科室内的资产数量
+     * @param departmentId
      * @param deviceState
      * @return
      */
     public int countByDepartmentIdAndDeviceState(Long departmentId, State deviceState);
+
+    /**
+     * 统计科室内的资产数量
+     * @param departmentId
+     * @param deviceState
+     * @param ids
+     * @return
+     */
+    public int countByDepartmentIdAndDeviceStateAndIdIn(Long departmentId, State deviceState,List<Long> ids);
 
     /**
      * 查询部门内的资产
@@ -88,6 +105,17 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
      */
     @Query( " select a from Assets a where a.departmentId =:departmentId and ( a.name like :name or a.code like :code) " )
     public List<Assets> findByDepartmentIdOrNameLikeOrCodeLike(Long departmentId,String name,String code);
+
+    /**
+     * 查询部门内的资产
+     * @param departmentId
+     * @param name
+     * @param code
+     * @param ids
+     * @return
+     */
+    @Query( " select a from Assets a where a.departmentId =:departmentId and ( a.name like :name or a.code like :code) and a.id in :ids")
+    public List<Assets> findByDepartmentIdOrNameLikeOrCodeLikeAndIdIn(Long departmentId,String name,String code,List<Long> ids);
 
     @Query( " select a.id from Assets a ")
     public List<Long> allId();

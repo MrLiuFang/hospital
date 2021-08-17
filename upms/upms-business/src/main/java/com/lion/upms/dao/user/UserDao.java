@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.awt.*;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -35,6 +36,20 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
      * @return
      */
     public List<User> findByNameLike(String name);
+
+    /**
+     *
+     * @param ids
+     * @return
+     */
+    public List<User> findByIdIn(List<Long> ids);
+
+    /**
+     *
+     * @param nameList
+     * @return
+     */
+    public List<User> findByNameLikeAndIdIn(String name,List<Long> ids);
 
     /**
      * 根据邮箱查询用户

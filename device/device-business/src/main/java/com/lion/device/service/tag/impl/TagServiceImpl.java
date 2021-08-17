@@ -24,6 +24,7 @@ import com.lion.device.expose.tag.TagPostdocsExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.device.service.tag.TagService;
 import com.lion.event.entity.HumitureRecord;
+import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.event.expose.service.HumitureRecordExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.assets.Assets;
@@ -112,6 +113,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     private FileExposeService fileExposeService;
 
     @DubboReference
+    private CurrentPositionExposeService currentPositionExposeService;
+
+    @DubboReference
     private HumitureRecordExposeService humitureRecordExposeService;
 
     @Override
@@ -167,6 +171,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 Tag tag = findById(tagPostdocs.getTagId());
                 BusinessException.throwException(tag.getTagCode() + "与流动人员绑定不能删除");
             }
+            currentPositionExposeService.delete(null,null,deleteDto.getId());
         });
 
         deleteDtoList.forEach(deleteDto -> {

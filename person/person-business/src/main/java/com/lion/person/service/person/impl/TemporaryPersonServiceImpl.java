@@ -12,6 +12,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagPostdocsExposeService;
+import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -99,6 +100,9 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     private RoleExposeService roleExposeService;
 
     @DubboReference
+    private CurrentPositionExposeService currentPositionExposeService;
+
+    @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
 
     @Override
@@ -134,8 +138,10 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
                 restrictedAreaService.delete(deleteDto.getId());
                 tagPostdocsExposeService.unbinding(deleteDto.getId(),true);
                 redisTemplate.delete(RedisConstants.TEMPORARY_PERSON+deleteDto.getId());
+                currentPositionExposeService.delete(deleteDto.getId(),null,null);
             });
         }
+
     }
 
     @Override
@@ -227,6 +233,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         temporaryPerson.setLeaveDateTime(LocalDateTime.now());
         update(temporaryPerson);
         tagPostdocsExposeService.unbinding(temporaryPerson.getId(),false);
+        currentPositionExposeService.delete(temporaryPerson.getId(),null,null);
     }
 
     private TemporaryPerson assertPatientExist(TemporaryPerson temporaryPerson, Long patientId) {

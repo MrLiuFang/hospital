@@ -64,7 +64,17 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
 
     @Override
     public List<User> findByName(String name) {
-        return userDao.findByNameLike(name);
+        return userDao.findByNameLike("%"+name+"%");
+    }
+
+    @Override
+    public List<User> findInIds(List<Long> ids) {
+        return userDao.findByIdIn(ids);
+    }
+
+    @Override
+    public List<User> findByNameAndInIds(String name, List<Long> ids) {
+        return userDao.findByNameLikeAndIdIn("%"+name+"%", ids);
     }
 
     @Override

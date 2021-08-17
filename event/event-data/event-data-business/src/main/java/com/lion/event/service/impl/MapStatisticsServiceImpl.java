@@ -7,7 +7,6 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.dto.CurrentRegionDto;
-import com.lion.common.dto.UserCurrentRegionDto;
 import com.lion.common.enums.Type;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.RedisUtil;
@@ -199,13 +198,13 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         map = currentPositionService.groupCount(buildFloorId,map);
         map = systemAlarmService.groupCount(buildFloorId,map);
 
-        List<Map<String, Object>> assestCount = assetsExposeService.count(buildFloorId);
-        for (Map m :assestCount){
-            if (map.containsKey(m.get("region_id")) ){
-                RegionStatisticsDetails regionStatisticsDetails = map.get(m.get("region_id"));
-                regionStatisticsDetails.setAssetsCount(((Long) m.get("count")).intValue());
-            }
-        }
+//        List<Map<String, Object>> assestCount = assetsExposeService.count(buildFloorId);
+//        for (Map m :assestCount){
+//            if (map.containsKey(m.get("region_id")) ){
+//                RegionStatisticsDetails regionStatisticsDetails = map.get(m.get("region_id"));
+//                regionStatisticsDetails.setAssetsCount(((Long) m.get("count")).intValue());
+//            }
+//        }
 
         List<RegionStatisticsDetails> returnList = new ArrayList<>();
         map.forEach((key,value) ->{
@@ -243,7 +242,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 if (map.containsKey("alarmCount")) {
                     departmentStatisticsDetailsVo.setAlarmCount(map.get("alarmCount"));
                 }
-                departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(departmentId, null));
+                departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(departmentId, null, null));
                 departmentStatisticsDetailsVo.setTagCount(tagExposeService.countTag(departmentId));
                 departmentStatisticsDetailsVo.setCctvCount(cctvExposeService.count(departmentId));
                 returnList.add(departmentStatisticsDetailsVo);
@@ -285,17 +284,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             DepartmentStaffStatisticsDetailsVo.DepartmentVo vo = new DepartmentStaffStatisticsDetailsVo.DepartmentVo();
             vo.setDepartmentName(department.getName());
             vo.setDepartmentId(department.getId());
-            departmentStaffStatisticsDetailsVo.setStaffCount(departmentStaffStatisticsDetailsVo.getStaffCount() + departmentUserExposeService.count(department.getId(),null ));
-            departmentStaffStatisticsDetailsVo.setNormalStaffCount(departmentStaffStatisticsDetailsVo.getNormalStaffCount() + departmentUserExposeService.count(department.getId(), com.lion.upms.entity.enums.State.NORMAL));
-            departmentStaffStatisticsDetailsVo.setAbnormalStaffCount(departmentStaffStatisticsDetailsVo.getAbnormalStaffCount() + departmentUserExposeService.count(department.getId(), com.lion.upms.entity.enums.State.ALARM));
-            List<Long> userIds = departmentUserExposeService.findAllUser(department.getId(),name);
+            departmentStaffStatisticsDetailsVo.setStaffCount(departmentStaffStatisticsDetailsVo.getStaffCount() + departmentUserExposeService.count(department.getId(),null, finalListIds));
+            departmentStaffStatisticsDetailsVo.setNormalStaffCount(departmentStaffStatisticsDetailsVo.getNormalStaffCount() + departmentUserExposeService.count(department.getId(), com.lion.upms.entity.enums.State.NORMAL, finalListIds));
+            departmentStaffStatisticsDetailsVo.setAbnormalStaffCount(departmentStaffStatisticsDetailsVo.getAbnormalStaffCount() + departmentUserExposeService.count(department.getId(), com.lion.upms.entity.enums.State.ALARM, finalListIds));
+            List<Long> userIds = departmentUserExposeService.findAllUser(department.getId(),name, finalListIds);
             List<DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo> listStaff = new ArrayList<>();
             userIds.forEach(id->{
-                if (Objects.nonNull(regionId)) {
-                    if ( !finalListIds.contains(id) ){
-                        return;
-                    }
-                }
                 User user = userExposeService.findById(id);
                 if (Objects.nonNull(user)) {
                     DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo staff = new DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo();
@@ -346,17 +340,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo vo = new DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo();
                 vo.setDepartmentName(department.getName());
                 vo.setDepartmentId(department.getId());
-                departmentAssetsStatisticsDetailsVo.setAssetsCount(departmentAssetsStatisticsDetailsVo.getAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), null));
-                departmentAssetsStatisticsDetailsVo.setNormalAssetsCount(departmentAssetsStatisticsDetailsVo.getNormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.NORMAL));
-                departmentAssetsStatisticsDetailsVo.setAbnormalAssetsCount(departmentAssetsStatisticsDetailsVo.getAbnormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.ALARM));
-                List<Assets> assets = assetsExposeService.findByDepartmentId(department.getId(), keyword, keyword);
+                departmentAssetsStatisticsDetailsVo.setAssetsCount(departmentAssetsStatisticsDetailsVo.getAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), null,finalListIds ));
+                departmentAssetsStatisticsDetailsVo.setNormalAssetsCount(departmentAssetsStatisticsDetailsVo.getNormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.NORMAL, finalListIds));
+                departmentAssetsStatisticsDetailsVo.setAbnormalAssetsCount(departmentAssetsStatisticsDetailsVo.getAbnormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.ALARM, finalListIds));
+                List<Assets> assets = assetsExposeService.findByDepartmentId(department.getId(), keyword, keyword, finalListIds);
                 List<DepartmentAssetsStatisticsDetailsVo.AssetsVo> assetsVos = new ArrayList<>();
                 assets.forEach(a -> {
-                    if (Objects.nonNull(regionId)) {
-                        if (!finalListIds.contains(a.getId())){
-                            return;
-                        }
-                    }
                     DepartmentAssetsStatisticsDetailsVo.AssetsVo assetsVo = new DepartmentAssetsStatisticsDetailsVo.AssetsVo();
                     BeanUtils.copyProperties(a, assetsVo);
                     TagAssets tagAssets = tagAssetsExposeService.find(a.getId());
@@ -439,17 +428,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo patientDepartmentVo = new DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo();
                 patientDepartmentVo.setDepartmentName(department.getName());
                 patientDepartmentVo.setDepartmentId(department.getId());
-                departmentPatientStatisticsDetailsVo.setPatientCount(departmentPatientStatisticsDetailsVo.getPatientCount() + patientExposeService.count(department.getId(), null));
-                departmentPatientStatisticsDetailsVo.setNormalPatientCount(departmentPatientStatisticsDetailsVo.getNormalPatientCount() + patientExposeService.count(department.getId(), State.NORMAL));
-                departmentPatientStatisticsDetailsVo.setAbnormalPatientCount(departmentPatientStatisticsDetailsVo.getAbnormalPatientCount() + patientExposeService.count(department.getId(), State.ALARM));
+                departmentPatientStatisticsDetailsVo.setPatientCount(departmentPatientStatisticsDetailsVo.getPatientCount() + patientExposeService.count(department.getId(), null,finalListIds ));
+                departmentPatientStatisticsDetailsVo.setNormalPatientCount(departmentPatientStatisticsDetailsVo.getNormalPatientCount() + patientExposeService.count(department.getId(), State.NORMAL, finalListIds));
+                departmentPatientStatisticsDetailsVo.setAbnormalPatientCount(departmentPatientStatisticsDetailsVo.getAbnormalPatientCount() + patientExposeService.count(department.getId(), State.ALARM,finalListIds ));
                 List<DepartmentPatientStatisticsDetailsVo.PatientVo> patientVos = new ArrayList<>();
-                List<Patient> patientList = patientExposeService.find(department.getId(), name);
+                List<Patient> patientList = patientExposeService.find(department.getId(), name, finalListIds);
                 patientList.forEach(patient -> {
-                    if (Objects.nonNull(regionId)) {
-                        if (!finalListIds.contains(patient.getId())) {
-                            return;
-                        }
-                    }
                     DepartmentPatientStatisticsDetailsVo.PatientVo vo = new DepartmentPatientStatisticsDetailsVo.PatientVo();
                     Tag tag = tagExposeService.find(patient.getTagCode());
                     if (Objects.nonNull(tag)) {
@@ -491,17 +475,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo temporaryPersonDepartmentVo = new DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo();
                 temporaryPersonDepartmentVo.setDepartmentName(department.getName());
                 temporaryPersonDepartmentVo.setDepartmentId(department.getId());
-                departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), null));
-                departmentTemporaryPersonStatisticsDetailsVo.setNormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getNormalTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), State.NORMAL));
-                departmentTemporaryPersonStatisticsDetailsVo.setAbnormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getAbnormalTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), State.ALARM));
+                departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), null,finalListIds ));
+                departmentTemporaryPersonStatisticsDetailsVo.setNormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getNormalTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), State.NORMAL, finalListIds));
+                departmentTemporaryPersonStatisticsDetailsVo.setAbnormalTemporaryPersonCount(departmentTemporaryPersonStatisticsDetailsVo.getAbnormalTemporaryPersonCount() + temporaryPersonExposeService.count(department.getId(), State.ALARM, finalListIds));
                 List<DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo> temporaryPersonVos = new ArrayList<>();
-                List<TemporaryPerson> temporaryPersonList = temporaryPersonExposeService.find(department.getId(), name);
+                List<TemporaryPerson> temporaryPersonList = temporaryPersonExposeService.find(department.getId(), name, finalListIds);
                 temporaryPersonList.forEach(temporaryPerson -> {
-                    if (Objects.nonNull(regionId)) {
-                        if (!finalListIds.contains(temporaryPerson.getId())){
-                            return;
-                        }
-                    }
                     DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo vo = new DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonVo();
                     Tag tag = tagExposeService.find(temporaryPerson.getTagCode());
                     if (Objects.nonNull(tag)) {
@@ -900,6 +879,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                returnList.add(currentPosition.getAdi());
            }
        });
+       returnList.add(Long.MAX_VALUE);
        return returnList;
     }
 }

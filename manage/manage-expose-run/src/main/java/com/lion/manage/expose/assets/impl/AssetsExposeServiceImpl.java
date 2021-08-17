@@ -45,11 +45,18 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
     }
 
     @Override
-    public Integer countByDepartmentId(Long departmentId, State deviceState) {
-        if (Objects.isNull(deviceState)) {
+    public Integer countByDepartmentId(Long departmentId, State deviceState, List<Long> assetsIds) {
+        if (Objects.isNull(deviceState) && (Objects.isNull(assetsIds) || assetsIds.size()<=0)) {
             return assetsDao.countByDepartmentId(departmentId);
+        }else if (Objects.isNull(deviceState) && (Objects.nonNull(assetsIds) || assetsIds.size()>0)) {
+            return assetsDao.countByDepartmentIdAndIdIn(departmentId,assetsIds);
         }
-        return assetsDao.countByDepartmentIdAndDeviceState(departmentId,deviceState);
+
+        if (Objects.nonNull(deviceState) && (Objects.isNull(assetsIds) || assetsIds.size()<=0)) {
+            return assetsDao.countByDepartmentIdAndDeviceState(departmentId, deviceState);
+        }else {
+            return assetsDao.countByDepartmentIdAndDeviceStateAndIdIn(departmentId, deviceState,assetsIds);
+        }
     }
 
     @Override
@@ -58,9 +65,11 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
     }
 
     @Override
-    public List<Assets> findByDepartmentId(Long departmentId, String name, String code) {
-        if (StringUtils.hasText(name) && StringUtils.hasText(code)) {
+    public List<Assets> findByDepartmentId(Long departmentId, String name, String code, List<Long> ids) {
+        if (StringUtils.hasText(name) && StringUtils.hasText(code) && (Objects.isNull(ids) || ids.size()<=0)) {
             return assetsDao.findByDepartmentIdOrNameLikeOrCodeLike(departmentId, "%"+name+"%", "%"+code+"%");
+        }else if (StringUtils.hasText(name) && StringUtils.hasText(code) && (Objects.nonNull(ids) || ids.size()>0)) {
+            return assetsDao.findByDepartmentIdOrNameLikeOrCodeLikeAndIdIn(departmentId, "%"+name+"%", "%"+code+"%",ids);
         }
         return assetsDao.findByDepartmentId(departmentId);
     }

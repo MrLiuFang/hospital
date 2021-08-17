@@ -67,15 +67,26 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
     }
 
     @Override
-    public List<Long> findAllUser(Long departmentId, String name) {
-        if (StringUtils.hasText(name)) {
-            List<User> userList = userExposeService.findByName(name);
-            List<Long> userIds = new ArrayList<>();
-            userList.forEach(user -> {
-                userIds.add(user.getId());
-            });
+    public List<Long> findAllUser(Long departmentId, String name, List<Long> userIds) {
+        if (StringUtils.hasText(name) || (Objects.nonNull(userIds) && userIds.size()>0)) {
+            List<User> userList = null;
+            if (StringUtils.hasText(name) &&  (Objects.nonNull(userIds) && userIds.size()>0)) {
+                userList = userExposeService.findByNameAndInIds(name,userIds);
+            }
+            if (!StringUtils.hasText(name) &&  (Objects.nonNull(userIds) && userIds.size()>0)) {
+                userList = userExposeService.findInIds(userIds);
+            }
+            if (StringUtils.hasText(name) &&  (Objects.isNull(userIds) || userIds.size()<=0)) {
+                userList = userExposeService.findByName(name);
+            }
+            List<Long> _userIds = new ArrayList<>();
+            if (Objects.nonNull(userList)) {
+                userList.forEach(user -> {
+                    _userIds.add(user.getId());
+                });
+            }
             if (Objects.nonNull(userIds) && userIds.size()>0) {
-                List<DepartmentUser> list = departmentUserDao.findByDepartmentIdAndUserIdIn(departmentId,userIds);
+                List<DepartmentUser> list = departmentUserDao.findByDepartmentIdAndUserIdIn(departmentId,_userIds);
                 List<Long> returnList = new ArrayList<Long>();
                 list.forEach(departmentUser -> {
                     returnList.add(departmentUser.getUserId());
@@ -87,11 +98,19 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
     }
 
     @Override
-    public Integer count(Long departmentId, State deviceState) {
-        if (Objects.isNull(deviceState)) {
+    public Integer count(Long departmentId, State deviceState, List<Long> userIds) {
+        List<DepartmentUser>  list = null;
+        if (Objects.isNull(deviceState) && (Objects.isNull(userIds) || userIds.size()<=0)) {
             return departmentUserDao.countByDepartmentId(departmentId);
+        }else if (Objects.isNull(deviceState) && (Objects.nonNull(userIds) || userIds.size()>0)) {
+            return departmentUserDao.countByDepartmentIdAndUserIdIn(departmentId,userIds);
         }
-        List<DepartmentUser>  list = departmentUserDao.findByDepartmentId(departmentId);
+
+        if (Objects.nonNull(deviceState) && (Objects.isNull(userIds) || userIds.size()<=0)) {
+            list = departmentUserDao.findByDepartmentId(departmentId);
+        }else if (Objects.nonNull(deviceState) && (Objects.nonNull(userIds) || userIds.size()>0)){
+            list = departmentUserDao.findByDepartmentIdAndUserIdIn(departmentId,userIds);
+        }
         List<Long> ids = new ArrayList<>();
         ids.add(Long.MAX_VALUE);
         list.forEach(departmentUser -> {

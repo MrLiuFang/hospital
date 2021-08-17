@@ -8,6 +8,7 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagAssets;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagExposeService;
+import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.assets.AssetsBorrowDao;
 import com.lion.manage.dao.assets.AssetsDao;
@@ -74,6 +75,9 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     @DubboReference
     private TagAssetsExposeService tagAssetsExposeService;
 
+    @DubboReference
+    private CurrentPositionExposeService currentPositionExposeService;
+
     @Autowired
     private RedisTemplate redisTemplate;
 
@@ -137,6 +141,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             assetsBorrowDao.deleteByAssetsId(deleteDto.getId());
             assetsFaultDao.deleteByAssetsId(deleteDto.getId());
             tagAssetsExposeService.deleteByAssetsId(deleteDto.getId());
+            currentPositionExposeService.delete(null,deleteDto.getId(),null);
         });
     }
 

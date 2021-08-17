@@ -60,10 +60,29 @@ public interface PatientDao extends BaseDao<Patient> {
      * 统计
      * @param departmentId
      * @param isLeave
+     * @param ids
+     * @return
+     */
+    public int countByDepartmentIdAndIsLeaveAndIdIn(Long departmentId, Boolean isLeave,List<Long> ids);
+
+    /**
+     * 统计
+     * @param departmentId
+     * @param isLeave
      * @param deviceState
      * @return
      */
     public int countByDepartmentIdAndIsLeaveAndDeviceState(Long departmentId,Boolean isLeave,State deviceState);
+
+    /**
+     * 统计
+     * @param departmentId
+     * @param isLeave
+     * @param deviceState
+     * @param ids
+     * @return
+     */
+    public int countByDepartmentIdAndIsLeaveAndDeviceStateAndIdIn(Long departmentId,Boolean isLeave,State deviceState,List<Long> ids);
 
     /**
      * 根据科室查询
@@ -75,10 +94,22 @@ public interface PatientDao extends BaseDao<Patient> {
     public List<Patient> findByDepartmentIdAndIsLeaveAndNameLike(Long departmentId,Boolean isLeave,String name);
 
     /**
+     *
+     * @param departmentId
+     * @param isLeave
+     * @param name
+     * @param ids
+     * @return
+     */
+    public List<Patient> findByDepartmentIdAndIsLeaveAndNameLikeAndIdIn(Long departmentId,Boolean isLeave,String name,List<Long> ids);
+
+    /**
      * 根据科室查询
      * @param departmentId
      * @param isLeave
      * @return
      */
     public List<Patient> findByDepartmentIdAndIsLeave(Long departmentId, Boolean isLeave);
+
+    public List<Patient> findByDepartmentIdAndIsLeaveAndIdIn(Long departmentId, Boolean isLeave,List<Long> ids);
 }

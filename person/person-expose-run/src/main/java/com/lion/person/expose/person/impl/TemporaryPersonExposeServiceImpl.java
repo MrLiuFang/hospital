@@ -35,19 +35,36 @@ public class TemporaryPersonExposeServiceImpl extends BaseServiceImpl<TemporaryP
     }
 
     @Override
-    public int count(Long departmentId, State deviceState) {
-        if (Objects.isNull(deviceState)){
+    public int count(Long departmentId, State deviceState, List<Long> ids) {
+        if (Objects.isNull(deviceState) && (Objects.isNull(ids) || ids.size()<=0)){
             return temporaryPersonDao.countByDepartmentIdAndIsLeave(departmentId,false);
+        }else if (Objects.isNull(deviceState) && (Objects.nonNull(ids) || ids.size()>0)){
+            return temporaryPersonDao.countByDepartmentIdAndIsLeaveAndIdIn(departmentId,false, ids);
+        }
+
+        if (Objects.nonNull(deviceState) && (Objects.isNull(ids) || ids.size()<=0)){
+            return temporaryPersonDao.countByDepartmentIdAndIsLeaveAndDeviceState(departmentId,false, deviceState);
+        }else if (Objects.nonNull(deviceState) && (Objects.nonNull(ids) || ids.size()>0)){
+            return temporaryPersonDao.countByDepartmentIdAndIsLeaveAndDeviceStateAndIdIn(departmentId,false, deviceState,ids);
         }
         return temporaryPersonDao.countByDepartmentIdAndIsLeaveAndDeviceState(departmentId,false, deviceState);
     }
 
     @Override
-    public List<TemporaryPerson> find(Long departmentId, String name) {
-        if (StringUtils.hasText(name)){
+    public List<TemporaryPerson> find(Long departmentId, String name, List<Long> ids) {
+        if (StringUtils.hasText(name) && (Objects.isNull(ids) || ids.size() <=0)){
             return temporaryPersonDao.findByDepartmentIdAndIsLeaveAndNameLike(departmentId,false,"%"+name+"%");
+        }else if (StringUtils.hasText(name) && (Objects.nonNull(ids) || ids.size() >0)){
+            return temporaryPersonDao.findByDepartmentIdAndIsLeaveAndNameLikeAndIdIn(departmentId,false,"%"+name+"%",ids);
         }
-        return temporaryPersonDao.findByDepartmentIdAndIsLeave(departmentId,false);
+
+        if (!StringUtils.hasText(name) && (Objects.isNull(ids) || ids.size() <=0)){
+            return temporaryPersonDao.findByDepartmentIdAndIsLeave(departmentId, false);
+        }else if (!StringUtils.hasText(name) && (Objects.nonNull(ids) || ids.size() >0)){
+            return temporaryPersonDao.findByDepartmentIdAndIsLeaveAndIdIn(departmentId, false,ids);
+        }
+
+        return temporaryPersonDao.findByDepartmentIdAndIsLeave(departmentId, false);
     }
 
     @Override

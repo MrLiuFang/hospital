@@ -14,6 +14,7 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagLogExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
+import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
@@ -93,6 +94,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     @DubboReference
     private TagLogExposeService tagLogExposeService;
+
+    @DubboReference
+    private CurrentPositionExposeService currentPositionExposeService;
 
     @Override
     public User findUser(String username) {
@@ -263,6 +267,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
                 redisTemplate.delete(RedisConstants.USER+d.getId());
                 tagUserExposeService.unbinding(user.getId(),false);
             }
+            currentPositionExposeService.delete(d.getId(),null,null);
         });
     }
 

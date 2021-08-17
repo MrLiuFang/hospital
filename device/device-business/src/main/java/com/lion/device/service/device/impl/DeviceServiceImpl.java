@@ -21,6 +21,7 @@ import com.lion.device.expose.device.DeviceGroupExposeService;
 import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.service.device.DeviceService;
 import com.lion.device.entity.device.Device;
+import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -88,6 +89,9 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     @DubboReference
     private RegionExposeService regionExposeService;
 
+    @DubboReference
+    private CurrentPositionExposeService currentPositionExposeService;
+
     @Override
     public void update(Device entity) {
         entity = setWarrantyPeriodDate(entity);
@@ -142,6 +146,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
                 redisTemplate.delete(RedisConstants.DEVICE+device.getId());
                 redisTemplate.delete(RedisConstants.DEVICE_CODE+device.getCode());
                 redisTemplate.delete(RedisConstants.DEVICE_REGION+device.getId());
+                currentPositionExposeService.delete(null,d.getId(),null);
             }
         });
     }

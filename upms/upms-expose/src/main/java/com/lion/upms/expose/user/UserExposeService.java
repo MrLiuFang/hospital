@@ -59,6 +59,21 @@ public interface UserExposeService extends BaseService<User> {
 
     /**
      *
+     * @param ids
+     * @return
+     */
+    public List<User> findInIds(List<Long> ids);
+
+    /**
+     *
+     * @param name
+     * @param ids
+     * @return
+     */
+    public List<User> findByNameAndInIds(String name, List<Long> ids);
+
+    /**
+     *
      * @param departmentId
      * @param name
      * @param userType

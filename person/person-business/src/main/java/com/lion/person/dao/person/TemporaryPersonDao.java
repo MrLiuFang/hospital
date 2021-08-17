@@ -43,6 +43,15 @@ public interface TemporaryPersonDao extends BaseDao<TemporaryPerson> {
     public int countByDepartmentIdAndIsLeave(Long departmentId, Boolean isLeave);
 
     /**
+     *
+     * @param departmentId
+     * @param isLeave
+     * @param ids
+     * @return
+     */
+    public int countByDepartmentIdAndIsLeaveAndIdIn(Long departmentId, Boolean isLeave,List<Long> ids);
+
+    /**
      * 统计
      * @param departmentId
      * @param isLeave
@@ -50,6 +59,16 @@ public interface TemporaryPersonDao extends BaseDao<TemporaryPerson> {
      * @return
      */
     public int countByDepartmentIdAndIsLeaveAndDeviceState(Long departmentId, Boolean isLeave, State deviceState);
+
+    /**
+     *
+     * @param departmentId
+     * @param isLeave
+     * @param deviceState
+     * @param ids
+     * @return
+     */
+    public int countByDepartmentIdAndIsLeaveAndDeviceStateAndIdIn(Long departmentId, Boolean isLeave, State deviceState,List<Long> ids);
 
     /**
      * 根据科室查询
@@ -61,10 +80,30 @@ public interface TemporaryPersonDao extends BaseDao<TemporaryPerson> {
     public List<TemporaryPerson> findByDepartmentIdAndIsLeaveAndNameLike(Long departmentId, Boolean isLeave, String name);
 
     /**
+     *
+     * @param departmentId
+     * @param isLeave
+     * @param name
+     * @param ids
+     * @return
+     */
+    public List<TemporaryPerson> findByDepartmentIdAndIsLeaveAndNameLikeAndIdIn(Long departmentId, Boolean isLeave, String name,List<Long> ids);
+
+    /**
      * 根据科室查询
      * @param departmentId
      * @param isLeave
      * @return
      */
     public List<TemporaryPerson> findByDepartmentIdAndIsLeave(Long departmentId, Boolean isLeave);
+
+    /**
+     *
+     * @param departmentId
+     * @param isLeave
+     * @param ids
+     * @return
+     */
+    public List<TemporaryPerson> findByDepartmentIdAndIsLeaveAndIdIn(Long departmentId, Boolean isLeave,List<Long> ids);
+
 }

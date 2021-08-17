@@ -39,14 +39,17 @@ public interface PatientExposeService extends BaseService<Patient> {
      * 统计
      * @param departmentId
      * @param deviceState
+     * @param ids
      * @return
      */
-    public int count(Long departmentId, State deviceState);
+    public int count(Long departmentId, State deviceState, List<Long> ids);
 
     /**
      * 根据部门查询患者
      * @param departmentId
+     * @param name
+     * @param ids
      * @return
      */
-    public List<Patient> find(Long departmentId,String name);
+    public List<Patient> find(Long departmentId,String name,List<Long> ids);
 }

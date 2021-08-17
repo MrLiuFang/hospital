@@ -32,16 +32,18 @@ public interface TemporaryPersonExposeService extends BaseService<TemporaryPerso
      * 统计
      * @param departmentId
      * @param deviceState
+     * @param ids
      * @return
      */
-    public int count(Long departmentId, State deviceState);
+    public int count(Long departmentId, State deviceState,List<Long> ids);
 
     /**
      * 根据部门查询患者
      * @param departmentId
+     * @param ids
      * @return
      */
-    public List<TemporaryPerson> find(Long departmentId, String name);
+    public List<TemporaryPerson> find(Long departmentId, String name,List<Long> ids);
 
     /**
      * 修改状态

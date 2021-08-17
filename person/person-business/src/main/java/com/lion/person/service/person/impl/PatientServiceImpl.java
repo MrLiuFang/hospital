@@ -10,6 +10,7 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.expose.tag.TagPatientExposeService;
+import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -124,6 +125,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @Autowired
     private PatientNurseService patientNurseService;
 
+    @DubboReference
+    private CurrentPositionExposeService currentPositionExposeService;
+
     @Override
     @Transactional
 //    @GlobalTransactional
@@ -201,6 +205,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
                 restrictedAreaService.delete(deleteDto.getId());
                 tagPatientExposeService.unbinding(deleteDto.getId(),true);
                 redisTemplate.delete(RedisConstants.PATIENT+deleteDto.getId());
+                currentPositionExposeService.delete(deleteDto.getId(),null,null);
             });
         }
     }
@@ -408,6 +413,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         if (Objects.equals(patientLeaveDto.getIsLeave(),true)) {
             tagPatientExposeService.unbinding(patient.getId(), false);
         }
+        currentPositionExposeService.delete(patient.getId(),null,null);
     }
 
     private Patient setOtherInfo(Patient patient) {

@@ -40,9 +40,10 @@ public interface AssetsExposeService extends BaseService<Assets> {
      * 统计科室内的资产数量
      * @param departmentId
      * @param deviceState
+     * @param assetsIds
      * @return
      */
-    public Integer countByDepartmentId(Long departmentId, State deviceState);
+    public Integer countByDepartmentId(Long departmentId, State deviceState,List<Long> assetsIds);
 
     /**
      * 查询部门内的资产
@@ -56,9 +57,10 @@ public interface AssetsExposeService extends BaseService<Assets> {
      * @param departmentId
      * @param name
      * @param code
+     * @param ids
      * @return
      */
-    public List<Assets> findByDepartmentId(Long departmentId,String name,String code);
+    public List<Assets> findByDepartmentId(Long departmentId,String name,String code,List<Long> ids);
 
     /**
      * 获取所有数据的id
