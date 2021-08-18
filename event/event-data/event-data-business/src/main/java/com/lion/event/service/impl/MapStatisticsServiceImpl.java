@@ -738,12 +738,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             startDateTime = LocalDateTime.now().minusDays(30);
         }
         List<Long> tagIds = tagExposeService.find(tagType,tagCode);
-        return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType,tagIds,startDateTime,endDateTime);
+        return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType, tagIds, startDateTime, endDateTime);
     }
 
     @Override
     public void systemAlarmListExport(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
-        IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di,alarmType,tagType,tagCode,startDateTime,endDateTime,lionPage);
+        IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage);
         List<SystemAlarmVo> list = pageResultData.getData();
         BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
         Font fontChinese = new Font(bfChinese);

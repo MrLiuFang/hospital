@@ -77,7 +77,6 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
             if (Objects.nonNull(systemAlarmDto.getId())) {
                 Boolean b = (Boolean) redisTemplate.opsForValue().get(RedisConstants.UNALARM + systemAlarmDto.getId());
                 if (Objects.equals(b, true)) {
-                    log.info("1");
                     redisTemplate.delete(RedisConstants.UNALARM + systemAlarmDto.getId());
                     return;
                 }
@@ -96,15 +95,12 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
             }else {
                 Alarm alarm = getAlarm(systemAlarmDto);
                 if (Objects.isNull(alarm)) {
-                    log.info("2");
                     return;
                 }
                 if (systemAlarmDto.getCount()>1){
                     systemAlarmDto.setCount(systemAlarmDto.getCount()+1);
                     systemAlarmService.updateSdt(systemAlarmDto.getId());
-                    log.info("3");
                 }else {
-                    log.info("4");
                     SystemAlarm newSystemAlarm = new SystemAlarm();
                     newSystemAlarm.setAi(systemAlarmDto.getAssetsId());
                     if (Objects.nonNull(systemAlarmDto.getHumidity())) {
@@ -153,55 +149,41 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                         }
                     }
                     if (Objects.equals(newSystemAlarm.getTy(),Type.STAFF.getKey())) {
-                        log.info("5");
                         User user = redisUtil.getUserById(newSystemAlarm.getPi()) ;
                         if (Objects.nonNull(user)) {
-                            log.info("6");
                             Department department = redisUtil.getDepartmentByUserId(user.getId());
                             newSystemAlarm.setSdi(department.getId());
                         }
                     }else if (Objects.equals(newSystemAlarm.getTy(),Type.PATIENT.getKey())) {
-                        log.info("7");
                         Patient patient = redisUtil.getPatient(newSystemAlarm.getPi());
                         if (Objects.nonNull(patient)) {
-                            log.info("8");
                             newSystemAlarm.setSdi(patient.getDepartmentId());
                         }
                     }else if (Objects.equals(newSystemAlarm.getTy(),Type.MIGRANT.getKey())) {
-                        log.info("9");
                         TemporaryPerson temporaryPerson = redisUtil.getTemporaryPerson(newSystemAlarm.getPi());
                         if (Objects.nonNull(temporaryPerson)) {
-                            log.info("10");
                             newSystemAlarm.setSdi(temporaryPerson.getDepartmentId());
                         }
                     }else if (Objects.equals(newSystemAlarm.getTy(),Type.ASSET.getKey())) {
-                        log.info("11");
                         Assets assets = redisUtil.getAssets(newSystemAlarm.getTi());
                         if (Objects.nonNull(assets)){
-                            log.info("12");
                             newSystemAlarm.setSdi(assets.getDepartmentId());
                         }
                     }else if (Objects.equals(newSystemAlarm.getTy(),Type.DEVICE.getKey())) {
-                        log.info("13");
                         Device device = redisUtil.getDevice(newSystemAlarm.getDvi());
                         if (Objects.nonNull(device)){
-                            log.info("14");
                             Department department = redisUtil.getDepartmentByDeviceId(device.getId());
                             if (Objects.nonNull(department)){
-                                log.info("15");
                                 newSystemAlarm.setSdi(department.getId());
                             }
                         }
                     }else if (Objects.equals(newSystemAlarm.getTy(),Type.HUMIDITY.getKey()) || Objects.equals(newSystemAlarm.getTy(),Type.TEMPERATURE.getKey()) ) {
                         Tag tag = redisUtil.getTagById(newSystemAlarm.getTi());
-                        log.info("16");
                         if (Objects.nonNull(tag)) {
-                            log.info("17");
                             newSystemAlarm.setSdi(tag.getDepartmentId());
                         }
                     }
                     newSystemAlarm = systemAlarmService.save(newSystemAlarm);
-                    log.info("18");
                     systemAlarmDto.setId(newSystemAlarm.get_id());
                     systemAlarmDto.setCount(systemAlarmDto.getCount() + 1);
 

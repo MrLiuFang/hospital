@@ -324,16 +324,16 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IPageResultData<List<SystemAlarmVo>> systemAlarmList(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                 LionPage lionPage){
-        return mapStatisticsService.systemAlarmList(false, false, null, null, null, null, null, startDateTime, endDateTime, lionPage);
+        return mapStatisticsService.systemAlarmList(false, false, null, null,null , null, null, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/alarm/list1")
     @ApiOperation(value = "警告记录(查看所有)默认30天内数据")
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList1(@ApiParam("区域id") @RequestParam(value = "ri",required = false) List<Long> ri, @ApiParam("科室id") Long di, @ApiParam("警报来源") Type alarmType,@ApiParam("标签属性") TagType tagType,@ApiParam("标签码") String tagCode,
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList1(@ApiParam("区域id") @RequestParam(value = "ri",required = false) List<Long> ri, @ApiParam("科室id") Long di,@ApiParam("状态false=未处理，true=已处理")Boolean alarmState, @ApiParam("警报来源") Type alarmType,@ApiParam("标签属性") TagType tagType,@ApiParam("标签码") String tagCode,
                                                                 @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                 LionPage lionPage){
-        return mapStatisticsService.systemAlarmList(true, null, ri, di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage);
+        return mapStatisticsService.systemAlarmList(true, alarmState, ri, di , alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/alarm/list1/export")
@@ -440,5 +440,10 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return userTagButtonRecordService.list(tagRuleEffect, name, startDateTime, endDateTime, lionPage);
     }
 
+    @GetMapping("/system/alarm/seven/days/statistics")
+    @ApiOperation(value = "近七日警报数量统计")
+    public List<SevenDaysStatisticsVo> sevenDaysStatistics(@ApiParam(value = "科室id") Long departmentId){
+        return systemAlarmService.sevenDaysStatistics(departmentId);
+    }
 
 }

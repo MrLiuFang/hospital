@@ -20,10 +20,7 @@ import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.SystemAlarmDao;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
-import com.lion.event.entity.vo.ListSystemAlarmVo;
-import com.lion.event.entity.vo.RegionStatisticsDetails;
-import com.lion.event.entity.vo.SystemAlarmDetailsVo;
-import com.lion.event.entity.vo.SystemAlarmVo;
+import com.lion.event.entity.vo.*;
 import com.lion.event.service.SystemAlarmReportService;
 import com.lion.event.service.SystemAlarmService;
 import com.lion.manage.entity.assets.Assets;
@@ -46,6 +43,7 @@ import com.lion.utils.CurrentUserUtil;
 import lombok.extern.java.Log;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
+import org.bson.Document;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -57,6 +55,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
@@ -213,7 +212,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Override
     public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return alarmDao.list(lionPage,departmentIds,ua,ri , alarmType ,tagIds, startDateTime, endDateTime);
+        return alarmDao.list(lionPage,departmentIds,ua,ri, alarmType, tagIds, startDateTime, endDateTime);
     }
 
     @Override
@@ -385,16 +384,12 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.equals(systemAlarmDto.getState(),SystemAlarmState.CANCEL_CALL)) {
-            log.info("20");
             if (Objects.nonNull(systemAlarmDto.getPeopleId())) {
-                log.info("21");
                 criteria.and("pi").is(systemAlarmDto.getPeopleId());
                 criteria.and("ua").is(SystemAlarmState.CALL.getKey());
             }
         }else if (Objects.equals(systemAlarmDto.getState(),SystemAlarmState.WELL_KNOWN)) {
-            log.info("22");
             if (Objects.nonNull(systemAlarmDto.getRegionId())) {
-                log.info("23");
                 criteria.and("ri").is(systemAlarmDto.getRegionId());
                 criteria.and("ua").is(SystemAlarmState.UNTREATED.getKey());
             }
@@ -412,6 +407,22 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
             redisTemplate.opsForValue().set(RedisConstants.UNALARM+systemAlarm.get_id(),true,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             updateDeviceState(systemAlarm);
         });
+    }
+
+    @Override
+    public List<SevenDaysStatisticsVo> sevenDaysStatistics(Long departmentId) {
+        List<Document> list = this.alarmDao.sevenDaysStatistics(departmentId);
+        List<SevenDaysStatisticsVo> returnList = new ArrayList<SevenDaysStatisticsVo>();
+        list.forEach(document -> {
+            if (Objects.nonNull(document.get("_id"))) {
+                SevenDaysStatisticsVo vo = SevenDaysStatisticsVo.builder()
+                        .date(LocalDate.parse(document.getString("_id")))
+                        .count(document.getInteger("count"))
+                        .build();
+                returnList.add(vo);
+            }
+        });
+        return returnList;
     }
 
     private void updateDeviceState(SystemAlarm systemAlarm ){

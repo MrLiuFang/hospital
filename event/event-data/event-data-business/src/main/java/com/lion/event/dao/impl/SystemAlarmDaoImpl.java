@@ -43,7 +43,9 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -349,6 +351,29 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             });
         }
         return new PageResultData<>(list,lionPage,count);
+    }
+
+    @Override
+    public List<Document> sevenDaysStatistics(Long departmentId) {
+        List<Bson> pipeline = new ArrayList<Bson>();
+        BasicDBObject match = new BasicDBObject();
+        LocalDateTime now = LocalDateTime.now();
+        if (Objects.nonNull(departmentId)) {
+            match = BasicDBObjectUtil.put(match, "$match", "sdi", new BasicDBObject("$eq", departmentId));
+        }
+//        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",LocalDateTime.of(now.toLocalDate(), LocalTime.MIN) ).append("$lte",now));
+        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte", LocalDateTime.of(now.toLocalDate().minusDays(7), LocalTime.MIN )).append("$lte",now));
+        pipeline.add(match);
+        BasicDBObject group = new BasicDBObject();
+        group = BasicDBObjectUtil.put(group,"$group","_id",new BasicDBObject("$dateToString",new BasicDBObject("format","%Y-%m-%d").append("date","$dt")));
+        group = BasicDBObjectUtil.put(group,"$group","count",new BasicDBObject("$sum",1));
+        pipeline.add(group);
+        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("system_alarm").aggregate(pipeline);
+        List<Document> list = new ArrayList<>();
+        aggregateIterable.forEach(document -> {
+            list.add(document);
+        });
+        return list;
     }
 
     @Override

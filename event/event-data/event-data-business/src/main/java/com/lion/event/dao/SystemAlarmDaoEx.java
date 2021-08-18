@@ -6,7 +6,9 @@ import com.lion.core.LionPage;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
+import com.lion.event.entity.vo.SevenDaysStatisticsVo;
 import com.lion.event.entity.vo.SystemAlarmVo;
+import org.bson.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -101,4 +103,11 @@ public interface SystemAlarmDaoEx {
      * @return
      */
     public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    /**
+     * 7天警告数量统计
+     * @param departmentId
+     * @return
+     */
+    public List<Document> sevenDaysStatistics(Long departmentId);
 }

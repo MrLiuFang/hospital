@@ -7,10 +7,7 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
-import com.lion.event.entity.vo.ListSystemAlarmVo;
-import com.lion.event.entity.vo.RegionStatisticsDetails;
-import com.lion.event.entity.vo.SystemAlarmDetailsVo;
-import com.lion.event.entity.vo.SystemAlarmVo;
+import com.lion.event.entity.vo.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -95,7 +92,7 @@ public interface SystemAlarmService {
      * @param endDateTime
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri,  Type alarmType, List<Long> tagIds,  LocalDateTime startDateTime,LocalDateTime endDateTime);
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds,  LocalDateTime startDateTime,LocalDateTime endDateTime);
 
     /**
      * 查询未处理的告警
@@ -130,4 +127,11 @@ public interface SystemAlarmService {
      * @param systemAlarmDto
      */
     public void updateState(SystemAlarmHandleDto systemAlarmDto);
+
+    /**
+     * 7天警告数量统计
+     * @param departmentId
+     * @return
+     */
+    List<SevenDaysStatisticsVo> sevenDaysStatistics(Long departmentId);
 }
