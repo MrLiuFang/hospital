@@ -8,6 +8,7 @@ import com.lion.device.entity.enums.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -40,5 +41,13 @@ public class DeviceDaoImpl implements DeviceDaoEx {
         }
         sb.append(" order by d.createDateTime ");
         return baseDao.findNavigator(lionPage,sb.toString(),searchParameter);
+    }
+
+    @Override
+    public Page deviceState(LionPage lionPage) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select d from Device d ");
+        sb.append(" order by d.deviceState desc ,battery desc ");
+        return baseDao.findNavigator(lionPage,sb.toString(), Collections.EMPTY_MAP);
     }
 }

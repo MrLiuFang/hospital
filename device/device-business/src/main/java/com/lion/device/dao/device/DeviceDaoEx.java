@@ -20,4 +20,11 @@ public interface DeviceDaoEx {
      * @return
      */
     Page deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, LionPage lionPage);
+
+    /**
+     * 设备状态
+     * @param lionPage
+     * @return
+     */
+    Page deviceState(LionPage lionPage);
 }

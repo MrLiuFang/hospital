@@ -6,7 +6,6 @@ import com.lion.core.LionPage;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
-import com.lion.event.entity.vo.SevenDaysStatisticsVo;
 import com.lion.event.entity.vo.SystemAlarmVo;
 import org.bson.Document;
 
@@ -110,4 +109,11 @@ public interface SystemAlarmDaoEx {
      * @return
      */
     public List<Document> sevenDaysStatistics(Long departmentId);
+
+    /**
+     * 今日警报统计
+     * @return
+     * @param type
+     */
+    public Document todayDaysStatistics(Type type);
 }

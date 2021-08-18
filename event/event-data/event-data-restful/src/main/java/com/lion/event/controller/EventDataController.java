@@ -446,4 +446,10 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return systemAlarmService.sevenDaysStatistics(departmentId);
     }
 
+    @GetMapping("/system/alarm/today/statistics")
+    @ApiOperation(value = "今日警报统计")
+    public TodayDaysStatisticsVo todayDaysStatistics(){
+        return systemAlarmService.todayDaysStatistics();
+    }
+
 }

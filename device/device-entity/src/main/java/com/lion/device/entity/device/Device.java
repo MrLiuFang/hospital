@@ -115,6 +115,6 @@ public class Device extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "上次消毒时间-回收箱特有字段")
     @Column(name = "previous_disinfect_date")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate previousDisinfectDate;
 }

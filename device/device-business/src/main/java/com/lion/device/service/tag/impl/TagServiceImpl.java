@@ -18,6 +18,7 @@ import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
 import com.lion.device.entity.tag.vo.DetailsTagVo;
 import com.lion.device.entity.tag.vo.ListTagVo;
+import com.lion.device.entity.tag.vo.PurposeStatisticsVo;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagPatientExposeService;
 import com.lion.device.expose.tag.TagPostdocsExposeService;
@@ -339,6 +340,20 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             }
         }
         return vo;
+    }
+
+    @Override
+    public List<PurposeStatisticsVo> purposeStatistics() {
+        List<PurposeStatisticsVo> list = new ArrayList<PurposeStatisticsVo>();
+        for (TagPurpose tagPurpose: TagPurpose.values()){
+            int count = tagDao.countByPurpose(tagPurpose);
+            PurposeStatisticsVo vo = PurposeStatisticsVo.builder()
+                    .purpose(tagPurpose)
+                    .count(count)
+                    .build();
+            list.add(vo);
+        }
+        return list;
     }
 
     private void assertDeviceCodeExist(String deviceCode, Long id) {

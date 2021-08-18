@@ -176,6 +176,11 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     }
 
     @Override
+    public Page<List<Device>> deviceState(LionPage lionPage) {
+        return deviceDao.deviceState(lionPage);
+    }
+
+    @Override
     public List<Long> allId() {
         return deviceDao.allId();
     }

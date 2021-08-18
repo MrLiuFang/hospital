@@ -425,6 +425,42 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         return returnList;
     }
 
+    @Override
+    public TodayDaysStatisticsVo todayDaysStatistics() {
+        Document document = alarmDao.todayDaysStatistics(null);
+        TodayDaysStatisticsVo vo = TodayDaysStatisticsVo.builder().build();
+        if (Objects.nonNull(document)) {
+            if (Objects.nonNull(document.get("count"))) {
+                vo.setTotal(document.getInteger("count"));
+            }
+        }
+        document = alarmDao.todayDaysStatistics(Type.STAFF);
+        if (Objects.nonNull(document)) {
+            if (Objects.nonNull(document.get("count"))) {
+                vo.setStaffCount(document.getInteger("count"));
+            }
+        }
+        document = alarmDao.todayDaysStatistics(Type.PATIENT);
+        if (Objects.nonNull(document)) {
+            if (Objects.nonNull(document.get("count"))) {
+                vo.setPatientCount(document.getInteger("count"));
+            }
+        }
+        document = alarmDao.todayDaysStatistics(Type.HUMIDITY);
+        if (Objects.nonNull(document)) {
+            if (Objects.nonNull(document.get("count"))) {
+                vo.setHumidCount(document.getInteger("count"));
+            }
+        }
+        document = alarmDao.todayDaysStatistics(Type.TEMPERATURE);
+        if (Objects.nonNull(document)) {
+            if (Objects.nonNull(document.get("count"))) {
+                vo.setHumidCount(vo.getHumidCount()+document.getInteger("count"));
+            }
+        }
+        return vo;
+    }
+
     private void updateDeviceState(SystemAlarm systemAlarm ){
         UpdateStateDto updateStateDto = new UpdateStateDto();
         updateStateDto.setType(Type.instance(systemAlarm.getTy()));

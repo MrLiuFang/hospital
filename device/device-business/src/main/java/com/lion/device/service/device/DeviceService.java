@@ -8,6 +8,7 @@ import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
 import com.lion.device.entity.enums.State;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -29,6 +30,13 @@ public interface DeviceService extends BaseService<Device> {
      * @return
      */
    public DeviceStatisticsVo statistics();
+
+    /**
+     * 设备状态
+     * @param lionPage
+     * @return
+     */
+   public Page<List<Device>> deviceState(LionPage lionPage);
 
     /**
      * 获取所有数据的id

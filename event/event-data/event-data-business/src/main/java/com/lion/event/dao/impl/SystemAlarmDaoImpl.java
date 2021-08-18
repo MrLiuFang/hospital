@@ -362,7 +362,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             match = BasicDBObjectUtil.put(match, "$match", "sdi", new BasicDBObject("$eq", departmentId));
         }
 //        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",LocalDateTime.of(now.toLocalDate(), LocalTime.MIN) ).append("$lte",now));
-        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte", LocalDateTime.of(now.toLocalDate().minusDays(7), LocalTime.MIN )).append("$lte",now));
+        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte", LocalDateTime.of(LocalDate.now().minusDays(7), LocalTime.MIN )).append("$lte",now));
         pipeline.add(match);
         BasicDBObject group = new BasicDBObject();
         group = BasicDBObjectUtil.put(group,"$group","_id",new BasicDBObject("$dateToString",new BasicDBObject("format","%Y-%m-%d").append("date","$dt")));
@@ -374,6 +374,23 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             list.add(document);
         });
         return list;
+    }
+
+    @Override
+    public Document todayDaysStatistics(Type type) {
+        List<Bson> pipeline = new ArrayList<Bson>();
+        BasicDBObject match = new BasicDBObject();
+        if (Objects.nonNull(type)) {
+            match = BasicDBObjectUtil.put(match, "$match", "ty", new BasicDBObject("$eq", type.getKey()));
+        }
+        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte", LocalDateTime.of(LocalDate.now(), LocalTime.MIN )).append("$lte",LocalDateTime.now()));
+        pipeline.add(match);
+        BasicDBObject group = new BasicDBObject();
+        group = BasicDBObjectUtil.put(group,"$group","_id",new BasicDBObject("$dateToString",new BasicDBObject("format","%Y-%m-%d").append("date","$dt")));
+        group = BasicDBObjectUtil.put(group,"$group","count",new BasicDBObject("$sum",1));
+        pipeline.add(group);
+        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("system_alarm").aggregate(pipeline);
+        return aggregateIterable.first();
     }
 
     @Override

@@ -98,10 +98,13 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/list")
     @ApiOperation(value = "设备列表")
-    public IPageResultData<List<Device>> list(@ApiParam(value = "设备组ID") Long deviceGroupId,@ApiParam(value = "设备名称") String name, @ApiParam(value = "设备编号") String code, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备分类")  DeviceType deviceType, LionPage lionPage){
+    public IPageResultData<List<Device>> list( @ApiParam(value = "电量")Integer battery, @ApiParam(value = "设备组ID") Long deviceGroupId,@ApiParam(value = "设备名称") String name, @ApiParam(value = "设备编号") String code, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备分类")  DeviceType deviceType, LionPage lionPage){
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
+        }
+        if (Objects.nonNull(battery)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_battery",battery);
         }
         if (StringUtils.hasText(code)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
@@ -206,6 +209,10 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
         return resultData;
     }
 
-
+    @GetMapping("/state")
+    @ApiOperation(value = "硬件状态(根据是否故障和电量排序)")
+    public IPageResultData<List<Device>> deviceState(LionPage lionPage) {
+        return (IPageResultData<List<Device>>) deviceService.deviceState(lionPage);
+    }
 
 }

@@ -126,4 +126,11 @@ public interface TagDao extends BaseDao<Tag> {
 
     @Query( " select t.id from Tag t where t.tagCode = :tagCode ")
     public List<Long> findId(@Param("tagCode")String tagCode);
+
+    /**
+     * 统计
+     * @param purpose
+     * @return
+     */
+    public int countByPurpose(TagPurpose purpose);
 }

@@ -134,4 +134,10 @@ public interface SystemAlarmService {
      * @return
      */
     List<SevenDaysStatisticsVo> sevenDaysStatistics(Long departmentId);
+
+    /**
+     * 今日警报统计
+     * @return
+     */
+    public TodayDaysStatisticsVo todayDaysStatistics();
 }

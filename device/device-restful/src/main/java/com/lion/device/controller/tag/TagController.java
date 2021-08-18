@@ -116,6 +116,12 @@ public class TagController extends BaseControllerImpl implements BaseController 
         return resultData;
     }
 
+    @GetMapping("/purpose/statistics")
+    @ApiOperation(value = "标签统计")
+    public List<PurposeStatisticsVo> purposeStatistics(){
+        return tagService.purposeStatistics();
+    }
+
     @PostMapping("/rule/add")
     @ApiOperation(value = "新增标签规则")
     public IResultData ruleAdd(@RequestBody AddTagRuleDto addTagRuleDto){
