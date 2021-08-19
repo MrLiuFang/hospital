@@ -446,6 +446,12 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 vo.setPatientCount(document.getInteger("count"));
             }
         }
+        document = alarmDao.todayDaysStatistics(Type.MIGRANT);
+        if (Objects.nonNull(document)) {
+            if (Objects.nonNull(document.get("count"))) {
+                vo.setTemporaryPersonCount(document.getInteger("count"));
+            }
+        }
         document = alarmDao.todayDaysStatistics(Type.HUMIDITY);
         if (Objects.nonNull(document)) {
             if (Objects.nonNull(document.get("count"))) {

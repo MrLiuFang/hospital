@@ -21,6 +21,9 @@ public class TodayDaysStatisticsVo {
     @ApiModelProperty(value = "患者数量")
     private int patientCount;
 
+    @ApiModelProperty(value = "流动人员数量")
+    private int temporaryPersonCount;
+
     @ApiModelProperty(value = "职员数量")
     private int staffCount;
 
