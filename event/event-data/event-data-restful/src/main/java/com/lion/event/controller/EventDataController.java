@@ -442,14 +442,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/system/alarm/seven/days/statistics")
     @ApiOperation(value = "近七日警报数量统计")
-    public List<SevenDaysStatisticsVo> sevenDaysStatistics(@ApiParam(value = "科室id") Long departmentId){
-        return systemAlarmService.sevenDaysStatistics(departmentId);
+    public IResultData<List<SevenDaysStatisticsVo>> sevenDaysStatistics(@ApiParam(value = "科室id") Long departmentId){
+        return ResultData.instance().setData(systemAlarmService.sevenDaysStatistics(departmentId));
     }
 
     @GetMapping("/system/alarm/today/statistics")
     @ApiOperation(value = "今日警报统计")
-    public TodayDaysStatisticsVo todayDaysStatistics(){
-        return systemAlarmService.todayDaysStatistics();
+    public IResultData<TodayDaysStatisticsVo> todayDaysStatistics(){
+        return ResultData.instance().setData(systemAlarmService.todayDaysStatistics());
     }
 
 }
