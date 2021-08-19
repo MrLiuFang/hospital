@@ -118,8 +118,8 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/purpose/statistics")
     @ApiOperation(value = "标签统计")
-    public List<PurposeStatisticsVo> purposeStatistics(){
-        return tagService.purposeStatistics();
+    public IResultData<List<PurposeStatisticsVo>> purposeStatistics(){
+        return ResultData.instance().setData(tagService.purposeStatistics());
     }
 
     @PostMapping("/rule/add")
