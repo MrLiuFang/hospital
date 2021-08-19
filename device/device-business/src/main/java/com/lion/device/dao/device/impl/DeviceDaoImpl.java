@@ -48,6 +48,6 @@ public class DeviceDaoImpl implements DeviceDaoEx {
         StringBuilder sb = new StringBuilder();
         sb.append(" select d from Device d ");
         sb.append(" order by d.deviceState desc ,battery desc ");
-        return baseDao.findNavigator(lionPage,sb.toString(), Collections.EMPTY_MAP);
+        return baseDao.findNavigator(lionPage,sb.toString(), null);
     }
 }
