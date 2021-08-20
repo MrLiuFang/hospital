@@ -58,8 +58,8 @@ public class User extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "姓名")
     @Column(name = "name")
-    @NotBlank(message = "姓名不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Length(min = 0, max = 30, message = "姓名不能超过{max}个字符", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{0000001}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @Length(min = 0, max = 30, message = "姓名不能超过{max}个字符", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "邮箱")
