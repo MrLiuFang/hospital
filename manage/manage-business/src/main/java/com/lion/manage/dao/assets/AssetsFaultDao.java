@@ -3,6 +3,7 @@ package com.lion.manage.dao.assets;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.AssetsFault;
+import com.lion.manage.entity.enums.AssetsFaultState;
 
 /**
  * @author Mr.Liu
@@ -24,4 +25,12 @@ public interface AssetsFaultDao extends BaseDao<AssetsFault> {
      * @return
      */
     public Integer countByAssetsId(Long assetsId);
+
+    /**
+     * 统计没有完成故障
+     * @param assetsId
+     * @param state
+     * @return
+     */
+    public int countByAssetsIdAndState(Long assetsId,AssetsFaultState state);
 }

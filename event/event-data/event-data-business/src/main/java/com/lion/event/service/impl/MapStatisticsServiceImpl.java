@@ -45,6 +45,7 @@ import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.expose.assets.AssetsExposeService;
+import com.lion.manage.expose.assets.AssetsFaultExposeService;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
@@ -175,6 +176,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @DubboReference
     private PatientReportExposeService patientReportExposeService;
+
+    @DubboReference
+    private AssetsFaultExposeService assetsFaultExposeService;
 
     @Autowired
     private HttpServletResponse response;
@@ -348,10 +352,10 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 assets.forEach(a -> {
                     DepartmentAssetsStatisticsDetailsVo.AssetsVo assetsVo = new DepartmentAssetsStatisticsDetailsVo.AssetsVo();
                     BeanUtils.copyProperties(a, assetsVo);
+                    assetsVo.setIsFault(assetsFaultExposeService.countNotFinish(a.getId())>0);
                     TagAssets tagAssets = tagAssetsExposeService.find(a.getId());
                     if (Objects.nonNull(tagAssets)) {
                         Tag tag = tagExposeService.findById(tagAssets.getTagId());
-                        assetsVo.setIsFault(faultExposeService.countFault(tagAssets.getAssetsId())>0);
                         if (Objects.nonNull(tag)) {
                             assetsVo.setBattery(tag.getBattery());
                             assetsVo.setTagCode(tag.getTagCode());

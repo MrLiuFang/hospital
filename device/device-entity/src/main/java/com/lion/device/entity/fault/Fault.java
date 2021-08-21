@@ -34,7 +34,7 @@ import java.io.Serializable;
 public class Fault extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 8725223620163785910L;
-    @ApiModelProperty(value = "关联ID（资产ID/cctvId/……）")
+    @ApiModelProperty(value = "关联ID（设备ID/cctvId/……）")
     @Column(name = "relation_id")
     private Long relationId;
 
