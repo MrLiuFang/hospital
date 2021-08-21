@@ -61,4 +61,5 @@ public interface AssetsService extends BaseService<Assets> {
      * @return
      */
     public List<Assets> find(String code);
+
 }

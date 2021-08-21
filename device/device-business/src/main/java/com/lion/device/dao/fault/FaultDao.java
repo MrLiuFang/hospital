@@ -31,5 +31,5 @@ public interface FaultDao extends BaseDao<Fault> {
      * @param relationId
      * @return
      */
-    public int countByRegionIdAndIsSolveIsFalse(Long relationId);
+    public int countByRelationIdAndIsSolveIsFalse(Long relationId);
 }

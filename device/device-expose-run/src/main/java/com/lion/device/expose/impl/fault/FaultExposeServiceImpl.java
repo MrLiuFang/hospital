@@ -40,6 +40,6 @@ public class FaultExposeServiceImpl extends BaseServiceImpl<Fault> implements Fa
 
     @Override
     public int countFault(Long relationId) {
-        return faultDao.countByRegionIdAndIsSolveIsFalse(relationId);
+        return faultDao.countByRelationIdAndIsSolveIsFalse(relationId);
     }
 }
