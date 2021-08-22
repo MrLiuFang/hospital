@@ -8,7 +8,9 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagAssets;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagExposeService;
+import com.lion.event.entity.SystemAlarm;
 import com.lion.event.expose.service.CurrentPositionExposeService;
+import com.lion.event.expose.service.SystemAlarmExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.assets.AssetsBorrowDao;
 import com.lion.manage.dao.assets.AssetsDao;
@@ -20,6 +22,8 @@ import com.lion.manage.entity.assets.vo.DetailsAssetsVo;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.AssetsFaultState;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.service.assets.AssetsService;
 import com.lion.manage.service.build.BuildFloorService;
@@ -77,6 +81,9 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 
     @DubboReference
     private CurrentPositionExposeService currentPositionExposeService;
+
+    @DubboReference
+    private SystemAlarmExposeService systemAlarmExposeService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -189,6 +196,15 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
                 detailsAssetsVo.setTagCode(tag.getTagCode());
                 detailsAssetsVo.setTagId(tag.getId());
             }
+        }
+        detailsAssetsVo.setAssetsFault(assetsFaultDao.findFirstByAssetsIdAndStateOrderByCreateDateTimeDesc(assets.getId(), AssetsFaultState.NOT_FINISHED));
+        SystemAlarm systemAlarm =  systemAlarmExposeService.findLastByAssetsId(assets.getId());
+        if (Objects.nonNull(systemAlarm)) {
+            SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
+            detailsAssetsVo.setAlarm(systemAlarmType.getDesc());
+            detailsAssetsVo.setAlarmType(systemAlarmType);
+            detailsAssetsVo.setAlarmDataTime(systemAlarm.getDt());
+            detailsAssetsVo.setAlarmId(systemAlarm.get_id());
         }
         return detailsAssetsVo;
     }

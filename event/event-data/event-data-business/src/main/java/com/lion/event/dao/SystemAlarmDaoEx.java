@@ -116,4 +116,18 @@ public interface SystemAlarmDaoEx {
      * @param type
      */
     public Document todayDaysStatistics(Type type);
+
+    /**
+     * 查找最后一次资产警告
+     * @param assetsId
+     * @return
+     */
+    public SystemAlarm findLastByAssetsId(Long  assetsId);
+
+    /**
+     * 查找最后一次tag警告
+     * @param tagId
+     * @return
+     */
+    public SystemAlarm findLastByTagId(Long  tagId);
 }

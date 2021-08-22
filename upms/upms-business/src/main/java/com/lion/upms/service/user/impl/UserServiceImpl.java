@@ -37,6 +37,7 @@ import com.lion.utils.MapToBeanUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -97,6 +98,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     @DubboReference
     private CurrentPositionExposeService currentPositionExposeService;
+
+    @Autowired
+    private MessageSource messageSource;
 
     @Override
     public User findUser(String username) {

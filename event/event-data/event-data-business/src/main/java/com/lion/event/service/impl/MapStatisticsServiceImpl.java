@@ -423,7 +423,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         departmentPatientStatisticsDetailsVo.setPatientDepartmentVos(patientDepartmentVos);
         List<Long> listIds = new ArrayList<>();
         if (Objects.nonNull(regionId)) {
-            listIds = this.find(Type.ASSET, regionId);
+            listIds = this.find(Type.PATIENT, regionId);
         }
         List<Long> finalListIds = listIds;
         list.forEach(departmentId -> {
@@ -470,7 +470,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonDepartmentVos(temporaryPersonDepartmentVos);
         List<Long> listIds = new ArrayList<>();
         if (Objects.nonNull(regionId)) {
-            listIds = this.find(Type.ASSET, regionId);
+            listIds = this.find(Type.MIGRANT, regionId);
         }
         List<Long> finalListIds = listIds;
         list.forEach(departmentId -> {
@@ -634,8 +634,6 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             }
         }
         LocalDateTime now = LocalDateTime.now();
-//        assetsDetailsVo.setPositions(positionService.findByAssetsId(assets.getId(),now.minusDays(30),now));
-        assetsDetailsVo.setFaultRecord(faultExposeService.findLast(assets.getId()));
         return assetsDetailsVo;
     }
 

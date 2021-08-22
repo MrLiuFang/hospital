@@ -25,11 +25,14 @@ import com.lion.device.expose.tag.TagPostdocsExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.device.service.tag.TagService;
 import com.lion.event.entity.HumitureRecord;
+import com.lion.event.entity.SystemAlarm;
 import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.event.expose.service.HumitureRecordExposeService;
+import com.lion.event.expose.service.SystemAlarmExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
@@ -118,6 +121,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 
     @DubboReference
     private HumitureRecordExposeService humitureRecordExposeService;
+
+    @DubboReference
+    private SystemAlarmExposeService systemAlarmExposeService;
 
     @Override
     public void add(AddTagDto addTagDto) {
@@ -338,6 +344,13 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 vo.setTemperature(humitureRecord.getT());
                 vo.setDateTime(humitureRecord.getDdt());
             }
+        }
+        SystemAlarm systemAlarm =  systemAlarmExposeService.findLastByAssetsId(tag.getId());
+        if (Objects.nonNull(systemAlarm)) {
+            vo.setAlarm(systemAlarmExposeService.getSystemAlarmTypeDesc(systemAlarm.getSat()));
+            vo.setAlarmType(systemAlarmExposeService.getSystemAlarmTypeCode(systemAlarm.getSat()));
+            vo.setAlarmDataTime(systemAlarm.getDt());
+            vo.setAlarmId(systemAlarm.get_id());
         }
         return vo;
     }

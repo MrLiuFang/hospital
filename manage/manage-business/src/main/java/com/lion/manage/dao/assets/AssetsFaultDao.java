@@ -33,4 +33,12 @@ public interface AssetsFaultDao extends BaseDao<AssetsFault> {
      * @return
      */
     public int countByAssetsIdAndState(Long assetsId,AssetsFaultState state);
+
+    /**
+     * 查询最后的故障
+     * @param assetsId
+     * @param state
+     * @return
+     */
+    public AssetsFault findFirstByAssetsIdAndStateOrderByCreateDateTimeDesc(Long assetsId,AssetsFaultState state);
 }

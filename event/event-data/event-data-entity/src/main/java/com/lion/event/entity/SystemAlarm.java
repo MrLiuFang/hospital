@@ -44,7 +44,7 @@ public class SystemAlarm implements Serializable {
     @ApiModelProperty(value = "标签id")
     private Long ti;
 
-    @ApiModelProperty(value = "警告id")
+    @ApiModelProperty(value = "警告规则id")
     private Long ali;
 
     @ApiModelProperty(value = "温湿标签警告湿度")

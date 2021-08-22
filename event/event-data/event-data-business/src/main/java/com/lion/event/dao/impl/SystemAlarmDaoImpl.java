@@ -219,22 +219,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
 
     @Override
     public SystemAlarm findLast(Long pi) {
-        Query query = new Query();
-        Criteria criteria = new Criteria();
-        if (Objects.nonNull(pi)) {
-            criteria.and("pi").is(pi);
-        }else {
-            return null;
-        }
-        criteria.and("dt").gte(LocalDateTime.now().minusDays(30));
-        query.addCriteria(criteria);
-        PageRequest pageRequest = PageRequest.of(0,1, Sort.by(Sort.Direction.DESC,"dt"));
-        query.with(pageRequest);
-        List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
-        if (Objects.nonNull(items) && items.size()>0){
-            return items.get(0);
-        }
-        return null;
+        return findLast(pi,null,null);
     }
 
     @Override
@@ -394,6 +379,16 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
+    public SystemAlarm findLastByAssetsId(Long assetsId) {
+        return findLast(null,assetsId,null);
+    }
+
+    @Override
+    public SystemAlarm findLastByTagId(Long tagId) {
+        return findLast(null,null,tagId);
+    }
+
+    @Override
     public SystemAlarm findUuid(String uuid){
         Query query = new Query();
         Criteria criteria = new Criteria();
@@ -414,5 +409,30 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         return systemAlarm;
     }
 
+    private SystemAlarm findLast(Long pi,Long ai,Long ti) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.isNull(pi) || Objects.isNull(pi)|| Objects.isNull(ti)) {
+            return null;
+        }
+        if (Objects.nonNull(pi)) {
+            criteria.and("pi").is(pi);
+        }
+        if (Objects.nonNull(ai)) {
+            criteria.and("ai").is(ai);
+        }
+        if (Objects.nonNull(ti)) {
+            criteria.and("ti").is(ti);
+        }
+        criteria.and("dt").gte(LocalDateTime.now().minusDays(30));
+        query.addCriteria(criteria);
+        PageRequest pageRequest = PageRequest.of(0,1, Sort.by(Sort.Direction.DESC,"dt"));
+        query.with(pageRequest);
+        List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
+        if (Objects.nonNull(items) && items.size()>0){
+            return items.get(0);
+        }
+        return null;
+    }
 
 }
