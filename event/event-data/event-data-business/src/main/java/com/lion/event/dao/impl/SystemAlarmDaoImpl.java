@@ -117,7 +117,6 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             query.addCriteria(Criteria.where("_id").is(alarmReportDto.getId()));
             Update update = new Update();
             update.set("re",alarmReportDto.getReport());
-            update.set("rnu",alarmReportDto.getNumber());
             update.set("rui",userId);
             update.set("run",userName);
             update.set("rdt",LocalDateTime.now());

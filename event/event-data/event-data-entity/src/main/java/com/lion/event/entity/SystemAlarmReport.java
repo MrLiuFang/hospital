@@ -32,9 +32,6 @@ public class SystemAlarmReport implements Serializable {
     @ApiModelProperty(value = "汇报人姓名")
     private String run;
 
-    @ApiModelProperty(value = "汇报员工编号")
-    private Integer rnu;
-
     @ApiModelProperty(value = "员工汇报内容")
     private String re;
 

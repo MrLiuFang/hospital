@@ -37,7 +37,7 @@ public class AssetsFault extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 4868910888962338123L;
     @ApiModelProperty(value = "资产Id")
-    @Column(name = "assets_id")
+    @Column(name = "assets_id",updatable = false)
     @NotNull(message = "资产id不能为空", groups = {Validator.Insert.class})
     private Long assetsId;
 

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -40,5 +41,6 @@ public class AssetsFaultReport extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "汇报")
     @Column(name = "report")
     @NotNull(message = "资产故障汇报能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @Length(max = 250,message ="汇报内容不能超过{max}个字符" , groups = {Validator.Insert.class, Validator.Update.class})
     private String report;
 }

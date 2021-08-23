@@ -288,14 +288,13 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
         List<Long> departmentIds = departmentExposeService.responsibleDepartment(departmentId);
+        List<Long> ids = new ArrayList<>();
         if (departmentIds.size()>0) {
             List<Assets> list = assetsService.findByDepartmentId(departmentIds);
-            List<Long> ids = new ArrayList<>();
             ids.add(Long.MAX_VALUE);
             list.forEach(assets -> {
                 ids.add(assets.getId());
             });
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids);
         }
         if (Objects.nonNull(assetsId)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsId",assetsId);
@@ -308,13 +307,15 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
         }
         if (StringUtils.hasText(assetsCode)) {
             List<Assets> list = assetsService.find(assetsCode);
-            List<Long> ids = new ArrayList<>();
             list.forEach(assets -> {
                 ids.add(assets.getId());
             });
-            if (ids.size()>0){
-                jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids);
+            if (ids.size()<=0){
+                ids.add(Long.MAX_VALUE);
             }
+        }
+        if (ids.size()>0){
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids);
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);

@@ -49,19 +49,15 @@ public class SystemAlarmReportServiceImpl implements SystemAlarmReportService {
 
     @Override
     public void alarmReport(AlarmReportDto alarmReportDto) {
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        if (Objects.nonNull(userId)) {
-            User user = userExposeService.findById(userId);
-            if (Objects.nonNull(user)){
-                SystemAlarmReport systemAlarmReport = new SystemAlarmReport();
-                systemAlarmReport.setSli(alarmReportDto.getId());
-                systemAlarmReport.setRdt(LocalDateTime.now());
-                systemAlarmReport.setRe(alarmReportDto.getReport());
-                systemAlarmReport.setRui(user.getId());
-                systemAlarmReport.setRun(user.getName());
-                systemAlarmReport.setRnu(user.getNumber());
-                systemAlarmReportDao.save(systemAlarmReport);
-            }
+        User user = userExposeService.findById(alarmReportDto.getUserId());
+        if (Objects.nonNull(user)){
+            SystemAlarmReport systemAlarmReport = new SystemAlarmReport();
+            systemAlarmReport.setSli(alarmReportDto.getId());
+            systemAlarmReport.setRdt(LocalDateTime.now());
+            systemAlarmReport.setRe(alarmReportDto.getReport());
+            systemAlarmReport.setRui(user.getId());
+            systemAlarmReport.setRun(user.getName());
+            systemAlarmReportDao.save(systemAlarmReport);
         }
     }
 
