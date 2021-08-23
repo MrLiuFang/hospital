@@ -24,6 +24,7 @@ import com.lion.person.service.person.PatientTransferService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,19 +72,19 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
         state.add(TransferState.FINISH);
         PatientTransfer oldPatientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(transferDto.getPatientId(),state);
         if (Objects.nonNull(oldPatientTransfer)) {
-            BusinessException.throwException("该患者有未完成/取消的转移操作");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000041"));
         }
         if (Objects.isNull(department)) {
-            BusinessException.throwException("转移的科室不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000042"));
         }
         if (Objects.isNull(patient)) {
-            BusinessException.throwException("该患者不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000043"));
         }
         if (Objects.equals(patient.getIsLeave(),true)){
-            BusinessException.throwException("该患者已登出");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000044"));
         }
         if (Objects.equals(transferDto.getDepartmentId(),patient.getDepartmentId())) {
-            BusinessException.throwException("不能从当前科室转移至当前科室");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000045"));
         }
         Long userId = CurrentUserUtil.getCurrentUserId();
         patientTransfer.setNewDepartmentId(transferDto.getDepartmentId());
@@ -99,10 +100,10 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
     @Transactional
     public void receiveOrCancel(ReceivePatientDto receivePatientDto) {
         if (Objects.isNull(receivePatientDto.getId())) {
-            BusinessException.throwException("患者id不能为空");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000026"));
         }
         if (!(Objects.equals(receivePatientDto.getState(),TransferState.FINISH) || Objects.equals(receivePatientDto.getState(),TransferState.CANCEL))) {
-            BusinessException.throwException("只能进行接受/取消转移操作");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000046"));
         }
         if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH)) {
             UpdatePatientDto updatePatientDto = new ReceivePatientDto();

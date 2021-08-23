@@ -18,11 +18,11 @@ import javax.validation.constraints.NotNull;
 public class PatientLeaveDto {
 
     @ApiModelProperty(value = "患者id")
-    @NotNull(message = "患者id不能为空")
+    @NotNull(message = "{1000026}")
     private Long patientId;
 
     @ApiModelProperty(value = "是否登出(true=登出,false=取消登出)")
-    @NotNull(message = "是否登出不能为空")
+    @NotNull(message = "{1000027}")
     private Boolean isLeave;
 
     @ApiModelProperty(value = "登出原因")

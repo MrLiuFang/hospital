@@ -17,6 +17,6 @@ import javax.validation.constraints.NotNull;
 public class ResetPasswordUserDto {
 
     @ApiModelProperty(value = "用户ID")
-    @NotNull(message = "用户ID不能为空")
+    @NotNull(message = "{0000000}")
     private Long id;
 }

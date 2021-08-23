@@ -9,6 +9,7 @@ import com.lion.person.service.person.PatientDoctorService;
 import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,10 +57,10 @@ public class PatientDoctorServiceImpl extends BaseServiceImpl<PatientDoctor> imp
     private void assertDoctorExist(Long doctorId) {
         User user = userExposeService.findById(doctorId);
         if (Objects.isNull(user)){
-            BusinessException.throwException("该医生不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000031"));
         }
         if (!Objects.equals(user.getUserType(), UserType.DOCTOR)) {
-            BusinessException.throwException("选择的负责医生非医生人员");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000006"));
         }
     }
 }

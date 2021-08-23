@@ -38,15 +38,15 @@ public class Role extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "角色名称")
     @Column(name = "name")
     @NotBlank(message = "角色名称不能为空",groups = {Validator.Update.class, Validator.Insert.class})
-    @Size(message = "角色名称为{min}-{max}个字符",max = 30,min = 3,groups = {Validator.Update.class, Validator.Insert.class})
-    @Pattern(regexp = "^[\\u4E00-\\u9FA5\\w+]+$",message = "角色名称不能包含特殊字符",groups = {Validator.Update.class, Validator.Insert.class})
+    @Size(message = "{0000010}",max = 30,min = 3,groups = {Validator.Update.class, Validator.Insert.class})
+    @Pattern(regexp = "^[\\u4E00-\\u9FA5\\w+]+$",message = "{0000011}",groups = {Validator.Update.class, Validator.Insert.class})
     private String name;
 
     @ApiModelProperty(value = "角色编码")
     @Column(name = "code")
     @NotBlank(message = "角色编码不能为空",groups = {Validator.Update.class, Validator.Insert.class})
-    @Size(message = "角色编码为{min}-{max}个字符",max = 30,min = 3,groups = {Validator.Update.class, Validator.Insert.class})
-    @Pattern(regexp = "^\\w+$",message = "角色编码只能是数字、英文字母或者下划线组成的字符串",groups = {Validator.Update.class, Validator.Insert.class})
+    @Size(message = "{0000012}",max = 30,min = 3,groups = {Validator.Update.class, Validator.Insert.class})
+    @Pattern(regexp = "^\\w+$",message = "{0000013}",groups = {Validator.Update.class, Validator.Insert.class})
     private String code;
 
     @ApiModelProperty(value = "备注")

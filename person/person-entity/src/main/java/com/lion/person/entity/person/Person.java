@@ -38,17 +38,17 @@ public abstract class Person extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "性别")
     @Column(name = "gender")
     @Convert(converter = Gender.GenderConverter.class)
-    @NotNull(message = "性别不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000010}", groups = {Validator.Insert.class, Validator.Update.class})
     private Gender gender;
 
     @ApiModelProperty(value = "姓名")
     @Column(name = "name")
-    @NotBlank(message = "姓名不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{1000011}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "联系电话")
     @Column(name = "phone_number")
-    @NotBlank(message = "联系电话不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{1000012}", groups = {Validator.Insert.class, Validator.Update.class})
     private String phoneNumber;
 
     @ApiModelProperty(value = "紧急联络人")
@@ -61,7 +61,7 @@ public abstract class Person extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "标签码")
     @Column(name = "tag_code")
-    @NotBlank(message = "标签码不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{1000013}", groups = {Validator.Insert.class, Validator.Update.class})
     private String tagCode;
 
     @ApiModelProperty(value = "住址")

@@ -30,14 +30,14 @@ public class AddPatientDto extends Patient {
 
     @ApiModelProperty(value = "负责医生")
     @Column(name = "doctor_id")
-    @NotNull(message = "负责医生不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Size(min = 1,message = "请选择负责的医生", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000006}", groups = {Validator.Insert.class, Validator.Update.class})
+    @Size(min = 1,message = "{1000006}", groups = {Validator.Insert.class, Validator.Update.class})
     private List<Long> doctorIds;
 
-    @ApiModelProperty(value = "负责医生")
+    @ApiModelProperty(value = "负责护士")
     @Column(name = "doctor_id")
-    @NotNull(message = "负责医生不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Size(min = 1,message = "请选择负责的医生", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000008}", groups = {Validator.Insert.class, Validator.Update.class})
+    @Size(min = 1,message = "{1000008}", groups = {Validator.Insert.class, Validator.Update.class})
     private List<Long> nurseIds;
 
 }

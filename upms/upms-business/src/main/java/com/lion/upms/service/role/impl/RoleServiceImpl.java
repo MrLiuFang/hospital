@@ -12,6 +12,7 @@ import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.role.vo.PageRoleVo;
 import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RoleUserService;
+import com.lion.utils.MessageI18nUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -59,7 +60,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
     public void assertCodeExist(String code, Long id) {
         Role role = roleDao.findFirstByCode(code);
         if ((Objects.isNull(id) && Objects.nonNull(role)) ||(Objects.nonNull(id) && Objects.nonNull(role) && !Objects.equals(role.getId(),id))  ){
-            BusinessException.throwException("该角色编码已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("0000020"));
         }
     }
 
@@ -67,7 +68,7 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
     public void assertNameExist(String name, Long id) {
         Role role = roleDao.findFirstByName(name);
         if ((Objects.isNull(id) && Objects.nonNull(role)) || (Objects.nonNull(id) && Objects.nonNull(role) && ! Objects.equals(role.getId(),id)) ){
-            BusinessException.throwException("该角色名称已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("0000021"));
         }
     }
 

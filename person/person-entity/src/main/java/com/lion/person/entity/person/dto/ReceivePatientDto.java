@@ -28,7 +28,7 @@ public class ReceivePatientDto extends UpdatePatientDto {
 //    private Long patientId;
 
     @ApiModelProperty(value = "转移状态")
-    @NotNull(message = "转移状态不能为空",groups = {Validator.OtherOne.class})
+    @NotNull(message = "{1000028}",groups = {Validator.OtherOne.class})
     private TransferState state = TransferState.FINISH;
 
 

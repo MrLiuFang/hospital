@@ -27,6 +27,7 @@ import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
 import com.lion.utils.CurrentUserUtil;
+import com.lion.utils.MessageI18nUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -101,7 +102,7 @@ public class UserController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/details")
     @ApiOperation(value = "用户详情(编辑时获取)")
-    public IResultData<DetailsUserVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsUserVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(userService.details(id));
         return resultData;
@@ -129,7 +130,7 @@ public class UserController extends BaseControllerImpl implements BaseController
         User user = userService.findById(resetPasswordUserDto.getId());
         if (Objects.nonNull(user)){
             if (!StringUtils.hasText(user.getUsername())){
-                BusinessException.throwException("该员工没有开通账号，不能重置密码");
+                BusinessException.throwException(MessageI18nUtil.getMessage("0000014"));
             }
             user.setPassword(passwordEncoder.encode(SecureUtil.md5(user.getEmail())));
         }
@@ -149,7 +150,7 @@ public class UserController extends BaseControllerImpl implements BaseController
             if (passwordEncoder.matches(updateCurrentUserDto.getOldPassword(),user.getPassword())) {
                 user.setPassword(passwordEncoder.encode(updateCurrentUserDto.getNewPassword()));
             }else {
-                BusinessException.throwException("旧密码错误");
+                BusinessException.throwException(MessageI18nUtil.getMessage("0000015"));
             }
         }
         userService.update(user);

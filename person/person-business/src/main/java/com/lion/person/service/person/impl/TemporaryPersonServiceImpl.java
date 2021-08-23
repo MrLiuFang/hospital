@@ -39,6 +39,7 @@ import com.lion.person.service.person.TemporaryPersonService;
 import com.lion.upms.entity.role.Role;
 import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.utils.CurrentUserUtil;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -239,10 +240,10 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     private TemporaryPerson assertPatientExist(TemporaryPerson temporaryPerson, Long patientId) {
         Patient patient = patientService.findById(patientId);
         if (Objects.isNull(patient)){
-            BusinessException.throwException("该患者不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000043"));
         }
         if (!Objects.equals(patient.getIsLeave(), false)) {
-            BusinessException.throwException("该患者已登出");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000044"));
         }
         temporaryPerson.setDepartmentId(patient.getDepartmentId());
         return temporaryPerson;

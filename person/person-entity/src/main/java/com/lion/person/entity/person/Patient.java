@@ -43,14 +43,14 @@ public class Patient extends Person implements Serializable {
     private static final long serialVersionUID = 6519257488177091836L;
     @ApiModelProperty(value = "出生日期")
     @Column(name = "birthday")
-    @Past(message = "出生日期不能大于/等于当前日期", groups = {Validator.Insert.class, Validator.Update.class})
+    @Past(message = "{0000005}", groups = {Validator.Insert.class, Validator.Update.class})
     @JsonFormat(pattern = "yyyy-MM-dd")
-    @NotNull(message = "出生日期不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000000}", groups = {Validator.Insert.class, Validator.Update.class})
     private LocalDate birthday;
 
     @ApiModelProperty(value = "病历号")
     @Column(name = "medical_record_no")
-    @NotBlank(message = "病历号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{1000001}", groups = {Validator.Insert.class, Validator.Update.class})
     private String medicalRecordNo;
 
     @ApiModelProperty(value = "科室ID")
@@ -67,7 +67,7 @@ public class Patient extends Person implements Serializable {
 
     @ApiModelProperty(value = "病床ID")
     @Column(name = "sickbed_id")
-    @NotNull(message = "病床ID不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000002}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long sickbedId;
 
     @ApiModelProperty(value = "疾病")
@@ -77,12 +77,12 @@ public class Patient extends Person implements Serializable {
 
     @ApiModelProperty(value = "患者级别(1/2/3)级")
     @Column(name = "level")
-    @NotNull(message = "患者级别不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000003}", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer level;
 
     @ApiModelProperty(value = "备注")
     @Column(name = "remarks")
-    @Length(max = 255,message = "最多255个字符",groups = {Validator.Insert.class, Validator.Update.class})
+    @Length(max = 255,message = "{1000004}",groups = {Validator.Insert.class, Validator.Update.class})
     private String remarks;
 
     @ApiModelProperty(value = "绑定患者")

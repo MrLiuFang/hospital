@@ -23,24 +23,24 @@ public class AddTempLeaveDto {
 
     @ApiModelProperty(value = "患者id")
     @Size(min = 1,message = "请选择患者")
-    @NotNull(message = "请选择患者")
+    @NotNull(message = "{1000021}")
     private List<Long> patientIds;
 
     @ApiModelProperty(value = "员工编号")
-    @NotNull(message = "请输入员工编号")
+    @NotNull(message = "{1000022}")
     private Integer number;
 
     @ApiModelProperty(value = "离开开始时间(yyyy-MM-dd HH:mm:ss)")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @NotNull(message = "请输入离开开始时间")
+    @NotNull(message = "{1000023}")
     private LocalDateTime startDateTime;
 
     @ApiModelProperty(value = "离开结束时间(yyyy-MM-dd HH:mm:ss)")
-    @NotNull(message = "请输入离开结束时间")
+    @NotNull(message = "{1000024}")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endDateTime;
 
     @ApiModelProperty(value = "离开原因")
-    @NotBlank(message = "请填写离开原因")
+    @NotBlank(message = "{1000025}")
     private String remarks;
 }

@@ -64,8 +64,8 @@ public class User extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "邮箱")
     @Column(name = "email")
-    @Email(message = "请输入正确的邮箱地址", groups = {Validator.Insert.class, Validator.Update.class})
-    @NotBlank(message = "邮箱不能为空", groups = {Validator.Insert.class,Validator.Update.class})
+    @Email(message = "{0000002}", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{0000003}", groups = {Validator.Insert.class,Validator.Update.class})
     private String email;
 
     @ApiModelProperty(value = "头像（文件id）")
@@ -75,24 +75,24 @@ public class User extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "性别")
     @Column(name = "gender")
     @Convert(converter = Gender.GenderConverter.class)
-    @NotNull(message = "性别不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{0000004}", groups = {Validator.Insert.class, Validator.Update.class})
     private Gender gender;
 
     @ApiModelProperty(value = "出生日期")
     @Column(name = "birthday")
-    @Past(message = "出生日期不能大于/等于当前日期", groups = {Validator.Insert.class, Validator.Update.class})
+    @Past(message = "{0000005}", groups = {Validator.Insert.class, Validator.Update.class})
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
     @ApiModelProperty(value = "员工类型")
     @Column(name = "user_type")
     @Convert(converter = UserType.UserTypeConverter.class)
-    @NotNull(message = "请输入员工类型", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{0000006}", groups = {Validator.Insert.class, Validator.Update.class})
     private UserType userType;
 
     @ApiModelProperty(value = "员工编号")
     @Column(name = "number")
-    @NotNull(message = "请输入员工编号", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{0000007}", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer number;
 
     @ApiModelProperty(value = "标签编码")
@@ -101,7 +101,7 @@ public class User extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "联系电话")
     @Column(name = "phone_number")
-    @NotBlank(message = "联系电话不能为空", groups = {Validator.Insert.class,Validator.Update.class})
+    @NotBlank(message = "{0000008}", groups = {Validator.Insert.class,Validator.Update.class})
     private String phoneNumber;
 
     @ApiModelProperty(value = "住址")

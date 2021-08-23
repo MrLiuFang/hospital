@@ -34,6 +34,7 @@ import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
 import com.lion.utils.MapToBeanUtil;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -237,7 +238,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             User tmp = findById(user.getId());
             if (!StringUtils.hasText(tmp.getPassword()) && !StringUtils.hasText(tmp.getUsername())) {
                 if (!StringUtils.hasText(tmp.getEmail())) {
-                    BusinessException.throwException("该用户没有email无法创建账号");
+                    BusinessException.throwException(MessageI18nUtil.getMessage("0000016"));
                 }else {
                     user.setUsername(StringUtils.hasText(user.getEmail())?user.getEmail():tmp.getEmail());
                     user.setPassword(passwordEncoder.encode(SecureUtil.md5(StringUtils.hasText(user.getEmail())?user.getEmail():tmp.getEmail())));
@@ -297,7 +298,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     private void assertEmailExist(String email, Long id) {
         User user = userDao.findFirstByEmail(email);
         if ((Objects.isNull(id) && Objects.nonNull(user)) || (Objects.nonNull(id) && Objects.nonNull(user) && !Objects.equals(user.getId(),id)) ){
-            BusinessException.throwException("该邮箱已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("0000017"));
         }
     }
 
@@ -305,7 +306,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         if (StringUtils.hasText(tagCode)) {
             Tag tag = tagExposeService.find(tagCode);
             if (Objects.isNull(tag)) {
-                BusinessException.throwException("标签不存在");
+                BusinessException.throwException(MessageI18nUtil.getMessage("0000018"));
             }
         }
     }
@@ -313,7 +314,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     private void assertNumberExist(Integer number, Long id) {
         User user = userDao.findFirstByNumber(number);
         if ((Objects.isNull(id) && Objects.nonNull(user)) ||(Objects.nonNull(id) && Objects.nonNull(user) && !Objects.equals(user.getId(),id))  ){
-            BusinessException.throwException("该工号已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("0000019"));
         }
     }
 

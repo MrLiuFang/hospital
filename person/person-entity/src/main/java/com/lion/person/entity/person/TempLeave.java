@@ -35,7 +35,7 @@ public class TempLeave extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 2751099054472220914L;
     @ApiModelProperty(value = "患者id")
-    @NotNull(message = "患者id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000005}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "patient_id")
     private Long patientId;
 

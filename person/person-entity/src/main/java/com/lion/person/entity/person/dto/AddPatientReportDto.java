@@ -23,6 +23,6 @@ import javax.validation.constraints.NotBlank;
 public class AddPatientReportDto extends PatientReport {
 
     @ApiModelProperty(value = "汇报员工编号")
-    @NotBlank(message = "汇报员工编号不能为空",groups = {Validator.Update.class, Validator.Insert.class})
+    @NotBlank(message = "{1000020}",groups = {Validator.Update.class, Validator.Insert.class})
     private Integer number;
 }

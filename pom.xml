@@ -21,6 +21,7 @@
 		<module>common</module>
 		<module>person</module>
 		<module>job</module>
+		<module>i18n</module>
     </modules>
 
 	<dependencyManagement>

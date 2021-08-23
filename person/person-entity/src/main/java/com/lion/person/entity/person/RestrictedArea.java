@@ -31,17 +31,17 @@ public class RestrictedArea extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -2133649767384990644L;
     @ApiModelProperty(value = "人员类型")
     @Convert(converter = PersonType.PersonTypeConverter.class)
-    @NotNull(message = "人员类型不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000014}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "type")
     private PersonType type;
 
     @ApiModelProperty(value = "人员id")
-    @NotNull(message = "人员id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000015}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "person_id")
     private Long personId;
 
     @ApiModelProperty(value = "限制区域")
-    @NotNull(message = "限制区域不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000016}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "region_id")
     private Long regionId;
 

@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 @DynamicUpdate
 @DynamicInsert
 @Data
-@ApiModel(description = "患者")
+@ApiModel(description = "患者转移")
 public class PatientTransfer extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 6410357470049605092L;

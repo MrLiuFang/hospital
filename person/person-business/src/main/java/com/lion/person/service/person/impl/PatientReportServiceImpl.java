@@ -23,6 +23,7 @@ import com.lion.person.service.person.PatientService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,7 +67,7 @@ public class PatientReportServiceImpl extends BaseServiceImpl<PatientReport> imp
         BeanUtils.copyProperties(addPatientReportDto,patientReport);
         User user = userExposeService.find(addPatientReportDto.getNumber());
         if (Objects.isNull(user)) {
-            BusinessException.throwException("该员工编号不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000033"));
         }
         patientReport.setReportUserId(user.getId());
         patientReport = save(patientReport);
@@ -105,7 +106,7 @@ public class PatientReportServiceImpl extends BaseServiceImpl<PatientReport> imp
         deleteDtoList.forEach(deleteDto -> {
             PatientReport patientReport = findById(deleteDto.getId());
             if (!Objects.equals(userId,patientReport.getReportUserId())){
-                BusinessException.throwException("只能删除自己汇报的数据");
+                BusinessException.throwException(MessageI18nUtil.getMessage("1000034"));
             }
         });
 

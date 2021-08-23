@@ -64,7 +64,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/details")
     @ApiOperation(value = "角色详情")
-    public IResultData<DetailsRoleVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsRoleVo> details(@NotNull(message = "{0000000}") Long id){
         Role role = roleService.findById(id);
         ResultData resultData = ResultData.instance();
         DetailsRoleVo detailsRoleVo = new DetailsRoleVo();
@@ -76,7 +76,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/editDetails")
     @ApiOperation(value = "编辑角色基础信息获取详情")
-    public IResultData<EditDetailsRoleVo> editDetails(@NotNull(message = "id不能为空") Long id){
+    public IResultData<EditDetailsRoleVo> editDetails(@NotNull(message = "{0000000}") Long id){
         Role role = roleService.findById(id);
         ResultData resultData = ResultData.instance();
         EditDetailsRoleVo editDetailsRoleVo= new EditDetailsRoleVo();

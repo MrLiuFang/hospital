@@ -69,7 +69,7 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @GetMapping("/details")
     @ApiOperation(value = "患者详情")
-    public IResultData<PatientDetailsVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<PatientDetailsVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(patientService.details(id));
         return resultData;
@@ -162,7 +162,7 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @GetMapping("/report/list")
     @ApiOperation(value = "医护汇报列表")
-    public IPageResultData<List<ListPatientReportVo>> listReport(@ApiParam(value = "患者id") @NotNull(message = "患者不能为空") Long patientId,LionPage lionPage) {
+    public IPageResultData<List<ListPatientReportVo>> listReport(@ApiParam(value = "患者id") @NotNull(message = "{1000026}") Long patientId,LionPage lionPage) {
         return patientReportService.list(patientId, lionPage);
     }
 
@@ -175,7 +175,7 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @GetMapping("/log/list")
     @ApiOperation(value = "患者日志")
-    public IPageResultData<List<ListPatientLogVo>> listLog(@ApiParam(value = "患者id") @NotNull(message = "患者不能为空") Long patientId,LionPage lionPage) {
+    public IPageResultData<List<ListPatientLogVo>> listLog(@ApiParam(value = "患者id") @NotNull(message = "{1000026}") Long patientId,LionPage lionPage) {
         return patientLogService.list(patientId, lionPage);
     }
 }

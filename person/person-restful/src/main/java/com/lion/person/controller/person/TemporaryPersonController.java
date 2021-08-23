@@ -57,7 +57,7 @@ public class TemporaryPersonController extends BaseControllerImpl implements Bas
 
     @GetMapping("/details")
     @ApiOperation(value = "流动人员详情")
-    public IResultData<TemporaryPersonDetailsVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<TemporaryPersonDetailsVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(temporaryPersonService.details(id));
         return resultData;

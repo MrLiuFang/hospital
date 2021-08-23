@@ -21,6 +21,7 @@ import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.TempLeaveService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,7 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
     public void addTempLeave(AddTempLeaveDto addTempLeaveDto) {
         User user = userExposeService.find(addTempLeaveDto.getNumber());
         if (Objects.isNull(user)){
-            BusinessException.throwException("该授权人不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000047"));
         }
         if (Objects.nonNull(addTempLeaveDto.getPatientIds()) && addTempLeaveDto.getPatientIds().size()>0) {
 //            addTempLeaveDto.getPatientIds().forEach(id ->{

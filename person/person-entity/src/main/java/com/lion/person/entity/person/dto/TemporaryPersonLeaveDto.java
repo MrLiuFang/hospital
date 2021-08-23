@@ -16,7 +16,7 @@ import javax.validation.constraints.NotNull;
 public class TemporaryPersonLeaveDto {
 
     @ApiModelProperty(value = "流动人员id")
-    @NotNull(message = "流动人员id不能为空")
+    @NotNull(message = "{1000015}")
     private Long temporaryPersonId;
 
     @ApiModelProperty(value = "登出原因")

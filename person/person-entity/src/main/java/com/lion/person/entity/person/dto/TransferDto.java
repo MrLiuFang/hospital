@@ -16,10 +16,10 @@ import javax.validation.constraints.NotNull;
 public class TransferDto {
 
     @ApiModelProperty(value = "患者id")
-    @NotNull(message = "患者id不能为空")
+    @NotNull(message = "{1000026}")
     private Long patientId;
 
     @ApiModelProperty(value = "转移新科室Id")
-    @NotNull(message = "转移新科室不能为空")
+    @NotNull(message = "{1000029}")
     private Long departmentId;
 }

@@ -27,17 +27,17 @@ import java.io.Serializable;
 @DynamicUpdate
 @DynamicInsert
 @Data
-@ApiModel(description = "患者")
+@ApiModel(description = "患者负责的护士")
 public class PatientNurse extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -5151149865866950108L;
     @ApiModelProperty(value = "患者ID")
     @Column(name = "patient_id")
-    @NotNull(message = "患者不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000005}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long patientId;
 
     @ApiModelProperty(value = "负责护士")
     @Column(name = "nurse_id")
-    @NotNull(message = "负责护士不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000008}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long nurseId;
 }

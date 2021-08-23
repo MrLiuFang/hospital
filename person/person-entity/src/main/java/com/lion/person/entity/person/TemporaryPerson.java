@@ -32,16 +32,16 @@ public class TemporaryPerson extends Person implements Serializable {
     @ApiModelProperty(value = "证件类型")
     @Column(name = "identity_document_type")
     @Convert(converter = IdentityDocumentType.IdentityDocumentTypeConverter.class)
-    @NotNull(message = "证件类型不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000017}", groups = {Validator.Insert.class, Validator.Update.class})
     private IdentityDocumentType identityDocumentType;
 
     @ApiModelProperty(value = "证件号码")
     @Column(name = "id_no")
-    @NotBlank(message = "证件号码不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{1000018}", groups = {Validator.Insert.class, Validator.Update.class})
     private String idNo;
 
     @ApiModelProperty(value = "拜访人ID")
-    @NotNull(message = "拜访人不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{1000019}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "patient_Id")
     private Long patientId;
 

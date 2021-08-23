@@ -39,12 +39,12 @@ public class PatientReport extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -5482937945633708331L;
     @ApiModelProperty(value = "患者ID")
     @Column(name = "patient_id")
-    @NotNull(message = "患者不能为空",groups = {Validator.Update.class, Validator.Insert.class})
+    @NotNull(message = "{1000005}",groups = {Validator.Update.class, Validator.Insert.class})
     private Long patientId;
 
     @ApiModelProperty(value = "汇报内容")
     @Column(name = "content")
-    @NotBlank(message = "汇报内容不能为空",groups = {Validator.Update.class, Validator.Insert.class})
+    @NotBlank(message = "{1000009}",groups = {Validator.Update.class, Validator.Insert.class})
     private String content;
 
     @ApiModelProperty(value = "汇报员工ID")

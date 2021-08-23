@@ -41,6 +41,7 @@ import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.service.person.*;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
@@ -419,20 +420,20 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     private Patient setOtherInfo(Patient patient) {
         WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
         if (Objects.isNull(wardRoomSickbed)){
-            BusinessException.throwException("该床位不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000035"));
         }
         WardRoom wardRoom = wardRoomExposeService.findById(wardRoomSickbed.getWardRoomId());
         if (Objects.isNull(wardRoomSickbed)){
-            BusinessException.throwException("该床位所属的房间不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000036"));
         }
         Ward ward = wardExposeService.findById(wardRoom.getWardId());
         if (Objects.isNull(wardRoomSickbed)){
-            BusinessException.throwException("该床位所属的病房不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000037"));
         }
         patient.setWardId(ward.getId());
         patient.setRoomId(wardRoom.getId());
         if (!Objects.equals(ward.getDepartmentId(),patient.getDepartmentId())) {
-            BusinessException.throwException("该表患者与床位不在同一科室");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000038"));
         }
         return patient;
     }
@@ -441,14 +442,14 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     private void sickbedIsCanUse(Long sickbedId,Long patientId) {
         Patient patient = patientDao.findFirstBySickbedIdAndIsLeave(sickbedId,false);
         if ((Objects.isNull(patientId) && Objects.nonNull(patient)) || (Objects.nonNull(patientId) && Objects.nonNull(patient) && !Objects.equals(patient.getId(),patientId)) ){
-            BusinessException.throwException("该床位已有患者未登出,不能使用");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000039"));
         }
     }
 
     private void assertMedicalRecordNoExist(String medicalRecordNo, Long id) {
         Patient patient = patientDao.findFirstByMedicalRecordNo(medicalRecordNo);
         if ((Objects.isNull(id) && Objects.nonNull(patient)) || (Objects.nonNull(id) && Objects.nonNull(patient) && !Objects.equals(patient.getId(),id)) ){
-            BusinessException.throwException("该病历号已被使用");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000040"));
         }
     }
 
