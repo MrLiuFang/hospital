@@ -434,7 +434,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/user/tag/button/list")
     @ApiOperation(value = "员工标签按钮日志(不返回总行数)")
-    public IPageResultData<List<ListUserTagButtonRecordVo>> userTagButtonRecordList(@ApiParam(value = "操作类型") TagRuleEffect tagRuleEffect,@ApiParam(value = "操作类型")String name,
+    public IPageResultData<List<ListUserTagButtonRecordVo>> userTagButtonRecordList(@ApiParam(value = "操作类型") TagRuleEffect tagRuleEffect,@ApiParam(value = "姓名")String name,
                                                                                     @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                     @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
         return userTagButtonRecordService.list(tagRuleEffect, name, startDateTime, endDateTime, lionPage);

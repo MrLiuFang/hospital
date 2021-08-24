@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 /**
  * @description:
@@ -22,7 +23,7 @@ import javax.validation.constraints.NotBlank;
 )
 public class AddPatientReportDto extends PatientReport {
 
-    @ApiModelProperty(value = "汇报员工编号")
-    @NotBlank(message = "{1000020}",groups = {Validator.Update.class, Validator.Insert.class})
-    private Integer number;
+    @ApiModelProperty(value = "汇报员工Id")
+    @NotNull(message = "{1000020}",groups = {Validator.Update.class, Validator.Insert.class})
+    private Long userId;
 }

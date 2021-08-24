@@ -28,11 +28,13 @@ import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -126,7 +128,13 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
 
     @Override
     public List<ListPatientTransferVo> list(Long patientId) {
-        List<PatientTransfer> list = patientTransferDao.findByPatientIdOrderByCreateDateTimeDesc(patientId);
+        List<PatientTransfer> list = Collections.EMPTY_LIST;
+        if (Objects.isNull(patientId)){
+            list = this.findAll(Sort.by(Sort.Direction.DESC,"createDateTime"));
+        }else {
+            list = patientTransferDao.findByPatientIdOrderByCreateDateTimeDesc(patientId);
+        }
+
         List<ListPatientTransferVo> returnList = new ArrayList<>();
         list.forEach(patientTransfer -> {
             ListPatientTransferVo vo = new ListPatientTransferVo();
@@ -160,8 +168,10 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
             list.add(TransferState.FINISH);
             list.add(TransferState.CANCEL);
             PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(updateTransferDto.getPatientId(),list);
-            patientTransfer.setState(updateTransferDto.getTransferState());
-            update(patientTransfer);
+            if (Objects.nonNull(patientTransfer)) {
+                patientTransfer.setState(updateTransferDto.getTransferState());
+                update(patientTransfer);
+            }
         }
     }
 

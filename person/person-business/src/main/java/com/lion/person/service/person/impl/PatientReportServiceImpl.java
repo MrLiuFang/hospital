@@ -65,7 +65,7 @@ public class PatientReportServiceImpl extends BaseServiceImpl<PatientReport> imp
     public void add(AddPatientReportDto addPatientReportDto) {
         PatientReport patientReport = new PatientReport();
         BeanUtils.copyProperties(addPatientReportDto,patientReport);
-        User user = userExposeService.find(addPatientReportDto.getNumber());
+        User user = userExposeService.findById(addPatientReportDto.getUserId());
         if (Objects.isNull(user)) {
             BusinessException.throwException(MessageI18nUtil.getMessage("1000033"));
         }

@@ -43,4 +43,5 @@ public interface PatientTransferDao extends BaseDao<PatientTransfer> {
      * @return
      */
     public List<PatientTransfer> findByPatientIdOrderByCreateDateTimeDesc(Long patientId);
+
 }
