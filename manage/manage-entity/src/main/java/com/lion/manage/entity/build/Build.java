@@ -35,7 +35,7 @@ public class Build extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -3137908609554075165L;
     @ApiModelProperty(value = "建筑名称")
     @Column(name = "name")
-    @NotBlank(message = "建筑名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{2000021}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "备注")

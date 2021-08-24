@@ -92,7 +92,7 @@ public class CctvController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/details")
     @ApiOperation(value = "cctv详情")
-    public IResultData<CctvVo> details(@ApiParam(value = "id") @NotNull(message = "id不能为空") Long id){
+    public IResultData<CctvVo> details(@ApiParam(value = "id") @NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(convertVo(cctvService.findById(id)));
         return resultData;

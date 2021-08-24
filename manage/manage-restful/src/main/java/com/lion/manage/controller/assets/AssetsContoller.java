@@ -194,7 +194,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/details")
     @ApiOperation(value = "资产详情")
-    public IResultData<DetailsAssetsVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsAssetsVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(assetsService.details(id));
         return resultData;
@@ -363,7 +363,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/fault/details")
     @ApiOperation(value = "资产故障详情")
-    public IResultData<DetailsAssetsFaultVo> detailsFault(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsAssetsFaultVo> detailsFault(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         AssetsFault assetsFault = this.assetsFaultService.findById(id);
         if (Objects.nonNull(assetsFault)) {

@@ -37,7 +37,7 @@ public class Alarm extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "警报分类")
     @Column(name = "classify")
     @Convert(converter = AlarmClassify.AlarmClassifyConverter.class)
-    @NotNull(message = "警报分类不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000037}", groups = {Validator.Insert.class, Validator.Update.class})
     private AlarmClassify classify;
 
     @ApiModelProperty(value = "级别(仅限患者分类下的(1,2,3级))")
@@ -46,24 +46,24 @@ public class Alarm extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "排序")
     @Column(name = "sort")
-    @NotNull(message = "排序不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000038}", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer sort;
 
     @ApiModelProperty(value = "警报编码")
     @Column(name = "code",updatable = false)
     @Convert(converter = SystemAlarmType.SystemAlarmTypeConverter.class)
-    @NotNull(message = "警报编码不能为空", groups = {Validator.Insert.class,Validator.Update.class})
+    @NotNull(message = "{2000039}", groups = {Validator.Insert.class,Validator.Update.class})
     private SystemAlarmType code;
 
     @ApiModelProperty(value = "警报内容")
     @Column(name = "content")
-    @NotBlank(message = "警报内容不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{2000040}", groups = {Validator.Insert.class, Validator.Update.class})
     private String content;
 
     @ApiModelProperty(value = "警报声持续时间")
     @Column(name = "duration")
     @Convert(converter = AlarmDuration.AlarmDurationConverter.class)
-    @NotNull(message = "警报声持续时间不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000041}", groups = {Validator.Insert.class, Validator.Update.class})
     private AlarmDuration duration;
 
     @ApiModelProperty(value = "blueCode")
@@ -72,7 +72,7 @@ public class Alarm extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "再次提醒未处理警报事件")
     @Column(name = "again")
-    @NotNull(message = "再次提醒未处理警报事件不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000042}", groups = {Validator.Insert.class, Validator.Update.class})
     private Boolean again = false;
 
     @ApiModelProperty(value = "提醒间隔时间")
@@ -81,7 +81,7 @@ public class Alarm extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "是否发邮件给科室负责人")
     @Column(name = "is_send_mail_to_department_manager")
-    @NotNull(message = "是否发邮件给科室负责人不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000043}", groups = {Validator.Insert.class, Validator.Update.class})
     private Boolean isSendMailToDepartmentManager = false;
 
     @ApiModelProperty(value = "发邮件给管理人(用户id,用逗号隔开)")

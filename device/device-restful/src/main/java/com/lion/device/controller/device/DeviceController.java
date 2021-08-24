@@ -132,7 +132,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/details")
     @ApiOperation(value = "设备详情")
-    public IResultData<DetailsDeviceVo> details(@ApiParam(value = "设备id") @NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsDeviceVo> details(@ApiParam(value = "设备id") @NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         Device device = deviceService.findById(id);
         DetailsDeviceVo detailsDeviceVo = new DetailsDeviceVo();
@@ -187,7 +187,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/group/details")
     @ApiOperation(value = "设备组详情")
-    public IResultData<DetailsDeviceGroupVo> groupDetails(@ApiParam(value = "设备组id") @NotNull(message = "id不能为空")Long id) {
+    public IResultData<DetailsDeviceGroupVo> groupDetails(@ApiParam(value = "设备组id") @NotNull(message = "{0000000}")Long id) {
         ResultData resultData = ResultData.instance();
         resultData.setData(deviceGroupService.details(id));
         return resultData;

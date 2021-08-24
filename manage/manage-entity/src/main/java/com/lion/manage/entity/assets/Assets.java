@@ -38,23 +38,23 @@ public class Assets extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 2129036984572348881L;
     @ApiModelProperty(value = "资产名称")
     @Column(name = "name")
-    @NotBlank(message = "资产名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{2000000}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "资产编号")
     @Column(name = "code")
-    @NotBlank(message = "资产编号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{2000001}", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 
     @ApiModelProperty(value = "资产分类")
     @Column(name = "type")
     @Convert(converter = AssetsType.AssetsTypeConverter.class)
-    @NotNull(message = "资产分类不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000002}", groups = {Validator.Insert.class, Validator.Update.class})
     private AssetsType type;
 
     @ApiModelProperty(value = "所属区域")
     @Column(name = "region_id")
-    @NotNull(message = "所属区域不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000003}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long regionId;
 
     @ApiModelProperty(value = "所属建筑")
@@ -80,7 +80,7 @@ public class Assets extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "是否需要使用登记")
     @Column(name = "use_registration")
-    @NotNull(message = "是否需要使用登记不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000004}", groups = {Validator.Insert.class, Validator.Update.class})
     private Boolean useRegistration;
 
     @ApiModelProperty(value = "图片")

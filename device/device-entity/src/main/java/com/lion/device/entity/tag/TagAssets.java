@@ -33,22 +33,22 @@ public class TagAssets extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 8071611663118296950L;
     @ApiModelProperty(value = "标签id")
-    @NotNull(message = "标签id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{3000019}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "tag_id")
     private Long tagId;
 
     @ApiModelProperty(value = "资产id")
-    @NotNull(message = "资产id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{3000020}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "assets_id")
     private Long assetsId;
 
     @ApiModelProperty(value = "绑定时间")
-    @NotNull(message = "绑定时间不能为空", groups = {Validator.Insert.class})
+    @NotNull(message = "{4000019}", groups = {Validator.Insert.class})
     @Column(name = "binding_time")
     private LocalDateTime bindingTime;
 
     @ApiModelProperty(value = "解绑时间")
-    @NotNull(message = "时间不能为空", groups = { Validator.Update.class})
+    @NotNull(message = "{4000020}", groups = { Validator.Update.class})
     @Column(name = "unbinding_time")
     private LocalDateTime unbindingTime;
 }

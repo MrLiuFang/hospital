@@ -34,12 +34,12 @@ public class WashDeviceType extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 6794032758736876013L;
     @ApiModelProperty(value = "洗手规则id")
     @Column(name = "wash_id")
-    @NotNull(message = "洗手规则id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000049}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long washId;
 
     @ApiModelProperty(value = "洗手设备类型")
     @Column(name = "type")
     @Convert(converter = com.lion.manage.entity.enums.WashDeviceType.WashDeviceTypeConverter.class)
-    @NotNull(message = "洗手设备类型不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000051}", groups = {Validator.Insert.class, Validator.Update.class})
     private com.lion.manage.entity.enums.WashDeviceType type;
 }

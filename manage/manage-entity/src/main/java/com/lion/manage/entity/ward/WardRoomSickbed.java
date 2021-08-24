@@ -36,11 +36,11 @@ public class WardRoomSickbed extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 2539027088777851254L;
     @ApiModelProperty(value = "病房id")
     @Column(name = "ward_room_id")
-    @NotNull(message = "病房(基本信息)不能为空")
+    @NotNull(message = "{2000055}")
     private Long wardRoomId;
 
     @ApiModelProperty(value = "床位")
     @Column(name = "bed_code")
-    @NotBlank(message = "床位不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{2000057}", groups = {Validator.Insert.class, Validator.Update.class})
     private String bedCode;
 }

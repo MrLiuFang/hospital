@@ -15,6 +15,7 @@ import com.lion.device.expose.tag.TagPatientExposeService;
 import com.lion.device.service.tag.TagLogService;
 import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -58,21 +59,21 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
         }
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){
-            BusinessException.throwException("该标签不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000021"));
         }
         if (Objects.equals(tag.getState(), TagState.DISABLE)) {
-            BusinessException.throwException("该表标签处于停用状态，可能在回收箱中,未消毒");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
         }
         if (!Objects.equals(departmentId,tag.getDepartmentId())) {
-            BusinessException.throwException("该表标签患者不在同一科室不能绑定");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000026"));
         }
         if (!Objects.equals(tag.getPurpose(), TagPurpose.PATIENT)){
-            BusinessException.throwException("该标签不能与患者绑定");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000027"));
         }
         TagPatient tagPatient = tagPatientDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
         if (Objects.nonNull(tagPatient)){
             if (!Objects.equals( tagPatient.getPatientId(),patientId)){
-                BusinessException.throwException("该标签已被其它患者绑定");
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000028"));
             }else {
                 return;
             }

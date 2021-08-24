@@ -13,6 +13,7 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.utils.MessageI18nUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -73,7 +74,7 @@ public class BuildFloorServiceImpl extends BaseServiceImpl<BuildFloor> implement
     private void assertNameExist(String name, Long buildId,Long id) {
         BuildFloor buildFloor = buildFloorDao.findFirstByBuildIdAndName(buildId,name);
         if ((Objects.isNull(id) && Objects.nonNull(buildFloor))||(Objects.nonNull(id) && Objects.nonNull(buildFloor) && !Objects.equals(buildFloor.getId(),id)) ){
-            BusinessException.throwException("该建筑已经存在该楼层");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000075"));
         }
     }
 

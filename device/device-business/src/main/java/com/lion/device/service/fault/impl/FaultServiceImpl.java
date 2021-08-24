@@ -31,6 +31,7 @@ import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,7 +162,7 @@ public class FaultServiceImpl extends BaseServiceImpl<Fault> implements FaultSer
                 regionId = assets.getRegionId();
                 entity.setRelationId(assets.getId());
             }else {
-                BusinessException.throwException("该资产编码不存在");
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000040"));
             }
         }else if (Objects.equals(entity.getType(), FaultType.ASSETS)) {
             Cctv cctv = cctvExposeService.find(entity.getCode());
@@ -169,7 +170,7 @@ public class FaultServiceImpl extends BaseServiceImpl<Fault> implements FaultSer
                 regionId = cctv.getRegionId();
                 entity.setRelationId(cctv.getId());
             }else {
-                BusinessException.throwException("该CCTV编码不存在");
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000041"));
             }
         }
         Region region = regionExposeService.findById(regionId);
@@ -196,7 +197,7 @@ public class FaultServiceImpl extends BaseServiceImpl<Fault> implements FaultSer
     private void assertUserNumberExist(Integer userNumber) {
         User user = userExposeService.find(userNumber);
         if (Objects.isNull(user)){
-            BusinessException.throwException("该员工编号不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000033"));
         }
     }
 }

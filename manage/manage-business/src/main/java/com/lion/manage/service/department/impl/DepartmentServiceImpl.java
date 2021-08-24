@@ -22,6 +22,7 @@ import com.lion.manage.service.department.DepartmentResponsibleUserService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardService;
+import com.lion.utils.MessageI18nUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -92,7 +93,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
     public void assertNameExist(String name, Long id) {
         Department department = departmentDao.findFirstByName(name);
         if ((Objects.isNull(id) && Objects.nonNull(department)) || (Objects.nonNull(id) && Objects.nonNull(department) && !Objects.equals(department.getId(),id)) ){
-            BusinessException.throwException("该科室名称已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000077"));
         }
     }
 

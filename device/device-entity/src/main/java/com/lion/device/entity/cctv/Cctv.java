@@ -36,7 +36,7 @@ public class Cctv extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 9015253379019012364L;
     @ApiModelProperty(value = "cctv名称")
     @Column(name = "name")
-    @NotBlank(message = "cctv名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{4000000}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "cctv型号")
@@ -45,7 +45,7 @@ public class Cctv extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "cctv编号")
     @Column(name = "code")
-    @NotNull(message = "cctv编号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{4000001}", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 
     @ApiModelProperty(value = "图片")
@@ -54,7 +54,7 @@ public class Cctv extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "ip地址")
     @Column(name = "ip")
-    @NotBlank(message = "ip地址不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{4000002}", groups = {Validator.Insert.class, Validator.Update.class})
     private String ip;
 
     @ApiModelProperty(value = "端口")

@@ -19,10 +19,10 @@ import javax.validation.constraints.NotNull;
 public class UpdateTagStateDto {
 
     @ApiModelProperty(value = "id")
-    @NotNull(message = "id不能为空",groups = {Validator.Update.class})
+    @NotNull(message = "{0000000}",groups = {Validator.Update.class})
     private Long id;
 
     @ApiModelProperty(value = "状态")
-    @NotNull(message = "状态不能为空",groups = {Validator.Update.class})
+    @NotNull(message = "{1000030}",groups = {Validator.Update.class})
     private TagState state;
 }

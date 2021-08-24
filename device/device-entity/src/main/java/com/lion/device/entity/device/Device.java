@@ -40,12 +40,12 @@ public class Device extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 3432969462078655827L;
     @ApiModelProperty(value = "设备名称")
     @Column(name = "name")
-    @NotBlank(message = "设备名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{4000003}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "设备编号")
     @Column(name = "code")
-    @NotNull(message = "设备编号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{4000004}", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 
     @ApiModelProperty(value = "设备大类")
@@ -60,13 +60,13 @@ public class Device extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "保修期(月)")
     @Column(name = "warranty_period")
-    @NotNull(message = "保修期不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{4000005}", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer warrantyPeriod;
 
     @ApiModelProperty(value = "购买日期(yyyy-MM-dd)")
     @Column(name = "purchase_pate" )
-    @NotNull(message = "购买日期不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Past(message = "购买日期不能大于/等于当前日期", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{4000006}", groups = {Validator.Insert.class, Validator.Update.class})
+    @Past(message = "{4000007}", groups = {Validator.Insert.class, Validator.Update.class})
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate purchaseDate;
 

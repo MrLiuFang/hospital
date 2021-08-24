@@ -21,6 +21,7 @@ import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
 import com.lion.manage.service.ward.WardService;
+import com.lion.utils.MessageI18nUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -127,10 +128,10 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
         if (Objects.nonNull(list)) {
             list.forEach(wardRoom -> {
                 if (!StringUtils.hasText(wardRoom.getCode())) {
-                    BusinessException.throwException("房间编号不能为空");
+                    BusinessException.throwException(MessageI18nUtil.getMessage("2000095"));
                 }
                 if (wardRoomCodeHash.containsKey(wardRoom.getCode())) {
-                    BusinessException.throwException("该病房存在重复的房间编号(" + wardRoom.getCode() + ")");
+                    BusinessException.throwException(MessageI18nUtil.getMessage("2000096",new String[]{wardRoom.getCode()}));
                 }
                 wardRoomCodeHash.put(wardRoom.getCode(), "");
                 if (wardRoom instanceof AddWardRoomDto) {
@@ -147,10 +148,10 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
         if (Objects.nonNull(list)) {
             list.forEach(wardRoomSickbed -> {
                 if (!StringUtils.hasText(wardRoomSickbed.getBedCode())) {
-                    BusinessException.throwException("床位不能为空");
+                    BusinessException.throwException(MessageI18nUtil.getMessage("2000057"));
                 }
                 if (wardRoomSickbedCodeHash.containsKey(wardRoomSickbed.getBedCode())) {
-                    BusinessException.throwException(code + "-房间存在重复的床位(" + wardRoomSickbed.getBedCode() + ")");
+                    BusinessException.throwException(code +MessageI18nUtil.getMessage("2000097",new String[]{wardRoomSickbed.getBedCode()}));
                 }
                 wardRoomSickbedCodeHash.put(wardRoomSickbed.getBedCode(), "");
             });
@@ -159,7 +160,7 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     private void assertDepartmentExist(Long id) {
         Department department = this.departmentService.findById(id);
         if (Objects.isNull(department) ){
-            BusinessException.throwException("该科室不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000069"));
         }
     }
 //    private void assertRegionExist(List<? extends WardRoom> wardRoomDto) {
@@ -175,7 +176,8 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     private void assertNameExist(String name, Long id) {
         Ward ward = wardDao.findFirstByName(name);
         if ((Objects.isNull(id) && Objects.nonNull(ward)) || (Objects.nonNull(id) && Objects.nonNull(ward) && !Objects.equals(ward.getId(),id) ) ){
-            BusinessException.throwException("该病房名称已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000098"));
+
         }
     }
 

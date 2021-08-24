@@ -127,7 +127,7 @@ public class RegionController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/details")
     @ApiOperation(value = "区域详情")
-    public IResultData<DetailsRegionVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsRegionVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         Region region = this.regionService.findById(id);
         if (Objects.nonNull(region)){

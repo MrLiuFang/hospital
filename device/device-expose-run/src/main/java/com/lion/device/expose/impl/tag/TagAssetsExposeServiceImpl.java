@@ -13,6 +13,7 @@ import com.lion.device.service.tag.TagAssetsService;
 import com.lion.device.service.tag.TagLogService;
 import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,18 +47,18 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
     public Boolean relation(Long assetsId, String tagCode, Long departmentId) {
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){
-            BusinessException.throwException("该标签不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000021"));
         }
         if (!Objects.equals(tag.getPurpose(), TagPurpose.ASSETS)){
-            BusinessException.throwException("该标签不能与资产关联");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000022"));
         }
         if (!Objects.equals(tag.getDepartmentId(), departmentId)){
-            BusinessException.throwException("该资产与标签不在同一科室,不能进行绑定");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000023"));
         }
         TagAssets tagAssets = tagAssetsDao.findFirstByAssetsIdAndUnbindingTimeIsNull(assetsId);
         if (Objects.nonNull(tagAssets)){
             if (!Objects.equals( tagAssets.getAssetsId(), assetsId)){
-                BusinessException.throwException("该标签正在使用中");
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000024"));
             }else {
                 return true;
             }

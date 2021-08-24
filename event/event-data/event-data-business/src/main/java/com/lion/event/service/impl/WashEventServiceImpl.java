@@ -48,6 +48,7 @@ import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
+import com.lion.utils.MessageI18nUtil;
 import lombok.extern.java.Log;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
@@ -164,7 +165,7 @@ public class WashEventServiceImpl implements WashEventService {
         List<Document> listHospitalAll = washEventDao.eventCount(startDateTime,endDateTime, false, null, null , null);
         if (Objects.nonNull(listHospitalAll) && listHospitalAll.size()>0){
             Document hospitalAll = listHospitalAll.get(0);
-            listWashMonitorVo.setHospital(init("全院合规率",hospitalAll.getDouble("allViolationRatio"),hospitalAll.getDouble("allNoWashRatio"),hospitalAll.getDouble("allNoAlarmRatio")));
+            listWashMonitorVo.setHospital(init(MessageI18nUtil.getMessage("3000001"),hospitalAll.getDouble("allViolationRatio"),hospitalAll.getDouble("allNoWashRatio"),hospitalAll.getDouble("allNoAlarmRatio")));
         }
         //所有科室事件
         List<Document> listDepartmentAll = washEventDao.eventCount(startDateTime,endDateTime,true,null, null , null);
@@ -326,7 +327,7 @@ public class WashEventServiceImpl implements WashEventService {
         Font fontChinese = new Font(bfChinese);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("手衛生行為報表.pdf", "UTF-8"));
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(MessageI18nUtil.getMessage("3000002")+".pdf", "UTF-8"));
         com.itextpdf.text.Document document = new com.itextpdf.text.Document();
         Rectangle pageSize = new Rectangle(PageSize.A4.getHeight(), PageSize.A4.getWidth());
         pageSize.rotate();
@@ -339,22 +340,22 @@ public class WashEventServiceImpl implements WashEventService {
         PdfPTable table = new PdfPTable(8);
         table.setWidths(new int[]{10, 10, 10, 10, 10, 20, 20, 10});
         table.setWidthPercentage(100);
-        PdfPCell cellTitle = new PdfPCell(new Paragraph("手衛生行為報表", new Font(bfChinese,24)));
+        PdfPCell cellTitle = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000002"), new Font(bfChinese,24)));
         cellTitle.setColspan(8);
         cellTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cellTitle);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        PdfPCell cellTitle1 = new PdfPCell(new Paragraph("導出日期: "+simpleDateFormat.format(new Date()), new Font(bfChinese)));
+        PdfPCell cellTitle1 = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000003")+":" +simpleDateFormat.format(new Date()), new Font(bfChinese)));
         cellTitle1.setColspan(8);
         table.addCell(cellTitle1);
-        table.addCell(new Paragraph("姓名", fontChinese));
-        table.addCell(new Paragraph("工號", fontChinese));
-        table.addCell(new Paragraph("科室", fontChinese));
-        table.addCell(new Paragraph("類型", fontChinese));
-        table.addCell(new Paragraph("性別", fontChinese));
-        table.addCell(new Paragraph("使用設備", fontChinese));
-        table.addCell(new Paragraph("使用時間", fontChinese));
-        table.addCell(new Paragraph("是否合規", fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000004"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000005"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000006"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000007"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000008"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000009"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000010"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000011"), fontChinese));
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         for (ListWashEventVo listWashEventVo : list) {
             table.addCell(new Paragraph(listWashEventVo.getName(), fontChinese));
@@ -364,7 +365,7 @@ public class WashEventServiceImpl implements WashEventService {
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getGender())?"":listWashEventVo.getGender().getDesc(), fontChinese));
             table.addCell(new Paragraph(listWashEventVo.getDeviceName(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUseDateTime())?"":dateTimeFormatter.format(listWashEventVo.getUseDateTime()), fontChinese));
-            table.addCell(new Paragraph(Objects.equals(listWashEventVo.getIa(),true)?"否":"是", fontChinese));
+            table.addCell(new Paragraph(Objects.equals(listWashEventVo.getIa(),true)?MessageI18nUtil.getMessage("3000012"):MessageI18nUtil.getMessage("3000013"), fontChinese));
         }
         document.add(table);
         document.close();
@@ -412,7 +413,7 @@ public class WashEventServiceImpl implements WashEventService {
         Font fontChinese = new Font(bfChinese);
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/pdf");
-        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("手衛生行為報表.pdf", "UTF-8"));
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(MessageI18nUtil.getMessage("3000002")+".pdf", "UTF-8"));
         com.itextpdf.text.Document document = new com.itextpdf.text.Document();
         Rectangle pageSize = new Rectangle(PageSize.A4.getHeight(), PageSize.A4.getWidth());
         pageSize.rotate();
@@ -424,18 +425,18 @@ public class WashEventServiceImpl implements WashEventService {
         document.open();
         PdfPTable table = new PdfPTable(4);
         table.setWidthPercentage(100);
-        PdfPCell cellTitle = new PdfPCell(new Paragraph("手衛生行為報表", new Font(bfChinese,24)));
+        PdfPCell cellTitle = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000002"), new Font(bfChinese,24)));
         cellTitle.setColspan(4);
         cellTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cellTitle);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        PdfPCell cellTitle1 = new PdfPCell(new Paragraph("導出日期: "+simpleDateFormat.format(new Date()), new Font(bfChinese)));
+        PdfPCell cellTitle1 = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000003")+": "+simpleDateFormat.format(new Date()), new Font(bfChinese)));
         cellTitle1.setColspan(4);
         table.addCell(cellTitle1);
-        table.addCell(new Paragraph("區域名稱", fontChinese));
-        table.addCell(new Paragraph("科室", fontChinese));
-        table.addCell(new Paragraph("設備數量", fontChinese));
-        table.addCell(new Paragraph("總合規率", fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000014"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000006"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000015"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000016"), fontChinese));
         for (ListWashEventRegionVo listWashEventRegionVo : list) {
             table.addCell(new Paragraph(listWashEventRegionVo.getRegionName(), fontChinese));
             table.addCell(new Paragraph(listWashEventRegionVo.getDepartmentName(), fontChinese));

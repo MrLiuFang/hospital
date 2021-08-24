@@ -25,30 +25,30 @@ import java.util.List;
 public class AddAssetsBorrowDto {
 
     @ApiModelProperty(value = "借用资产id")
-    @Size(min = 1,message = "请选择要借用的资产")
-    @NotNull(message = "请选择要借用的资产")
+    @Size(min = 1,message = "{2000018}")
+    @NotNull(message = "{2000018}")
     private List<Long> assetsIds;
 
     @ApiModelProperty(value = "借用科室Id")
-    @NotNull(message = "资产id不能为空")
+    @NotNull(message = "{2000005}")
     private Long borrowDepartmentId;
 
     @ApiModelProperty(value = "借用床位Id")
-    @NotNull(message = "借用床位id不能为空")
+    @NotNull(message = "{2000007}")
     private Long borrowWardRoomSickbedId;
 
     @ApiModelProperty(value = "借用开始时间(yyyy-MM-dd HH:mm:ss)")
-    @NotNull(message = "借用开始时间不能为空")
+    @NotNull(message = "{2000008}")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDateTime;
 
     @ApiModelProperty(value = "借用结束时间(yyyy-MM-dd HH:mm:ss)")
-    @NotNull(message = "借用结束时间不能为空")
+    @NotNull(message = "{借用结束时间不能为空}")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endDateTime;
 
     @ApiModelProperty(value = "借用人编号")
-    @NotNull(message = "借用人编号不能为空")
+    @NotNull(message = "{2000019}")
     private Integer borrowUserNumber;
 
 }

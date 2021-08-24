@@ -8,6 +8,7 @@ import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.service.device.DeviceService;
 import com.lion.exception.BusinessException;
+import com.lion.utils.MessageI18nUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +51,7 @@ public class DeviceGroupDeviceServiceImpl extends BaseServiceImpl<DeviceGroupDev
                 DeviceGroupDevice tmp = deviceGroupDeviceDao.findFirstByDeviceId(id);
                 if (Objects.nonNull(tmp) && !Objects.equals(tmp.getDeviceGroupId(),deviceGroupId)){
                     Device device = deviceService.findById(id);
-                    BusinessException.throwException(device.getName()+"已在其它设备组");
+                    BusinessException.throwException(device.getName()+ MessageI18nUtil.getMessage("4000035"));
                 }
                 DeviceGroupDevice deviceGroupDevice = new DeviceGroupDevice();
                 deviceGroupDevice.setDeviceGroupId(deviceGroupId);

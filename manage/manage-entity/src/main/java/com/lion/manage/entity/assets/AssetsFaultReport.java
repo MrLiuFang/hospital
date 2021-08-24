@@ -35,12 +35,12 @@ public class AssetsFaultReport extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "资产故障iId")
     @Column(name = "assets_fault_id")
-    @NotNull(message = "资产故障id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000015}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long assetsFaultId;
 
     @ApiModelProperty(value = "汇报")
     @Column(name = "report")
-    @NotNull(message = "资产故障汇报能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    @Length(max = 250,message ="汇报内容不能超过{max}个字符" , groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000016}", groups = {Validator.Insert.class, Validator.Update.class})
+    @Length(max = 250,message ="{2000017}" , groups = {Validator.Insert.class, Validator.Update.class})
     private String report;
 }

@@ -22,6 +22,7 @@ import com.lion.manage.entity.department.vo.ListDepartmentVo;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.utils.MessageI18nUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -91,7 +92,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/details")
     @ApiOperation(value = "建筑详情")
-    public IResultData<DetailsBuildVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsBuildVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         Build build = this.buildService.findById(id);
         if (Objects.nonNull(build)){
@@ -163,7 +164,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/floor/details")
     @ApiOperation(value = "建筑楼层详情")
-    public IResultData<DetailsBuildVo> floorDetails(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsBuildVo> floorDetails(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         BuildFloor buildFloor = this.buildFloorService.findById(id);
         resultData.setData(buildFloor);
@@ -191,7 +192,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
     private void assertBuildExist(Long buildId){
         Build build = this.buildService.findById(buildId);
         if (Objects.isNull(build)){
-            BusinessException.throwException("关联的建筑不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000059"));
         }
     }
 }

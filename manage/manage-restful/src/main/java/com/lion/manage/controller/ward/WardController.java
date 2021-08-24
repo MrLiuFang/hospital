@@ -109,7 +109,7 @@ public class WardController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/details")
     @ApiOperation(value = "病房详情")
-    public IResultData<DetailsWardVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsWardVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         Ward ward = this.wardService.findById(id);
         if (Objects.nonNull(ward)){

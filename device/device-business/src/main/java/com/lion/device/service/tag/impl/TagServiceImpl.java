@@ -42,6 +42,7 @@ import com.lion.person.expose.person.PatientExposeService;
 import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -161,22 +162,22 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagUser)) {
                 Tag tag = findById(tagUser.getTagId());
-                BusinessException.throwException(tag.getTagCode() + "与用户绑定不能删除");
+                BusinessException.throwException(tag.getTagCode() + MessageI18nUtil.getMessage("4000044"));
             }
             TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagUser)) {
                 Tag tag = findById(tagAssets.getTagId());
-                BusinessException.throwException(tag.getTagCode() + "与资产绑定不能删除");
+                BusinessException.throwException(tag.getTagCode() + MessageI18nUtil.getMessage("4000045"));
             }
             TagPatient tagPatient = tagPatientDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagPatient)) {
                 Tag tag = findById(tagPatient.getTagId());
-                BusinessException.throwException(tag.getTagCode() + "与患者绑定不能删除");
+                BusinessException.throwException(tag.getTagCode() + MessageI18nUtil.getMessage("4000046"));
             }
             TagPostdocs tagPostdocs = tagPostdocsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagPostdocs)) {
                 Tag tag = findById(tagPostdocs.getTagId());
-                BusinessException.throwException(tag.getTagCode() + "与流动人员绑定不能删除");
+                BusinessException.throwException(tag.getTagCode() + MessageI18nUtil.getMessage("4000047"));
             }
             currentPositionExposeService.delete(null,null,deleteDto.getId());
         });
@@ -373,7 +374,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         if (StringUtils.hasText(deviceCode)) {
             Tag tag = tagDao.findFirstByDeviceCode(deviceCode);
             if ((Objects.isNull(id) && Objects.nonNull(tag)) || (Objects.nonNull(id) && Objects.nonNull(tag) && !Objects.equals(tag.getId(), id))) {
-                BusinessException.throwException("该设备编码已存在");
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000048"));
             }
         }
     }
@@ -382,7 +383,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         if (StringUtils.hasText(deviceName)) {
             Tag tag = tagDao.findFirstByDeviceName(deviceName);
             if ((Objects.isNull(id) && Objects.nonNull(tag)) || (Objects.nonNull(id) && Objects.nonNull(tag) && !Objects.equals(tag.getId(), id))) {
-                BusinessException.throwException("该设备名称已存在");
+                BusinessException.throwException(MessageI18nUtil.getMessage("该设备名称已存在"));
             }
         }
     }
@@ -391,7 +392,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         if (StringUtils.hasText(tagCode)) {
             Tag tag = tagDao.findFirstByTagCode(tagCode);
             if ((Objects.isNull(id) && Objects.nonNull(tag)) || (Objects.nonNull(id) && Objects.nonNull(tag) && !Objects.equals(tag.getId(), id))) {
-                BusinessException.throwException("该标签编码已存在");
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000050"));
             }
         }
     }
@@ -399,20 +400,20 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     private void assertDepartmentExist(Long departmentId) {
         Department department = departmentExposeService.findById(departmentId);
         if (Objects.isNull(department) ){
-            BusinessException.throwException("该科室不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000069"));
         }
     }
 
     private void assertTagPurpose(Tag tag) {
         if (Objects.equals(tag.getType(), TagType.STAFF)) {
             if (!Objects.equals(tag.getPurpose(), TagPurpose.STAFF)) {
-                BusinessException.throwException("该标签分类只能用途于员工");
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000051"));
             }
         }
 
         if (Objects.equals(tag.getType(), TagType.TEMPERATURE_HUMIDITY)) {
             if (!Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH)) {
-                BusinessException.throwException("该标签分类只能用途于温湿仪");
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000052"));
             }
         }
     }

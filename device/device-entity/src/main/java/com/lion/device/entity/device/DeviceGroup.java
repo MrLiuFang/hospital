@@ -36,12 +36,12 @@ public class DeviceGroup extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 2183390610432287366L;
     @ApiModelProperty(value = "设备组名称")
     @Column(name = "name")
-    @NotBlank(message = "设备组名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{4000008}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "设备组编号")
     @Column(name = "code")
-    @NotBlank(message = "设备组名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{4000009}", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 
     @ApiModelProperty(value = "备注")

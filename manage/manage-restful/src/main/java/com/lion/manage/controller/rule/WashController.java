@@ -110,7 +110,7 @@ public class WashController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/details")
     @ApiOperation(value = "洗手规则详情")
-    public IResultData<DetailsWashVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsWashVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(washService.details(id));
         return resultData;

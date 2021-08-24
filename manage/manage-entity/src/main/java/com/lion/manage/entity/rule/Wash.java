@@ -34,13 +34,13 @@ public class Wash extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 6103915473684030413L;
     @ApiModelProperty(value = "规则名称")
     @Column(name = "name")
-    @NotBlank(message = "规则名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{2000046}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "洗手规则类型")
     @Column(name = "type")
     @Convert(converter = WashRuleType.WashRuleTypeConverter.class)
-    @NotNull(message = "洗手规则类型不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000047}", groups = {Validator.Insert.class, Validator.Update.class})
     private WashRuleType type;
 
     @ApiModelProperty(value = "洗手间隔")
@@ -53,7 +53,7 @@ public class Wash extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "是否提醒")
     @Column(name = "remind")
-    @NotNull(message = "是否提醒不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000048}", groups = {Validator.Insert.class, Validator.Update.class})
     private Boolean remind;
 
     @ApiModelProperty(value = "超时提醒")

@@ -75,7 +75,7 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/log/list")
     @ApiOperation(value = "标签列表")
-    public IPageResultData<List<ListTagLogVo>> logList(@NotNull(message = "标签id不能为空") @ApiParam(value = "标签ID") Long tagId,
+    public IPageResultData<List<ListTagLogVo>> logList(@NotNull(message = "{0000000}") @ApiParam(value = "标签ID") Long tagId,
                                                        @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                        @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                        @ApiParam(value = "操作内容(绑定/解绑)") TagLogContent content,LionPage lionPage){
@@ -84,7 +84,7 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/details")
     @ApiOperation(value = "标签详情")
-    public IResultData<DetailsTagVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsTagVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(tagService.details(id));
         return resultData;
@@ -158,7 +158,7 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/rule/details")
     @ApiOperation(value = "标签规则详情")
-    public IResultData<TagRuleDetailsVo> ruleDetails(@ApiParam(value = "id") @NotNull(message = "id不能为空") Long id){
+    public IResultData<TagRuleDetailsVo> ruleDetails(@ApiParam(value = "id") @NotNull(message = "{0000000}") Long id){
         TagRule tagRule = tagRuleService.findById(id);
         if (Objects.nonNull(tagRule)) {
             TagRuleDetailsVo vo = new TagRuleDetailsVo();
@@ -182,7 +182,7 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/rule/user/list")
     @ApiOperation(value = "标签规则用户列表")
-    public IPageResultData<List<ListTagRuleUserVo>> ruleUserList(@NotNull(message = "标签规则id不能为空") @ApiParam(value = "标签规则id") Long tagRuleId, LionPage lionPage){
+    public IPageResultData<List<ListTagRuleUserVo>> ruleUserList(@NotNull(message = "{4000034}") @ApiParam(value = "标签规则id") Long tagRuleId, LionPage lionPage){
         return tagRuleUserService.list(tagRuleId, lionPage);
     }
 

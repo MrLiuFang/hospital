@@ -1,5 +1,6 @@
 package com.lion.manage.controller.department;
 
+import com.fasterxml.jackson.databind.ser.impl.MapEntrySerializer;
 import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.common.dto.DeleteDto;
@@ -18,6 +19,7 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.service.department.DepartmentResponsibleUserService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.utils.MessageI18nUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -91,7 +93,7 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
 
     @GetMapping("/details")
     @ApiOperation(value = "科室详情")
-    public IResultData<DetailsDepartmentVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsDepartmentVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(this.departmentService.details(id));
         return resultData;
@@ -111,7 +113,7 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
             List<Region> list = regionService.find(d.getId());
             if (list.size()>0){
                 Department department = this.departmentService.findById(d.getId());
-                BusinessException.throwException(department.getName()+"已关联区域,所有删除操作取消");
+                BusinessException.throwException(department.getName()+ MessageI18nUtil.getMessage("2000060"));
             }
         });
         departmentService.delete(deleteDtoList);

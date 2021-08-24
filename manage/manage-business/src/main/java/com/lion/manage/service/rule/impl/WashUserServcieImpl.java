@@ -9,7 +9,9 @@ import com.lion.manage.entity.rule.WashUser;
 import com.lion.manage.service.rule.WashUserServcie;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.Mergeable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +43,7 @@ public class WashUserServcieImpl extends BaseServiceImpl<WashUser> implements Wa
                 List<WashUser> list = washUserDao.find(id, WashRuleType.LOOP, wash.getId());
                 if (Objects.nonNull(list) && list.size() > 0) {
                     User user = userExposeService.findById(id);
-                    BusinessException.throwException(user.getName() + "已经存在其它定时洗手规则中,多个定时洗手规则会造成洗手监控冲突");
+                    BusinessException.throwException(user.getName() + MessageI18nUtil.getMessage("2000094"));
                 }
             }
         });

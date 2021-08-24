@@ -1,5 +1,6 @@
 package com.lion.device.service.tag.impl;
 
+import com.fasterxml.jackson.databind.ser.impl.MapEntrySerializer;
 import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
@@ -14,6 +15,7 @@ import com.lion.device.service.tag.TagRuleLogService;
 import com.lion.device.service.tag.TagRuleService;
 import com.lion.device.service.tag.TagRuleUserService;
 import com.lion.exception.BusinessException;
+import com.lion.utils.MessageI18nUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -88,7 +90,7 @@ public class TagRuleServiceImpl extends BaseServiceImpl<TagRule> implements TagR
     private void assertNameExist(String name, Long id) {
         TagRule tagRule = tagRuleDao.findFirstByName(name);
         if ((Objects.isNull(id) && Objects.nonNull(tagRule) ) || (Objects.nonNull(id) && Objects.nonNull(tagRule) && !Objects.equals(tagRule.getId(),id))){
-            BusinessException.throwException("该规则名称已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000042"));
         }
     }
 }

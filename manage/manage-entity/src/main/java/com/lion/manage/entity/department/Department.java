@@ -36,7 +36,7 @@ public class Department extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -3294625261945415578L;
     @ApiModelProperty(value = "科室名称")
     @Column(name = "name")
-    @NotBlank(message = "科室名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{2000025}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "备注")

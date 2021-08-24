@@ -19,10 +19,10 @@ import java.util.List;
 public class ReturnAssetsBorrowDto {
 
     @ApiModelProperty(value = "资产借用id(不是资产id)assetsBorrowId")
-    @NotNull(message = "id不能为空")
+    @NotNull(message = "{0000000}")
     private List<Long> assetsBorrowIds;
 
     @ApiModelProperty(value = "归还人编号")
-    @NotNull(message = "归还人编号不能为空")
+    @NotNull(message = "{2000020}")
     private Integer number;
 }

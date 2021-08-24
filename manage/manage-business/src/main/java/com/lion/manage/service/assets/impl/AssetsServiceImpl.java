@@ -30,6 +30,7 @@ import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -232,39 +233,39 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     private void assertDepartmentExist(Long id) {
         Department department = this.departmentService.findById(id);
         if (Objects.isNull(department) ){
-            BusinessException.throwException("该科室不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000069"));
         }
     }
     private void assertBuildExist(Long id) {
         Build build = this.buildService.findById(id);
         if (Objects.isNull(build) ){
-            BusinessException.throwException("该建筑不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000070"));
         }
     }
     private void assertBuildFloorExist(Long id) {
         BuildFloor buildFloor = this.buildFloorService.findById(id);
         if (Objects.isNull(buildFloor) ){
-            BusinessException.throwException("该建筑楼层不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000071"));
         }
     }
     private void assertRegionExist(Long id) {
         Region region = this.regionService.findById(id);
         if (Objects.isNull(region) ){
-            BusinessException.throwException("该区域不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000072"));
         }
     }
 
     private void assertNameExist(String name, Long id) {
         Assets assets = assetsDao.findFirstByName(name);
         if ((Objects.isNull(id) && Objects.nonNull(assets)) || (Objects.nonNull(id) && Objects.nonNull(assets) && !Objects.equals(assets.getId(),id)) ){
-            BusinessException.throwException("该资产名称已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000073"));
         }
     }
 
     private void assertCodeExist(String code, Long id) {
         Assets assets = assetsDao.findFirstByCode(code);
         if ((Objects.isNull(id) && Objects.nonNull(assets)) || (Objects.nonNull(id) && Objects.nonNull(assets) && !Objects.equals(assets.getId(),id)) ){
-            BusinessException.throwException("该资产编码已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000074"));
         }
     }
 

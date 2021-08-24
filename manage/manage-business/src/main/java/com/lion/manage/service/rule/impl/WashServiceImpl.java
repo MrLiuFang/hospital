@@ -30,6 +30,7 @@ import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.rule.*;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -245,11 +246,11 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
         List<Wash> list = washDao.findFirstByTypeAndIsAllUser(WashRuleType.LOOP, true);
         Wash washLoppAllUser = list.size()>0?list.get(0):null;
         if ((Objects.isNull(id) && Objects.nonNull(washLoppAllUser) ) || (Objects.nonNull(id) && Objects.nonNull(washLoppAllUser) &&  !Objects.equals(washLoppAllUser.getId(),id)) ){
-            BusinessException.throwException("针对全员的定时洗手规则已经存在,多个全员定时洗手规则会造成洗手监控冲突");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000087"));
         }
 
         if (Objects.nonNull(washLoppAllUser) && Objects.equals(false,isAllUser)){
-            BusinessException.throwException("针对全员的定时洗手规则已经存在,不能再给员工单独设置定时洗手规则，会造成洗手监控冲突");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000088"));
         }
 
     }
@@ -259,14 +260,14 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             return;
         }
         if (Objects.nonNull(wash.getAfterEnteringTime()) && Objects.nonNull(wash.getBeforeEnteringTime())) {
-            BusinessException.throwException("检测洗手时间（进入之前/进入之后）只能二选一");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000089"));
         }
         if (Objects.isNull(wash.getAfterEnteringTime()) && Objects.isNull(wash.getBeforeEnteringTime())) {
-            BusinessException.throwException("检测洗手时间（进入之前/进入之后）必须选一个");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000090"));
         }
         if (Objects.nonNull(wash.getAfterEnteringTime())) {
             if (wash.getAfterEnteringTime()<=0){
-                BusinessException.throwException("检测时间必须大于0分钟");
+                BusinessException.throwException(MessageI18nUtil.getMessage("2000091"));
             }
             wash.setBeforeEnteringTime(null);
             if (Objects.equals(true,isUpdate)) {
@@ -274,7 +275,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
             }
         }else if (Objects.nonNull(wash.getBeforeEnteringTime())) {
             if (wash.getBeforeEnteringTime()<=0){
-                BusinessException.throwException("检测时间必须大于0分钟");
+                BusinessException.throwException(MessageI18nUtil.getMessage("2000092"));
             }
             wash.setAfterEnteringTime(null);
             if (Objects.equals(true,isUpdate)) {
@@ -286,7 +287,7 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
     private void assertNameExist(String name, Long id) {
         Wash wash = washDao.findFirstByName(name);
         if ((Objects.isNull(id) && Objects.nonNull(wash) ) || (Objects.nonNull(id) && Objects.nonNull(wash) &&  !Objects.equals(wash.getId(),id)) ){
-            BusinessException.throwException("该名称已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000093"));
         }
     }
 

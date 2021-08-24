@@ -43,6 +43,7 @@ import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,20 +123,20 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
             AssetsBorrow assetsBorrow = assetsBorrowDao.findFirstByAssetsIdAndReturnUserIdIsNull(assetsId);
             if (Objects.nonNull(assetsBorrow)) {
                 Assets assets = assetsService.findById(assetsId);
-                BusinessException.throwException((Objects.isNull(assets)?"":assets.getName())+"已借用,未归还");
+                BusinessException.throwException((Objects.isNull(assets)?"":assets.getName())+ MessageI18nUtil.getMessage("2000061"));
             }
         });
         User user = userExposeService.find(addAssetsBorrowDto.getBorrowUserNumber());
         if (Objects.isNull(user)) {
-            BusinessException.throwException("借用人不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000062"));
         }
         Department department = departmentService.findById(addAssetsBorrowDto.getBorrowDepartmentId());
         if (Objects.isNull(department)) {
-            BusinessException.throwException("借用科室不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000063"));
         }
         WardRoomSickbed wardRoomSickbed = wardRoomSickbedService.findById(addAssetsBorrowDto.getBorrowWardRoomSickbedId());
         if (Objects.isNull(wardRoomSickbed)) {
-            BusinessException.throwException("借用床位不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000064"));
         }
         addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
             assertAssetsExist(assetsId);
@@ -231,7 +232,7 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
 
         User user = userExposeService.find(returnAssetsBorrowDto.getNumber());
         if (Objects.isNull(user)) {
-            BusinessException.throwException("归还人编号不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000065"));
         }
 
         if (Objects.nonNull(returnAssetsBorrowDto.getAssetsBorrowIds()) && returnAssetsBorrowDto.getAssetsBorrowIds().size()>0) {
@@ -257,7 +258,7 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
     private void assertAssetsExist(Long id) {
         Assets assets = this.assetsService.findById(id);
         if (Objects.isNull(assets) ){
-            BusinessException.throwException(assets.getCode()+"该资产不存在");
+            BusinessException.throwException(assets.getCode()+MessageI18nUtil.getMessage("2000066"));
         }
     }
 

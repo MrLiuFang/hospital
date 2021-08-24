@@ -40,24 +40,24 @@ public class Tag extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 610297207210388788L;
     @ApiModelProperty(value = "标签分类")
     @Convert(converter = TagType.TagTypeConverter.class)
-    @NotNull(message = "标签分类不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{4000016}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "type")
     private TagType type;
 
     @ApiModelProperty(value = "标签用途")
     @Convert(converter = TagPurpose.TagPurposeConverter.class)
-    @NotNull(message = "标签用途不能为空", groups = {Validator.Insert.class})
+    @NotNull(message = "{4000017}", groups = {Validator.Insert.class})
     @Column(name = "purpose")
     private TagPurpose purpose;
 
     @ApiModelProperty(value = "标签编码")
-    @NotBlank(message = "标签编码不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{4000018}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "tag_code")
     private String tagCode;
 
     @ApiModelProperty(value = "所属科室")
     @Column(name = "department_id")
-    @NotNull(message = "所属科室不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{0000009}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long departmentId;
 
     @ApiModelProperty(value = "设备名称")

@@ -38,28 +38,28 @@ public class AssetsFault extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 4868910888962338123L;
     @ApiModelProperty(value = "资产Id")
     @Column(name = "assets_id",updatable = false)
-    @NotNull(message = "资产id不能为空", groups = {Validator.Insert.class})
+    @NotNull(message = "{2000005}", groups = {Validator.Insert.class})
     private Long assetsId;
 
     @ApiModelProperty(value = "故障编码")
     @Column(name = "code",updatable = false)
-    @NotBlank(message = "故障编码不能为空", groups = {Validator.Insert.class})
+    @NotBlank(message = "{2000011}", groups = {Validator.Insert.class})
     private String code;
 
     @ApiModelProperty(value = "故障描述")
     @Column(name = "describe" ,updatable = false)
-    @NotBlank(message = "故障描述不能为空", groups = {Validator.Insert.class})
+    @NotBlank(message = "{2000012}", groups = {Validator.Insert.class})
     private String describe;
 
     @ApiModelProperty(value = "申报人")
     @Column(name = "declarant_user_id",updatable = false)
-    @NotNull(message = "申报人不能为空", groups = {Validator.Insert.class})
+    @NotNull(message = "{2000013}", groups = {Validator.Insert.class})
     private Long declarantUserId;
 
     @ApiModelProperty(value = "状态")
     @Column(name = "state")
     @Convert(converter = AssetsFaultState.AssetsFaultStateConverter.class)
-    @NotNull(message = "状态不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000014}", groups = {Validator.Insert.class, Validator.Update.class})
     private AssetsFaultState state = AssetsFaultState.NOT_FINISHED;
 
     @ApiModelProperty(value = "申报时间(yyyy-MM-dd HH:mm:ss)")

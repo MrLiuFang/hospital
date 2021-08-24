@@ -1,5 +1,6 @@
 package com.lion.device.service.tag.impl;
 
+import cn.hutool.crypto.digest.mac.MacEngine;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
@@ -20,6 +21,7 @@ import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -66,7 +68,7 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                 if (Objects.nonNull(tagRuleUser)) {
                     User user = userExposeService.findById(id);
                     if (Objects.nonNull(user)){
-                        BusinessException.throwException(user.getName() + "已关联其它标签规则");
+                        BusinessException.throwException(user.getName() + MessageI18nUtil.getMessage("4000043"));
                     }
                 }
             });

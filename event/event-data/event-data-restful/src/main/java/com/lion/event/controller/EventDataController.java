@@ -92,31 +92,31 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/user/current/region")
     @ApiOperation(value = "员工当前位置")
-    public IResultData<CurrentRegionVo> userCurrentRegion(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId) {
+    public IResultData<CurrentRegionVo> userCurrentRegion(@ApiParam(value = "用户id") @NotNull(message = "{3000017}") Long userId) {
         return ResultData.instance().setData(mapStatisticsService.userCurrentRegion(userId));
     }
 
     @GetMapping("/patient/current/region")
     @ApiOperation(value = "患者当前位置")
-    public IResultData<CurrentPosition> patientCurrentRegion(@ApiParam(value = "患者id") @NotNull(message = "患者id不能为空") Long patientId) {
+    public IResultData<CurrentPosition> patientCurrentRegion(@ApiParam(value = "患者id") @NotNull(message = "{3000018}") Long patientId) {
         return ResultData.instance().setData(currentPositionService.find(patientId));
     }
 
     @GetMapping("/tag/current/region")
     @ApiOperation(value = "标签当前位置")
-    public IResultData<CurrentPosition> tagCurrentPosition(@ApiParam(value = "标签id") @NotNull(message = "标签id不能为空") Long tagId) {
+    public IResultData<CurrentPosition> tagCurrentPosition(@ApiParam(value = "标签id") @NotNull(message = "{3000019}") Long tagId) {
         return ResultData.instance().setData(currentPositionService.findByTagId(tagId));
     }
 
     @GetMapping("/assets/current/region")
     @ApiOperation(value = "资产当前位置")
-    public IResultData<CurrentPosition> assetsCurrentPosition(@ApiParam(value = "资产id") @NotNull(message = "资产id不能为空") Long assetsId) {
+    public IResultData<CurrentPosition> assetsCurrentPosition(@ApiParam(value = "资产id") @NotNull(message = "{3000020}") Long assetsId) {
         return ResultData.instance().setData(currentPositionService.findByAssetsId(assetsId));
     }
 
     @GetMapping("/wash/list")
     @ApiOperation(value = "用户洗手记录(不返回总行数，数据量大查询总行数费时，不给时间范围默认查询一周内的数据，以提高性能)")
-    public IPageResultData<List<WashRecord>> washList(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId,
+    public IPageResultData<List<WashRecord>> washList(@ApiParam(value = "用户id") @NotNull(message = "{3000017}") Long userId,
                                                       @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                       @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                       LionPage lionPage) {
@@ -141,7 +141,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/user/wash/below/standard")
     @ApiOperation(value = "手卫生监控（低于标准人员）不返回总行数")
-    public IPageResultData<List<ListUserWashMonitorVo>> userWashBelowStandard(@ApiParam(value = "用户类型") @NotNull(message = "用户类型不能为空") UserType userType,
+    public IPageResultData<List<ListUserWashMonitorVo>> userWashBelowStandard(@ApiParam(value = "用户类型") @NotNull(message = "{3000021}") UserType userType,
                                                                               @NotNull(message = "开始时间不能为空") @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                               @NotNull(message = "结束时间不能为空") @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                               LionPage lionPage) {
@@ -150,7 +150,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/user/wash/details")
     @ApiOperation(value = "手卫生监控（用户洗手详细）不返回总行数")
-    public IResultData<UserWashDetailsVo> userWashDetails(@ApiParam(value = "用户id") @NotNull(message = "用户id不能为空") Long userId,
+    public IResultData<UserWashDetailsVo> userWashDetails(@ApiParam(value = "用户id") @NotNull(message = "{3000017}") Long userId,
                                                                     @NotNull(message = "开始时间不能为空") @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                     @NotNull(message = "结束时间不能为空") @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                     LionPage lionPage) {
@@ -189,7 +189,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/region/statistics/details")
     @ApiOperation(value = "地图监控地图统计（员工，患者，标签…………）")
-    public IResultData<List<RegionStatisticsDetails>> regionStatisticsDetails(@ApiParam("楼层ID") @NotNull(message = "楼层ID不能为空") Long buildFloorId){
+    public IResultData<List<RegionStatisticsDetails>> regionStatisticsDetails(@ApiParam("楼层ID") @NotNull(message = "{3000022}") Long buildFloorId){
         return ResultData.instance().setData(mapStatisticsService.regionStatisticsDetails(buildFloorId));
     }
 
@@ -237,25 +237,25 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/patient/details")
     @ApiOperation(value = "地图监控患者详情")
-    public IResultData<PatientDetailsVo> patientDetails(@ApiParam("患者id") @NotNull(message = "患者id不能为空") Long patientId) {
+    public IResultData<PatientDetailsVo> patientDetails(@ApiParam("患者id") @NotNull(message = "{3000018}") Long patientId) {
         return ResultData.instance().setData(mapStatisticsService.patientDetails(patientId));
     }
 
     @GetMapping("/temporary/person/details")
     @ApiOperation(value = "地图监控流动人员详情")
-    public IResultData<TemporaryPersonDetailsVo> TemporaryPersonDetails(@ApiParam("流动人员id") @NotNull(message = "流动人员id不能为空") Long temporaryPersonId) {
+    public IResultData<TemporaryPersonDetailsVo> TemporaryPersonDetails(@ApiParam("流动人员id") @NotNull(message = "{3000023}") Long temporaryPersonId) {
         return ResultData.instance().setData(mapStatisticsService.temporaryPersonDetails(temporaryPersonId));
     }
 
     @GetMapping("/staff/details")
     @ApiOperation(value = "地图监控员工详情")
-    public IResultData<StaffDetailsVo> staffDetails(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId) {
+    public IResultData<StaffDetailsVo> staffDetails(@ApiParam("员工id") @NotNull(message = "{3000024}") Long userId) {
         return ResultData.instance().setData(mapStatisticsService.staffDetails(userId));
     }
 
     @GetMapping("/assets/position")
     @ApiOperation(value = "地图监控资产轨迹(不返回总行数)")
-    public IPageResultData<List<Position>> assetsPosition(@ApiParam("资产id") @NotNull(message = "资产id不能为空") Long assetsId,@ApiParam("区域id")  Long regionId,
+    public IPageResultData<List<Position>> assetsPosition(@ApiParam("资产id") @NotNull(message = "{3000025}") Long assetsId,@ApiParam("区域id")  Long regionId,
                                                           @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                           @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                           LionPage lionPage) {
@@ -264,7 +264,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/staff/position")
     @ApiOperation(value = "地图监控员工轨迹(不返回总行数)")
-    public IPageResultData<List<Position>> staffPosition(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId,@ApiParam("区域id")  Long regionId,
+    public IPageResultData<List<Position>> staffPosition(@ApiParam("员工id") @NotNull(message = "{3000024}") Long userId,@ApiParam("区域id")  Long regionId,
                                                          @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                          @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                          LionPage lionPage) {
@@ -273,7 +273,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/staff/system/alarm")
     @ApiOperation(value = "地图监控员工警告列表(不返回总行数)")
-    public IPageResultData<List<ListSystemAlarmVo>> staffSystemAlarm(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long userId,@ApiParam("区域id") Long regionId,
+    public IPageResultData<List<ListSystemAlarmVo>> staffSystemAlarm(@ApiParam("员工id") @NotNull(message = "{3000024}") Long userId,@ApiParam("区域id") Long regionId,
                                                                      @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                      @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,LionPage lionPage) {
         return systemAlarmService.list(userId,regionId,startDateTime,endDateTime, lionPage);
@@ -281,7 +281,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/patient/position")
     @ApiOperation(value = "地图监控患者轨迹(不返回总行数)")
-    public IPageResultData<List<Position>> patientPosition(@ApiParam("患者id") @NotNull(message = "患者id不能为空") Long patientId,@ApiParam("区域id") Long regionId,
+    public IPageResultData<List<Position>> patientPosition(@ApiParam("患者id") @NotNull(message = "{3000018}") Long patientId,@ApiParam("区域id") Long regionId,
                                                             @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                            @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                            LionPage lionPage) {
@@ -290,7 +290,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/patient/system/alarm")
     @ApiOperation(value = "地图监控患者警告列表(不返回总行数)")
-    public IPageResultData<List<ListSystemAlarmVo>> patientSystemAlarm(@ApiParam("患者id") @NotNull(message = "患者id不能为空") Long patientId,@ApiParam("区域id") Long regionId,
+    public IPageResultData<List<ListSystemAlarmVo>> patientSystemAlarm(@ApiParam("患者id") @NotNull(message = "{3000018}") Long patientId,@ApiParam("区域id") Long regionId,
                                                                         @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                         @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,LionPage lionPage) {
         return systemAlarmService.list(patientId, regionId,startDateTime ,endDateTime, lionPage);
@@ -298,7 +298,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/temporary/person/position")
     @ApiOperation(value = "地图监控流动人员轨迹(不返回总行数)")
-    public IPageResultData<List<Position>> temporaryPersonPosition(@ApiParam("流动人员id") @NotNull(message = "流动人员id不能为空") Long temporaryPersonId,@ApiParam("区域id") Long regionId,
+    public IPageResultData<List<Position>> temporaryPersonPosition(@ApiParam("流动人员id") @NotNull(message = "{3000023}") Long temporaryPersonId,@ApiParam("区域id") Long regionId,
                                                                    @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                    @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                    LionPage lionPage) {
@@ -307,7 +307,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/temporary/person/system/alarm")
     @ApiOperation(value = "地图监控流动人员警告列表(不返回总行数)")
-    public IPageResultData<List<ListSystemAlarmVo>> temporaryPersonSystemAlarm(@ApiParam("流动人员id") @NotNull(message = "流动人员id不能为空") Long temporaryPersonId,@ApiParam("区域id") Long regionId,
+    public IPageResultData<List<ListSystemAlarmVo>> temporaryPersonSystemAlarm(@ApiParam("流动人员id") @NotNull(message = "{3000023}") Long temporaryPersonId,@ApiParam("区域id") Long regionId,
                                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,LionPage lionPage) {
         return systemAlarmService.list(temporaryPersonId,regionId ,startDateTime ,endDateTime, lionPage);
@@ -315,7 +315,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/assets/details")
     @ApiOperation(value = "地图监控资产详情")
-    public IResultData<AssetsDetailsVo> assetsDetails(@ApiParam("员工id") @NotNull(message = "员工id不能为空") Long assetsId) {
+    public IResultData<AssetsDetailsVo> assetsDetails(@ApiParam("员工id") @NotNull(message = "{3000024}") Long assetsId) {
         return ResultData.instance().setData(mapStatisticsService.assetsDetails(assetsId));
     }
 
@@ -347,7 +347,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/alarm/details")
     @ApiOperation(value = "地图监控警告详情")
-    public IResultData<SystemAlarmDetailsVo> systemAlarmDetails(@ApiParam("警告id") @NotNull(message = "警告id不能为空") String id){
+    public IResultData<SystemAlarmDetailsVo> systemAlarmDetails(@ApiParam("警告id") @NotNull(message = "{3000026}") String id){
         return ResultData.instance().setData(systemAlarmService.details(id));
     }
 
@@ -385,7 +385,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/person/all/region")
     @ApiOperation(value = "病人或流动人员所到区域")
-    public IResultData<List<String>> personAllRegion(@ApiParam("病人或流动人员id")@NotNull(message = "病人或流动人员不能为空") Long personId,@ApiParam("区域")Long regionId,
+    public IResultData<List<String>> personAllRegion(@ApiParam("病人或流动人员id")@NotNull(message = "{3000027}") Long personId,@ApiParam("区域")Long regionId,
                                                      @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                      @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime ) {
         return ResultData.instance().setData(positionService.personAllRegion(personId,regionId , startDateTime, endDateTime));

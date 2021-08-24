@@ -1,5 +1,6 @@
 package com.lion.device.service.device.impl;
 
+import cn.hutool.crypto.digest.mac.MacEngine;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.IPageResultData;
@@ -31,6 +32,7 @@ import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -116,14 +118,14 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     private void assertNameExist(String name, Long id) {
         Device device = deviceDao.findFirstByName(name);
         if ((Objects.isNull(id) && Objects.nonNull(device)) || (Objects.nonNull(id) && Objects.nonNull(device) && !Objects.equals(device.getId(),id )) ){
-            BusinessException.throwException("该设备名称已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000038"));
         }
     }
 
     private void assertCodeExist(String code, Long id) {
         Device device = deviceDao.findFirstByCode(code);
         if ((Objects.isNull(id) && Objects.nonNull(device)) || ( Objects.nonNull(id) && Objects.nonNull(device) && !Objects.equals(device.getId(),id)) ){
-            BusinessException.throwException("该设备编号已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000039"));
         }
     }
 

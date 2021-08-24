@@ -23,6 +23,7 @@ import com.lion.manage.service.rule.AlarmService;
 import com.lion.manage.service.rule.AlarmWayService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -178,7 +179,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     private void alarmClassify(Alarm alarm){
         if (Objects.equals(alarm.getClassify(),AlarmClassify.PATIENT)){
             if (Objects.isNull(alarm.getLevel())) {
-                BusinessException.throwException("级别不能为空");
+                BusinessException.throwException(MessageI18nUtil.getMessage("2000083"));
             }
         }
     }
@@ -191,7 +192,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
             alarm = alarmDao.findFirstByCodeAndClassify(code,classify);
         }
         if ((Objects.isNull(id) && Objects.nonNull(alarm)) || (Objects.nonNull(id) && Objects.nonNull(alarm) && !Objects.equals(alarm.getId(),id)) ){
-            BusinessException.throwException("该分类已存在该编码");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000084"));
         }
     }
 
@@ -203,7 +204,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
             alarm = alarmDao.findFirstByClassifyAndContent(classify,content);
         }
         if ((Objects.isNull(id) && Objects.nonNull(alarm)) || (Objects.nonNull(id) && Objects.nonNull(alarm) && !Objects.equals(alarm.getId(),id)) ){
-            BusinessException.throwException("该警报分类已存在("+content+")警报内容");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000085",new String[]{content}));
         }
     }
 

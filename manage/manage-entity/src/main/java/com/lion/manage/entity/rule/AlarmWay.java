@@ -33,12 +33,12 @@ public class AlarmWay extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 7542149250412572073L;
     @ApiModelProperty(value = "警报id")
     @Column(name = "alarm_id")
-    @NotNull(message = "警报id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000044}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long alarmId;
 
     @ApiModelProperty(value = "警报方式")
     @Column(name = "way")
     @Convert(converter = com.lion.manage.entity.enums.AlarmWay.AlarmWayConverter.class)
-    @NotNull(message = "警报方式不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000045}", groups = {Validator.Insert.class, Validator.Update.class})
     private com.lion.manage.entity.enums.AlarmWay way;
 }

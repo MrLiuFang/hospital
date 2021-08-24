@@ -72,7 +72,7 @@ public class FaultController extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/details")
     @ApiOperation(value = "故障详情")
-    public IResultData<FaultDetailsVo> details(@ApiParam(value = "故障id") @NotNull(message = "id不能为空") Long id){
+    public IResultData<FaultDetailsVo> details(@ApiParam(value = "故障id") @NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(faultService.details(id));
         return resultData;

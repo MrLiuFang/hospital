@@ -26,6 +26,7 @@ import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionCctvService;
 import com.lion.manage.service.region.RegionExposeObjectService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +106,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         assertNameExist(region.getName(),null);
         assertDeviceGroupIsUse(region.getDeviceGroupId(),null);
         if (addRegionDto.isPublic && (Objects.isNull(addRegionDto.getExposeObjects()) ||addRegionDto.getExposeObjects().size()<=0) ){
-            BusinessException.throwException("请选择公开对象");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000078"));
         }
         region = save(region);
         regionCctvService.save(region.getId(),addRegionDto.getCctvIds());
@@ -122,7 +123,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         if (Objects.nonNull(oldRegion)){
             oldDevideGroupId = oldRegion.getDeviceGroupId();
         }else {
-            BusinessException.throwException("更新的数据不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000079"));
         }
         Region region = new Region();
         BeanUtils.copyProperties(updateRegionDto,region);
@@ -132,7 +133,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         assertNameExist(region.getName(),region.getId());
         assertDeviceGroupIsUse(region.getDeviceGroupId(),region.getId());
         if (updateRegionDto.isPublic && (Objects.isNull(updateRegionDto.getExposeObjects()) ||updateRegionDto.getExposeObjects().size()<=0) ){
-            BusinessException.throwException("请选择公开对象");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000078"));
         }
         update(region);
         regionCctvService.save(region.getId(),updateRegionDto.getCctvIds());
@@ -144,7 +145,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @Transactional
     public void updateCoordinates(UpdateRegionCoordinatesDto updateRegionCoordinatesDto) {
         if (Objects.isNull(updateRegionCoordinatesDto.getId())){
-            BusinessException.throwException("id不能为空");
+            BusinessException.throwException(MessageI18nUtil.getMessage("0000000"));
         }
         Region region = findById(updateRegionCoordinatesDto.getId());
         region.setCoordinates(updateRegionCoordinatesDto.getCoordinates());
@@ -177,7 +178,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     private void assertNameExist(String name, Long id) {
         Region region = regionDao.findFirstByName(name);
         if ((Objects.isNull(id) && Objects.nonNull(region)) || (Objects.nonNull(id) && Objects.nonNull(region) && !Objects.equals(region.getId(),id)) ){
-            BusinessException.throwException("该区域名称已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000080"));
         }
     }
 
@@ -187,31 +188,31 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         }
         Region region = regionDao.findFirstByDeviceGroupId(deviceGroupId);
         if ((Objects.isNull(id) && Objects.nonNull(region)) || (Objects.nonNull(id) && Objects.nonNull(region) && !Objects.equals(region.getId(),id)) ){
-            BusinessException.throwException("该设备组在其它区域已经使用");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000081"));
         }
     }
 
     private void assertBuildExist(Long buildId) {
         Build build = buildService.findById(buildId);
         if (Objects.isNull(build)){
-            BusinessException.throwException("建筑不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000070"));
         }
     }
 
     private void assertDepartmentExist(Long departmentId) {
         Department department = departmentService.findById(departmentId);
         if (Objects.isNull(department)){
-            BusinessException.throwException("科室不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000069"));
         }
     }
 
     private void assertBuildFloorExist(Long buildId,Long buildFloorId) {
         BuildFloor buildFloor = buildFloorService.findById(buildFloorId);
         if (Objects.isNull(buildFloor)){
-            BusinessException.throwException("建筑楼层不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000071"));
         }
         if (!Objects.equals(buildFloor.getBuildId(),buildId)) {
-            BusinessException.throwException("该建筑不存在此楼层");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000082"));
         }
     }
 

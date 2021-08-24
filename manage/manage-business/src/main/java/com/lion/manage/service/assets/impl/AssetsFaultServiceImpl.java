@@ -1,5 +1,6 @@
 package com.lion.manage.service.assets.impl;
 
+import com.lion.common.utils.MessageDelayUtil;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.assets.AssetsFaultDao;
@@ -12,6 +13,7 @@ import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +47,7 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
         assertAssetsExist(assetsFault.getAssetsId());
         assetsFault.setDeclarantTime(LocalDateTime.now());
         if (Objects.equals(assetsFault.getState(),AssetsFaultState.FINISH)){
-            BusinessException.throwException("状态不能是已完成状态");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000067"));
         }
         save(assetsFault);
     }
@@ -65,7 +67,7 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
     private void assertAssetsExist(Long id) {
         Assets assets = this.assetsService.findById(id);
         if (Objects.isNull(assets) ){
-            BusinessException.throwException("该资产不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000066"));
         }
     }
 
@@ -73,7 +75,7 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
     private void assertUserExist(Long id) {
         User user = this.userExposeService.findById(id);
         if (Objects.isNull(user) ){
-            BusinessException.throwException("申报人不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000068"));
         }
     }
 }

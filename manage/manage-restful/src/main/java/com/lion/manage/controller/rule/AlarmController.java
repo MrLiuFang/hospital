@@ -55,7 +55,7 @@ public class AlarmController extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/details")
     @ApiOperation(value = "警报规则详情")
-    public IResultData<DetailsAlarmVo> details(@NotNull(message = "id不能为空") Long id){
+    public IResultData<DetailsAlarmVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(alarmService.details(id));
         return resultData;

@@ -15,6 +15,7 @@ import com.lion.device.service.tag.TagLogService;
 import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,24 +63,24 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         TagUser tagUser = tagUserDao.findFirstByUserIdAndUnbindingTimeIsNull(userId);
         if (Objects.isNull(tag)){
-            BusinessException.throwException("该标签不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000021"));
         }
         if (Objects.nonNull(tagUser) && !Objects.equals(tag.getId(),tagUser.getTagId())) {
             unbinding(userId,false);
         }
         if (Objects.equals(tag.getState(), TagState.DISABLE)) {
-            BusinessException.throwException("该表标签处于停用状态，可能在回收箱中！");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
         }
         if (!Objects.equals(tag.getPurpose(),TagPurpose.STAFF)) {
-            BusinessException.throwException("此标签不能绑定员工");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000031"));
         }
         if (!Objects.equals(departmentId,tag.getDepartmentId())) {
-            BusinessException.throwException("该表标签与员工不在同一科室不能绑定");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000032"));
         }
         TagUser oldTagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
         if (Objects.nonNull(oldTagUser)){
             if (!Objects.equals( oldTagUser.getUserId(),userId)){
-                BusinessException.throwException("该标签已被其它用户绑定");
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000033"));
             }else {
                 return;
             }

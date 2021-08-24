@@ -36,12 +36,12 @@ public class WardRoom extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 8001669825400228305L;
     @ApiModelProperty(value = "病房id")
     @Column(name = "ward_id")
-    @NotNull(message = "病房(基本信息)不能为空")
+    @NotNull(message = "{2000055}")
     private Long wardId;
 
     @ApiModelProperty(value = "房间编号")
     @Column(name = "code")
-    @NotBlank(message = "房间编号不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{2000056}", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 
 //    @ApiModelProperty(value = "区域id")

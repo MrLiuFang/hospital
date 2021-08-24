@@ -23,6 +23,7 @@ import com.lion.device.entity.device.DeviceGroup;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.region.RegionExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -168,14 +169,14 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
     private void assertNameExist(String name, Long id) {
         DeviceGroup deviceGroup = deviceGroupDao.findFirstByName(name);
         if ((Objects.isNull(id) && Objects.nonNull(deviceGroup)) || (Objects.nonNull(id) && Objects.nonNull(deviceGroup) && !Objects.equals( deviceGroup.getId(),id)) ){
-            BusinessException.throwException("该设备组名称已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000036"));
         }
     }
 
     private void assertCodeExist(String code, Long id) {
         DeviceGroup deviceGroup = deviceGroupDao.findFirstByCode(code);
         if ((Objects.isNull(id) && Objects.nonNull(deviceGroup)) || (Objects.nonNull(id) && Objects.nonNull(deviceGroup) && !Objects.equals(deviceGroup.getId() ,id)) ){
-            BusinessException.throwException("该设备组编号已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000037"));
         }
     }
 

@@ -32,12 +32,12 @@ public class TagRuleUser extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -8844894716739235743L;
     @ApiModelProperty(value = "标签id")
-    @NotNull(message = "标签id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{3000019}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "tag_rule_id")
     private Long tagRuleId;
 
     @ApiModelProperty(value = "用户id")
-    @NotNull(message = "用户id不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000053}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "user_id")
     private Long userId;
 }

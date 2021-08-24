@@ -12,6 +12,7 @@ import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.rule.WashRegionService;
 import com.lion.manage.service.rule.WashService;
 import com.lion.upms.entity.user.User;
+import com.lion.utils.MessageI18nUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class WashRegionServiceImpl extends BaseServiceImpl<WashRegion> implement
             if (Objects.nonNull(washRegion)){
                 Region region = regionService.findById(washRegion.getRegionId());
                 if (Objects.nonNull(region)){
-                    BusinessException.throwException(region.getName()+"已存在洗手规则,一个区域设置多个洗手规则可能会冲突!");
+                    BusinessException.throwException(region.getName()+ MessageI18nUtil.getMessage("2000086"));
                 }
             }
             WashRegion newWashRegion = new WashRegion();

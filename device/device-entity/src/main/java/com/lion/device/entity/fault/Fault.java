@@ -40,11 +40,11 @@ public class Fault extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "故障类型")
     @Column(name = "type")
-    @NotNull(message = "故障类型不能为空",groups = {Validator.Update.class,Validator.Insert.class})
+    @NotNull(message = "{4000012}",groups = {Validator.Update.class,Validator.Insert.class})
     private FaultType type;
 
     @ApiModelProperty(value = "资产编码/其它编码")
-    @NotBlank(message = "编码不能为空",groups = {Validator.Update.class,Validator.Insert.class})
+    @NotBlank(message = "{4000013}",groups = {Validator.Update.class,Validator.Insert.class})
     @Column(name = "code")
     private String code;
 
@@ -66,12 +66,12 @@ public class Fault extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "申报人编号")
     @Column(name = "user_number")
-    @NotNull(message = "申报人编号不能为空",groups = {Validator.Update.class,Validator.Insert.class})
+    @NotNull(message = "{4000014}",groups = {Validator.Update.class,Validator.Insert.class})
     private Integer userNumber;
 
     @ApiModelProperty(value = "故障描述")
     @Column(name = "content",length = 2000)
-    @NotBlank(message = "故障描述不能为空",groups = {Validator.Update.class,Validator.Insert.class})
+    @NotBlank(message = "{4000015}",groups = {Validator.Update.class,Validator.Insert.class})
     private String content;
 
     @ApiModelProperty(value = "是否已处理")

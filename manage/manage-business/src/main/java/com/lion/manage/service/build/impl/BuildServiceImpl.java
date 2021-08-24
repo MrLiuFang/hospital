@@ -15,6 +15,7 @@ import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.utils.MessageI18nUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -86,7 +87,7 @@ public class BuildServiceImpl extends BaseServiceImpl<Build> implements BuildSer
     private void assertNameExist(String name, Long id) {
         Build build = buildDao.findFirstByName(name);
         if ((Objects.isNull(id) && Objects.nonNull(build)) || (Objects.nonNull(id) && Objects.nonNull(build) && !Objects.equals(build.getId(),id)) ){
-            BusinessException.throwException("该建筑名称已存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000076"));
         }
     }
 

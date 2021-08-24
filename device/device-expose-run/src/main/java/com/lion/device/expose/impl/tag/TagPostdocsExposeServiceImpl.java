@@ -15,6 +15,7 @@ import com.lion.device.expose.tag.TagPostdocsExposeService;
 import com.lion.device.service.tag.TagLogService;
 import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -55,18 +56,18 @@ public class TagPostdocsExposeServiceImpl extends BaseServiceImpl<TagPostdocs> i
         }
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){
-            BusinessException.throwException("该标签不存在");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000021"));
         }
         if (Objects.equals(tag.getState(), TagState.DISABLE)) {
-            BusinessException.throwException("该表标签处于停用状态，可能在回收箱中！");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
         }
         if (!Objects.equals(tag.getPurpose(), TagPurpose.POSTDOCS)){
-            BusinessException.throwException("该标签不能与流动人员绑定");
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000029"));
         }
         TagPostdocs tagPostdocs = tagPostdocsDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
         if (Objects.nonNull(tagPostdocs)){
             if (!Objects.equals( tagPostdocs.getPostdocsId(),postdocsId)){
-                BusinessException.throwException("该标签已被其它流动人员绑定");
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000030"));
             }else {
                 return;
             }

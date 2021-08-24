@@ -36,18 +36,18 @@ public class BuildFloor extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 4430569449863892569L;
     @ApiModelProperty(value = "建筑id")
-    @NotNull(message = "建筑名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotNull(message = "{2000022}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "build_id")
     private Long buildId;
 
     @ApiModelProperty(value = "地图url")
-    @NotBlank(message = "地图url名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{2000023}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "map_url")
     private String mapUrl;
 
     @ApiModelProperty(value = "楼层名称")
     @Column(name = "name")
-    @NotBlank(message = "楼层名称不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+    @NotBlank(message = "{2000024}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "地图高")
