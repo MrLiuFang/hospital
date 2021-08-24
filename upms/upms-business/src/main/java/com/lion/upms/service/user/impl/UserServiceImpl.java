@@ -243,6 +243,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
                     user.setUsername(StringUtils.hasText(user.getEmail())?user.getEmail():tmp.getEmail());
                     user.setPassword(passwordEncoder.encode(SecureUtil.md5(StringUtils.hasText(user.getEmail())?user.getEmail():tmp.getEmail())));
                 }
+            }else {
+                user.setUsername(tmp.getUsername());
+                user.setPassword(tmp.getPassword());
             }
         }else {
             user.setUsername("");
