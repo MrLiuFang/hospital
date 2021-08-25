@@ -73,6 +73,16 @@ public interface WashEventService {
     IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName, Long departmentId,  UserType userType,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 
     /**
+     * 员工合规率导出
+     * @param userName
+     * @param departmentId
+     * @param userType
+     * @param startDateTime
+     * @param endDateTime
+     */
+    void userWashConformanceRatioExport(String userName, Long departmentId,  UserType userType,LocalDateTime startDateTime,LocalDateTime endDateTime) throws DocumentException, IOException;
+
+    /**
      * 手卫生行为包报表
      * @param ia
      * @param type

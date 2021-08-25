@@ -166,6 +166,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return eventService.userWashConformanceRatio(userName,departmentId,userType,startDateTime,endDateTime,lionPage);
     }
 
+    @GetMapping("/user/wash/conformance/ratio/export")
+    @ApiOperation(value = "手卫生监控（员工合规率）导出")
+    public void userWashConformanceRatioExport(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") Long departmentId,@ApiParam(value = "用户类型")  UserType userType,
+                                                                                 @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) throws DocumentException, IOException {
+        eventService.userWashConformanceRatioExport(userName,departmentId,userType,startDateTime,endDateTime);
+    }
+
     @PutMapping("/unalarm")
     @ApiOperation(value = "警告知熟(处理警告)")
     public IResultData unalarm(@RequestBody UnalarmDto unalarmDto) throws JsonProcessingException {

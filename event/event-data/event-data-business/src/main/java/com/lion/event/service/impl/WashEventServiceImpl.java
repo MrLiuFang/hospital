@@ -57,6 +57,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.DateOperators;
@@ -255,6 +256,60 @@ public class WashEventServiceImpl implements WashEventService {
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,lionPage,totalElements);
+    }
+
+    @Override
+    public void userWashConformanceRatioExport(String userName, Long departmentId, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime) throws DocumentException, IOException {
+        IPageResultData<List<ListUserWashMonitorVo>> page = userWashConformanceRatio(userName,departmentId,userType,startDateTime,endDateTime,  new LionPage(0,Integer.MAX_VALUE));
+        List<ListUserWashMonitorVo> list = page.getData();
+        BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+        Font fontChinese = new Font(bfChinese);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(MessageI18nUtil.getMessage("3000028")+".pdf", "UTF-8"));
+        com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+        Rectangle pageSize = new Rectangle(PageSize.A4.getHeight(), PageSize.A4.getWidth());
+        pageSize.rotate();
+        document.setPageSize(pageSize);
+        ServletOutputStream servletOutputStream = response.getOutputStream();
+        PdfWriter writer = PdfWriter.getInstance(document, servletOutputStream);
+        writer.setPageEvent(new PdfPageEventHelper(FONT,CurrentUserUtil.getCurrentUserUsername()));
+        document.open();
+        PdfPTable table = new PdfPTable(8);
+        table.setWidths(new int[]{10, 10, 10, 20, 20, 10, 10, 10});
+        table.setWidthPercentage(100);
+        PdfPCell cellTitle = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000028"), new Font(bfChinese,24)));
+        cellTitle.setColspan(8);
+        cellTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cellTitle);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        PdfPCell cellTitle1 = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000003")+":" +simpleDateFormat.format(new Date()), new Font(bfChinese)));
+        cellTitle1.setColspan(8);
+        table.addCell(cellTitle1);
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000004"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000006"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000029"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000030"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000031"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000032"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000033"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000034"), fontChinese));
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        for (ListUserWashMonitorVo vo : list) {
+            table.addCell(new Paragraph(vo.getUserName(), fontChinese));
+            table.addCell(new Paragraph(vo.getDepartmentName(), fontChinese));
+            User user = userExposeService.findById(vo.getUserId());
+            table.addCell(new Paragraph((Objects.nonNull(user)&&Objects.nonNull(user.getUserType()))?user.getUserType().getDesc():"", fontChinese));
+            table.addCell(new Paragraph(Objects.nonNull(vo.getStartWorkTime())?dateTimeFormatter.format(vo.getStartWorkTime()):"", fontChinese));
+            table.addCell(new Paragraph(Objects.nonNull(vo.getEndWorkTime())?dateTimeFormatter.format(vo.getEndWorkTime()):"", fontChinese));
+            table.addCell(new Paragraph(String.valueOf(vo.getConformance()), fontChinese));
+            table.addCell(new Paragraph(String.valueOf(vo.getViolation()), fontChinese));
+            table.addCell(new Paragraph(String.valueOf(vo.getNoWash()), fontChinese));
+        }
+        document.add(table);
+        document.close();
+        servletOutputStream.flush();
+        servletOutputStream.close();
     }
 
     @Override
