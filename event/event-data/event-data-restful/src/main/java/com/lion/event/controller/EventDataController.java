@@ -460,4 +460,11 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return ResultData.instance().setData(systemAlarmService.todayDaysStatistics());
     }
 
+    @GetMapping("/violation/wash/event")
+    @ApiOperation(value = "首页洗手不合规-(不返回总行数)不传时间默认查询30天内数据")
+    public IPageResultData<List<ListViolationWashEventVo>> violationWashEvent(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                   @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
+        return washEventService.violationWashEvent(startDateTime, endDateTime, lionPage);
+    }
+
 }

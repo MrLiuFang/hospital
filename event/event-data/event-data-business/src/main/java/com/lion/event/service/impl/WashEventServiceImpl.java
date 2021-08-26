@@ -551,6 +551,43 @@ public class WashEventServiceImpl implements WashEventService {
         }
     }
 
+    @Override
+    public IPageResultData<List<ListViolationWashEventVo>> violationWashEvent(LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            criteria.andOperator(Criteria.where("ddt").gte(startDateTime), Criteria.where("ddt").lte(endDateTime));
+        }else if (Objects.nonNull(startDateTime)) {
+            criteria.and("ddt").gte(startDateTime);
+        }else if (Objects.nonNull(endDateTime)) {
+            criteria.and("ddt").lte(endDateTime);
+        }
+        criteria.and("ia").is(true);
+        query.addCriteria(criteria);
+        query.with(lionPage);
+        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        List<WashEvent> items = mongoTemplate.find(query,WashEvent.class);
+        List<ListViolationWashEventVo> returnList = new ArrayList<ListViolationWashEventVo>();
+        items.forEach(washEvent -> {
+            ListViolationWashEventVo vo = new ListViolationWashEventVo();
+            BeanUtils.copyProperties(washEvent,vo);
+            User user = userExposeService.findById(washEvent.getPi());
+            if (Objects.nonNull(user)) {
+                vo.setName(user.getName());
+            }
+            SystemAlarmType systemAlarmType = SystemAlarmType.instance(washEvent.getAt());
+            if (Objects.nonNull(systemAlarmType)) {
+                vo.setAlarmType(systemAlarmType);
+                vo.setAlarmTypeStr(systemAlarmType.getDesc());
+            }
+            returnList.add(vo);
+        });
+        return new PageResultData<>(returnList,lionPage,returnList.size());
+    }
+
     private ListUserWashMonitorVo init(LocalDateTime startDateTime, LocalDateTime endDateTime,Long userId,Document document){
         ListUserWashMonitorVo vo = new ListUserWashMonitorVo();
         if (Objects.nonNull(document)) {

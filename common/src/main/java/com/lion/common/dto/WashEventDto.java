@@ -1,5 +1,6 @@
 package com.lion.common.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,8 +32,10 @@ public class WashEventDto extends WashRecordDto implements Serializable {
     private Integer at;
 
     @ApiModelProperty(value = "洗手时间(针对区域洗手规则-有记录为违规洗手,没有记录为错过洗手)定时洗手规则一律为错过洗手")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime wt = LocalDateTime.parse("9999-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
     @ApiModelProperty(value = "触发警告时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime adt = LocalDateTime.now();
 }

@@ -137,4 +137,13 @@ public interface WashEventService {
      * @param userLastWashDto
      */
     public void updateWashTime(UserLastWashDto userLastWashDto);
+
+    /**
+     * 不合规洗手事件
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     * @return
+     */
+    IPageResultData<List<ListViolationWashEventVo>> violationWashEvent(LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 }

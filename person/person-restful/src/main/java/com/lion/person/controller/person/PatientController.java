@@ -166,7 +166,7 @@ public class PatientController extends BaseControllerImpl implements BaseControl
         return patientReportService.list(patientId, lionPage);
     }
 
-    @GetMapping("/report/delete")
+    @DeleteMapping("/report/delete")
     @ApiOperation(value = "删除医护汇报")
     public IResultData deleteReport(@RequestBody List<DeleteDto> deleteDtoList) {
         patientReportService.delete(deleteDtoList);
