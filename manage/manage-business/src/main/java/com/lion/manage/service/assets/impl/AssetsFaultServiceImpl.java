@@ -1,5 +1,6 @@
 package com.lion.manage.service.assets.impl;
 
+import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.MessageDelayUtil;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
@@ -8,9 +9,18 @@ import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.dto.AddAssetsFaultDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsFaultDto;
+import com.lion.manage.entity.assets.vo.DetailsAssetsFaultVo;
+import com.lion.manage.entity.build.Build;
+import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsFaultState;
+import com.lion.manage.entity.region.Region;
 import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
+import com.lion.manage.service.build.BuildFloorService;
+import com.lion.manage.service.build.BuildService;
+import com.lion.manage.service.department.DepartmentService;
+import com.lion.manage.service.region.RegionService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.MessageI18nUtil;
@@ -39,6 +49,21 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
     @Autowired
     private AssetsService assetsService;
 
+    @DubboReference
+    private FileExposeService fileExposeService;
+
+    @Autowired
+    private BuildService buildService;
+
+    @Autowired
+    private BuildFloorService buildFloorService;
+
+    @Autowired
+    private RegionService regionService;
+
+    @Autowired
+    private DepartmentService departmentService;
+
     @Override
     public void add(AddAssetsFaultDto addAssetsFaultDto) {
         AssetsFault assetsFault = new AssetsFault();
@@ -62,6 +87,48 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
             assetsFault.setFinishTime(LocalDateTime.now());
         }
         super.update(assetsFault);
+    }
+
+    @Override
+    public DetailsAssetsFaultVo details(Long id) {
+        AssetsFault assetsFault = this.findById(id);
+        if (Objects.nonNull(assetsFault)) {
+            DetailsAssetsFaultVo vo = new DetailsAssetsFaultVo();
+            BeanUtils.copyProperties(assetsFault, vo);
+            if (Objects.nonNull(assetsFault.getDeclarantUserId())) {
+                User user = userExposeService.findById(assetsFault.getDeclarantUserId());
+                if (Objects.nonNull(user)){
+                    vo.setDeclarantUserName(user.getName());
+                    vo.setDeclarantUserHeadPortrait(user.getHeadPortrait());
+                    vo.setDeclarantUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                }
+            }
+            Assets assets = assetsService.findById(assetsFault.getAssetsId());
+            if (Objects.nonNull(assets)){
+                vo.setDeviceCode(assets.getCode());
+                vo.setImg(assets.getImg());
+                vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
+                vo.setName(assets.getName());
+                Build build = buildService.findById(assets.getBuildId());
+                if (Objects.nonNull(build)) {
+                    vo.setBuildName(build.getName());
+                }
+                BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
+                if (Objects.nonNull(buildFloor)){
+                    vo.setBuildFloorName(buildFloor.getName());
+                }
+                Region region = regionService.findById(assets.getRegionId());
+                if (Objects.nonNull(region)){
+                    vo.setRegionName(region.getName());
+                }
+                Department department = departmentService.findById(assets.getDepartmentId());
+                if (Objects.nonNull(department)){
+                    vo.setDepartmentName(department.getName());
+                }
+            }
+            return vo;
+        }
+        return null;
     }
 
     private void assertAssetsExist(Long id) {

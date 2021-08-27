@@ -34,7 +34,6 @@ import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
-import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.upms.expose.user.UserExposeService;
@@ -42,7 +41,6 @@ import com.lion.utils.CurrentUserUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.catalina.authenticator.SingleSignOnSessionKey;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +50,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import sun.util.resources.ga.LocaleNames_ga;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
@@ -364,45 +361,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @GetMapping("/fault/details")
     @ApiOperation(value = "资产故障详情")
     public IResultData<DetailsAssetsFaultVo> detailsFault(@NotNull(message = "{0000000}") Long id){
-        ResultData resultData = ResultData.instance();
-        AssetsFault assetsFault = this.assetsFaultService.findById(id);
-        if (Objects.nonNull(assetsFault)) {
-            DetailsAssetsFaultVo vo = new DetailsAssetsFaultVo();
-            BeanUtils.copyProperties(assetsFault, vo);
-            if (Objects.nonNull(assetsFault.getDeclarantUserId())) {
-                User user = userExposeService.findById(assetsFault.getDeclarantUserId());
-                if (Objects.nonNull(user)){
-                    vo.setDeclarantUserName(user.getName());
-                    vo.setDeclarantUserHeadPortrait(user.getHeadPortrait());
-                    vo.setDeclarantUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
-                }
-            }
-            Assets assets = assetsService.findById(assetsFault.getAssetsId());
-            if (Objects.nonNull(assets)){
-                vo.setDeviceCode(assets.getCode());
-                vo.setImg(assets.getImg());
-                vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
-                vo.setName(assets.getName());
-                Build build = buildService.findById(assets.getBuildId());
-                if (Objects.nonNull(build)) {
-                    vo.setBuildName(build.getName());
-                }
-                BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)){
-                    vo.setBuildFloorName(buildFloor.getName());
-                }
-                Region region = regionService.findById(assets.getRegionId());
-                if (Objects.nonNull(region)){
-                    vo.setRegionName(region.getName());
-                }
-                Department department = departmentService.findById(assets.getDepartmentId());
-                if (Objects.nonNull(department)){
-                    vo.setDepartmentName(department.getName());
-                }
-            }
-            resultData.setData(vo);
-        }
-        return resultData;
+        return ResultData.instance().setData(assetsFaultService.details(id));
     }
 
     @PutMapping("/fault/update")

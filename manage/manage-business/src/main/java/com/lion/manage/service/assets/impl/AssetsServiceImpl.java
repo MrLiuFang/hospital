@@ -16,6 +16,7 @@ import com.lion.manage.dao.assets.AssetsBorrowDao;
 import com.lion.manage.dao.assets.AssetsDao;
 import com.lion.manage.dao.assets.AssetsFaultDao;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.dto.AddAssetsDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsVo;
@@ -25,6 +26,7 @@ import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsFaultState;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
@@ -85,6 +87,9 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 
     @DubboReference
     private SystemAlarmExposeService systemAlarmExposeService;
+
+    @Autowired
+    private AssetsFaultService assetsFaultService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -198,7 +203,10 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
                 detailsAssetsVo.setTagId(tag.getId());
             }
         }
-        detailsAssetsVo.setAssetsFault(assetsFaultDao.findFirstByAssetsIdAndStateOrderByCreateDateTimeDesc(assets.getId(), AssetsFaultState.NOT_FINISHED));
+        AssetsFault assetsFault = assetsFaultDao.findFirstByAssetsIdAndStateOrderByCreateDateTimeDesc(assets.getId(), AssetsFaultState.NOT_FINISHED);
+        if (Objects.nonNull(assetsFault)) {
+            detailsAssetsVo.setAssetsFault(assetsFaultService.details(assetsFault.getId()));
+        }
         SystemAlarm systemAlarm =  systemAlarmExposeService.findLastByAssetsId(assets.getId());
         if (Objects.nonNull(systemAlarm)) {
             SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());

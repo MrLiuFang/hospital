@@ -28,7 +28,7 @@ public class DetailsAssetsVo extends Assets {
     private String position;
 
     @ApiModelProperty(value = "故障申报记录-最后一次")
-    private AssetsFault assetsFault;
+    private DetailsAssetsFaultVo assetsFault;
 
     @ApiModelProperty(value = "警告")
     private String alarm;

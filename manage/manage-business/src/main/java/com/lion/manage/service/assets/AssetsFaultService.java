@@ -4,6 +4,9 @@ import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.dto.AddAssetsFaultDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsFaultDto;
+import com.lion.manage.entity.assets.vo.DetailsAssetsFaultVo;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * @author Mr.Liu
@@ -23,4 +26,11 @@ public interface AssetsFaultService extends BaseService<AssetsFault> {
      * @param updateAssetsFaultDto
      */
     public void update(UpdateAssetsFaultDto updateAssetsFaultDto);
+
+    /**
+     * 详情
+     * @param id
+     * @return
+     */
+    DetailsAssetsFaultVo details(Long id);
 }
