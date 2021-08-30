@@ -56,6 +56,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Mr.Liu
@@ -280,6 +281,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @GetMapping("/fault/list")
     @ApiOperation(value = "资产故障列表")
     public IPageResultData<List<ListAssetsFaultVo>> listFault(@ApiParam("科室")Long departmentId, @ApiParam("状态") AssetsFaultState state, @ApiParam("资产ID") Long assetsId,@ApiParam("故障编码")String code,@ApiParam("设备-资产编码")String assetsCode,
+                                                              @ApiParam("关键字") String keyword,
                                                               @ApiParam(value = "开始申报时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                               @ApiParam(value = "结束申报时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,LionPage lionPage){
         ResultData resultData = ResultData.instance();
@@ -292,6 +294,16 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
             list.forEach(assets -> {
                 ids.add(assets.getId());
             });
+        }
+        if (StringUtils.hasText(keyword)) {
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",keyword);
+            List<Assets> list = assetsService.findByKeyword(keyword);
+            list.forEach(assets -> {
+                ids.add(assets.getId());
+            });
+            if (ids.size()<=0){
+                ids.add(Long.MAX_VALUE);
+            }
         }
         if (Objects.nonNull(assetsId)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsId",assetsId);
@@ -312,7 +324,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
             }
         }
         if (ids.size()>0){
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids);
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids.stream().distinct().collect(Collectors.toList()));
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);

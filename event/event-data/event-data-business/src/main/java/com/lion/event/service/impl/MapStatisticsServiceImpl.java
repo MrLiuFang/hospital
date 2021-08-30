@@ -402,9 +402,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     }
                     HumitureRecord previousRecord = humitureRecordDao.find(tag.getId(),true);
                     if (Objects.nonNull(previousRecord)) {
-                        vo.setPreviousTemperature(record.getT());
-                        vo.setPreviousHumidity(record.getH());
-                        vo.setPreviousDataDateTime(record.getDdt());
+                        vo.setPreviousTemperature(previousRecord.getT());
+                        vo.setPreviousHumidity(previousRecord.getH());
+                        vo.setPreviousDataDateTime(previousRecord.getDdt());
                     }
                     tagVos.add(vo);
                 });
@@ -641,6 +641,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     public PatientDetailsVo patientDetails(Long patientId) {
         PatientDetailsVo vo = new PatientDetailsVo();
         Patient patient = patientExposeService.findById(patientId);
+        if (Objects.isNull(patient)) {
+            return null;
+        }
         BeanUtils.copyProperties(patient,vo);
         Tag tag = tagExposeService.find(patient.getTagCode());
         if (Objects.nonNull(tag)) {

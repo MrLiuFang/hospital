@@ -47,7 +47,6 @@ import java.util.Objects;
  **/
 @Component
 @RocketMQMessageListener(topic = TopicConstants.SYSTEM_ALARM,selectorExpression="*",consumerGroup = TopicConstants.SYSTEM_ALARM_CONSUMER_GROUP)
-@Log
 public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
 
     @Autowired

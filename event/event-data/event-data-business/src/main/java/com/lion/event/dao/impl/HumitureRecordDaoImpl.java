@@ -47,9 +47,9 @@ public class HumitureRecordDaoImpl implements HumitureRecordDaoEx {
         query.with(pageRequest);
         List<HumitureRecord> items = mongoTemplate.find(query, HumitureRecord.class);
         if (Objects.nonNull(items) && items.size()>0){
-            if (isPrevious && items.size()==2) {
+            if (Objects.equals(true,isPrevious) && items.size()==2) {
                 return items.get(1);
-            }else {
+            }else if (Objects.equals(false,isPrevious)){
                 return items.get(0);
             }
         }

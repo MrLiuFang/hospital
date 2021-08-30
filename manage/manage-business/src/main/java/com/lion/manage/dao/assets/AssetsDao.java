@@ -43,6 +43,14 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
     public List<Assets> findByCodeLike(String code);
 
     /**
+     * 根据关键字查询
+     * @param code
+     * @param name
+     * @return
+     */
+    public List<Assets> findByCodeLikeOrNameLike(String code,String name);
+
+    /**
      * 根据楼层统计区域内资产数量
      * @param buildFloorId
      * @return

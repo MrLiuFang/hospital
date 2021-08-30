@@ -62,4 +62,11 @@ public interface AssetsService extends BaseService<Assets> {
      */
     public List<Assets> find(String code);
 
+    /**
+     * 根据关键字查询
+     * @param keyword
+     * @return
+     */
+    public List<Assets> findByKeyword(String keyword);
+
 }

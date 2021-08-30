@@ -74,7 +74,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                     }
                     String regionId = str.split("_")[0];
                     String uuid = str.split("_")[1];
-                    if (!(Objects.equals(regionId,regionWashMonitorDelayDto.getRegionId()) && Objects.equals(uuid,regionWashMonitorDelayDto.getMonitorId()))) {
+                    if (!(Objects.equals(regionId,String.valueOf(regionWashMonitorDelayDto.getRegionId())) && Objects.equals(uuid,regionWashMonitorDelayDto.getMonitorId()))) {
                         return;
                     }
                     //判断用户是否从X区域离开 如果离开就不进行洗手检测

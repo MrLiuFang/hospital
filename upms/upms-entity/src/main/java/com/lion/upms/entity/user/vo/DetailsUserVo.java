@@ -1,5 +1,6 @@
 package com.lion.upms.entity.user.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.upms.entity.user.User;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -7,6 +8,7 @@ import lombok.Data;
 import org.springframework.util.StringUtils;
 
 import javax.print.DocFlavor;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -38,6 +40,19 @@ public class DetailsUserVo extends User {
 
     @ApiModelProperty(value = "是否创建账号")
     private Boolean isCreateAccount;
+
+    @ApiModelProperty(value = "警告")
+    private String alarm;
+
+    @ApiModelProperty(value = "警告编码")
+    private String alarmType;
+
+    @ApiModelProperty(value = "警告时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime alarmDataTime;
+
+    @ApiModelProperty(value = "警报ID")
+    private String alarmId;
 
     public Boolean getIsCreateAccount() {
         return (StringUtils.hasText(this.getUsername()) && StringUtils.hasText(this.getPassword()));

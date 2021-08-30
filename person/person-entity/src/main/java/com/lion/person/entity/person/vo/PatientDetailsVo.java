@@ -52,6 +52,19 @@ public class PatientDetailsVo extends Patient {
     @ApiModelProperty(value = "临时离开权限")
     private TempLeaveVo tempLeaveVo;
 
+    @ApiModelProperty(value = "警告")
+    private String alarm;
+
+    @ApiModelProperty(value = "警告编码")
+    private String alarmType;
+
+    @ApiModelProperty(value = "警告时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime alarmDataTime;
+
+    @ApiModelProperty(value = "警报ID")
+    private String alarmId;
+
     @Data
     @ApiModel
     public static class DoctorVo {

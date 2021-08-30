@@ -15,13 +15,13 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
         HibernateJpaAutoConfiguration.class})
 @EnableDiscoveryClient
 @DubboComponentScan(basePackages = {"com.lion.**"})
-public class ApplicationEventData {
+public class ApplicationEventDataMq {
 
     public static void main ( String args[] ) throws Exception {
         /*
          * new SpringApplicationBuilder(Application.class)
          * .web(WebApplicationType.NONE) .run(args);
          */
-        SpringApplication.run(ApplicationEventData.class, args);
+        SpringApplication.run(ApplicationEventDataMq.class, args);
     }
 }

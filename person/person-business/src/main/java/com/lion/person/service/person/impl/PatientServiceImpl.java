@@ -10,11 +10,14 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.expose.tag.TagPatientExposeService;
+import com.lion.event.entity.SystemAlarm;
 import com.lion.event.expose.service.CurrentPositionExposeService;
+import com.lion.event.expose.service.SystemAlarmExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.Ward;
 import com.lion.manage.entity.ward.WardRoom;
@@ -128,6 +131,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
 
     @DubboReference
     private CurrentPositionExposeService currentPositionExposeService;
+
+    @DubboReference
+    private SystemAlarmExposeService systemAlarmExposeService;
 
     @Override
     @Transactional
@@ -393,6 +399,15 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
                 tempLeaveVo.setEndDateTime(tempLeave.getEndDateTime());
             }
             vo.setTempLeaveVo(tempLeaveVo);
+        }
+
+        SystemAlarm systemAlarm =  systemAlarmExposeService.findLastByPi(patient.getId());
+        if (Objects.nonNull(systemAlarm)) {
+            SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
+            vo.setAlarm(systemAlarmType.getDesc());
+            vo.setAlarmType(systemAlarmType.getName());
+            vo.setAlarmDataTime(systemAlarm.getDt());
+            vo.setAlarmId(systemAlarm.get_id());
         }
 
         if (Objects.nonNull(patient.getBindPatientId())){

@@ -12,11 +12,14 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagPostdocsExposeService;
+import com.lion.event.entity.SystemAlarm;
 import com.lion.event.expose.service.CurrentPositionExposeService;
+import com.lion.event.expose.service.SystemAlarmExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
@@ -105,6 +108,9 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
 
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
+
+    @DubboReference
+    private SystemAlarmExposeService systemAlarmExposeService;
 
     @Override
     @Transactional
@@ -221,7 +227,14 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
             }
         });
         temporaryPersonDetailsVo.setRestrictedAreaVoList(restrictedAreaVoList);
-
+        SystemAlarm systemAlarm =  systemAlarmExposeService.findLastByPi(temporaryPerson.getId());
+        if (Objects.nonNull(systemAlarm)) {
+            SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
+            temporaryPersonDetailsVo.setAlarm(systemAlarmType.getDesc());
+            temporaryPersonDetailsVo.setAlarmType(systemAlarmExposeService.getSystemAlarmTypeCode(systemAlarm.getSat()));
+            temporaryPersonDetailsVo.setAlarmDataTime(systemAlarm.getDt());
+            temporaryPersonDetailsVo.setAlarmId(systemAlarm.get_id());
+        }
         return temporaryPersonDetailsVo;
     }
 

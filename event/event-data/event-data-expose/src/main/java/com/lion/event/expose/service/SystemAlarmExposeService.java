@@ -5,6 +5,13 @@ import com.lion.event.entity.SystemAlarm;
 public interface SystemAlarmExposeService {
 
     /**
+     * 查找最后一次人员（员工/病人/流动人员）警告
+     * @param assetsId
+     * @return
+     */
+    SystemAlarm findLastByPi(Long  pi);
+
+    /**
      * 查找最后一次资产警告
      * @param assetsId
      * @return

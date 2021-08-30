@@ -16,6 +16,11 @@ public class SystemAlarmExposeServiceImpl  implements SystemAlarmExposeService {
     private SystemAlarmDao systemAlarmDao;
 
     @Override
+    public SystemAlarm findLastByPi(Long pi) {
+        return systemAlarmDao.findLast(pi);
+    }
+
+    @Override
     public SystemAlarm findLastByAssetsId(Long assetsId) {
         return systemAlarmDao.findLastByAssetsId(assetsId);
     }

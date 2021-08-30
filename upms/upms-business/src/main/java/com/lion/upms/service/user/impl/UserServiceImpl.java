@@ -14,9 +14,12 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagLogExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
+import com.lion.event.entity.SystemAlarm;
 import com.lion.event.expose.service.CurrentPositionExposeService;
+import com.lion.event.expose.service.SystemAlarmExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.upms.dao.role.RoleDao;
@@ -99,6 +102,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     @DubboReference
     private CurrentPositionExposeService currentPositionExposeService;
+
+    @DubboReference
+    private SystemAlarmExposeService systemAlarmExposeService;
 
     @Autowired
     private MessageSource messageSource;
@@ -192,6 +198,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             return null;
         }
         DetailsUserVo detailsUserVo = new DetailsUserVo();
+        BeanUtils.copyProperties(user,detailsUserVo);
         Role role = roleDao.findByUserId(user.getId());
         if (Objects.nonNull(role)){
             detailsUserVo.setRoleName(role.getName());
@@ -224,7 +231,14 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             });
             detailsUserVo.setResponsibleDepartment(responsibleDepartment);
         }
-        BeanUtils.copyProperties(user,detailsUserVo);
+        SystemAlarm systemAlarm =  systemAlarmExposeService.findLastByPi(user.getId());
+        if (Objects.nonNull(systemAlarm)) {
+            SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
+            detailsUserVo.setAlarm(systemAlarmType.getDesc());
+            detailsUserVo.setAlarmType(systemAlarmExposeService.getSystemAlarmTypeCode(systemAlarm.getSat()));
+            detailsUserVo.setAlarmDataTime(systemAlarm.getDt());
+            detailsUserVo.setAlarmId(systemAlarm.get_id());
+        }
         return detailsUserVo;
     }
 

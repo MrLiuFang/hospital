@@ -1,5 +1,6 @@
 package com.lion.person.entity.person.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.person.entity.person.TemporaryPerson;
 import io.swagger.annotations.ApiModel;
@@ -7,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.persistence.Column;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -33,6 +35,19 @@ public class TemporaryPersonDetailsVo extends TemporaryPerson {
 
     @ApiModelProperty(value = "限制区域")
     private List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList;
+
+    @ApiModelProperty(value = "警告")
+    private String alarm;
+
+    @ApiModelProperty(value = "警告编码")
+    private String alarmType;
+
+    @ApiModelProperty(value = "警告时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime alarmDataTime;
+
+    @ApiModelProperty(value = "警报ID")
+    private String alarmId;
 
     @Data
     @ApiModel

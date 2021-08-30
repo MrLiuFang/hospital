@@ -238,6 +238,11 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         return assetsDao.findByCodeLike("%"+code+"%");
     }
 
+    @Override
+    public List<Assets> findByKeyword(String keyword) {
+        return assetsDao.findByCodeLikeOrNameLike(keyword,keyword);
+    }
+
     private void assertDepartmentExist(Long id) {
         Department department = this.departmentService.findById(id);
         if (Objects.isNull(department) ){

@@ -411,7 +411,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     private SystemAlarm findLast(Long pi,Long ai,Long ti) {
         Query query = new Query();
         Criteria criteria = new Criteria();
-        if (Objects.isNull(pi) || Objects.isNull(pi)|| Objects.isNull(ti)) {
+        if (Objects.isNull(pi) && Objects.isNull(ai) && Objects.isNull(ti)) {
             return null;
         }
         if (Objects.nonNull(pi)) {
@@ -423,7 +423,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         if (Objects.nonNull(ti)) {
             criteria.and("ti").is(ti);
         }
-        criteria.and("dt").gte(LocalDateTime.now().minusDays(30));
+        criteria.and("dt").gte(LocalDateTime.now().minusDays(90));
         query.addCriteria(criteria);
         PageRequest pageRequest = PageRequest.of(0,1, Sort.by(Sort.Direction.DESC,"dt"));
         query.with(pageRequest);
