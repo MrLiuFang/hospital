@@ -102,21 +102,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                     return;
                                 }else {
                                     if (userLastWashDto.getTime()<wash.getDuration()) {
-                                        //doto 给硬件发消息
-                                        log.info("给硬件发送消息-洗手时长不够");
-                                        SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
-                                        systemAlarmDto.setDateTime(LocalDateTime.now());
-                                        systemAlarmDto.setType(Type.STAFF);
-                                        systemAlarmDto.setTagId(userLastWashDto.getTagId());
-                                        systemAlarmDto.setRegionId(userCurrentRegionDto.getRegionId());
-                                        systemAlarmDto.setPeopleId(userLastWashDto.getUserId());
-                                        systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-                                        systemAlarmDto.setSystemAlarmType(SystemAlarmType.WDDBZSXSC);
-                                        try {
-                                            rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-                                        } catch (JsonProcessingException e) {
-                                            e.printStackTrace();
-                                        }
+                                        alarm(washEventDto,true,SystemAlarmType.WDDBZSXSC,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,wash,regionWashMonitorDelayDto.getTagId() );
                                         return;
                                     }
                                 }
@@ -158,9 +144,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
 
     private void alarm(WashEventDto washEventDto,Boolean ia,SystemAlarmType systemAlarmType,LocalDateTime wt,UserCurrentRegionDto userCurrentRegionDto,UserLastWashDto userLastWashDto,Wash wash,Long tagId) throws JsonProcessingException {
         washEventDto.setWet(WashEventType.REGION.getKey());
-        if (Objects.nonNull(ia)) {
-            washEventDto.setIa(ia);//是否触发警告
-        }
+        washEventDto.setIa(ia);
         if (Objects.nonNull(systemAlarmType)) {
             washEventDto.setAt(systemAlarmType.getKey());
         }
