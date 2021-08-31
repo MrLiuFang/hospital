@@ -83,8 +83,8 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                         List<Wash> washList = redisUtil.getWash(regionWashMonitorDelayDto.getRegionId());
                         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
                         for (Wash wash :washList){
-                            WashRecordDto washRecordDto = washCommon.init(userCurrentRegionDto.getUserId(),userCurrentRegionDto.getRegionId(),Objects.isNull(userLastWashDto)?null:userLastWashDto.getMonitorId(),userCurrentRegionDto.getUuid() ,
-                                    Objects.isNull(userLastWashDto)?null:userLastWashDto.getDateTime(),Objects.isNull(userLastWashDto)?null:userLastWashDto.getSystemDateTime());
+                            WashRecordDto washRecordDto = washCommon.init(userCurrentRegionDto.getUserId(),userCurrentRegionDto.getRegionId(),null,userCurrentRegionDto.getUuid() ,
+                                    null,null);
                             WashEventDto washEventDto = new WashEventDto();
                             BeanUtils.copyProperties(washRecordDto,washEventDto);
                             washEventDto.setWi(wash.getId());
@@ -101,6 +101,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                     alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,userLastWashDto,wash,regionWashMonitorDelayDto.getTagId() );
                                     return;
                                 }else {
+                                    //洗手时长不够
                                     if (userLastWashDto.getTime()<wash.getDuration()) {
                                         alarm(washEventDto,true,SystemAlarmType.WDDBZSXSC,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,wash,regionWashMonitorDelayDto.getTagId() );
                                         return;
