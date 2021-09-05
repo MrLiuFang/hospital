@@ -17,7 +17,9 @@ import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.upms.entity.enums.UserType;
+import com.lion.upms.entity.role.QRole;
 import com.lion.upms.entity.role.Role;
+import com.lion.upms.entity.user.QUser;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.*;
 import com.lion.upms.entity.user.vo.CurrentUserDetailsVo;
@@ -28,6 +30,7 @@ import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
 import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -78,6 +81,9 @@ public class UserController extends BaseControllerImpl implements BaseController
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JPAQueryFactory jpaQueryFactory;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增用户")
@@ -182,6 +188,14 @@ public class UserController extends BaseControllerImpl implements BaseController
             resultData.setData(currentUserDetailsVo);
         }
         return resultData;
+    }
+
+    @GetMapping("/test")
+    public IResultData test(){
+
+        QUser qUser = QUser.user;
+        List<User> list = jpaQueryFactory.selectFrom(qUser).fetch();
+        return ResultData.instance().setData(list);
     }
 
 }
