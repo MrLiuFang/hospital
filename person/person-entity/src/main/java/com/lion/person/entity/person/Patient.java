@@ -88,4 +88,8 @@ public class Patient extends Person implements Serializable {
     @ApiModelProperty(value = "绑定患者")
     @Column(name = "bind_patient_id")
     private Long bindPatientId;
+
+    @ApiModelProperty(value = "金卡号")
+    @Column(name = "card_number")
+    private String cardNumber;
 }

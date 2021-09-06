@@ -7,7 +7,6 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.upms.dao.user.UserDao;
 import com.lion.upms.entity.enums.State;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.upms.service.user.UserService;
@@ -53,8 +52,8 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
     }
 
     @Override
-    public int countInUserType(Collection<UserType> userTypes) {
-        return userDao.countByUserTypeIn(userTypes);
+    public int countInUserTypeId(Collection<Long> userTypeIds) {
+        return userDao.countByUserTypeIdIn(userTypeIds);
     }
 
     @Override
@@ -78,7 +77,7 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
     }
 
     @Override
-    public Map<String,Object> find(Long departmentId, String name, UserType userType, List<Long> ontIn, int page, int size) {
+    public Map<String,Object> find(Long departmentId, String name, Long userTypeId, List<Long> ontIn, int page, int size) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.nonNull(departmentId)){
             List<Long> list = departmentUserExposeService.findAllUser(departmentId);
@@ -86,8 +85,8 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
                 jpqlParameter.setSearchParameter(SearchConstant.IN + "_id", list);
             }
         }
-        if (Objects.nonNull(userType)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_userType",userType);
+        if (Objects.nonNull(userTypeId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_userTypeId", userTypeId);
         }
         if (Objects.nonNull(ontIn) && ontIn.size()>0){
             jpqlParameter.setSearchParameter(SearchConstant.NOT_IN+"_id",ontIn);

@@ -20,16 +20,24 @@ import com.lion.event.entity.Position;
 import com.lion.event.entity.WashRecord;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.dto.OldAlarmToNewAlarm;
+import com.lion.event.entity.dto.SetAlarmModeDto;
 import com.lion.event.entity.dto.UnalarmDto;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
-import com.lion.upms.entity.enums.UserType;
+import com.lion.upms.entity.enums.AlarmMode;
+import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.AssertUtil;
+import com.lion.utils.CurrentUserUtil;
+import com.lion.utils.MessageI18nUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +45,7 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author Mr.Liu
@@ -90,6 +99,12 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @Autowired
     private SystemAlarmReportService systemAlarmReportService;
 
+    @DubboReference
+    private UserExposeService userExposeService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @GetMapping("/user/current/region")
     @ApiOperation(value = "员工当前位置")
     public IResultData<CurrentRegionVo> userCurrentRegion(@ApiParam(value = "用户id") @NotNull(message = "{3000017}") Long userId) {
@@ -141,11 +156,11 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/user/wash/below/standard")
     @ApiOperation(value = "手卫生监控（低于标准人员）不返回总行数")
-    public IPageResultData<List<ListUserWashMonitorVo>> userWashBelowStandard(@ApiParam(value = "用户类型") @NotNull(message = "{3000021}") UserType userType,
+    public IPageResultData<List<ListUserWashMonitorVo>> userWashBelowStandard(@ApiParam(value = "用户类型") @NotNull(message = "{3000021}") Long userTypeId,
                                                                               @NotNull(message = "开始时间不能为空") @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                               @NotNull(message = "结束时间不能为空") @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                               LionPage lionPage) {
-        return eventService.userWashRatio(userType, startDateTime, endDateTime, lionPage);
+        return eventService.userWashRatio(userTypeId, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/user/wash/details")
@@ -159,19 +174,19 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/user/wash/conformance/ratio")
     @ApiOperation(value = "手卫生监控（员工合规率）")
-    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") Long departmentId,@ApiParam(value = "用户类型")  UserType userType,
+    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") Long departmentId,@ApiParam(value = "用户类型")  Long userTypeId,
                                                           @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                           @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                           LionPage lionPage) {
-        return eventService.userWashConformanceRatio(userName,departmentId,userType,startDateTime,endDateTime,lionPage);
+        return eventService.userWashConformanceRatio(userName,departmentId,userTypeId,startDateTime,endDateTime,lionPage);
     }
 
     @GetMapping("/user/wash/conformance/ratio/export")
     @ApiOperation(value = "手卫生监控（员工合规率）导出")
-    public void userWashConformanceRatioExport(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") Long departmentId,@ApiParam(value = "用户类型")  UserType userType,
+    public void userWashConformanceRatioExport(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") Long departmentId,@ApiParam(value = "用户类型")  Long userTypeId,
                                                                                  @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                  @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) throws DocumentException, IOException {
-        eventService.userWashConformanceRatioExport(userName,departmentId,userType,startDateTime,endDateTime);
+        eventService.userWashConformanceRatioExport(userName,departmentId,userTypeId,startDateTime,endDateTime);
     }
 
     @PutMapping("/unalarm")
@@ -467,4 +482,21 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return washEventService.violationWashEvent(startDateTime, endDateTime, lionPage);
     }
 
+    @PutMapping("/set/alarm/mode")
+    @ApiOperation(value = "切换洗手模式")
+    public IResultData setAlarmMode(@RequestBody SetAlarmModeDto alarmMode) {
+        if (Objects.nonNull(alarmMode.getAlarmMode())) {
+            Long userId = CurrentUserUtil.getCurrentUserId();
+            User user = userExposeService.findById(userId);
+            AssertUtil.isFlase(!passwordEncoder.matches(alarmMode.getPassword(),user.getPassword()), MessageI18nUtil.getMessage("3000035"));
+            redisTemplate.opsForValue().set("alarmMode",alarmMode.getAlarmMode());
+        }
+        return ResultData.instance();
+    }
+
+    @PutMapping("/alarm/mode")
+    @ApiOperation(value = "获取洗手模式")
+    public IResultData<AlarmMode> alarmMode() {
+        return ResultData.instance().setData(redisTemplate.opsForValue().get("alarmMode"));
+    }
 }

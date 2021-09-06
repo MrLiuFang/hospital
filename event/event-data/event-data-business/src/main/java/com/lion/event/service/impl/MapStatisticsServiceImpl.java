@@ -59,6 +59,7 @@ import com.lion.person.entity.person.*;
 import com.lion.person.expose.person.*;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.upms.expose.user.UserTypeExposeService;
 import com.lion.utils.CurrentUserUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
@@ -180,6 +181,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @DubboReference
     private AssetsFaultExposeService assetsFaultExposeService;
 
+    @DubboReference
+    private UserTypeExposeService userTypeExposeService;
+
     @Autowired
     private HttpServletResponse response;
 
@@ -300,7 +304,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     staff.setUserId(user.getId());
                     staff.setUserName(user.getName());
                     staff.setDeviceState(user.getDeviceState());
-                    staff.setType(user.getUserType());
+                    staff.setUserType(userTypeExposeService.findById(user.getUserTypeId()));
                     staff.setHeadPortrait(user.getHeadPortrait());
                     staff.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                     staff.setNumber(user.getNumber());

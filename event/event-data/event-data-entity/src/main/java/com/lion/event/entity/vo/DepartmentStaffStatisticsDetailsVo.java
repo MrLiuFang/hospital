@@ -1,15 +1,12 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.lion.device.entity.enums.TagRuleEffect;
 import com.lion.upms.entity.enums.State;
-import com.lion.upms.entity.enums.UserType;
+import com.lion.upms.entity.user.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -60,7 +57,7 @@ public class DepartmentStaffStatisticsDetailsVo {
         private String userName;
 
         @ApiModelProperty("员工类型")
-        private UserType type;
+        private UserType userType;
 
         @ApiModelProperty("员工编号")
         private Integer number;

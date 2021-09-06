@@ -10,14 +10,11 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
-import com.lion.device.expose.tag.TagExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
-import com.lion.upms.entity.enums.UserType;
-import com.lion.upms.entity.role.QRole;
 import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.user.QUser;
 import com.lion.upms.entity.user.User;
@@ -28,6 +25,7 @@ import com.lion.upms.entity.user.vo.ListUserVo;
 import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
+import com.lion.upms.service.user.UserTypeService;
 import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -37,7 +35,6 @@ import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
@@ -83,6 +80,9 @@ public class UserController extends BaseControllerImpl implements BaseController
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    private UserTypeService userTypeService;
+
+    @Autowired
     private JPAQueryFactory jpaQueryFactory;
 
     @PostMapping("/add")
@@ -95,14 +95,14 @@ public class UserController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/list")
     @ApiOperation(value = "用户列表")
-    public IPageResultData<List<ListUserVo>> list(@ApiParam(value = "是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户") UserType userType,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId, LionPage lionPage){
+    public IPageResultData<List<ListUserVo>> list(@ApiParam(value = "是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户类型") Long userTypeId,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId, LionPage lionPage){
         if (Objects.equals(isMyDepartment,true)) {
             Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
             if (Objects.nonNull(department)) {
                 departmentId = department.getId();
             }
         }
-        return userService.list(departmentId, userType, number, name, roleId, lionPage);
+        return userService.list(departmentId, userTypeId, number, name, roleId, lionPage);
     }
 
 
@@ -189,6 +189,12 @@ public class UserController extends BaseControllerImpl implements BaseController
         }
         return resultData;
     }
+
+    @PostMapping("/type/add")
+    public IResultData addUserType(@RequestBody @Validated AddUserTypeDto addUserTypeDto){
+
+    }
+
 
     @GetMapping("/test")
     public IResultData test(){

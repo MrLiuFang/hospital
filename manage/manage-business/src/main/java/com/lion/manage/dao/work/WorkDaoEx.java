@@ -1,12 +1,9 @@
 package com.lion.manage.dao.work;
 
 import com.lion.core.LionPage;
-import com.lion.manage.entity.work.Work;
-import com.lion.upms.entity.enums.UserType;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,11 +17,11 @@ public interface WorkDaoEx {
      *
      * @param departmentId
      * @param name
-     * @param userType
+     * @param userTypeId
      * @param startDateTime
      * @param endDateTime
      * @param lionPage
      * @return
      */
-    public Page<Map<String,Object>> List(Long departmentId, String name, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public Page<Map<String,Object>> List(Long departmentId, String name, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

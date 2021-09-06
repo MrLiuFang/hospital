@@ -1,6 +1,5 @@
 package com.lion.device.service.tag.impl;
 
-import cn.hutool.crypto.digest.mac.MacEngine;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
@@ -18,9 +17,10 @@ import com.lion.device.service.tag.TagRuleUserService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
+import com.lion.upms.entity.user.UserType;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.upms.expose.user.UserTypeExposeService;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +30,10 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -55,6 +58,9 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
 
     @DubboReference
     private DepartmentUserExposeService departmentUserExposeService;
+
+    @DubboReference
+    private UserTypeExposeService userTypeExposeService;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -139,7 +145,10 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                 vo.setHeadPortrait(user.getHeadPortrait());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                 vo.setNumber(user.getNumber());
-                vo.setPosition(user.getUserType().getDesc());
+                UserType userType = userTypeExposeService.findById(user.getUserTypeId());
+                if (Objects.nonNull(userType)) {
+                    vo.setPosition(userType.getName());
+                }
                 Department department = departmentUserExposeService.findDepartment(user.getId());
                 if (Objects.nonNull(department)) {
                     vo.setDepartmentName(department.getName());
@@ -151,13 +160,13 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
     }
 
     @Override
-    public PageResultData<List<User>> ruleUserSearch(Long departmentId, String name, UserType userType, LionPage lionPage) {
+    public PageResultData<List<User>> ruleUserSearch(Long departmentId, String name, Long userTypeId, LionPage lionPage) {
         List<Long> userList = new ArrayList<Long>();
         List<TagRuleUser> list = findAll();
         list.forEach(tagRuleUser -> {
             userList.add(tagRuleUser.getUserId());
         });
-        Map<String,Object> map = userExposeService.find(departmentId,name,userType,userList,lionPage.getPageNumber(),lionPage.getPageSize());
+        Map<String,Object> map = userExposeService.find(departmentId,name, userTypeId,userList,lionPage.getPageNumber(),lionPage.getPageSize());
         return new PageResultData<List<User>>((List) map.get("list"),lionPage,(Long) map.get("totalElements"));
     }
 

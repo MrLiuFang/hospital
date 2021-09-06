@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import com.lion.person.entity.enums.Gender;
-import com.lion.person.entity.enums.IdentityDocumentType;
-import com.lion.person.entity.enums.PersonType;
-import com.lion.person.entity.enums.State;
+import com.lion.person.entity.enums.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -83,6 +80,15 @@ public abstract class Person extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "登出原因")
     @Column(name = "leave_emarks")
     private String leaveRemarks;
+
+    @ApiModelProperty(value = "行动限制")
+    @Column(name = "action_mode")
+    @Convert(converter = ActionMode.ActionModeConverter.class)
+    private ActionMode actionMode;
+
+    @ApiModelProperty(value = "可通行时间段  [[\"09\",\"19\"],[\"19\",\"21\"]]  json数据格式")
+    @Column(name = "time_quantum")
+    private String timeQuantum;
 
     @ApiModelProperty(value = "设备状态")
     @Column(name = "device_state")

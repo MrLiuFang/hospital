@@ -4,9 +4,7 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.tag.TagRuleUser;
-import com.lion.device.entity.tag.TagUser;
 import com.lion.device.entity.tag.vo.ListTagRuleUserVo;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 
 import java.util.List;
@@ -39,11 +37,11 @@ public interface TagRuleUserService extends BaseService<TagRuleUser> {
      * 查询可关联的用户
      * @param departmentId
      * @param name
-     * @param userType
+     * @param userTypeId
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<User>>  ruleUserSearch(Long departmentId, String name, UserType userType,LionPage lionPage);
+    public IPageResultData<List<User>>  ruleUserSearch(Long departmentId, String name, Long userTypeId,LionPage lionPage);
 
     /**
      * 根据规则id查询关联的用户

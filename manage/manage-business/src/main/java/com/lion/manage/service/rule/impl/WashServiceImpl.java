@@ -10,8 +10,6 @@ import com.lion.exception.BusinessException;
 import com.lion.manage.dao.rule.WashDao;
 import com.lion.manage.dao.rule.WashRegionDao;
 import com.lion.manage.dao.rule.WashUserDao;
-import com.lion.manage.entity.build.Build;
-import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.region.Region;
@@ -30,16 +28,14 @@ import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.rule.*;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.upms.expose.user.UserTypeExposeService;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -103,6 +99,9 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private UserTypeExposeService userTypeExposeService;
 
     @Override
     @Transactional
@@ -213,7 +212,9 @@ public class WashServiceImpl extends BaseServiceImpl<Wash> implements WashServic
                     userVo.setName(user.getName());
                     userVo.setNumber(user.getNumber());
                     userVo.setTagCode(user.getTagCode());
-                    userVo.setUserType(user.getUserType());
+                    if (Objects.nonNull(user.getUserTypeId())) {
+                        userVo.setUserType(userTypeExposeService.findById(user.getUserTypeId()));
+                    }
                     userVos.add(userVo);
                 }
             });

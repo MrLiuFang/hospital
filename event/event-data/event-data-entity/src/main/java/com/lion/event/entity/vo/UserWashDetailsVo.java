@@ -1,14 +1,11 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.lion.core.IPageResultData;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.awt.geom.PathIterator;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;

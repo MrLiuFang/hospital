@@ -25,18 +25,14 @@ import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.WashEventDao;
-import com.lion.event.entity.CurrentPosition;
-import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.WashEvent;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.WashEventService;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.SystemAlarmType;
-import com.lion.manage.entity.enums.WashRuleType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.WashUser;
-import com.lion.manage.entity.work.Work;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
@@ -44,9 +40,10 @@ import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.rule.WashExposeService;
 import com.lion.manage.expose.rule.WashUserExposeService;
 import com.lion.manage.expose.work.WorkExposeService;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
+import com.lion.upms.entity.user.UserType;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.upms.expose.user.UserTypeExposeService;
 import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
 import lombok.extern.java.Log;
@@ -55,12 +52,8 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.bson.Document;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.DateOperators;
 import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -75,11 +68,9 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * @Author Mr.Liu
@@ -138,6 +129,9 @@ public class WashEventServiceImpl implements WashEventService {
     @DubboReference
     private AssetsExposeService assetsExposeService;
 
+    @DubboReference
+    private UserTypeExposeService userTypeExposeService;
+
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
 
@@ -179,8 +173,8 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
-    public IPageResultData<List<ListUserWashMonitorVo>> userWashRatio(UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        List<Document> list = washEventDao.eventCount(startDateTime,endDateTime,null,userType, null , lionPage);
+    public IPageResultData<List<ListUserWashMonitorVo>> userWashRatio(Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        List<Document> list = washEventDao.eventCount(startDateTime,endDateTime,null,userTypeId, null , lionPage);
         List<ListUserWashMonitorVo> returnList = new ArrayList<>();
         list.forEach(document -> {
             returnList.add(init(null,null,document.getLong("_id"),document));
@@ -223,8 +217,8 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
-    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName, Long departmentId, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        PageResultData<Map<String,Object>> page = workExposeService.find(departmentId,userName,userType,startDateTime,endDateTime,lionPage);
+    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName, Long departmentId, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        PageResultData<Map<String,Object>> page = workExposeService.find(departmentId,userName, userTypeId,startDateTime,endDateTime,lionPage);
         Long totalElements = (Long) page.getTotalElements();
         List<Map<String,Object>> list = page.getContent();
         List<ListUserWashMonitorVo> returnList = new ArrayList<>();
@@ -259,8 +253,8 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
-    public void userWashConformanceRatioExport(String userName, Long departmentId, UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime) throws DocumentException, IOException {
-        IPageResultData<List<ListUserWashMonitorVo>> page = userWashConformanceRatio(userName,departmentId,userType,startDateTime,endDateTime,  new LionPage(0,Integer.MAX_VALUE));
+    public void userWashConformanceRatioExport(String userName, Long departmentId, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws DocumentException, IOException {
+        IPageResultData<List<ListUserWashMonitorVo>> page = userWashConformanceRatio(userName,departmentId, userTypeId,startDateTime,endDateTime,  new LionPage(0,Integer.MAX_VALUE));
         List<ListUserWashMonitorVo> list = page.getData();
         BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
         Font fontChinese = new Font(bfChinese);
@@ -299,7 +293,11 @@ public class WashEventServiceImpl implements WashEventService {
             table.addCell(new Paragraph(vo.getUserName(), fontChinese));
             table.addCell(new Paragraph(vo.getDepartmentName(), fontChinese));
             User user = userExposeService.findById(vo.getUserId());
-            table.addCell(new Paragraph((Objects.nonNull(user)&&Objects.nonNull(user.getUserType()))?user.getUserType().getDesc():"", fontChinese));
+            UserType userType = null;
+            if (Objects.nonNull(user)) {
+                userType = userTypeExposeService.findById(user.getUserTypeId());
+            }
+            table.addCell(new Paragraph((Objects.nonNull(user)&&Objects.nonNull(userType))?userType.getName():"", fontChinese));
             table.addCell(new Paragraph(Objects.nonNull(vo.getStartWorkTime())?dateTimeFormatter.format(vo.getStartWorkTime()):"", fontChinese));
             table.addCell(new Paragraph(Objects.nonNull(vo.getEndWorkTime())?dateTimeFormatter.format(vo.getEndWorkTime()):"", fontChinese));
             table.addCell(new Paragraph(String.valueOf(vo.getConformance()), fontChinese));
@@ -355,7 +353,7 @@ public class WashEventServiceImpl implements WashEventService {
             ListWashEventVo vo = new ListWashEventVo();
             User user = userExposeService.findById(washEvent.getPi());
             if (Objects.nonNull(user)){
-                vo.setUserType(user.getUserType());
+                vo.setUserType(userTypeExposeService.findById(user.getUserTypeId()));
                 vo.setName(user.getName());
                 vo.setNumber(user.getNumber());
                 vo.setGender(user.getGender());
@@ -416,7 +414,7 @@ public class WashEventServiceImpl implements WashEventService {
             table.addCell(new Paragraph(listWashEventVo.getName(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getNumber())?"":String.valueOf(listWashEventVo.getNumber()), fontChinese));
             table.addCell(new Paragraph(listWashEventVo.getDepartmentName(), fontChinese));
-            table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUserType())?"":listWashEventVo.getUserType().getDesc(), fontChinese));
+            table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUserType())?"":listWashEventVo.getUserType().getName(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getGender())?"":listWashEventVo.getGender().getDesc(), fontChinese));
             table.addCell(new Paragraph(listWashEventVo.getDeviceName(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUseDateTime())?"":dateTimeFormatter.format(listWashEventVo.getUseDateTime()), fontChinese));

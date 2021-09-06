@@ -1,9 +1,8 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.lion.event.entity.WashEvent;
 import com.lion.upms.entity.enums.Gender;
-import com.lion.upms.entity.enums.UserType;
+import com.lion.upms.entity.user.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

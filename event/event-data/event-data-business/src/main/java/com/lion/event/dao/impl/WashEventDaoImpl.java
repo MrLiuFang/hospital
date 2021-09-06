@@ -4,7 +4,6 @@ import com.lion.common.utils.BasicDBObjectUtil;
 import com.lion.core.LionPage;
 import com.lion.event.dao.WashEventDaoEx;
 import com.lion.event.entity.WashEvent;
-import com.lion.upms.entity.enums.UserType;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
 import lombok.extern.java.Log;
@@ -52,7 +51,7 @@ public class WashEventDaoImpl implements WashEventDaoEx {
     }
 
     @Override
-    public List<Document> eventCount(LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isDepartmentGroup, UserType userType, Long userId, LionPage lionPage) {
+    public List<Document> eventCount(LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isDepartmentGroup, Long userTypeId, Long userId, LionPage lionPage) {
         List<Bson> pipeline = new ArrayList<Bson>();
         BasicDBObject group = new BasicDBObject();
         if (Objects.nonNull(isDepartmentGroup) && Objects.equals(true,isDepartmentGroup)) {
@@ -79,8 +78,8 @@ public class WashEventDaoImpl implements WashEventDaoEx {
         }else if (Objects.isNull(startDateTime) && Objects.nonNull(endDateTime)) {
             match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$lte",endDateTime));
         }
-        if (Objects.nonNull(userType)){
-            match = BasicDBObjectUtil.put(match,"$match","py",new BasicDBObject("$eq",userType.getKey()) );
+        if (Objects.nonNull(userTypeId)){
+            match = BasicDBObjectUtil.put(match,"$match","py",new BasicDBObject("$eq", userTypeId) );
         }
         if (Objects.nonNull(userId)){
             match = BasicDBObjectUtil.put(match,"$match","pi",new BasicDBObject("$eq",userId) );
@@ -96,7 +95,7 @@ public class WashEventDaoImpl implements WashEventDaoEx {
         pipeline.add(group);
         pipeline.add(project);
 
-        if (Objects.nonNull(userType)){
+        if (Objects.nonNull(userTypeId)){
             BasicDBObject having = new BasicDBObject();
             having = BasicDBObjectUtil.put(having,"$match","allNoAlarmRatio",new BasicDBObject("$lt",80));
             pipeline.add(having);

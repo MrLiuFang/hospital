@@ -3,6 +3,8 @@ package com.lion.upms.entity.role;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
+import com.lion.upms.entity.enums.AlarmMode;
+import com.lion.upms.entity.enums.Gender;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -11,8 +13,8 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
-import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
@@ -60,4 +62,13 @@ public class Role extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "是否默认角色（0：否，1：是）默认角色不能删除")
     @Column(name = "is_default" )
     private Boolean isDefault =false;
+
+    @ApiModelProperty(value = "模式")
+    @Column(name = "alarm_model" )
+    @Convert(converter = AlarmMode.AlarmModeConverter.class)
+    private AlarmMode alarmModel = AlarmMode.STANDARD;
+
+    @ApiModelProperty(value = "标签是否禁音")
+    @Column(name = "tag_forbidden_sound" )
+    private Boolean tagForbiddenSound =false;
 }

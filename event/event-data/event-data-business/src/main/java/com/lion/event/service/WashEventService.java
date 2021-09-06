@@ -7,7 +7,6 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.WashEvent;
 import com.lion.event.entity.vo.*;
-import com.lion.upms.entity.enums.UserType;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -43,12 +42,14 @@ public interface WashEventService {
 
     /**
      * 手卫生监控(低于标准人员)
+     *
+     * @param userTypeId
      * @param startDateTime
      * @param endDateTime
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListUserWashMonitorVo>> userWashRatio(UserType userType, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<ListUserWashMonitorVo>> userWashRatio(Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      * 用户洗手记录详情
@@ -64,23 +65,23 @@ public interface WashEventService {
      * 员工合规率
      * @param userName
      * @param departmentId
-     * @param userType
+     * @param userTypeId
      * @param startDateTime
      * @param endDateTime
      * @param lionPage
      * @return
      */
-    IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName, Long departmentId,  UserType userType,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+    IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName, Long departmentId,  Long userTypeId,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      * 员工合规率导出
      * @param userName
      * @param departmentId
-     * @param userType
+     * @param userTypeId
      * @param startDateTime
      * @param endDateTime
      */
-    void userWashConformanceRatioExport(String userName, Long departmentId,  UserType userType,LocalDateTime startDateTime,LocalDateTime endDateTime) throws DocumentException, IOException;
+    void userWashConformanceRatioExport(String userName, Long departmentId,  Long userTypeId,LocalDateTime startDateTime,LocalDateTime endDateTime) throws DocumentException, IOException;
 
     /**
      * 手卫生行为包报表

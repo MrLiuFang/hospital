@@ -7,7 +7,6 @@ import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.upms.entity.enums.Gender;
 import com.lion.upms.entity.enums.State;
-import com.lion.upms.entity.enums.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.AccessLevel;
@@ -16,11 +15,12 @@ import lombok.EqualsAndHashCode;
 import lombok.Setter;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.validator.constraints.Length;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import javax.validation.constraints.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -85,10 +85,10 @@ public class User extends BaseEntity implements Serializable {
     private LocalDate birthday;
 
     @ApiModelProperty(value = "员工类型")
-    @Column(name = "user_type")
-    @Convert(converter = UserType.UserTypeConverter.class)
-    @NotNull(message = "{0000006}", groups = {Validator.Insert.class, Validator.Update.class})
-    private UserType userType;
+    @Column(name = "user_type_id")
+//    @Convert(converter = UserType.UserTypeConverter.class)
+//    @NotNull(message = "{0000006}", groups = {Validator.Insert.class, Validator.Update.class})
+    private Long userTypeId;
 
     @ApiModelProperty(value = "员工编号")
     @Column(name = "number")

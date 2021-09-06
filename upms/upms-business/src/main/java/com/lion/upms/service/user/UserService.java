@@ -1,24 +1,16 @@
 package com.lion.upms.service.user;
 
 import com.lion.core.IPageResultData;
-import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
-import com.lion.core.persistence.Validator;
 import com.lion.core.service.BaseService;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.role.vo.DetailsRoleUserVo;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.AddUserDto;
-import com.lion.upms.entity.user.dto.ListUserDto;
 import com.lion.upms.entity.user.dto.UpdateUserDto;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -52,14 +44,14 @@ public interface UserService extends BaseService<User> {
      *
      *
      * @param departmentId
-     * @param userType
+     * @param userTypeIds
      * @param number
      * @param name
      * @param roleId
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListUserVo>> list( Long departmentId,  UserType userType,  Integer number,   String name, Long roleId, LionPage lionPage);
+    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, LionPage lionPage);
 
     /**
      * 用户详情

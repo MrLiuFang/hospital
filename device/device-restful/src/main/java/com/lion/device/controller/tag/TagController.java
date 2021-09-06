@@ -1,7 +1,10 @@
 package com.lion.device.controller.tag;
 
 import com.lion.constant.SearchConstant;
-import com.lion.core.*;
+import com.lion.core.IPageResultData;
+import com.lion.core.IResultData;
+import com.lion.core.LionPage;
+import com.lion.core.ResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
@@ -14,7 +17,6 @@ import com.lion.device.entity.tag.TagRuleUser;
 import com.lion.device.entity.tag.dto.*;
 import com.lion.device.entity.tag.vo.*;
 import com.lion.device.service.tag.*;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -176,8 +178,8 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/rule/user/search")
     @ApiOperation(value = "标签规则查询可关联的用户")
-    public IResultData<List<User>> ruleUserSearch(@ApiParam(value = "科室")Long departmentId,@ApiParam(value = "姓名") String name,@ApiParam(value = "用户类型") UserType userType, LionPage lionPage){
-        return tagRuleUserService.ruleUserSearch(departmentId, name, userType, lionPage);
+    public IResultData<List<User>> ruleUserSearch(@ApiParam(value = "科室")Long departmentId,@ApiParam(value = "姓名") String name,@ApiParam(value = "用户类型") Long userTypeId, LionPage lionPage){
+        return tagRuleUserService.ruleUserSearch(departmentId, name, userTypeId, lionPage);
     }
 
     @GetMapping("/rule/user/list")

@@ -4,9 +4,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.person.dao.person.PatientDoctorDao;
 import com.lion.person.entity.person.PatientDoctor;
-import com.lion.person.entity.person.PatientNurse;
 import com.lion.person.service.person.PatientDoctorService;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.MessageI18nUtil;
@@ -59,8 +57,8 @@ public class PatientDoctorServiceImpl extends BaseServiceImpl<PatientDoctor> imp
         if (Objects.isNull(user)){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000031"));
         }
-        if (!Objects.equals(user.getUserType(), UserType.DOCTOR)) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("1000006"));
-        }
+//        if (!Objects.equals(user.getUserType(), UserType.DOCTOR)) {
+//            BusinessException.throwException(MessageI18nUtil.getMessage("1000006"));
+//        }
     }
 }

@@ -3,10 +3,8 @@ package com.lion.person.service.person.impl;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.person.dao.person.PatientNurseDao;
-import com.lion.person.entity.person.PatientDoctor;
 import com.lion.person.entity.person.PatientNurse;
 import com.lion.person.service.person.PatientNurseService;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.MessageI18nUtil;
@@ -61,8 +59,8 @@ public class PatientNurseServiceImpl extends BaseServiceImpl<PatientNurse> imple
         if (Objects.isNull(user)){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000032"));
         }
-        if (!Objects.equals(user.getUserType(), UserType.NURSE)) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("1000008"));
-        }
+//        if (!Objects.equals(user.getUserType(), UserType.NURSE)) {
+//            BusinessException.throwException(MessageI18nUtil.getMessage("1000008"));
+//        }
     }
 }

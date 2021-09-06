@@ -1,19 +1,15 @@
 package com.lion.manage.entity.rule.vo;
 
-import com.lion.core.persistence.Validator;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
 import com.lion.manage.entity.enums.WashDeviceType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Wash;
-import com.lion.upms.entity.enums.UserType;
+import com.lion.upms.entity.user.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**

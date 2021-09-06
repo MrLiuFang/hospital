@@ -1,12 +1,8 @@
 package com.lion.upms.expose.user;
 
-import com.lion.core.IPageResultData;
-import com.lion.core.LionPage;
 import com.lion.core.service.BaseService;
 import com.lion.upms.entity.enums.State;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.user.User;
-import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -38,10 +34,10 @@ public interface UserExposeService extends BaseService<User> {
 
     /**
      * 统计用户类型
-     * @param userTypes
+     * @param userTypeIds
      * @return
      */
-    public int countInUserType(Collection<UserType> userTypes);
+    public int countInUserTypeId(Collection<Long> userTypeIds);
 
     /**
      * 根据员工编号查询
@@ -76,13 +72,13 @@ public interface UserExposeService extends BaseService<User> {
      *
      * @param departmentId
      * @param name
-     * @param userType
+     * @param userTypeId
      * @param ontIn
      * @param page
      * @param size
      * @return
      */
-    public Map<String,Object> find(Long departmentId, String name, UserType userType, List<Long> ontIn, int page, int size);
+    public Map<String,Object> find(Long departmentId, String name, Long userTypeId, List<Long> ontIn, int page, int size);
 
     /**
      * 修改状态

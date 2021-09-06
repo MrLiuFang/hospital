@@ -24,7 +24,6 @@ import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.upms.dao.role.RoleDao;
 import com.lion.upms.dao.user.UserDao;
-import com.lion.upms.entity.enums.UserType;
 import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.role.RoleUser;
 import com.lion.upms.entity.role.vo.DetailsRoleUserVo;
@@ -50,10 +49,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -155,7 +151,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
-    public IPageResultData<List<ListUserVo>> list(Long departmentId, UserType userType, Integer number, String name, Long roleId, LionPage lionPage) {
+    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.nonNull(departmentId)){
             List<Long> userList = departmentUserExposeService.findAllUser(departmentId);
@@ -170,8 +166,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         if (Objects.nonNull(number)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_number",number);
         }
-        if (Objects.nonNull(userType)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_userType",userType);
+        if (Objects.nonNull(userTypeIds)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_userTypeId",userTypeIds);
         }
         if (Objects.nonNull(roleId)){
             List<RoleUser> list = roleUserService.find(roleId);

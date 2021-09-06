@@ -8,6 +8,9 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.upms.entity.user.User;
+import com.lion.upms.entity.user.UserType;
+import com.lion.upms.expose.user.UserTypeExposeService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +25,9 @@ import java.util.Objects;
 public class WashCommonUtil {
     @Autowired
     private RedisUtil redisUtil;
+
+    @DubboReference
+    private UserTypeExposeService userTypeExposeService;
 
     public WashRecordDto setInfo(WashRecordDto washRecordDto){
         Device device = redisUtil.getDevice(washRecordDto.getDvi());
@@ -58,7 +64,10 @@ public class WashCommonUtil {
 
         User user = redisUtil.getUserById(washRecordDto.getPi());
         if (Objects.nonNull(user)){
-            washRecordDto.setPy(user.getUserType().getKey());
+            UserType userType = userTypeExposeService.findById(user.getUserTypeId());
+            if (Objects.nonNull(userType)) {
+                washRecordDto.setPy(userType.getId());
+            }
         }
         return washRecordDto;
     }
