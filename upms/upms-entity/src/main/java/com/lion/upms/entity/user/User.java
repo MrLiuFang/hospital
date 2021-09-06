@@ -33,7 +33,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_user"
-        ,indexes = {@Index(columnList = "name"),@Index(columnList = "username"),@Index(columnList = "email"),@Index(columnList = "create_date_time") })
+        ,indexes = {@Index(columnList = "name"),@Index(columnList = "username"),@Index(columnList = "email"),@Index(columnList = "create_date_time"),@Index(columnList = "user_type_id") })
 @DynamicUpdate
 @DynamicInsert
 @Data

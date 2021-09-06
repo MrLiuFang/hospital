@@ -1,10 +1,13 @@
 package com.lion.upms.service.user;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.upms.entity.user.UserType;
 import com.lion.upms.entity.user.dto.AddUserTypeDto;
-import com.lion.upms.entity.user.dto.UpdateUserDto;
+import com.lion.upms.entity.user.dto.UpdateUserTypeDto;
+import com.lion.upms.entity.user.vo.ListUserTypeVo;
 
 import java.util.List;
 
@@ -23,14 +26,22 @@ public interface UserTypeService extends BaseService<UserType> {
 
     /**
      * 修改
-     * @param updateUserDto
+     * @param updateUserTypeDto
      */
-    public void update(UpdateUserDto updateUserDto);
+    public void update(UpdateUserTypeDto updateUserTypeDto);
 
     /**
      * 删除
      * @param deleteDto
      */
     public void delete(List<DeleteDto> deleteDto);
+
+    /**
+     * 列表
+     * @param name
+     * @param LionPage
+     * @return
+     */
+    public IPageResultData<List<ListUserTypeVo>> list(String name, LionPage LionPage);
 
 }

@@ -1,22 +1,28 @@
 package com.lion.upms.service.user.impl;
 
+import com.lion.constant.SearchConstant;
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
+import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.upms.dao.user.UserDao;
-import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.UserType;
 import com.lion.upms.entity.user.dto.AddUserTypeDto;
-import com.lion.upms.entity.user.dto.UpdateUserDto;
-import com.lion.upms.service.user.UserService;
+import com.lion.upms.entity.user.dto.UpdateUserTypeDto;
+import com.lion.upms.entity.user.vo.ListUserTypeVo;
 import com.lion.upms.service.user.UserTypeService;
 import com.lion.utils.AssertUtil;
 import com.lion.utils.MessageI18nUtil;
-import com.sun.org.apache.xpath.internal.operations.String;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -39,9 +45,9 @@ public class UserTypeServiceImpl extends BaseServiceImpl<UserType> implements Us
     }
 
     @Override
-    public void update(UpdateUserDto updateUserDto) {
+    public void update(UpdateUserTypeDto updateUserTypeDto) {
         UserType userType = new UserType();
-        BeanUtils.copyProperties(updateUserDto,userType);
+        BeanUtils.copyProperties(updateUserTypeDto,userType);
         this.update(userType);
     }
 
@@ -57,5 +63,24 @@ public class UserTypeServiceImpl extends BaseServiceImpl<UserType> implements Us
         deleteDto.forEach(dto -> {
             this.deleteById(dto.getId());
         });
+    }
+
+    @Override
+    public IPageResultData<List<ListUserTypeVo>> list(String name, LionPage LionPage) {
+        JpqlParameter jpqlParameter = new JpqlParameter();
+        if (StringUtils.hasText(name)) {
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_name", name);
+        }
+        LionPage.setJpqlParameter(jpqlParameter);
+        Page<UserType> page = this.findNavigator(LionPage);
+        List<UserType> list = page.getContent();
+        List<ListUserTypeVo> returnList = new ArrayList<ListUserTypeVo>();
+        list.forEach(userType -> {
+            ListUserTypeVo vo = new ListUserTypeVo();
+            BeanUtils.copyProperties(userType, vo);
+            vo.setUserCount(userDao.countByUserTypeId(userType.getId()));
+            returnList.add(vo);
+        });
+        return new PageResultData<List<ListUserTypeVo>>(returnList,LionPage,page.getTotalElements());
     }
 }

@@ -191,8 +191,30 @@ public class UserController extends BaseControllerImpl implements BaseController
     }
 
     @PostMapping("/type/add")
-    public IResultData addUserType(@RequestBody @Validated AddUserTypeDto addUserTypeDto){
+    @ApiOperation(value = "添加用户类型")
+    public IResultData addUserType(@RequestBody @Validated({Validator.Insert.class}) AddUserTypeDto addUserTypeDto){
+        userTypeService.add(addUserTypeDto);
+        return ResultData.instance();
+    }
 
+    @PutMapping("/type/update")
+    @ApiOperation(value = "修改用户类型")
+    public IResultData updateUserType(@RequestBody @Validated({Validator.Update.class}) UpdateUserTypeDto updateUserTypeDto){
+        userTypeService.update(updateUserTypeDto);
+        return ResultData.instance();
+    }
+
+    @DeleteMapping("/type/delete")
+    @ApiOperation(value = "修改用户类型")
+    public IResultData deleteUserType(@RequestBody List<DeleteDto> deleteDtoList){
+        userTypeService.delete(deleteDtoList);
+        return ResultData.instance();
+    }
+
+    @GetMapping("/type/list")
+    @ApiOperation(value = "修改用户类型")
+    public IResultData listUserType(@ApiParam(value = "类型名称") String name, LionPage LionPage){
+        return userTypeService.list(name, LionPage);
     }
 
 
