@@ -18,17 +18,24 @@ import com.lion.manage.entity.region.vo.DetailsRegionVo;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.WashDevice;
 import com.lion.manage.entity.rule.WashDeviceType;
+import com.lion.manage.entity.rule.WashTemplate;
 import com.lion.manage.entity.rule.dto.AddWashDto;
+import com.lion.manage.entity.rule.dto.AddWashTemplateDto;
 import com.lion.manage.entity.rule.dto.UpdateWashDto;
+import com.lion.manage.entity.rule.dto.UpdateWashTemplateDto;
+import com.lion.manage.entity.rule.vo.DetailsWashTemplateVo;
 import com.lion.manage.entity.rule.vo.DetailsWashVo;
+import com.lion.manage.entity.rule.vo.ListWashTemplateVo;
 import com.lion.manage.entity.rule.vo.ListWashVo;
 import com.lion.manage.service.rule.WashDeviceService;
 import com.lion.manage.service.rule.WashDeviceTypeService;
 import com.lion.manage.service.rule.WashService;
+import com.lion.manage.service.rule.WashTemplateService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -63,6 +70,9 @@ public class WashController extends BaseControllerImpl implements BaseController
 
     @DubboReference
     private DeviceExposeService deviceExposeService;
+
+    @Autowired
+    private WashTemplateService washTemplateService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增洗手规则")
@@ -129,5 +139,41 @@ public class WashController extends BaseControllerImpl implements BaseController
         washService.delete(deleteDtoList);
         ResultData resultData = ResultData.instance();
         return resultData;
+    }
+
+    @PostMapping("/add/template")
+    @ApiOperation(value = "新增洗手规则模板")
+    public IResultData addTemplate(@RequestBody @Validated({Validator.Insert.class})AddWashTemplateDto addWashTemplateDto) {
+        washTemplateService.add(addWashTemplateDto);
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @PutMapping("/update/template")
+    @ApiOperation(value = "修改洗手规则模板")
+    public IResultData updateTemplate(@RequestBody @Validated({Validator.Update.class}) UpdateWashTemplateDto updateWashTemplateDto) {
+        washTemplateService.update(updateWashTemplateDto);
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @DeleteMapping("/delete/template")
+    @ApiOperation(value = "删除洗手规则模板")
+    public IResultData deleteTemplate(@RequestBody List<DeleteDto> deleteDtoList) {
+        washTemplateService.delete(deleteDtoList);
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @GetMapping("/list/template")
+    @ApiOperation(value = "洗手规则模板列表")
+    public IPageResultData<List<ListWashTemplateVo>> deleteTemplate(String name, LionPage lionPage) {
+        return washTemplateService.list(name, lionPage);
+    }
+
+    @GetMapping("/list/template")
+    @ApiOperation(value = "洗手规则模板详情")
+    public IResultData<DetailsWashTemplateVo> detailsTemplate(@ApiParam(value = "类型id") @NotNull(message = "{0000000}") Long id) {
+        return ResultData.instance().setData(washTemplateService.details(id));
     }
 }

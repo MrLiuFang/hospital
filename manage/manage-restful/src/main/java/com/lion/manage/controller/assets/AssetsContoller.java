@@ -14,6 +14,7 @@ import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.AssetsFault;
+import com.lion.manage.entity.assets.AssetsType;
 import com.lion.manage.entity.assets.dto.*;
 import com.lion.manage.entity.assets.vo.*;
 import com.lion.manage.entity.build.Build;
@@ -31,6 +32,8 @@ import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.upms.entity.user.User;
+import com.lion.upms.entity.user.UserType;
+import com.lion.upms.entity.user.vo.DetailsUserTypeVo;
 import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
@@ -453,4 +456,14 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     public IPageResultData<List<ListAssetsTypeVo>> listUserType(@ApiParam(value = "类型名称") String userTypeName, LionPage LionPage){
         return assetsTypeService.list(userTypeName, LionPage);
     }
+
+    @GetMapping("/type/details")
+    @ApiOperation(value = "资产类型详情")
+    public IResultData<DetailsAssetsTypeVo> detailsUserType(@ApiParam(value = "类型id") @NotNull(message = "{0000000}") Long id){
+        AssetsType assetsType = assetsTypeService.findById(id);
+        DetailsAssetsTypeVo vo = new DetailsAssetsTypeVo();
+        BeanUtils.copyProperties(assetsType,vo);
+        return ResultData.instance().setData(vo);
+    }
+
 }

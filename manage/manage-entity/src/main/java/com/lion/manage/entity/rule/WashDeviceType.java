@@ -32,7 +32,7 @@ import java.io.Serializable;
 public class WashDeviceType extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 6794032758736876013L;
-    @ApiModelProperty(value = "洗手规则id")
+    @ApiModelProperty(value = "洗手规则id/洗手规则模板项Id")
     @Column(name = "wash_id")
     @NotNull(message = "{2000049}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long washId;

@@ -18,11 +18,9 @@ import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.user.QUser;
 import com.lion.upms.entity.user.User;
+import com.lion.upms.entity.user.UserType;
 import com.lion.upms.entity.user.dto.*;
-import com.lion.upms.entity.user.vo.CurrentUserDetailsVo;
-import com.lion.upms.entity.user.vo.DetailsUserVo;
-import com.lion.upms.entity.user.vo.ListUserTypeVo;
-import com.lion.upms.entity.user.vo.ListUserVo;
+import com.lion.upms.entity.user.vo.*;
 import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
@@ -216,6 +214,15 @@ public class UserController extends BaseControllerImpl implements BaseController
     @ApiOperation(value = "用户类型列表")
     public IPageResultData<List<ListUserTypeVo>> listUserType(@ApiParam(value = "类型名称") String userTypeName, LionPage LionPage){
         return userTypeService.list(userTypeName, LionPage);
+    }
+
+    @GetMapping("/type/details")
+    @ApiOperation(value = "用户类型详情")
+    public IResultData<DetailsUserTypeVo> detailsUserType(@ApiParam(value = "类型id") @NotNull(message = "{0000000}") Long id){
+        UserType userType = userTypeService.findById(id);
+        DetailsUserTypeVo vo = new DetailsUserTypeVo();
+        BeanUtils.copyProperties(userType,vo);
+        return ResultData.instance().setData(vo);
     }
 
 
