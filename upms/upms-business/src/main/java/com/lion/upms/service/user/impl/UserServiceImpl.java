@@ -28,6 +28,7 @@ import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.role.RoleUser;
 import com.lion.upms.entity.role.vo.DetailsRoleUserVo;
 import com.lion.upms.entity.user.User;
+import com.lion.upms.entity.user.UserType;
 import com.lion.upms.entity.user.dto.AddUserDto;
 import com.lion.upms.entity.user.dto.UpdateUserDto;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
@@ -35,6 +36,7 @@ import com.lion.upms.entity.user.vo.ListUserVo;
 import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
+import com.lion.upms.service.user.UserTypeService;
 import com.lion.utils.MapToBeanUtil;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -104,6 +106,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     @Autowired
     private MessageSource messageSource;
+
+    @Autowired
+    private UserTypeService userTypeService;
 
     @Override
     public User findUser(String username) {
@@ -235,6 +240,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             detailsUserVo.setAlarmDataTime(systemAlarm.getDt());
             detailsUserVo.setAlarmId(systemAlarm.get_id());
         }
+        detailsUserVo.setUserType(userTypeService.findById(user.getUserTypeId()));
         return detailsUserVo;
     }
 

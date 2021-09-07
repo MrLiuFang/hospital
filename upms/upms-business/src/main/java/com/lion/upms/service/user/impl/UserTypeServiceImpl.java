@@ -57,7 +57,7 @@ public class UserTypeServiceImpl extends BaseServiceImpl<UserType> implements Us
         deleteDto.forEach(dto -> {
             UserType userType = this.findById(dto.getId());
             if (Objects.nonNull(userType)) {
-                AssertUtil.isTrue(userDao.countByUserTypeId(dto.getId()) > 0, MessageI18nUtil.getMessage("0000023",new Object[]{userType.getName()}) );
+                AssertUtil.isTrue(userDao.countByUserTypeId(dto.getId()) > 0, MessageI18nUtil.getMessage("0000023",new Object[]{userType.getUserTypeName()}) );
             }
         });
         deleteDto.forEach(dto -> {
@@ -69,7 +69,7 @@ public class UserTypeServiceImpl extends BaseServiceImpl<UserType> implements Us
     public IPageResultData<List<ListUserTypeVo>> list(String name, LionPage LionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)) {
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_name", name);
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_userTypeName", name);
         }
         LionPage.setJpqlParameter(jpqlParameter);
         Page<UserType> page = this.findNavigator(LionPage);

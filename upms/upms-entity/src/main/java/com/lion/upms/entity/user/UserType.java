@@ -33,7 +33,7 @@ public class UserType extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "名称")
     @NotBlank(message = "{0000022}", groups = {Validator.Insert.class, Validator.Update.class})
-    private String name;
+    private String userTypeName;
 
     @ApiModelProperty(value = "备注")
     private String remark;

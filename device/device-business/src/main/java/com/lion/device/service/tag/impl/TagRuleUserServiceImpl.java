@@ -147,7 +147,7 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                 vo.setNumber(user.getNumber());
                 UserType userType = userTypeExposeService.findById(user.getUserTypeId());
                 if (Objects.nonNull(userType)) {
-                    vo.setPosition(userType.getName());
+                    vo.setPosition(userType.getUserTypeName());
                 }
                 Department department = departmentUserExposeService.findDepartment(user.getId());
                 if (Objects.nonNull(department)) {

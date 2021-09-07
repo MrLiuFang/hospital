@@ -21,6 +21,7 @@ import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.dto.*;
 import com.lion.upms.entity.user.vo.CurrentUserDetailsVo;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
+import com.lion.upms.entity.user.vo.ListUserTypeVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
 import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RoleUserService;
@@ -213,8 +214,8 @@ public class UserController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/type/list")
     @ApiOperation(value = "修改用户类型")
-    public IResultData listUserType(@ApiParam(value = "类型名称") String name, LionPage LionPage){
-        return userTypeService.list(name, LionPage);
+    public IPageResultData<List<ListUserTypeVo>> listUserType(@ApiParam(value = "类型名称") String userTypeName, LionPage LionPage){
+        return userTypeService.list(userTypeName, LionPage);
     }
 
 

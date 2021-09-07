@@ -297,7 +297,7 @@ public class WashEventServiceImpl implements WashEventService {
             if (Objects.nonNull(user)) {
                 userType = userTypeExposeService.findById(user.getUserTypeId());
             }
-            table.addCell(new Paragraph((Objects.nonNull(user)&&Objects.nonNull(userType))?userType.getName():"", fontChinese));
+            table.addCell(new Paragraph((Objects.nonNull(user)&&Objects.nonNull(userType))?userType.getUserTypeName():"", fontChinese));
             table.addCell(new Paragraph(Objects.nonNull(vo.getStartWorkTime())?dateTimeFormatter.format(vo.getStartWorkTime()):"", fontChinese));
             table.addCell(new Paragraph(Objects.nonNull(vo.getEndWorkTime())?dateTimeFormatter.format(vo.getEndWorkTime()):"", fontChinese));
             table.addCell(new Paragraph(String.valueOf(vo.getConformance()), fontChinese));
@@ -414,7 +414,7 @@ public class WashEventServiceImpl implements WashEventService {
             table.addCell(new Paragraph(listWashEventVo.getName(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getNumber())?"":String.valueOf(listWashEventVo.getNumber()), fontChinese));
             table.addCell(new Paragraph(listWashEventVo.getDepartmentName(), fontChinese));
-            table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUserType())?"":listWashEventVo.getUserType().getName(), fontChinese));
+            table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUserType())?"":listWashEventVo.getUserType().getUserTypeName(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getGender())?"":listWashEventVo.getGender().getDesc(), fontChinese));
             table.addCell(new Paragraph(listWashEventVo.getDeviceName(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUseDateTime())?"":dateTimeFormatter.format(listWashEventVo.getUseDateTime()), fontChinese));
