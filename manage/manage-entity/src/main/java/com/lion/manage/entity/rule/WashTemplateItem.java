@@ -19,7 +19,7 @@ import javax.persistence.Table;
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "t_wash_template",indexes = {@Index(columnList = "wash_template_id")})
+@Table(name = "t_wash_template_item")
 @DynamicUpdate
 @DynamicInsert
 @Data

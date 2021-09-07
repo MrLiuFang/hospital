@@ -256,6 +256,11 @@ public class RedisConstants {
     public static final String TAG_RULE = "tag_rule_";
 
     /**
+     * 洗手规则模板(key:washTemplateId,value:DetailsWashTemplateVo)
+     */
+    public static final String WASH_TEMPLATE = "wash_template_";
+
+    /**
      * 缓存过期时间
      */
     public static final Integer EXPIRE_TIME = 364;

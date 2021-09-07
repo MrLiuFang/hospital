@@ -19,4 +19,13 @@ public class ListWashTemplateVo extends WashTemplate {
 
     @ApiModelProperty(value = "规则项")
     List<ListWashTemplateItemVo> listWashTemplateItemVos;
+
+    @ApiModelProperty(value = "创建人")
+    private String createUserName;
+
+    @ApiModelProperty(value = "创建人头像")
+    private Long createUserHeadPortrait;
+
+    @ApiModelProperty(value = "创建人头像url")
+    private String createUserHeadPortraitUrl;
 }

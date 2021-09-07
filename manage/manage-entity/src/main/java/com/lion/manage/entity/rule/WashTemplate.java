@@ -41,4 +41,7 @@ public class WashTemplate extends BaseEntity {
 
     @ApiModelProperty("false=通用模板，true=区域自定义模板（自定义模板在通用模板中不显示）")
     private Boolean isCustom=false;
+
+    @ApiModelProperty(value = "是否启用(true=启用，false=停用)")
+    private Boolean state = true;
 }

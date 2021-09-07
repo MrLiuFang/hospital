@@ -83,7 +83,7 @@ public class AssetsTypeServiceImpl extends BaseServiceImpl<AssetsType> implement
     public IPageResultData<List<ListAssetsTypeVo>> list(String name, LionPage LionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)) {
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_userTypeName", name);
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_assetsTypeName", name);
         }
         LionPage.setJpqlParameter(jpqlParameter);
         Page<AssetsType> page = this.findNavigator(LionPage);

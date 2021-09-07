@@ -63,4 +63,11 @@ public interface RegionDao extends BaseDao<Region> {
     @Query(" update Region set deviceGroupId = null  ,version=version +1 where deviceGroupId = :deviceGroupId ")
     @Modifying
     public void deleteDeviceGroup(Long deviceGroupId);
+
+    /**
+     * 根据在规则模板统计
+     * @param washTemplateId
+     * @return
+     */
+    public int countByWashTemplateId(Long washTemplateId);
 }

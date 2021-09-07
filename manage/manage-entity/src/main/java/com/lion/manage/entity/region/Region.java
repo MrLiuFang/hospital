@@ -76,4 +76,7 @@ public class Region extends BaseEntity implements Serializable {
     @Column(name = "build_floor_id")
     @NotNull(message = "{2000033}", groups = {Validator.Insert.class})
     private Long buildFloorId;
+
+    @ApiModelProperty("洗手规则模板id")
+    private Long washTemplateId;
 }

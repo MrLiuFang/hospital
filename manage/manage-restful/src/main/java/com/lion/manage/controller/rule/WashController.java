@@ -167,11 +167,11 @@ public class WashController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/list/template")
     @ApiOperation(value = "洗手规则模板列表")
-    public IPageResultData<List<ListWashTemplateVo>> deleteTemplate(String name, LionPage lionPage) {
+    public IPageResultData<List<ListWashTemplateVo>> listTemplate(String name, LionPage lionPage) {
         return washTemplateService.list(name, lionPage);
     }
 
-    @GetMapping("/list/template")
+    @GetMapping("/details/template")
     @ApiOperation(value = "洗手规则模板详情")
     public IResultData<DetailsWashTemplateVo> detailsTemplate(@ApiParam(value = "类型id") @NotNull(message = "{0000000}") Long id) {
         return ResultData.instance().setData(washTemplateService.details(id));
