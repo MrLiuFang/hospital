@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import com.lion.manage.entity.enums.AssetsType;
 import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.enums.State;
 import io.swagger.annotations.ApiModel;
@@ -14,7 +13,10 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -47,10 +49,10 @@ public class Assets extends BaseEntity implements Serializable {
     private String code;
 
     @ApiModelProperty(value = "资产分类")
-    @Column(name = "type")
-    @Convert(converter = AssetsType.AssetsTypeConverter.class)
-    @NotNull(message = "{2000002}", groups = {Validator.Insert.class, Validator.Update.class})
-    private AssetsType type;
+    @Column(name = "assets_type_id")
+//    @Convert(converter = AssetsType.AssetsTypeConverter.class)
+//    @NotNull(message = "{2000002}", groups = {Validator.Insert.class, Validator.Update.class})
+    private Long assetsTypeId;
 
     @ApiModelProperty(value = "所属区域")
     @Column(name = "region_id")

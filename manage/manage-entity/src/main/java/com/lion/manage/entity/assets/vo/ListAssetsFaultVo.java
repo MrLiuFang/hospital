@@ -1,16 +1,9 @@
 package com.lion.manage.entity.assets.vo;
 
-import com.lion.core.persistence.Validator;
 import com.lion.manage.entity.assets.AssetsFault;
-import com.lion.manage.entity.enums.AssetsType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import javax.persistence.Column;
-import javax.persistence.Convert;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @author Mr.Liu

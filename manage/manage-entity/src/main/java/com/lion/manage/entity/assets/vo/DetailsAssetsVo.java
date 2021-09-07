@@ -1,18 +1,12 @@
 package com.lion.manage.entity.assets.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.lion.core.persistence.Validator;
-import com.lion.device.entity.fault.vo.FaultDetailsVo;
 import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import sun.rmi.runtime.Log;
 
-import javax.persistence.Column;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**

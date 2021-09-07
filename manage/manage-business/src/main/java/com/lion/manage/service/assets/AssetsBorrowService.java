@@ -7,8 +7,6 @@ import com.lion.manage.entity.assets.AssetsBorrow;
 import com.lion.manage.entity.assets.dto.AddAssetsBorrowDto;
 import com.lion.manage.entity.assets.dto.ReturnAssetsBorrowDto;
 import com.lion.manage.entity.assets.vo.ListAssetsBorrowVo;
-import com.lion.manage.entity.enums.AssetsType;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,7 +29,7 @@ public interface AssetsBorrowService extends BaseService<AssetsBorrow> {
      *
      * @param name
      * @param borrowUserId
-     * @param type
+     * @param assetsTypeId
      * @param departmentId
      * @param assetsId
      * @param startDateTime
@@ -40,7 +38,7 @@ public interface AssetsBorrowService extends BaseService<AssetsBorrow> {
      * @param lionPage
      * @return
      */
-    IPageResultData<List<ListAssetsBorrowVo>> list(String name, Long borrowUserId, AssetsType type, Long departmentId,  Long assetsId,  LocalDateTime startDateTime,  LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage);
+    IPageResultData<List<ListAssetsBorrowVo>> list(String name, Long borrowUserId, Long assetsTypeId, Long departmentId,  Long assetsId,  LocalDateTime startDateTime,  LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage);
 
     /**
      * 修改资产借用(归还)

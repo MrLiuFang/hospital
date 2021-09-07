@@ -20,16 +20,12 @@ import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsFaultState;
-import com.lion.manage.entity.enums.AssetsType;
 import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
-import com.lion.manage.service.assets.AssetsBorrowService;
-import com.lion.manage.service.assets.AssetsFaultReportService;
-import com.lion.manage.service.assets.AssetsFaultService;
-import com.lion.manage.service.assets.AssetsService;
+import com.lion.manage.service.assets.*;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
@@ -117,6 +113,9 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @DubboReference
     private DepartmentUserExposeService departmentUserExposeService;
 
+    @Autowired
+    private AssetsTypeService assetsTypeService;
+
     @PostMapping("/add")
     @ApiOperation(value = "新增资产")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class})AddAssetsDto addAssetsDto){
@@ -128,7 +127,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @GetMapping("/list")
     @ApiOperation(value = "资产列表")
     public IPageResultData<List<ListAssetsVo>> list(@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code,@ApiParam(value = "科室id")Long departmentId,Boolean isMyDepartment,
-                                                  @ApiParam(value = "资产分类") AssetsType type, @ApiParam(value = "使用状态") AssetsUseState useState, LionPage lionPage){
+                                                  @ApiParam(value = "资产分类") Long assetsTypeId, @ApiParam(value = "使用状态") AssetsUseState useState, LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
@@ -137,8 +136,8 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
         if (StringUtils.hasText(code)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
         }
-        if (Objects.nonNull(type)) {
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_type",type);
+        if (Objects.nonNull(assetsTypeId)) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsTypeId",assetsTypeId);
         }
         if (Objects.nonNull(useState)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_useState",useState);
@@ -223,9 +222,9 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/borrw/list")
     @ApiOperation(value = "资产借用列表")
-    public IPageResultData<List<ListAssetsBorrowVo>> listBorrw(@ApiParam(value = "资产名称")String name,@ApiParam(value = "登记人/借用人")Long borrowUserId,@ApiParam(value = "资产类型")AssetsType type,@ApiParam(value = "科室id") Long departmentId, @ApiParam(value = "资产id") Long assetsId, @ApiParam(value = "借用开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "借用结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+    public IPageResultData<List<ListAssetsBorrowVo>> listBorrw(@ApiParam(value = "资产名称")String name,@ApiParam(value = "登记人/借用人")Long borrowUserId,@ApiParam(value = "资产类型")Long assetsTypeId,@ApiParam(value = "科室id") Long departmentId, @ApiParam(value = "资产id") Long assetsId, @ApiParam(value = "借用开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "借用结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                @ApiParam(value = "是否已归还(null值 查所有)") Boolean isReturn, LionPage lionPage){
-        return assetsBorrowService.list(name, borrowUserId, type, departmentId, assetsId, startDateTime, endDateTime, isReturn, lionPage);
+        return assetsBorrowService.list(name, borrowUserId, assetsTypeId, departmentId, assetsId, startDateTime, endDateTime, isReturn, lionPage);
     }
 
 //    @GetMapping("/borrw/details")
@@ -426,5 +425,32 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
         }
         lionPage.setJpqlParameter(jpqlParameter);
         return (IPageResultData<List<ListAssetsFaultReportVo>>) assetsFaultReportService.findNavigator(lionPage);
+    }
+
+    @PostMapping("/type/add")
+    @ApiOperation(value = "添加资产类型")
+    public IResultData addUserType(@RequestBody @Validated({Validator.Insert.class}) AddAssetsTypeDto addAssetsTypeDto){
+        assetsTypeService.add(addAssetsTypeDto);
+        return ResultData.instance();
+    }
+
+    @PutMapping("/type/update")
+    @ApiOperation(value = "修改资产类型")
+    public IResultData updateUserType(@RequestBody @Validated({Validator.Update.class}) UpdateAssetsTypeDto updateAssetsTypeDto){
+        assetsTypeService.update(updateAssetsTypeDto);
+        return ResultData.instance();
+    }
+
+    @DeleteMapping("/type/delete")
+    @ApiOperation(value = "删除资产类型")
+    public IResultData deleteUserType(@RequestBody List<DeleteDto> deleteDtoList){
+        assetsTypeService.delete(deleteDtoList);
+        return ResultData.instance();
+    }
+
+    @GetMapping("/type/list")
+    @ApiOperation(value = "资产类型列表")
+    public IPageResultData<List<ListAssetsTypeVo>> listUserType(@ApiParam(value = "类型名称") String userTypeName, LionPage LionPage){
+        return assetsTypeService.list(userTypeName, LionPage);
     }
 }

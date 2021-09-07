@@ -4,7 +4,6 @@ import com.lion.core.LionPage;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.dao.assets.AssetsDaoEx;
 import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.enums.AssetsType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
@@ -27,7 +26,7 @@ public class AssetsDaoImpl implements AssetsDaoEx {
 
 
     @Override
-    public Page list(String name, Long borrowUserId, List<Long> departmentIds, AssetsType type, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage) {
+    public Page list(String name, Long borrowUserId, List<Long> departmentIds, Long assetsTypeId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> searchParameter = new HashMap<String, Object>();
         sb.append(" select new com.lion.core.persistence.curd.MoreEntity(a,ab) from Assets a join AssetsBorrow ab on a.id = ab.assetsId where 1=1");
@@ -39,9 +38,9 @@ public class AssetsDaoImpl implements AssetsDaoEx {
             sb.append(" and a.departmentId in :departmentIds ");
             searchParameter.put("departmentIds",departmentIds);
         }
-        if (Objects.nonNull(type)) {
-            sb.append(" and a.type = :type ");
-            searchParameter.put("type",type);
+        if (Objects.nonNull(assetsTypeId)) {
+            sb.append(" and a.assets_type_id = :assetsId ");
+            searchParameter.put("assetsId", assetsId);
         }
         if (Objects.nonNull(assetsId)) {
             sb.append(" and a.id = :assetsId ");

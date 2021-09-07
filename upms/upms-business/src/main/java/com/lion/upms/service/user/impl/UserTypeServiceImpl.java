@@ -7,7 +7,10 @@ import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.exception.BusinessException;
 import com.lion.upms.dao.user.UserDao;
+import com.lion.upms.entity.user.QUserType;
+import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.UserType;
 import com.lion.upms.entity.user.dto.AddUserTypeDto;
 import com.lion.upms.entity.user.dto.UpdateUserTypeDto;
@@ -15,6 +18,7 @@ import com.lion.upms.entity.user.vo.ListUserTypeVo;
 import com.lion.upms.service.user.UserTypeService;
 import com.lion.utils.AssertUtil;
 import com.lion.utils.MessageI18nUtil;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -35,12 +39,16 @@ import java.util.Objects;
 public class UserTypeServiceImpl extends BaseServiceImpl<UserType> implements UserTypeService {
 
     @Autowired
+    private JPAQueryFactory jpaQueryFactory;
+
+    @Autowired
     private UserDao userDao;
 
     @Override
     public void add(AddUserTypeDto addUserTypeDto) {
         UserType userType = new UserType();
         BeanUtils.copyProperties(addUserTypeDto,userType);
+        assertUserTypeNameExist(userType.getUserTypeName(),null);
         this.save(userType);
     }
 
@@ -48,6 +56,7 @@ public class UserTypeServiceImpl extends BaseServiceImpl<UserType> implements Us
     public void update(UpdateUserTypeDto updateUserTypeDto) {
         UserType userType = new UserType();
         BeanUtils.copyProperties(updateUserTypeDto,userType);
+        assertUserTypeNameExist(userType.getUserTypeName(),userType.getId());
         this.update(userType);
     }
 
@@ -82,5 +91,13 @@ public class UserTypeServiceImpl extends BaseServiceImpl<UserType> implements Us
             returnList.add(vo);
         });
         return new PageResultData<List<ListUserTypeVo>>(returnList,LionPage,page.getTotalElements());
+    }
+
+    private void assertUserTypeNameExist(String userTypeName, Long id) {
+        QUserType qUserType = QUserType.userType;
+        UserType userType = jpaQueryFactory.selectFrom(qUserType).where(qUserType.userTypeName.eq(userTypeName)).fetchOne();
+        if ((Objects.isNull(id) && Objects.nonNull(userType)) || (Objects.nonNull(id) && Objects.nonNull(userType) && !Objects.equals(userType.getId(),id)) ){
+            BusinessException.throwException(MessageI18nUtil.getMessage("0000024",new Object[]{userTypeName}));
+        }
     }
 }

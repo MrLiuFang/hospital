@@ -138,4 +138,11 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
     @Query(" update Assets  set lastDataTime =:dateTime ,version = version+1 where id = :id ")
     public void updateLastDataTime(@Param("id")Long id, @Param("dateTime")LocalDateTime dateTime);
 
+    /**
+     * 根据类型统计
+     * @param assetsTypeId
+     * @return
+     */
+    public int countByAssetsTypeId(Long assetsTypeId);
+
 }

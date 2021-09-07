@@ -206,14 +206,14 @@ public class UserController extends BaseControllerImpl implements BaseController
     }
 
     @DeleteMapping("/type/delete")
-    @ApiOperation(value = "修改用户类型")
+    @ApiOperation(value = "删除用户类型")
     public IResultData deleteUserType(@RequestBody List<DeleteDto> deleteDtoList){
         userTypeService.delete(deleteDtoList);
         return ResultData.instance();
     }
 
     @GetMapping("/type/list")
-    @ApiOperation(value = "修改用户类型")
+    @ApiOperation(value = "用户类型列表")
     public IPageResultData<List<ListUserTypeVo>> listUserType(@ApiParam(value = "类型名称") String userTypeName, LionPage LionPage){
         return userTypeService.list(userTypeName, LionPage);
     }

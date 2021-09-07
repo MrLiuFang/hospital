@@ -1,7 +1,6 @@
 package com.lion.manage.dao.assets;
 
 import com.lion.core.LionPage;
-import com.lion.manage.entity.enums.AssetsType;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
@@ -14,5 +13,5 @@ import java.util.List;
  */
 public interface AssetsDaoEx {
 
-    Page list(String name, Long borrowUserId, List<Long> departmentIds, AssetsType type, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage);
+    Page list(String name, Long borrowUserId, List<Long> departmentIds, Long assetsTypeId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage);
 }

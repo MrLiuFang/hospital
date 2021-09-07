@@ -17,12 +17,10 @@ import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.AssetsBorrow;
 import com.lion.manage.entity.assets.dto.AddAssetsBorrowDto;
 import com.lion.manage.entity.assets.dto.ReturnAssetsBorrowDto;
-import com.lion.manage.entity.assets.dto.UpdateAssetsDto;
 import com.lion.manage.entity.assets.vo.ListAssetsBorrowVo;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.enums.AssetsType;
 import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoomSickbed;
@@ -37,12 +35,9 @@ import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
 import com.lion.manage.service.ward.WardService;
-import com.lion.upms.entity.role.Role;
-import com.lion.upms.entity.role.RoleUser;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.upms.expose.user.UserExposeService;
-import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
@@ -53,7 +48,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -160,9 +154,9 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
     }
 
     @Override
-    public IPageResultData<List<ListAssetsBorrowVo>> list(String name, Long borrowUserId, AssetsType type, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage) {
+    public IPageResultData<List<ListAssetsBorrowVo>> list(String name, Long borrowUserId, Long assetsTypeId, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage) {
         List<Long> departmentIds = departmentExposeService.responsibleDepartment(departmentId);
-        Page page = assetsDao.list(name, borrowUserId,departmentIds , type, assetsId, startDateTime, endDateTime, isReturn, lionPage);
+        Page page = assetsDao.list(name, borrowUserId,departmentIds , assetsTypeId, assetsId, startDateTime, endDateTime, isReturn, lionPage);
         List<MoreEntity> list = page.getContent();
         List<ListAssetsBorrowVo> returnList = new ArrayList<>();
         list.forEach(moreEntity -> {
