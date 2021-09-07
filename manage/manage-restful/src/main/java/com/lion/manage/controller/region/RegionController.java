@@ -88,7 +88,7 @@ public class RegionController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/list")
     @ApiOperation(value = "区域列表")
-    public IPageResultData<List<ListRegionVo>> list(@ApiParam(value = "区域名称") String name, @ApiParam(value = "建筑id")Long buildId, @ApiParam(value = "建筑楼层id")Long buildFloorId, LionPage lionPage){
+    public IPageResultData<List<ListRegionVo>> list(@ApiParam(value = "区域名称") String name,@ApiParam(value = "洗手规则模板id")Long washTemplateId, @ApiParam(value = "建筑id")Long buildId, @ApiParam(value = "建筑楼层id")Long buildFloorId, LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
@@ -99,6 +99,9 @@ public class RegionController extends BaseControllerImpl implements BaseControll
         }
         if (Objects.nonNull(buildFloorId)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_buildFloorId",buildFloorId);
+        }
+        if (Objects.nonNull(washTemplateId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_washTemplateId",washTemplateId);
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
