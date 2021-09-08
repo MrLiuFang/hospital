@@ -3,10 +3,7 @@ package com.lion.manage.entity.region.vo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.device.Device;
-import com.lion.device.entity.device.DeviceGroup;
-import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.region.Region;
-import com.lion.manage.entity.region.RegionExposeObject;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -30,6 +27,6 @@ public class DetailsRegionVo extends Region {
     @JsonIgnoreProperties(ignoreUnknown = true,value = {"regionId","buildFloorId","buildId","port","ip","createDateTime","updateDateTime","createUserId","updateUserId"})
     private List<Cctv> cctvs;
 
-    @ApiModelProperty(value = "公开对象")
-    private List<ExposeObject> exposeObjects;
+//    @ApiModelProperty(value = "公开对象")
+//    private List<ExposeObject> exposeObjects;
 }

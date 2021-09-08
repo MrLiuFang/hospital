@@ -2,10 +2,10 @@ package com.lion.common.utils;
 
 import com.lion.common.constants.RedisConstants;
 import com.lion.device.entity.device.Device;
-import com.lion.device.entity.device.DeviceGroupDevice;
+//import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.entity.tag.*;
 import com.lion.device.expose.device.DeviceExposeService;
-import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
+//import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.tag.*;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.build.Build;
@@ -15,6 +15,7 @@ import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.enums.WashDeviceType;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.entity.region.RegionDevice;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.WashDevice;
@@ -23,6 +24,7 @@ import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.manage.expose.region.RegionDeviceExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.rule.AlarmExposeService;
 import com.lion.manage.expose.rule.WashDeviceExposeService;
@@ -59,8 +61,11 @@ public class RedisUtil {
     @DubboReference
     private DeviceExposeService deviceExposeService;
 
+//    @DubboReference
+//    private DeviceGroupDeviceExposeService deviceGroupDeviceExposeService;
+
     @DubboReference
-    private DeviceGroupDeviceExposeService deviceGroupDeviceExposeService;
+    private RegionDeviceExposeService regionDeviceExposeService;
 
     @DubboReference
     private TagExposeService tagExposeService;
@@ -269,10 +274,13 @@ public class RedisUtil {
         if (Objects.isNull(deviceId)){
             return null;
         }
-        DeviceGroupDevice deviceGroupDevice = deviceGroupDeviceExposeService.findByDeviceId(deviceId);
-        if (Objects.nonNull(deviceGroupDevice)) {
-            Department department = departmentExposeService.find(deviceGroupDevice.getDeviceGroupId());
-            return department;
+        RegionDevice regionDevice = regionDeviceExposeService.find(deviceId);
+        if (Objects.nonNull(regionDevice)) {
+            Region region = regionExposeService.findById(regionDevice.getRegionId());
+            if (Objects.nonNull(region)) {
+                Department department = departmentExposeService.findById(region.getDepartmentId());
+                return department;
+            }
         }
         return null;
     }
@@ -424,9 +432,9 @@ public class RedisUtil {
             }
         }
         if (Objects.isNull(region)){
-            DeviceGroupDevice deviceGroupDevice = deviceGroupDeviceExposeService.findByDeviceId(deviceId);
-            if (Objects.nonNull(deviceGroupDevice)){
-                region = regionExposeService.find(deviceGroupDevice.getDeviceGroupId());
+            RegionDevice regionDevice = regionDeviceExposeService.find(deviceId);
+            if (Objects.nonNull(regionDevice)){
+                region = regionExposeService.find(regionDevice.getRegionId());
                 if (Objects.nonNull(region)){
                     redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION+deviceId,region.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                     redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);

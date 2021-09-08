@@ -43,4 +43,8 @@ public class WardRoomSickbed extends BaseEntity implements Serializable {
     @Column(name = "bed_code")
     @NotBlank(message = "{2000057}", groups = {Validator.Insert.class, Validator.Update.class})
     private String bedCode;
+
+    @ApiModelProperty(value = "区域id")
+    @Column(name = "region_id")
+    private Long regionId;
 }

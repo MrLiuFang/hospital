@@ -58,6 +58,9 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
 
     @Override
     public void assertCodeExist(String code, Long id) {
+        if (!StringUtils.hasText(code)) {
+            return;
+        }
         Role role = roleDao.findFirstByCode(code);
         if ((Objects.isNull(id) && Objects.nonNull(role)) ||(Objects.nonNull(id) && Objects.nonNull(role) && !Objects.equals(role.getId(),id))  ){
             BusinessException.throwException(MessageI18nUtil.getMessage("0000020"));

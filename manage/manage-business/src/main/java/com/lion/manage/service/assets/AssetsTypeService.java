@@ -8,9 +8,6 @@ import com.lion.manage.entity.assets.AssetsType;
 import com.lion.manage.entity.assets.dto.AddAssetsTypeDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsTypeDto;
 import com.lion.manage.entity.assets.vo.ListAssetsTypeVo;
-import com.lion.upms.entity.user.dto.AddUserTypeDto;
-import com.lion.upms.entity.user.dto.UpdateUserTypeDto;
-import com.lion.upms.entity.user.vo.ListUserTypeVo;
 
 import java.util.List;
 
@@ -41,9 +38,9 @@ public interface AssetsTypeService extends BaseService<AssetsType> {
 
     /**
      * 列表
-     * @param name
+     * @param assetsTypeName
      * @param LionPage
      * @return
      */
-    public IPageResultData<List<ListAssetsTypeVo>> list(String name, LionPage LionPage);
+    public IPageResultData<List<ListAssetsTypeVo>> list(String assetsTypeName, LionPage LionPage);
 }

@@ -10,16 +10,12 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.assets.AssetsDao;
 import com.lion.manage.dao.assets.AssetsTypeDao;
-import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.AssetsType;
 import com.lion.manage.entity.assets.QAssetsType;
 import com.lion.manage.entity.assets.dto.AddAssetsTypeDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsTypeDto;
 import com.lion.manage.entity.assets.vo.ListAssetsTypeVo;
 import com.lion.manage.service.assets.AssetsTypeService;
-import com.lion.upms.entity.user.QUserType;
-import com.lion.upms.entity.user.UserType;
-import com.lion.upms.entity.user.vo.ListUserTypeVo;
 import com.lion.utils.AssertUtil;
 import com.lion.utils.MessageI18nUtil;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -80,10 +76,10 @@ public class AssetsTypeServiceImpl extends BaseServiceImpl<AssetsType> implement
     }
 
     @Override
-    public IPageResultData<List<ListAssetsTypeVo>> list(String name, LionPage LionPage) {
+    public IPageResultData<List<ListAssetsTypeVo>> list(String assetsTypeName, LionPage LionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
-        if (StringUtils.hasText(name)) {
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_assetsTypeName", name);
+        if (StringUtils.hasText(assetsTypeName)) {
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_assetsTypeName", assetsTypeName);
         }
         LionPage.setJpqlParameter(jpqlParameter);
         Page<AssetsType> page = this.findNavigator(LionPage);

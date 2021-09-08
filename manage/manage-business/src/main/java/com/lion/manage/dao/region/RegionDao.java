@@ -70,4 +70,11 @@ public interface RegionDao extends BaseDao<Region> {
      * @return
      */
     public int countByWashTemplateId(Long washTemplateId);
+
+    /**
+     * 根据区域类型统计
+     * @param regionTypeId
+     * @return
+     */
+    public int countByRegionTypeId(Long regionTypeId);
 }

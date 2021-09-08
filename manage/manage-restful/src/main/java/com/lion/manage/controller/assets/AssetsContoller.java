@@ -453,8 +453,8 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/type/list")
     @ApiOperation(value = "资产类型列表")
-    public IPageResultData<List<ListAssetsTypeVo>> listUserType(@ApiParam(value = "类型名称") String userTypeName, LionPage LionPage){
-        return assetsTypeService.list(userTypeName, LionPage);
+    public IPageResultData<List<ListAssetsTypeVo>> listUserType(@ApiParam(value = "类型名称") String assetsTypeName, LionPage LionPage){
+        return assetsTypeService.list(assetsTypeName, LionPage);
     }
 
     @GetMapping("/type/details")
