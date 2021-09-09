@@ -5,7 +5,7 @@ import com.lion.device.entity.tag.TagRuleLog;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/4 上午11:02
  **/
 public interface TagRuleLogDao extends BaseDao<TagRuleLog> {

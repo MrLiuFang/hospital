@@ -7,7 +7,7 @@ import com.lion.manage.entity.rule.Alarm;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/4/27 下午8:16
  **/
 public interface AlarmExposeService extends BaseService<Alarm> {

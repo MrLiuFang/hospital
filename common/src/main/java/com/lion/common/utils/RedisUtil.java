@@ -19,6 +19,8 @@ import com.lion.manage.entity.region.RegionDevice;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.WashDevice;
+import com.lion.manage.entity.ward.WardRoom;
+import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
@@ -30,6 +32,8 @@ import com.lion.manage.expose.rule.AlarmExposeService;
 import com.lion.manage.expose.rule.WashDeviceExposeService;
 import com.lion.manage.expose.rule.WashDeviceTypeExposeService;
 import com.lion.manage.expose.rule.WashExposeService;
+import com.lion.manage.expose.ward.WardRoomExposeService;
+import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.PatientExposeService;
@@ -49,7 +53,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/4/25 下午4:55
  **/
 @Component
@@ -120,6 +124,12 @@ public class RedisUtil {
 
     @DubboReference
     private TagRuleExposeService tagRuleExposeService;
+
+    @DubboReference
+    private WardRoomSickbedExposeService wardRoomSickbedExposeService;
+
+    @DubboReference
+    private WardRoomExposeService wardRoomExposeService;
 
     public TemporaryPerson getTemporaryPerson(Long temporaryPersonId) {
         if (Objects.isNull(temporaryPersonId)){
@@ -925,6 +935,72 @@ public class RedisUtil {
             }
         }
         return tagRule;
+    }
+
+    public WardRoomSickbed getWardRoomSickbed(Long id) {
+        Object obj = redisTemplate.opsForValue().get(RedisConstants.WARD_ROOM_SICKBED+id);
+        if (Objects.nonNull(obj)) {
+            if (obj instanceof  WardRoomSickbed) {
+                return (WardRoomSickbed) obj;
+            }else {
+                redisTemplate.delete(RedisConstants.WARD_ROOM_SICKBED+id);
+            }
+        }
+        WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(id);
+        if (Objects.nonNull(wardRoomSickbed)) {
+            redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM_SICKBED+id,wardRoomSickbed,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+        }
+        return wardRoomSickbed;
+    }
+
+    public WardRoom getWardRoom(Long id) {
+        Object obj = redisTemplate.opsForValue().get(RedisConstants.WARD_ROOM+id);
+        if (Objects.nonNull(obj)) {
+            if (obj instanceof  WardRoom) {
+                return (WardRoom) obj;
+            }else {
+                redisTemplate.delete(RedisConstants.WARD_ROOM+id);
+            }
+        }
+        WardRoom wardRoom = wardRoomExposeService.findById(id);
+        if (Objects.nonNull(wardRoom)) {
+            redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM+id,wardRoom,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+        }
+        return wardRoom;
+    }
+
+    /**
+     * 获取宾人所在的区域
+     * @param patientId
+     * @return
+     */
+    public Region getPatientRegion(Long patientId) {
+        Patient patient = this.getPatient(patientId);
+        if (Objects.isNull(patient)) {
+            return null;
+        }
+        WardRoomSickbed wardRoomSickbed = this.getWardRoomSickbed(patient.getSickbedId());
+        if (Objects.isNull(wardRoomSickbed)) {
+            return null;
+        }
+        if (Objects.nonNull(wardRoomSickbed.getRegionId())) {
+            Region region = this.getRegion(wardRoomSickbed.getRegionId());
+            if (Objects.nonNull(region)) {
+                return region;
+            }
+        }
+
+        WardRoom wardRoom = this.getWardRoom(wardRoomSickbed.getWardRoomId());
+        if (Objects.isNull(wardRoom)) {
+            return null;
+        }
+        if (Objects.nonNull(wardRoom.getRegionId())) {
+            Region region = this.getRegion(wardRoom.getRegionId());
+            if (Objects.nonNull(region)) {
+                return region;
+            }
+        }
+        return null;
     }
 
 

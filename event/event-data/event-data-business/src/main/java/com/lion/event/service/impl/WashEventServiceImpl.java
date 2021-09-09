@@ -74,7 +74,7 @@ import java.util.*;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/1 下午6:11
  **/
 @Service
@@ -526,7 +526,7 @@ public class WashEventServiceImpl implements WashEventService {
                         if (userLastWashDto.getTime()<wash.getDuration()) {
                             update.set("ia",true);
                             update.set("at",SystemAlarmType.WDDBZSXSC.getKey());
-                            //doto 给硬件发消息
+                            // TODO 给硬件发消息
                             log.info("给硬件发送消息-洗手时长不够");
                             SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
                             systemAlarmDto.setDateTime(LocalDateTime.now());

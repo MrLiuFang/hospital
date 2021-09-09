@@ -8,7 +8,7 @@ import java.util.PrimitiveIterator;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/14 上午10:02
  **/
 public interface WashDeviceTypeService extends BaseService<WashDeviceType> {

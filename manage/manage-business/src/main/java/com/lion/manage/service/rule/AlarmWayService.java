@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/18 上午9:52
  **/
 public interface AlarmWayService extends BaseService<AlarmWay> {

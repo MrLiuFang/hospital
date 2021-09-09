@@ -11,9 +11,9 @@ import com.lion.device.entity.device.Device;
 import com.lion.device.entity.tag.Tag;
 import com.lion.event.service.CommonService;
 import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
+import com.lion.person.entity.enums.ActionMode;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
@@ -25,13 +25,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/15 下午2:43
  **/
 @Service
@@ -145,48 +147,121 @@ public class CommonServiceImpl implements CommonService {
      * @param ri
      * @param ti
      */
-    private void penaltyZoneAlarm(Type type,Long pi,Long ri, Long ti) {
+    private void penaltyZoneAlarm(Type type,Long pi,Long ri, Long ti) throws JsonProcessingException {
         Region region = redisUtil.getRegionById(ri);
         if (Objects.isNull(region)) {
             return;
         }
-        if (Objects.equals(region.isPublic,true)) {
-            List<ExposeObject> exposeObjects = redisTemplate.opsForList().range(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(),0,-1);
-            SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
-            systemAlarmDto.setDateTime(LocalDateTime.now());
-            systemAlarmDto.setType(type);
-            systemAlarmDto.setTagId(ti);
-            systemAlarmDto.setPeopleId(pi);
-            systemAlarmDto.setSystemAlarmType(SystemAlarmType.JRJQ);
-            systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-            systemAlarmDto.setRegionId(ri);
-            if (Objects.equals(type,Type.STAFF)) {
-                if (!exposeObjects.contains(ExposeObject.STAFF)) {
-                    try {
-                        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
+        Region patientRegion = null;
+        if (Objects.equals(type,Type.PATIENT)) {
+            Patient patient = redisUtil.getPatient(pi);
+            if (Objects.nonNull(patient) || Objects.isNull(patient.getActionMode())) {
+                return;
+            }
+            patientRegion = redisUtil.getPatientRegion(pi);
+            if (Objects.equals(patient.getActionMode(), ActionMode.NO_LIMIT) || Objects.equals(patient.getActionMode(), ActionMode.LIMIT)) {
+                return;
+            }else if (Objects.equals(patient.getActionMode(), ActionMode.NO_WALK)) {
+                if (StringUtils.hasText(patient.getTimeQuantum())) {
+                    if (!isCanWalk(patient.getTimeQuantum())) {
+                        if (!Objects.equals(patientRegion.getId(),region.getId())) {
+                            sendAlarm(type,pi,ri,ti);
+                        }
+                    }
+                }else {
+                    if (!Objects.equals(patientRegion.getId(),region.getId())) {
+                        sendAlarm(type,pi,ri,ti);
+                    }
+                }
+            }else if (Objects.equals(patient.getActionMode(), ActionMode.OUTPATIENT) || Objects.equals(patient.getActionMode(), ActionMode.PATIENT_VISITORS)) {
+                if (!isCanWalk(patient.getTimeQuantum())) {
+                    sendAlarm(type,pi,ri,ti);
+                }else {
+                    if (region.getTrafficLevel()>patient.getActionMode().getKey()) {
+                        sendAlarm(type,pi,ri,ti);
                     }
                 }
             }
-            if (Objects.equals(type,Type.PATIENT)) {
-                if (!exposeObjects.contains(ExposeObject.PATIENT)) {
-                    try {
-                        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
-                }
+        }
+//        if (Objects.equals(region.isPublic,true)) {
+//            List<ExposeObject> exposeObjects = redisTemplate.opsForList().range(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(),0,-1);
+//            SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+//            systemAlarmDto.setDateTime(LocalDateTime.now());
+//            systemAlarmDto.setType(type);
+//            systemAlarmDto.setTagId(ti);
+//            systemAlarmDto.setPeopleId(pi);
+//            systemAlarmDto.setSystemAlarmType(SystemAlarmType.JRJQ);
+//            systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
+//            systemAlarmDto.setRegionId(ri);
+//            if (Objects.equals(type,Type.STAFF)) {
+//                if (!exposeObjects.contains(ExposeObject.STAFF)) {
+//                    try {
+//                        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+//                    } catch (JsonProcessingException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//            if (Objects.equals(type,Type.PATIENT)) {
+//                if (!exposeObjects.contains(ExposeObject.PATIENT)) {
+//                    try {
+//                        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+//                    } catch (JsonProcessingException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//            if (Objects.equals(type,Type.MIGRANT)) {
+//                if (!exposeObjects.contains(ExposeObject.POSTDOCS)) {
+//                    try {
+//                        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+//                    } catch (JsonProcessingException e) {
+//                        e.printStackTrace();
+//                    }
+//                }
+//            }
+//        }
+    }
+
+    private Boolean isCanWalk(String time) throws JsonProcessingException {
+        List list = jacksonObjectMapper.readValue(time,List.class);
+        AtomicReference<Boolean> isCanWalk = new AtomicReference<>(false);
+        list.forEach(obj->{
+            List<String> list1 = (List<String>) obj;
+            LocalTime startTime = LocalTime.parse(list1.get(0)+"00");
+            LocalTime endTime = LocalTime.parse(list1.get(1)+"59");
+            LocalTime now = LocalTime.now();
+            if (now.isBefore(startTime) && now.isAfter(endTime)) {
+                isCanWalk.set(true);
             }
-            if (Objects.equals(type,Type.MIGRANT)) {
-                if (!exposeObjects.contains(ExposeObject.POSTDOCS)) {
-                    try {
-                        rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-                    } catch (JsonProcessingException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
+        });
+        return isCanWalk.get();
+    }
+
+    public static void main(String agr[]) throws JsonProcessingException {
+        String str = "[[\"09:00\",\"12:00\"],[\"13:00\",\"16:00\"]]";
+        List list = new ObjectMapper().readValue(str,List.class);
+        list.forEach(obj->{
+            List<String> list1 = (List<String>) obj;
+            list1.forEach(s -> {
+                System.out.println(s);
+            });
+        });
+    }
+
+    private void sendAlarm(Type type,Long pi,Long ri, Long ti){
+        SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+        systemAlarmDto.setDateTime(LocalDateTime.now());
+        systemAlarmDto.setType(type);
+        systemAlarmDto.setTagId(ti);
+        systemAlarmDto.setPeopleId(pi);
+        systemAlarmDto.setSystemAlarmType(SystemAlarmType.JRJQ);
+        systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
+        systemAlarmDto.setRegionId(ri);
+        try {
+            rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
         }
     }
 

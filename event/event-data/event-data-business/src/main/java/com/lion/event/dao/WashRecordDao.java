@@ -5,7 +5,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/5 上午8:44
  **/
 public interface WashRecordDao extends MongoRepository<WashRecord,String> , WashRecordDaoEx {

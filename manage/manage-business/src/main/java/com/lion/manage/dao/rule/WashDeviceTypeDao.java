@@ -7,7 +7,7 @@ import java.util.List;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/14 上午10:01
  **/
 public interface WashDeviceTypeDao extends BaseDao<WashDeviceType> {

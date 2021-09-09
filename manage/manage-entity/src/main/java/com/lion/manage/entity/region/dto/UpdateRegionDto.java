@@ -27,4 +27,10 @@ public class UpdateRegionDto extends Region {
 
     @ApiModelProperty(value = "病床ID")
     public List<Long> wardRoomSickbedIds;
+
+    @ApiModelProperty(value = "警示铃id")
+    public List<Long> warningBellIds;
+
+    @ApiModelProperty(value = "定位设备id")
+    public List<Long> deviceIds;
 }

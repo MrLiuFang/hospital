@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/16 下午2:44
  **/
 public enum WashEventType implements IEnum {

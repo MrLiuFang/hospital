@@ -12,7 +12,7 @@ import javax.persistence.AttributeConverter;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/4/29 下午4:46
  **/
 @Component(value = "deviceEnumPersistence")

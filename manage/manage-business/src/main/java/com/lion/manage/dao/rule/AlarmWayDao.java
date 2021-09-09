@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/18 上午9:50
  **/
 public interface AlarmWayDao extends BaseDao<AlarmWay> {

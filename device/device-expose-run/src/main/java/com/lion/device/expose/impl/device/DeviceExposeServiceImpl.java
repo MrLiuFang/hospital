@@ -104,4 +104,9 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     public List<Long> allId() {
         return deviceDao.allId();
     }
+
+    @Override
+    public List<Device> findByRegionId(Long regionId) {
+        return deviceDao.findByRegionId(regionId);
+    }
 }

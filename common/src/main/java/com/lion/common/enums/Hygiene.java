@@ -8,7 +8,7 @@ import java.util.Objects;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/15 上午10:57
  **/
 public enum Hygiene implements IEnum {

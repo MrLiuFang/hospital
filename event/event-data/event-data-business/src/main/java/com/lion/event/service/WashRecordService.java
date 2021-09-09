@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/5 上午8:46
  **/
 public interface WashRecordService {

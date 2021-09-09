@@ -6,7 +6,7 @@ import com.lion.device.entity.tag.TagLog;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/4 下午5:11
  **/
 public interface TagLogExposeService extends BaseService<TagLog> {

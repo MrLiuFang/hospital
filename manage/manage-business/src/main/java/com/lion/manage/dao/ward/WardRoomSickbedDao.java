@@ -2,6 +2,8 @@ package com.lion.manage.dao.ward;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.ward.WardRoomSickbed;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,4 +29,21 @@ public interface WardRoomSickbedDao extends BaseDao<WardRoomSickbed> ,WardRoomSi
      * @return
      */
     public List<WardRoomSickbed> findByWardRoomId(Long wardRoomId);
+
+    @Modifying
+    @Transactional
+    @Query( " update WardRoom set regionId =:regionId where id in :ids " )
+    public int updateRegionId(Long regionId,List<Long> ids);
+
+    @Modifying
+    @Transactional
+    @Query( " update WardRoom set regionId = null where regionId = :regionId " )
+    public int updateRegionIdIsNull(Long regionId);
+
+    /**
+     * 根据区域查询
+     * @param regionId
+     * @return
+     */
+    public List<WardRoomSickbed> findByRegionId(Long regionId);
 }

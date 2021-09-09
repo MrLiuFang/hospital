@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/4 上午11:02
  **/
 public interface TagRuleDao extends BaseDao<TagRule> {

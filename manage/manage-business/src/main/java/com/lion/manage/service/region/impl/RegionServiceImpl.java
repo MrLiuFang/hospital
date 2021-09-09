@@ -9,23 +9,23 @@ import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.region.RegionCctvDao;
 import com.lion.manage.dao.region.RegionDao;
-import com.lion.manage.dao.region.RegionExposeObjectDao;
 import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.region.dto.AddRegionDto;
 import com.lion.manage.entity.region.dto.UpdateRegionCoordinatesDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
+import com.lion.manage.expose.ward.WardRoomExposeService;
+import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionCctvService;
-import com.lion.manage.service.region.RegionExposeObjectService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.manage.service.region.RegionWarningBellService;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
@@ -35,7 +35,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -54,14 +53,14 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @Autowired
     private RegionCctvService regionCctvService;
 
-    @Autowired
-    private RegionExposeObjectService regionExposeObjectService;
+//    @Autowired
+//    private RegionExposeObjectService regionExposeObjectService;
 
     @Autowired
     private RegionCctvDao regionCctvDao;
 
-    @Autowired
-    private RegionExposeObjectDao regionExposeObjectDao;
+//    @Autowired
+//    private RegionExposeObjectDao regionExposeObjectDao;
 
     @Autowired
     private BuildService buildService;
@@ -84,6 +83,15 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @DubboReference
     private DeviceGroupDeviceExposeService deviceGroupDeviceExposeService;
 
+    @Autowired
+    private RegionWarningBellService regionWarningBellService;
+
+    @DubboReference
+    private WardRoomExposeService wardRoomExposeService;
+
+    @DubboReference
+    private WardRoomSickbedExposeService wardRoomSickbedExposeService;
+
     @Override
     public List<Region> find(Long departmentId) {
         return regionDao.findByDepartmentId(departmentId);
@@ -105,13 +113,16 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         assertDepartmentExist(region.departmentId);
         assertNameExist(region.getName(),null);
         assertDeviceGroupIsUse(region.getDeviceGroupId(),null);
-        if (addRegionDto.isPublic && (Objects.isNull(addRegionDto.getExposeObjects()) ||addRegionDto.getExposeObjects().size()<=0) ){
-            BusinessException.throwException(MessageI18nUtil.getMessage("2000078"));
-        }
+//        if (addRegionDto.isPublic && (Objects.isNull(addRegionDto.getExposeObjects()) ||addRegionDto.getExposeObjects().size()<=0) ){
+//            BusinessException.throwException(MessageI18nUtil.getMessage("2000078"));
+//        }
         region = save(region);
         regionCctvService.save(region.getId(),addRegionDto.getCctvIds());
-        regionExposeObjectService.save(region.getId(),addRegionDto.getExposeObjects());
-        persistenceRedis(region,addRegionDto.getExposeObjects(), region.getDeviceGroupId(),null);
+        regionWarningBellService.add(addRegionDto.getWarningBellIds(),region.getId());
+        wardRoomExposeService.updateRegionId(addRegionDto.wardRoomIds,region.getId());
+        wardRoomSickbedExposeService.updateRegionId(addRegionDto.getWardRoomSickbedIds(),region.getId());
+//        regionExposeObjectService.save(region.getId(),addRegionDto.getExposeObjects());
+        persistenceRedis(region, region.getDeviceGroupId(),null);
     }
 
     @Override
@@ -132,13 +143,16 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         assertDepartmentExist(region.departmentId);
         assertNameExist(region.getName(),region.getId());
         assertDeviceGroupIsUse(region.getDeviceGroupId(),region.getId());
-        if (updateRegionDto.isPublic && (Objects.isNull(updateRegionDto.getExposeObjects()) ||updateRegionDto.getExposeObjects().size()<=0) ){
-            BusinessException.throwException(MessageI18nUtil.getMessage("2000078"));
-        }
+//        if (updateRegionDto.isPublic && (Objects.isNull(updateRegionDto.getExposeObjects()) ||updateRegionDto.getExposeObjects().size()<=0) ){
+//            BusinessException.throwException(MessageI18nUtil.getMessage("2000078"));
+//        }
         update(region);
         regionCctvService.save(region.getId(),updateRegionDto.getCctvIds());
-        regionExposeObjectService.save(region.getId(),updateRegionDto.getExposeObjects());
-        persistenceRedis(region,updateRegionDto.getExposeObjects(), region.getDeviceGroupId(),oldDevideGroupId);
+        regionWarningBellService.add(updateRegionDto.getWarningBellIds(),region.getId());
+        wardRoomExposeService.updateRegionId(updateRegionDto.wardRoomIds,region.getId());
+        wardRoomSickbedExposeService.updateRegionId(updateRegionDto.getWardRoomSickbedIds(),region.getId());
+//        regionExposeObjectService.save(region.getId(),updateRegionDto.getExposeObjects());
+        persistenceRedis(region, region.getDeviceGroupId(),oldDevideGroupId);
     }
 
     @Override
@@ -169,9 +183,9 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
                 cctvExposeService.relationPosition(oldCctvIds,new ArrayList<Long>(),region.getBuildId(),region.getBuildFloorId(),deleteDto.getId(), region.getDepartmentId());
             }
             regionCctvDao.deleteByRegionId(deleteDto.getId());
-            regionExposeObjectDao.deleteByRegionId(deleteDto.getId());
+//            regionExposeObjectDao.deleteByRegionId(deleteDto.getId());
             wardRoomDao.deleteByWardId(deleteDto.getId());
-            persistenceRedis(region, Collections.EMPTY_LIST, null,region.getDeviceGroupId());
+            persistenceRedis(region,  null,region.getDeviceGroupId());
         });
     }
 
@@ -216,7 +230,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         }
     }
 
-    private void persistenceRedis(Region region, List<ExposeObject> exposeObjects,Long devideGroupId, Long oldDevideGroupId){
+    private void persistenceRedis(Region region, Long devideGroupId, Long oldDevideGroupId){
         if (Objects.nonNull(oldDevideGroupId)){
             List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(oldDevideGroupId);
             list.forEach(deviceGroupDevice -> {
@@ -229,13 +243,13 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
                 redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION + deviceGroupDevice.getDeviceId(), region.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });
         }
-        redisTemplate.delete(RedisConstants.REGION_EXPOSE_OBJECT+region.getId());
-        if (Objects.nonNull(exposeObjects) && exposeObjects.size()>0){
-            exposeObjects.forEach(exposeObject -> {
-                redisTemplate.opsForList().leftPush(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(),exposeObject);
-                redisTemplate.expire(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(), RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
-            });
-        }
+//        redisTemplate.delete(RedisConstants.REGION_EXPOSE_OBJECT+region.getId());
+//        if (Objects.nonNull(exposeObjects) && exposeObjects.size()>0){
+//            exposeObjects.forEach(exposeObject -> {
+//                redisTemplate.opsForList().leftPush(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(),exposeObject);
+//                redisTemplate.expire(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(), RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+//            });
+//        }
         redisTemplate.opsForValue().set(RedisConstants.REGION + region.getId(), region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.REGION_BUILD + region.getId(), region.getBuildId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.REGION_BUILD_FLOOR + region.getId(), region.getBuildFloorId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);

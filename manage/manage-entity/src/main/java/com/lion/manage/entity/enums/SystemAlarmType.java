@@ -9,7 +9,7 @@ import java.util.Objects;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/4/27 下午5:39
  **/
 public enum SystemAlarmType implements IEnum {

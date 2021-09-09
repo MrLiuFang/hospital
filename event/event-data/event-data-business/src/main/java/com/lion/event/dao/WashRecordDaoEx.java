@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/5 下午2:59
  **/
 public interface WashRecordDaoEx {

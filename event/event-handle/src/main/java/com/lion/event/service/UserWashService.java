@@ -8,7 +8,7 @@ import com.lion.upms.entity.user.User;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/2 上午10:45
  **/
 public interface UserWashService {

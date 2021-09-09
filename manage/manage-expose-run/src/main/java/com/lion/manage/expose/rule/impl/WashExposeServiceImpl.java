@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/4/24 下午3:43
  **/
 @DubboService(interfaceClass = WashExposeService.class)

@@ -8,7 +8,7 @@ import java.util.List;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/12 下午9:12
  **/
 public interface WashUserExposeService extends BaseService<WashUser> {

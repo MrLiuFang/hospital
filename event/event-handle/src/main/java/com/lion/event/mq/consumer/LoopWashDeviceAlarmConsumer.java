@@ -30,7 +30,7 @@ import java.util.Objects;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/19 下午3:44
  **/
 @Component
@@ -68,7 +68,7 @@ public class LoopWashDeviceAlarmConsumer implements RocketMQListener<MessageExt>
             if (Objects.isNull(state) || Objects.equals(RedisConstants.USER_WORK_STATE_END,state) || !Objects.equals(uuid,loopWashDeviceAlarmDto.getUuid())) {
                 return;
             }
-            log.info("给硬件发送提醒");
+
 //            List<Wash> list = redisUtil.getLoopWash();
 //            if (Objects.isNull(list) || list.size()<=0) {
 //                if (Objects.nonNull(loopWashDeviceAlarmDto.getUserId())) {

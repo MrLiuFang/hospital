@@ -7,8 +7,6 @@ import com.lion.exception.BusinessException;
 import com.lion.manage.dao.build.BuildFloorDao;
 import com.lion.manage.dao.region.RegionCctvDao;
 import com.lion.manage.dao.region.RegionDao;
-import com.lion.manage.dao.region.RegionExposeObjectDao;
-import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.service.build.BuildFloorService;
@@ -41,8 +39,8 @@ public class BuildFloorServiceImpl extends BaseServiceImpl<BuildFloor> implement
     @Autowired
     private RegionCctvDao regionCctvDao;
 
-    @Autowired
-    private RegionExposeObjectDao regionExposeObjectDao;
+//    @Autowired
+//    private RegionExposeObjectDao regionExposeObjectDao;
 
     @Autowired
     private RegionService regionService;

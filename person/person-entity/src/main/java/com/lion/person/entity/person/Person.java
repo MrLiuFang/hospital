@@ -81,15 +81,6 @@ public abstract class Person extends BaseEntity implements Serializable {
     @Column(name = "leave_emarks")
     private String leaveRemarks;
 
-    @ApiModelProperty(value = "行动限制")
-    @Column(name = "action_mode")
-    @Convert(converter = ActionMode.ActionModeConverter.class)
-    private ActionMode actionMode;
-
-    @ApiModelProperty(value = "可通行时间段  [[\"09\",\"19\"],[\"19\",\"21\"]]  json数据格式")
-    @Column(name = "time_quantum")
-    private String timeQuantum;
-
     @ApiModelProperty(value = "设备状态")
     @Column(name = "device_state")
     @Convert(converter = State.StateConverter.class)

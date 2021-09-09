@@ -38,34 +38,35 @@ public class WarningBellController extends BaseControllerImpl implements BaseCon
     private WarningBellService warningBellService;
 
     @PostMapping("/add")
-    @ApiOperation(value = "添加用户类型")
+    @ApiOperation(value = "添加警示铃")
     public IResultData addUserType(@RequestBody @Validated({Validator.Insert.class}) AddWarningBellDto addWarningBellDto){
         warningBellService.add(addWarningBellDto);
         return ResultData.instance();
     }
 
     @PutMapping("/update")
-    @ApiOperation(value = "修改用户类型")
+    @ApiOperation(value = "修改警示铃")
     public IResultData updateUserType(@RequestBody @Validated({Validator.Update.class}) UpdateWarningBellDto updateWarningBellDto){
         warningBellService.update(updateWarningBellDto);
         return ResultData.instance();
     }
 
     @DeleteMapping("/delete")
-    @ApiOperation(value = "删除用户类型")
+    @ApiOperation(value = "删除警示铃")
     public IResultData deleteUserType(@RequestBody List<DeleteDto> deleteDtoList){
         warningBellService.delete(deleteDtoList);
         return ResultData.instance();
     }
 
     @GetMapping("/list")
-    @ApiOperation(value = "用户类型列表")
+    @ApiOperation(value = "警示铃列表")
     public IPageResultData<List<ListWarningBellVo>> listUserType(@ApiParam(value = "名称") String name, @ApiParam(value = "设备编码") String code, @ApiParam(value = "设备id") String warningBellId, @ApiParam(value = "所属科室")Long departmentId, LionPage LionPage){
         return warningBellService.list(name, code, warningBellId, departmentId, LionPage);
     }
 
     @GetMapping("/details")
-    @ApiOperation(value = "用户类型详情")
+    @ApiOperation(value = "警示铃详情")
     public IResultData<DetailsUserTypeVo> detailsUserType(@ApiParam(value = "类型id") @NotNull(message = "{0000000}") Long id){
+        return ResultData.instance().setData(warningBellService.details(id));
     }
 }

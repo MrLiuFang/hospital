@@ -76,4 +76,11 @@ public interface DeviceExposeService extends BaseService<Device> {
 
     public List<Long> allId();
 
+    /**
+     * 根据区域查询设备
+     * @param regionId
+     * @return
+     */
+    public List<Device> findByRegionId(Long regionId);
+
 }

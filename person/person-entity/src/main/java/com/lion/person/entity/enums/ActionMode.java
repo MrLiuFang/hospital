@@ -14,7 +14,7 @@ import java.util.Objects;
  */
 public enum ActionMode implements IEnum {
 
-    NO_WALK(0, "禁足"), LIMIT(1, "限制"),NO_LIMIT(1, "不限制");
+    NO_WALK(-1, "禁足"), LIMIT(0, "限制"),NO_LIMIT(1, "不限制"),OUTPATIENT(2, "专科门诊患者"),PATIENT_VISITORS(3, "住院病患访客"),OTHER(4, "其它");
 
     private final int key;
 

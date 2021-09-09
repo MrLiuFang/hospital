@@ -9,29 +9,25 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
-import com.lion.manage.entity.assets.AssetsType;
-import com.lion.manage.entity.assets.dto.AddAssetsTypeDto;
-import com.lion.manage.entity.assets.dto.UpdateAssetsTypeDto;
-import com.lion.manage.entity.assets.vo.DetailsAssetsTypeVo;
-import com.lion.manage.entity.assets.vo.ListAssetsTypeVo;
+import com.lion.manage.dao.ward.WardRoomSickbedDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.enums.ExposeObject;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
-import com.lion.manage.entity.region.RegionExposeObject;
 import com.lion.manage.entity.region.RegionType;
 import com.lion.manage.entity.region.dto.*;
 import com.lion.manage.entity.region.vo.DetailsRegionTypeVo;
 import com.lion.manage.entity.region.vo.DetailsRegionVo;
 import com.lion.manage.entity.region.vo.ListRegionTypeVo;
 import com.lion.manage.entity.region.vo.ListRegionVo;
+import com.lion.manage.entity.ward.WardRoom;
+import com.lion.manage.expose.ward.WardRoomExposeService;
+import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionCctvService;
-import com.lion.manage.service.region.RegionExposeObjectService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.region.RegionTypeService;
 import io.swagger.annotations.Api;
@@ -73,8 +69,8 @@ public class RegionController extends BaseControllerImpl implements BaseControll
     @DubboReference
     private CctvExposeService cctvExposeService;
 
-    @Autowired
-    private RegionExposeObjectService regionExposeObjectService;
+//    @Autowired
+//    private RegionExposeObjectService regionExposeObjectService;
 
     @Autowired
     private BuildService buildService;
@@ -87,6 +83,12 @@ public class RegionController extends BaseControllerImpl implements BaseControll
 
     @Autowired
     private RegionTypeService regionTypeService;
+
+    @DubboReference
+    private WardRoomExposeService wardRoomExposeService;
+
+    @DubboReference
+    private WardRoomSickbedExposeService wardRoomSickbedExposeService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增区域")
@@ -149,7 +151,9 @@ public class RegionController extends BaseControllerImpl implements BaseControll
         if (Objects.nonNull(region)){
             DetailsRegionVo detailsRegionVo = new DetailsRegionVo();
             BeanUtils.copyProperties(region,detailsRegionVo);
-            detailsRegionVo.setDevices(deviceExposeService.findByDeviceGruopId(region.getDeviceGroupId()));
+            detailsRegionVo.setDevices(deviceExposeService.findByRegionId(region.getId()));
+            detailsRegionVo.setWardRooms(wardRoomExposeService.find(region.getId()));
+            detailsRegionVo.setWardRoomSickbeds(wardRoomSickbedExposeService.find(region.getId()));
             List<RegionCctv> list = regionCctvService.find(region.getId());
             List<Long> cctvIds = new ArrayList<>();
             list.forEach(regionCctv -> {
@@ -158,12 +162,12 @@ public class RegionController extends BaseControllerImpl implements BaseControll
             if (cctvIds.size()>0) {
                 detailsRegionVo.setCctvs(cctvExposeService.find(cctvIds));
             }
-            List<RegionExposeObject> regionExposeObjectList = regionExposeObjectService.find(region.getId());
-            List<ExposeObject> exposeObjectList = new ArrayList<>();
-            regionExposeObjectList.forEach(regionExposeObject -> {
-                exposeObjectList.add(regionExposeObject.getExposeObject());
-            });
-            detailsRegionVo.setExposeObjects(exposeObjectList);
+//            List<RegionExposeObject> regionExposeObjectList = regionExposeObjectService.find(region.getId());
+//            List<ExposeObject> exposeObjectList = new ArrayList<>();
+//            regionExposeObjectList.forEach(regionExposeObject -> {
+//                exposeObjectList.add(regionExposeObject.getExposeObject());
+//            });
+//            detailsRegionVo.setExposeObjects(exposeObjectList);
             resultData.setData(detailsRegionVo);
         }
         return resultData;

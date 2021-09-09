@@ -6,7 +6,7 @@ import javax.print.attribute.standard.PrinterURI;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/4/23 下午4:35
  **/
 public class RedisConstants {
@@ -259,6 +259,16 @@ public class RedisConstants {
      * 洗手规则模板(key:washTemplateId,value:DetailsWashTemplateVo)
      */
     public static final String WASH_TEMPLATE = "wash_template_";
+
+    /**
+     * 病床(key:wardRoomSickbedId,value:WardRoomSickbed)
+     */
+    public static final String WARD_ROOM_SICKBED ="ward_room_sickbed_";
+
+    /**
+     * 病房(key:wardRoomId,value:WardRoom)
+     */
+    public static final String WARD_ROOM ="ward_room";
 
     /**
      * 缓存过期时间

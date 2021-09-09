@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.LionObjectMapper;
 import com.lion.core.persistence.Validator;
+import com.lion.person.entity.enums.ActionMode;
+import com.lion.person.entity.enums.NurseLevel;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,10 +14,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.validator.constraints.Length;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Past;
@@ -79,6 +78,22 @@ public class Patient extends Person implements Serializable {
     @Column(name = "level")
     @NotNull(message = "{1000003}", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer level;
+
+//    @ApiModelProperty(value = "护理级别")
+//    @Column(name = "nurse_level")
+//    @NotNull(message = "{1000048}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @Convert(converter = NurseLevel.NurseLevelConverter.class)
+//    private NurseLevel nurseLevel;
+
+    @ApiModelProperty(value = "行动限制")
+    @Column(name = "action_mode")
+    @Convert(converter = ActionMode.ActionModeConverter.class)
+    private ActionMode actionMode;
+
+
+    @ApiModelProperty(value = "可通行时间段 [[\"09:00\",\"12:00\"],[\"13:00\",\"16:00\"]] json数据格式,时间范围不能乱,否则会影响警告")
+    @Column(name = "time_quantum")
+    private String timeQuantum;
 
     @ApiModelProperty(value = "备注")
     @Column(name = "remarks")

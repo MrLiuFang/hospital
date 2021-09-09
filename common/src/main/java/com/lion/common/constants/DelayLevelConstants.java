@@ -2,7 +2,7 @@ package com.lion.common.constants;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/4/25 下午4:07
  **/
 public class DelayLevelConstants {

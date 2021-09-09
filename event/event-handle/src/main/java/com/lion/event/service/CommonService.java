@@ -12,7 +12,7 @@ import com.lion.upms.entity.user.User;
 
 /**
  * @Author Mr.Liu
- * @Description //TODO
+ * @Description
  * @Date 2021/5/15 下午2:41
  **/
 public interface CommonService {

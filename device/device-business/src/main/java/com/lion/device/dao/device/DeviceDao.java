@@ -5,6 +5,7 @@ import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.State;
+import com.lion.manage.entity.region.Region;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -88,4 +89,11 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
     @Transactional
     @Query(" update Device set previousDisinfectDate =:previousDisinfectDate ,version=version+1 where id = :id ")
     public void updateDisinfectDate(@Param("id")Long id,@Param("previousDisinfectDate") LocalDate previousDisinfectDate);
+
+    /**
+     * 根据区域查询设备
+     * @param regionId
+     * @return
+     */
+    public List<Device> findByRegionId(Long regionId);
 }
