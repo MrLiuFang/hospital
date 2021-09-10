@@ -190,6 +190,7 @@ public class WashEventServiceImpl implements WashEventService {
             BeanUtils.copyProperties(user,vo);
             vo.setHeadPortrait(user.getHeadPortrait());
             vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+            vo.setUserType(userTypeExposeService.findById(user.getUserTypeId()));
             Department department = departmentUserExposeService.findDepartment(userId);
             if (Objects.nonNull(department)){
                 vo.setDepartmentName(department.getName());
@@ -604,6 +605,7 @@ public class WashEventServiceImpl implements WashEventService {
             vo.setUserName(user.getName());
             vo.setHeadPortrait(user.getHeadPortrait());
             vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+            vo.setUserType(userTypeExposeService.findById(user.getUserTypeId()));
             Department department = departmentUserExposeService.findDepartment(vo.getUserId());
             if (Objects.nonNull(department)) {
                 vo.setDepartmentName(department.getName());

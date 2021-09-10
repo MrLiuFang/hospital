@@ -1,6 +1,7 @@
 package com.lion.upms.entity.user.vo;
 
 import com.lion.upms.entity.user.User;
+import com.lion.upms.entity.user.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,4 +23,7 @@ public class ListUserVo extends User {
 
     @ApiModelProperty(value = "头像")
     private String headPortraitUrl;
+
+    @ApiModelProperty(value = "用户类型")
+    private UserType userType;
 }

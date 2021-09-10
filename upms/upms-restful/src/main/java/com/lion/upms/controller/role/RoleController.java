@@ -7,6 +7,7 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
+import com.lion.exception.BusinessException;
 import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.role.dto.AddRoleDto;
 import com.lion.upms.entity.role.dto.UpdateRoleDto;
@@ -16,6 +17,7 @@ import com.lion.upms.entity.role.vo.PageRoleVo;
 import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
+import com.lion.utils.MessageI18nUtil;
 import io.swagger.annotations.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Mr.Liu
@@ -51,7 +54,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
         Role role = new Role();
         BeanUtil.copyProperties(addRoleDto,role, CopyOptions.create().setIgnoreNullValue(true).setIgnoreError(true));
         roleService.assertNameExist(role.getName(),null);
-        roleService.assertCodeExist(role.getCode(),null);
+//        roleService.assertCodeExist(role.getCode(),null);
         roleService.save(role);
         return ResultData.instance();
     }
@@ -91,7 +94,13 @@ public class RoleController extends BaseControllerImpl implements BaseController
         Role role = new Role();
         BeanUtils.copyProperties(updateRoleDto,role);
         roleService.assertNameExist(role.getName(),role.getId());
-        roleService.assertCodeExist(role.getCode(),role.getId());
+//        roleService.assertCodeExist(role.getCode(),role.getId());
+        Role old = roleService.findById(role.getId());
+        if (Objects.equals(role.getIsDefault(),true)) {
+            if (!Objects.equals(old.getName(),role.getName())){
+                BusinessException.throwException(MessageI18nUtil.getMessage("0000025"));
+            }
+        }
         roleService.update(role);
         return ResultData.instance();
     }

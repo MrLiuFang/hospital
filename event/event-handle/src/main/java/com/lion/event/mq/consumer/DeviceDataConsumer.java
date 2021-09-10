@@ -113,14 +113,14 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 tag = redisUtil.getTag(deviceDataDto.getTagId());
             }
             if (Objects.nonNull(tag)){
-                user = redisUtil.getUser(tag.getId());
-                if (Objects.isNull(user)) {
+                Type type = (Type) redisTemplate.opsForValue().get(RedisConstants.TAG_BIND_TYPE+tag.getId());
+                if (Objects.equals(type,Type.STAFF)) {
+                    user = redisUtil.getUser(tag.getId());
+                }else if (Objects.equals(type,Type.PATIENT)) {
                     patient = redisUtil.getPatientByTagId(tag.getId());
-                }
-                if (Objects.isNull(patient) && Objects.isNull(user)) {
+                }else if (Objects.equals(type,Type.MIGRANT)) {
                     temporaryPerson = redisUtil.getTemporaryPersonByTagId(tag.getId());
-                }
-                if (Objects.isNull(temporaryPerson) && Objects.isNull(patient) && Objects.isNull(user)) {
+                }else if (Objects.equals(type,Type.ASSET)) {
                     assets = redisUtil.getAssets(tag.getId());
                 }
             }else {

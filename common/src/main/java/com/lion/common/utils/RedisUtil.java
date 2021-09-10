@@ -1,6 +1,7 @@
 package com.lion.common.utils;
 
 import com.lion.common.constants.RedisConstants;
+import com.lion.common.enums.Type;
 import com.lion.device.entity.device.Device;
 //import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.entity.tag.*;
@@ -164,6 +165,7 @@ public class RedisUtil {
 
         if (Objects.nonNull(obj) && !(obj instanceof Long)){
             redisTemplate.delete(RedisConstants.TAG_TEMPORARY_PERSON + tagId);
+            redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tagId);
             obj = null;
         }
         if (Objects.nonNull(obj)){
@@ -196,10 +198,12 @@ public class RedisUtil {
                     redisTemplate.opsForValue().set(RedisConstants.TAG_TEMPORARY_PERSON + tagId, temporaryPerson.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                     redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON_TAG + temporaryPerson.getId(), tagId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                     redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON + temporaryPerson.getId(), temporaryPerson, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.MIGRANT, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }else {
                     redisTemplate.delete(RedisConstants.TAG_TEMPORARY_PERSON + tagId);
                     redisTemplate.delete(RedisConstants.TEMPORARY_PERSON_TAG +  tagPostdocs.getPostdocsId());
                     redisTemplate.delete(RedisConstants.TEMPORARY_PERSON + tagPostdocs.getPostdocsId());
+                    redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tagId);
                 }
             }
         }
@@ -216,6 +220,7 @@ public class RedisUtil {
 
         if (Objects.nonNull(obj) && !(obj instanceof Long)){
             redisTemplate.delete(RedisConstants.TAG_PATIENT + tagId);
+            redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tagId);
             obj = null;
         }
         if (Objects.nonNull(obj)){
@@ -248,10 +253,12 @@ public class RedisUtil {
                     redisTemplate.opsForValue().set(RedisConstants.TAG_PATIENT + tagId, patient.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                     redisTemplate.opsForValue().set(RedisConstants.PATIENT_TAG + patient.getId(), tagId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                     redisTemplate.opsForValue().set(RedisConstants.PATIENT + patient.getId(), patient, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.PATIENT, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }else {
                     redisTemplate.delete(RedisConstants.TAG_PATIENT + tagId);
                     redisTemplate.delete(RedisConstants.PATIENT_TAG +  tagPatient.getPatientId());
                     redisTemplate.delete(RedisConstants.PATIENT + tagPatient.getPatientId());
+                    redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tagId);
                 }
             }
         }
@@ -489,6 +496,7 @@ public class RedisUtil {
 
         if (Objects.nonNull(obj) && !(obj instanceof Long)){
             redisTemplate.delete(RedisConstants.TAG_USER + tagId);
+            redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tagId);
             obj = null;
         }
         if (Objects.nonNull(obj)){
@@ -519,10 +527,12 @@ public class RedisUtil {
                     redisTemplate.opsForValue().set(RedisConstants.TAG_USER + tagId, user.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                     redisTemplate.opsForValue().set(RedisConstants.USER_TAG + user.getId(), tagId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                     redisTemplate.opsForValue().set(RedisConstants.USER + user.getId(), user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.ASSET, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 }else {
                     redisTemplate.delete(RedisConstants.TAG_USER + tagId);
                     redisTemplate.delete(RedisConstants.USER_TAG + userId);
                     redisTemplate.delete(RedisConstants.USER + userId);
+                    redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tagId);
                 }
             }
         }
@@ -894,6 +904,7 @@ public class RedisUtil {
 
         if (Objects.nonNull(assetsId) && !(assetsId instanceof Long)){
             redisTemplate.delete(RedisConstants.TAG_ASSETS+tagId);
+            redisTemplate.delete(RedisConstants.TAG_BIND_TYPE+tagId);
             assetsId = null;
         }
         if (Objects.nonNull(assetsId)) {
@@ -905,6 +916,7 @@ public class RedisUtil {
             if (Objects.nonNull(assets)) {
                 redisTemplate.opsForValue().set(RedisConstants.TAG_ASSETS + tagId, assets.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 redisTemplate.opsForValue().set(RedisConstants.ASSETS + assets.getId(), assets, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.ASSET, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             }
         }
         return assets;

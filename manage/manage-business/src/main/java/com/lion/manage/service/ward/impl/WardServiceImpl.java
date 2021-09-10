@@ -1,14 +1,13 @@
 package com.lion.manage.service.ward.impl;
 
+import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
-import com.lion.manage.dao.department.DepartmentDao;
 import com.lion.manage.dao.ward.WardDao;
 import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
 import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.Ward;
 import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.entity.ward.WardRoomSickbed;
@@ -24,17 +23,13 @@ import com.lion.manage.service.ward.WardService;
 import com.lion.utils.MessageI18nUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 
 /**
  * @author Mr.Liu
@@ -65,14 +60,20 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
     @Autowired
     private RegionService regionService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     @Transactional
-    public int deleteByDepartmentId(Long departmentId) {
+    public void deleteByDepartmentId(Long departmentId) {
         List<Ward> list = wardDao.findByDepartmentId(departmentId);
+        List<DeleteDto> deleteDtoList = new ArrayList<DeleteDto>();
         list.forEach(ward -> {
-            wardRoomService.deleteByWardId(ward.getId());
+            DeleteDto  deleteDto = new DeleteDto();
+            deleteDto.setId(ward.getId());
+            deleteDtoList.add(deleteDto);
         });
-        return wardDao.deleteByDepartmentId(departmentId);
+        delete(deleteDtoList);
     }
 
     @Override
@@ -104,6 +105,11 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
             List<WardRoom> list = wardRoomDao.findByWardId(deleteDto.getId());
             list.forEach(wardRoom -> {
                 wardRoomSickbedDao.deleteByWardRoomId(wardRoom.getId());
+                List<WardRoomSickbed> wardRoomSickbeds = wardRoomSickbedDao.findByWardRoomId(wardRoom.getId());
+                wardRoomSickbeds.forEach(wardRoomSickbed -> {
+                    redisTemplate.delete(RedisConstants.WARD_ROOM_SICKBED+wardRoomSickbed.getId());
+                });
+                redisTemplate.delete(RedisConstants.WARD_ROOM+wardRoom.getId());
             });
             wardRoomDao.deleteByWardId(deleteDto.getId());
             deleteById(deleteDto.getId());

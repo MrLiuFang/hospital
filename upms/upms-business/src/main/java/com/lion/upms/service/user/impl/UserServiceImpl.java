@@ -309,6 +309,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
                 userVo.setRoleName(role.getName());
             }
             userVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+            userVo.setUserType(userTypeService.findById(user.getUserTypeId()));
             returnList.add(userVo);
         });
         return returnList;

@@ -1,10 +1,12 @@
 package com.lion.manage.service.ward.impl;
 
+import com.lion.common.constants.RedisConstants;
 import com.lion.core.LionPage;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
 import com.lion.manage.entity.ward.WardRoom;
+import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.entity.ward.dto.AddWardRoomDto;
 import com.lion.manage.entity.ward.dto.UpdateWardRoomDto;
 import com.lion.manage.service.region.RegionService;
@@ -13,11 +15,13 @@ import com.lion.manage.service.ward.WardRoomSickbedService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -39,6 +43,9 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
     @Autowired
     private RegionService regionService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @Override
     @Transactional
     public int deleteByWardId(Long wardId) {
@@ -47,6 +54,7 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
             wardRoomSickbedDao.deleteByWardRoomId(wardRoom.getId());
         });
         return wardRoomDao.deleteByWardId(wardId);
+
     }
 
     @Override
@@ -77,7 +85,7 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
                 } else if ((dto instanceof UpdateWardRoomDto)) {
                     wardRoomSickbedService.save(((UpdateWardRoomDto) dto).getWardRoomSickbed(), wardRoom.getId());
                 }
-
+                redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM+wardRoom.getId(),wardRoom, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });
         }
 
@@ -92,6 +100,11 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
                     }
                     if (isDelete) {
                         deleteById(wardRoom.getId());
+                        redisTemplate.delete(RedisConstants.WARD_ROOM+wardRoom.getId());
+                        List<WardRoomSickbed> wardRoomSickbeds = wardRoomSickbedDao.findByWardRoomId(wardRoom.getId());
+                        wardRoomSickbeds.forEach(wardRoomSickbed -> {
+                            redisTemplate.delete(RedisConstants.WARD_ROOM_SICKBED+wardRoomSickbed.getId());
+                        });
                         wardRoomSickbedDao.deleteByWardRoomId(wardRoom.getId());
                     }
                 }

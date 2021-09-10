@@ -17,9 +17,8 @@ public interface WardService extends BaseService<Ward> {
     /**
      * 根据科室删除
      * @param departmentId
-     * @return
      */
-    public int deleteByDepartmentId(Long departmentId);
+    public void deleteByDepartmentId(Long departmentId);
 
     /**
      * 新增病房

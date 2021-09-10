@@ -1,6 +1,7 @@
 package com.lion.device.expose.impl.tag;
 
 import com.lion.common.constants.RedisConstants;
+import com.lion.common.enums.Type;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagDao;
 import com.lion.device.dao.tag.TagPostdocsDao;
@@ -81,6 +82,7 @@ public class TagPostdocsExposeServiceImpl extends BaseServiceImpl<TagPostdocs> i
         tagService.update(tag);
         redisTemplate.opsForValue().set(RedisConstants.TAG_TEMPORARY_PERSON+tag.getId(),postdocsId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON_TAG+postdocsId,tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.MIGRANT, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -88,19 +90,17 @@ public class TagPostdocsExposeServiceImpl extends BaseServiceImpl<TagPostdocs> i
         TagPostdocs tagPostdocs = tagPostdocsDao.findFirstByPostdocsIdAndUnbindingTimeIsNull(postdocsId);
         if (Objects.equals(true,isDelete)) {
             tagPostdocsDao.deleteByPostdocsId(postdocsId);
-        }else {
-            if (Objects.nonNull(tagPostdocs)) {
-                tagPostdocs.setUnbindingTime(LocalDateTime.now());
-                update(tagPostdocs);
-                tagLogService.add( TagLogContent.unbinding,tagPostdocs.getTagId());
-            }
         }
         if (Objects.nonNull(tagPostdocs)) {
+            tagPostdocs.setUnbindingTime(LocalDateTime.now());
+            update(tagPostdocs);
+            tagLogService.add( TagLogContent.unbinding,tagPostdocs.getTagId());
             Tag tag = tagService.findById(tagPostdocs.getTagId());
             tag.setUseState(TagUseState.NOT_USED);
             tagService.update(tag);
             redisTemplate.delete(RedisConstants.TAG_TEMPORARY_PERSON + tagPostdocs.getTagId());
             redisTemplate.delete(RedisConstants.TEMPORARY_PERSON_TAG + tagPostdocs.getPostdocsId());
+            redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tagPostdocs.getTagId());
         }
     }
 

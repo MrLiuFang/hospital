@@ -271,6 +271,11 @@ public class RedisConstants {
     public static final String WARD_ROOM ="ward_room";
 
     /**
+     * 标签绑定类型
+     */
+    public static final String TAG_BIND_TYPE = "tag_bind_type";
+
+    /**
      * 缓存过期时间
      */
     public static final Integer EXPIRE_TIME = 364;

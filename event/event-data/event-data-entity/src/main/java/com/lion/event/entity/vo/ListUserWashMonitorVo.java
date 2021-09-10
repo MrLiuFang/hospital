@@ -1,6 +1,7 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.upms.entity.user.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -32,6 +33,9 @@ public class ListUserWashMonitorVo {
 
     @ApiModelProperty(value = "头像")
     private String headPortraitUrl;
+
+    @ApiModelProperty(value = "用户类型")
+    private UserType userType;
 
     @ApiModelProperty(value = "是否有洗手规则")
     private Boolean isExistWashRule = true;

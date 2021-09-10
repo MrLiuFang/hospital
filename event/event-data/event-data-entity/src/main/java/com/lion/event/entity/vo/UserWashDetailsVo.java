@@ -2,6 +2,7 @@ package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.upms.entity.user.User;
+import com.lion.upms.entity.user.UserType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -24,6 +25,9 @@ public class UserWashDetailsVo extends User {
 
     @ApiModelProperty(value = "头像")
     private String headPortraitUrl;
+
+    @ApiModelProperty(value = "用户类型")
+    private UserType userType;
 
     @ApiModelProperty(value = "合规率")
     private BigDecimal conformance = new BigDecimal(0);

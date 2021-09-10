@@ -1,5 +1,6 @@
 package com.lion.manage.service.ward.impl;
 
+import com.lion.common.constants.RedisConstants;
 import com.lion.core.LionPage;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
@@ -8,10 +9,12 @@ import com.lion.manage.service.ward.WardRoomSickbedService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -23,6 +26,9 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
 
     @Autowired
     private WardRoomSickbedDao wardRoomSickbedDao;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Override
     public void save(List<? extends WardRoomSickbed> addWardRoomSickbedDto, Long wardRoomId) {
@@ -42,6 +48,7 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
                 BeanUtils.copyProperties(dto,wardRoomSickbed);
                 wardRoomSickbed.setWardRoomId(wardRoomId);
                 save(wardRoomSickbed);
+                redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM_SICKBED+wardRoomSickbed.getId(),wardRoomSickbed,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             }
         });
 
@@ -54,6 +61,7 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
             }
             if (isDelete) {
                 deleteById(wrs.getId());
+                redisTemplate.delete(RedisConstants.WARD_ROOM_SICKBED+wrs.getId());
             }
         });
     }

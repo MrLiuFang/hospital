@@ -1,6 +1,7 @@
 package com.lion.device.expose.impl.tag;
 
 import com.lion.common.constants.RedisConstants;
+import com.lion.common.enums.Type;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagDao;
 import com.lion.device.dao.tag.TagPatientDao;
@@ -87,6 +88,7 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
         tagService.update(tag);
         redisTemplate.opsForValue().set(RedisConstants.TAG_PATIENT+tag.getId(),patientId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.PATIENT_TAG+patientId,tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.PATIENT, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
     @Override
@@ -95,19 +97,19 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
         TagPatient tagPatient = tagPatientDao.findFirstByPatientIdAndUnbindingTimeIsNull(patientId);
         if (Objects.equals(true,isDelete)) {
             tagPatientDao.deleteByPatientId(patientId);
-        }else {
-            if (Objects.nonNull(tagPatient)) {
-                tagPatient.setUnbindingTime(LocalDateTime.now());
-                update(tagPatient);
-                tagLogService.add( TagLogContent.unbinding,tagPatient.getTagId());
-            }
+            Long tagId = (Long) redisTemplate.opsForValue().get(RedisConstants.PATIENT_TAG+patientId);
+            redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tagId);
         }
         if (Objects.nonNull(tagPatient)) {
+            tagPatient.setUnbindingTime(LocalDateTime.now());
+            update(tagPatient);
+            tagLogService.add( TagLogContent.unbinding,tagPatient.getTagId());
             Tag tag = tagService.findById(tagPatient.getTagId());
             tag.setUseState(TagUseState.NOT_USED);
             tagService.update(tag);
             redisTemplate.delete(RedisConstants.TAG_PATIENT + tagPatient.getTagId());
             redisTemplate.delete(RedisConstants.PATIENT_TAG + tagPatient.getPatientId());
+            redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tagPatient.getTagId());
         }
 
     }
