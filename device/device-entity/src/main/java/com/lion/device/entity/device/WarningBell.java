@@ -23,7 +23,7 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_warning_well" )
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "警示铃")

@@ -34,7 +34,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "t_user"
         ,indexes = {@Index(columnList = "name"),@Index(columnList = "username"),@Index(columnList = "email"),@Index(columnList = "create_date_time"),@Index(columnList = "user_type_id") })
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"password","createDateTime","updateDateTime","createUserId","updateUserId"})

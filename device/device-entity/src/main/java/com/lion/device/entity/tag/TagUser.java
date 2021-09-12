@@ -26,7 +26,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_tag_user" ,indexes = {@Index(columnList = "tag_id"),@Index(columnList = "user_id")})
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})

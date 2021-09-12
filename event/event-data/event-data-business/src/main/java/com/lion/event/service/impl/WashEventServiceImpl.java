@@ -312,11 +312,14 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
-    public IPageResultData<List<ListWashEventVo>> listWashEvent(Boolean ia, WashEventType type, Long regionId, Long departmentId, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<ListWashEventVo>> listWashEvent(Boolean ia, Long userTypeId, WashEventType type, Long regionId, Long departmentId, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(ia)) {
             criteria.and("ia").is(ia);
+        }
+        if (Objects.nonNull(userTypeId)) {
+            criteria.and("py").is(userTypeId);
         }
         if (Objects.nonNull(type)) {
             criteria.and("ai").is(ia);
@@ -375,7 +378,7 @@ public class WashEventServiceImpl implements WashEventService {
 
     @Override
     public void listWashEventExport(Boolean ia, WashEventType type, Long regionId, Long departmentId, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
-        IPageResultData<List<ListWashEventVo>> pageResultData = listWashEvent(ia, type, regionId, departmentId, userIds, startDateTime, endDateTime, lionPage);
+        IPageResultData<List<ListWashEventVo>> pageResultData = listWashEvent(ia, null , type, regionId, departmentId, userIds, startDateTime, endDateTime, lionPage);
         List<ListWashEventVo> list = pageResultData.getData();
         BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
         Font fontChinese = new Font(bfChinese);

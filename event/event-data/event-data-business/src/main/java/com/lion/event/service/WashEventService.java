@@ -86,6 +86,7 @@ public interface WashEventService {
     /**
      * 手卫生行为包报表
      * @param ia
+     * @param userTypeId
      * @param type
      * @param regionId
      * @param departmentId
@@ -95,7 +96,7 @@ public interface WashEventService {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListWashEventVo>> listWashEvent(Boolean ia,  WashEventType type,Long regionId,Long departmentId,List<Long> userIds,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<ListWashEventVo>> listWashEvent(Boolean ia,Long userTypeId,  WashEventType type,Long regionId,Long departmentId,List<Long> userIds,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      * 手卫生行为包报表导出

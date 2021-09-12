@@ -27,7 +27,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_tag_rule" ,indexes = {@Index(columnList = "name")})
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "标签规则")

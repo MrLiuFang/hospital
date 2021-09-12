@@ -24,7 +24,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_patient_nurse",indexes = {@Index(columnList = "patient_id")})
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "患者负责的护士")

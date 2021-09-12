@@ -22,7 +22,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_patient_transfer",indexes = {@Index(columnList = "patient_id")})
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "患者转移")

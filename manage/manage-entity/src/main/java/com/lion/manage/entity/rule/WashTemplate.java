@@ -24,7 +24,7 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_wash_template",indexes = {@Index(columnList = "name")})
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "洗手规则模板")

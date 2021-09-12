@@ -27,7 +27,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_temp_leave",indexes = {@Index(columnList = "patient_id")})
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "临时离开权限")

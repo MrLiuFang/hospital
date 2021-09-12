@@ -22,7 +22,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_restricted_area",indexes = {@Index(columnList = "person_id")})
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "限制区域")

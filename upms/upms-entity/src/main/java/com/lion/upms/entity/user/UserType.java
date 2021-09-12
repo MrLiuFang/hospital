@@ -24,7 +24,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_user_type")
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "用户类型")

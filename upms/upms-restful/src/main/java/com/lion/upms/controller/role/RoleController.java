@@ -96,7 +96,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
         roleService.assertNameExist(role.getName(),role.getId());
 //        roleService.assertCodeExist(role.getCode(),role.getId());
         Role old = roleService.findById(role.getId());
-        if (Objects.equals(role.getIsDefault(),true)) {
+        if (Objects.equals(old.getIsDefault(),true)) {
             if (!Objects.equals(old.getName(),role.getName())){
                 BusinessException.throwException(MessageI18nUtil.getMessage("0000025"));
             }

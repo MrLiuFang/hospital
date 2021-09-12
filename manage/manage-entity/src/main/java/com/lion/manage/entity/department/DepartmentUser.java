@@ -24,7 +24,7 @@ import java.io.Serializable;
 @Entity
 @Table(name = "t_department_user"
         ,indexes = {@Index(columnList = "department_id"),@Index(columnList = "user_id")})
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})

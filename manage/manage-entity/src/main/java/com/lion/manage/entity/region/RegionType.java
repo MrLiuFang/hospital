@@ -21,7 +21,7 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_region_type" )
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "区域类型")

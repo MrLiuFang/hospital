@@ -22,7 +22,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_temporary_person",indexes = {@Index(columnList = "name"),@Index(columnList = "id_no"),@Index(columnList = "phone_number")})
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "临时人员")

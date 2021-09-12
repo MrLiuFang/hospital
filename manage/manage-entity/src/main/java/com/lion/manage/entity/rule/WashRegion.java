@@ -23,7 +23,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "t_wash_region",indexes = {@Index(columnList ="wash_id" ),@Index(columnList ="region_id" )})
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})

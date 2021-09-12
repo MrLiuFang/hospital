@@ -20,7 +20,7 @@ import javax.persistence.Table;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_region_warning_bell" )
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "区域警示铃")

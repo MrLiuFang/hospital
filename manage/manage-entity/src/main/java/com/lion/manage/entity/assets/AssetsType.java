@@ -21,7 +21,7 @@ import javax.validation.constraints.NotBlank;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "t_assets_type")
-@DynamicUpdate
+
 @DynamicInsert
 @Data
 @ApiModel(description = "资产类型")
