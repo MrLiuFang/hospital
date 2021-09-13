@@ -83,12 +83,17 @@ public class RedisConstants {
     /**
      * 区域公开对象(key:regionId,value:List<ExposeObject>)
      */
-    public static final String REGION_EXPOSE_OBJECT = "region_expose_object_";
+//    public static final String REGION_EXPOSE_OBJECT = "region_expose_object_";
 
     /**
      * 区域(key:regionId,value:region)
      */
     public static final String REGION = "region_";
+
+    /**
+     * 区域洗手模板(key:regionId,value:WashTemplateId)
+     */
+    public static final String REGION_WASH_TEMPLATE = "region_wash_template_";
 
     /**
      * 设备(key:deviceId,value:device)
@@ -274,6 +279,11 @@ public class RedisConstants {
      * 标签绑定类型
      */
     public static final String TAG_BIND_TYPE = "tag_bind_type";
+
+    /**
+     * 洗手模式
+     */
+    public static final String ALARM_MODE = "alarm_mode";
 
     /**
      * 缓存过期时间

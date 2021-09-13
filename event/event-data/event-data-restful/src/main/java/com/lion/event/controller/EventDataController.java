@@ -2,6 +2,7 @@ package com.lion.event.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itextpdf.text.DocumentException;
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.enums.Type;
 import com.lion.common.enums.WashEventType;
 import com.lion.common.utils.RedisUtil;
@@ -489,7 +490,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
             Long userId = CurrentUserUtil.getCurrentUserId();
             User user = userExposeService.findById(userId);
             AssertUtil.isFlase(!passwordEncoder.matches(alarmMode.getPassword(),user.getPassword()), MessageI18nUtil.getMessage("3000035"));
-            redisTemplate.opsForValue().set("alarmMode",alarmMode.getAlarmMode());
+            redisTemplate.opsForValue().set(RedisConstants.ALARM_MODE,alarmMode.getAlarmMode());
         }
         return ResultData.instance();
     }
@@ -497,6 +498,6 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @PutMapping("/alarm/mode")
     @ApiOperation(value = "获取洗手模式")
     public IResultData<AlarmMode> alarmMode() {
-        return ResultData.instance().setData(redisTemplate.opsForValue().get("alarmMode"));
+        return ResultData.instance().setData(redisTemplate.opsForValue().get(RedisConstants.ALARM_MODE));
     }
 }

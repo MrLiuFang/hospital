@@ -2,7 +2,10 @@ package com.lion.manage.dao.region;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.region.RegionDevice;
+import org.springframework.context.Lifecycle;
 import org.springframework.context.annotation.Primary;
+
+import java.util.List;
 
 /**
  * @author Mr.Liu
@@ -17,4 +20,11 @@ public interface RegionDeviceDao extends BaseDao<RegionDevice> {
      * @return
      */
     public RegionDevice findFirstByDeviceId(Long deviceId);
+
+    /**
+     * 根据区域查询设备
+     * @param regionId
+     * @return
+     */
+    public List<RegionDevice> findByRegionId(Long regionId);
 }

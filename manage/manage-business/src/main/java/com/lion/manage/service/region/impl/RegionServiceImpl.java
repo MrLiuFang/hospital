@@ -3,18 +3,20 @@ package com.lion.manage.service.region.impl;
 import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
-import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.region.RegionCctvDao;
 import com.lion.manage.dao.region.RegionDao;
+import com.lion.manage.dao.region.RegionDeviceDao;
 import com.lion.manage.dao.ward.WardRoomDao;
+import com.lion.manage.dao.ward.WardRoomSickbedDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
+import com.lion.manage.entity.region.RegionDevice;
 import com.lion.manage.entity.region.dto.AddRegionDto;
 import com.lion.manage.entity.region.dto.UpdateRegionCoordinatesDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
@@ -74,6 +76,9 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @Autowired
     private WardRoomDao wardRoomDao;
 
+    @Autowired
+    private WardRoomSickbedDao wardRoomSickbedDao;
+
     @DubboReference
     private CctvExposeService cctvExposeService;
 
@@ -91,6 +96,9 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
 
     @DubboReference
     private WardRoomSickbedExposeService wardRoomSickbedExposeService;
+
+    @Autowired
+    private RegionDeviceDao regionDeviceDao;
 
     @Override
     public List<Region> find(Long departmentId) {
@@ -112,7 +120,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         assertBuildFloorExist(region.getBuildId(),region.getBuildFloorId());
         assertDepartmentExist(region.departmentId);
         assertNameExist(region.getName(),null);
-        assertDeviceGroupIsUse(region.getDeviceGroupId(),null);
+//        assertDeviceGroupIsUse(region.getDeviceGroupId(),null);
 //        if (addRegionDto.isPublic && (Objects.isNull(addRegionDto.getExposeObjects()) ||addRegionDto.getExposeObjects().size()<=0) ){
 //            BusinessException.throwException(MessageI18nUtil.getMessage("2000078"));
 //        }
@@ -122,27 +130,20 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         wardRoomExposeService.updateRegionId(addRegionDto.wardRoomIds,region.getId());
         wardRoomSickbedExposeService.updateRegionId(addRegionDto.getWardRoomSickbedIds(),region.getId());
 //        regionExposeObjectService.save(region.getId(),addRegionDto.getExposeObjects());
-        persistenceRedis(region, region.getDeviceGroupId(),null);
+        persistenceRedis(region, addRegionDto.deviceIds,null, false);
     }
 
     @Override
 //    @GlobalTransactional
     @Transactional
     public void update(UpdateRegionDto updateRegionDto) {
-        Region oldRegion = findById(updateRegionDto.getId());
-        Long oldDevideGroupId = null;
-        if (Objects.nonNull(oldRegion)){
-            oldDevideGroupId = oldRegion.getDeviceGroupId();
-        }else {
-            BusinessException.throwException(MessageI18nUtil.getMessage("2000079"));
-        }
         Region region = new Region();
         BeanUtils.copyProperties(updateRegionDto,region);
 //        assertBuildExist(region.getBuildId());
 //        assertBuildFloorExist(region.getBuildId(),region.getBuildFloorId());
         assertDepartmentExist(region.departmentId);
         assertNameExist(region.getName(),region.getId());
-        assertDeviceGroupIsUse(region.getDeviceGroupId(),region.getId());
+//        assertDeviceGroupIsUse(region.getDeviceGroupId(),region.getId());
 //        if (updateRegionDto.isPublic && (Objects.isNull(updateRegionDto.getExposeObjects()) ||updateRegionDto.getExposeObjects().size()<=0) ){
 //            BusinessException.throwException(MessageI18nUtil.getMessage("2000078"));
 //        }
@@ -152,7 +153,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         wardRoomExposeService.updateRegionId(updateRegionDto.wardRoomIds,region.getId());
         wardRoomSickbedExposeService.updateRegionId(updateRegionDto.getWardRoomSickbedIds(),region.getId());
 //        regionExposeObjectService.save(region.getId(),updateRegionDto.getExposeObjects());
-        persistenceRedis(region, region.getDeviceGroupId(),oldDevideGroupId);
+        persistenceRedis(region, updateRegionDto.deviceIds,getDeviceId(region.getId()), false);
     }
 
     @Override
@@ -183,10 +184,20 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
                 cctvExposeService.relationPosition(oldCctvIds,new ArrayList<Long>(),region.getBuildId(),region.getBuildFloorId(),deleteDto.getId(), region.getDepartmentId());
             }
             regionCctvDao.deleteByRegionId(deleteDto.getId());
+            wardRoomDao.updateRegionIdIsNull(deleteDto.getId());
+            wardRoomSickbedDao.updateRegionIdIsNull(deleteDto.getId());
 //            regionExposeObjectDao.deleteByRegionId(deleteDto.getId());
-            wardRoomDao.deleteByWardId(deleteDto.getId());
-            persistenceRedis(region,  null,region.getDeviceGroupId());
+            persistenceRedis(region,  null,getDeviceId(region.getId()), true);
         });
+    }
+
+    private List<Long> getDeviceId(Long regionId) {
+        List<Long> devideIds = new ArrayList<>();
+        List<RegionDevice> list = regionDeviceDao.findByRegionId(regionId);
+        list.forEach(regionDevice -> {
+            devideIds.add(regionDevice.getDeviceId());
+        });
+        return devideIds;
     }
 
     private void assertNameExist(String name, Long id) {
@@ -230,19 +241,19 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         }
     }
 
-    private void persistenceRedis(Region region, Long devideGroupId, Long oldDevideGroupId){
-        if (Objects.nonNull(oldDevideGroupId)){
-            List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(oldDevideGroupId);
-            list.forEach(deviceGroupDevice -> {
-                redisTemplate.delete(RedisConstants.DEVICE_REGION+deviceGroupDevice.getDeviceId());
-            });
-        }
-        if (Objects.nonNull(devideGroupId)) {
-            List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(devideGroupId);
-            list.forEach(deviceGroupDevice -> {
-                redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION + deviceGroupDevice.getDeviceId(), region.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-            });
-        }
+    private void persistenceRedis(Region region, List<Long> deviceIds,List<Long> oldDeviceIds,Boolean isDelete){
+//        if (Objects.nonNull(oldDevideGroupId)){
+//            List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(oldDevideGroupId);
+//            list.forEach(deviceGroupDevice -> {
+//                redisTemplate.delete(RedisConstants.DEVICE_REGION+deviceGroupDevice.getDeviceId());
+//            });
+//        }
+//        if (Objects.nonNull(devideGroupId)) {
+//            List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(devideGroupId);
+//            list.forEach(deviceGroupDevice -> {
+//                redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION + deviceGroupDevice.getDeviceId(), region.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//            });
+//        }
 //        redisTemplate.delete(RedisConstants.REGION_EXPOSE_OBJECT+region.getId());
 //        if (Objects.nonNull(exposeObjects) && exposeObjects.size()>0){
 //            exposeObjects.forEach(exposeObject -> {
@@ -250,9 +261,29 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
 //                redisTemplate.expire(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(), RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
 //            });
 //        }
-        redisTemplate.opsForValue().set(RedisConstants.REGION + region.getId(), region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.REGION_BUILD + region.getId(), region.getBuildId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.REGION_BUILD_FLOOR + region.getId(), region.getBuildFloorId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.REGION_DEPARTMENT + region.getId(), region.getDepartmentId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        if (Objects.nonNull(oldDeviceIds) && oldDeviceIds.size()>0) {
+            oldDeviceIds.forEach(id -> {
+                redisTemplate.delete(RedisConstants.DEVICE_REGION + id);
+            });
+        }
+
+        if (Objects.nonNull(deviceIds) && oldDeviceIds.size()>0) {
+            deviceIds.forEach(id -> {
+                redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION + id, region.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            });
+        }
+        if (Objects.equals(true,isDelete)) {
+            redisTemplate.delete(RedisConstants.REGION_WASH_TEMPLATE + region.getId());
+            redisTemplate.delete(RedisConstants.REGION + region.getId());
+            redisTemplate.delete(RedisConstants.REGION_BUILD + region.getId());
+            redisTemplate.delete(RedisConstants.REGION_BUILD_FLOOR + region.getId());
+            redisTemplate.delete(RedisConstants.REGION_DEPARTMENT + region.getId());
+        }else {
+            redisTemplate.opsForValue().set(RedisConstants.REGION_WASH_TEMPLATE + region.getId(), region.getWashTemplateId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.REGION + region.getId(), region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.REGION_BUILD + region.getId(), region.getBuildId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.REGION_BUILD_FLOOR + region.getId(), region.getBuildFloorId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.REGION_DEPARTMENT + region.getId(), region.getDepartmentId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        }
     }
 }

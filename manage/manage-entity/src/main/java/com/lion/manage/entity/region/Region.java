@@ -77,10 +77,10 @@ public class Region extends BaseEntity implements Serializable {
     @NotBlank(message = "{2000030}", groups = {Validator.Insert.class,Validator.OtherOne.class})
     private String coordinates;
 
-    @ApiModelProperty(value = "设备组id")
-    @Column(name = "device_group_id")
-    @NotNull(message = "{2000031}", groups = {Validator.Insert.class})
-    private Long deviceGroupId;
+//    @ApiModelProperty(value = "设备组id")
+//    @Column(name = "device_group_id")
+//    @NotNull(message = "{2000031}", groups = {Validator.Insert.class})
+//    private Long deviceGroupId;
 
     @ApiModelProperty(value = "建筑id")
     @Column(name = "build_id")

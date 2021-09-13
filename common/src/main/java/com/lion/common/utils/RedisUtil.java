@@ -17,9 +17,9 @@ import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.enums.WashDeviceType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionDevice;
-import com.lion.manage.entity.rule.Alarm;
-import com.lion.manage.entity.rule.Wash;
-import com.lion.manage.entity.rule.WashDevice;
+import com.lion.manage.entity.rule.*;
+import com.lion.manage.entity.rule.vo.DetailsWashTemplateVo;
+import com.lion.manage.entity.rule.vo.ListWashTemplateItemVo;
 import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.expose.assets.AssetsExposeService;
@@ -29,19 +29,18 @@ import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.expose.region.RegionDeviceExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
-import com.lion.manage.expose.rule.AlarmExposeService;
-import com.lion.manage.expose.rule.WashDeviceExposeService;
-import com.lion.manage.expose.rule.WashDeviceTypeExposeService;
-import com.lion.manage.expose.rule.WashExposeService;
+import com.lion.manage.expose.rule.*;
 import com.lion.manage.expose.ward.WardRoomExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.PatientExposeService;
 import com.lion.person.expose.person.TemporaryPersonExposeService;
+import com.lion.upms.entity.enums.AlarmMode;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -51,6 +50,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @Author Mr.Liu
@@ -131,6 +131,12 @@ public class RedisUtil {
 
     @DubboReference
     private WardRoomExposeService wardRoomExposeService;
+
+    @DubboReference
+    private WashTemplateExposeService washTemplateExposeService;
+
+    @DubboReference
+    private WashTemplateItemExposeService washTemplateItemExposeService;
 
     public TemporaryPerson getTemporaryPerson(Long temporaryPersonId) {
         if (Objects.isNull(temporaryPersonId)){
@@ -427,41 +433,51 @@ public class RedisUtil {
         if (Objects.isNull(deviceId)){
             return null;
         }
-        Object obj = redisTemplate.opsForValue().get(RedisConstants.DEVICE_REGION+deviceId);
-        Long regionId = null;
-        Region region =null;
-
-        if (Objects.nonNull(obj) && !(obj instanceof Long)){
-            redisTemplate.delete(RedisConstants.DEVICE_REGION + deviceId);
-            obj = null;
+//        Object obj = redisTemplate.opsForValue().get(RedisConstants.DEVICE_REGION+deviceId);
+//        Long regionId = null;
+//        Region region =null;
+//
+//        if (Objects.nonNull(obj) && !(obj instanceof Long)){
+//            redisTemplate.delete(RedisConstants.DEVICE_REGION + deviceId);
+//            obj = null;
+//        }
+//        if (Objects.nonNull(obj)){
+//            regionId= (Long) obj;
+//        }
+//
+//        if (Objects.nonNull(regionId)){
+//            region = (Region) redisTemplate.opsForValue().get(RedisConstants.REGION+regionId);
+//            if (Objects.isNull(region)){
+//                region = regionExposeService.findById(regionId);
+//                if (Objects.nonNull(region)){
+//                    redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                }
+//            }
+//        }
+//        if (Objects.isNull(region)){
+//            RegionDevice regionDevice = regionDeviceExposeService.find(deviceId);
+//            if (Objects.nonNull(regionDevice)){
+//                region = regionExposeService.find(regionDevice.getRegionId());
+//                if (Objects.nonNull(region)){
+//                    redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION+deviceId,region.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                    redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                }else {
+//                    redisTemplate.delete(RedisConstants.DEVICE_REGION+deviceId);
+//                    redisTemplate.delete(RedisConstants.REGION+regionId);
+//                }
+//            }
+//        }
+        Device device = this.getDevice(deviceId);
+        if (Objects.isNull(device)) {
+            return null;
         }
-        if (Objects.nonNull(obj)){
-            regionId= (Long) obj;
-        }
-
-        if (Objects.nonNull(regionId)){
-            region = (Region) redisTemplate.opsForValue().get(RedisConstants.REGION+regionId);
-            if (Objects.isNull(region)){
-                region = regionExposeService.findById(regionId);
-                if (Objects.nonNull(region)){
-                    redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        if (Objects.nonNull(device.getRegionId())) {
+                Region region = this.getRegionById(device.getRegionId());
+                if (Objects.nonNull(region)) {
+                    return region;
                 }
-            }
         }
-        if (Objects.isNull(region)){
-            RegionDevice regionDevice = regionDeviceExposeService.find(deviceId);
-            if (Objects.nonNull(regionDevice)){
-                region = regionExposeService.find(regionDevice.getRegionId());
-                if (Objects.nonNull(region)){
-                    redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION+deviceId,region.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                    redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                }else {
-                    redisTemplate.delete(RedisConstants.DEVICE_REGION+deviceId);
-                    redisTemplate.delete(RedisConstants.REGION+regionId);
-                }
-            }
-        }
-        return region;
+        return null;
     }
     public User getUserById(Long userId){
         if (Objects.isNull(userId)){
@@ -776,6 +792,43 @@ public class RedisUtil {
             }
         }
         return washList;
+    }
+
+    public ListWashTemplateItemVo getWashTemplate(Long washTemplateId) {
+        Object obj = redisTemplate.opsForValue().get(RedisConstants.WASH_TEMPLATE+ washTemplateId);
+        DetailsWashTemplateVo detailsWashTemplateVo = null;
+        if (!(obj instanceof DetailsWashTemplateVo)) {
+            redisTemplate.delete(RedisConstants.WASH_TEMPLATE+ washTemplateId);
+        }else {
+            detailsWashTemplateVo = (DetailsWashTemplateVo) obj;
+        }
+        if (Objects.isNull(detailsWashTemplateVo)) {
+            WashTemplate washTemplate = washTemplateExposeService.findById(washTemplateId);
+            BeanUtils.copyProperties(washTemplate,detailsWashTemplateVo);
+            List<WashTemplateItem> list = washTemplateItemExposeService.findByWashTemplateId(washTemplate.getId());
+            List<ListWashTemplateItemVo> listWashTemplateItemVos = new ArrayList<ListWashTemplateItemVo>();
+            list.forEach(washTemplateItem -> {
+                ListWashTemplateItemVo listWashTemplateItemVo = new ListWashTemplateItemVo();
+                BeanUtils.copyProperties(washTemplateItem,listWashTemplateItemVo);
+                List<com.lion.manage.entity.enums.WashDeviceType> deviceTypes = washDeviceTypeExposeService.find(washTemplateItem.getId());
+                listWashTemplateItemVo.setWashDeviceTypes(deviceTypes);
+                listWashTemplateItemVos.add(listWashTemplateItemVo);
+            });
+            detailsWashTemplateVo.setListWashTemplateItemVos(listWashTemplateItemVos);
+        }
+
+        AlarmMode alarmMode = (AlarmMode) redisTemplate.opsForValue().get(RedisConstants.ALARM_MODE);
+        List<ListWashTemplateItemVo> listWashTemplateItemVos = detailsWashTemplateVo.getListWashTemplateItemVos();
+        AtomicReference<ListWashTemplateItemVo> washTemplateItemVo = new AtomicReference<>(null);
+        listWashTemplateItemVos.forEach(listWashTemplateItemVo -> {
+            if (Objects.equals(alarmMode, AlarmMode.URGENT) && Objects.equals(true, listWashTemplateItemVo.getIsUrgent())) {
+                washTemplateItemVo.set(listWashTemplateItemVo);
+            } else if (Objects.equals(alarmMode, AlarmMode.STANDARD) && Objects.equals(false, listWashTemplateItemVo.getIsUrgent())) {
+                washTemplateItemVo.set(listWashTemplateItemVo);
+            }
+        });
+        redisTemplate.opsForValue().set(RedisConstants.WASH_TEMPLATE,detailsWashTemplateVo,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+        return washTemplateItemVo.get();
     }
 
     public List<Wash> getWash(Long regionId){

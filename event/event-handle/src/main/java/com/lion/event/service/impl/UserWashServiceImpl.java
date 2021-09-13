@@ -14,6 +14,9 @@ import com.lion.event.service.CommonService;
 import com.lion.event.service.UserWashService;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Wash;
+import com.lion.manage.entity.rule.vo.DetailsWashTemplateVo;
+import com.lion.manage.entity.rule.vo.ListWashTemplateItemVo;
+import com.lion.upms.entity.enums.AlarmMode;
 import com.lion.upms.entity.user.User;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.BeanUtils;
@@ -22,10 +25,9 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * @Author Mr.Liu
@@ -75,38 +77,44 @@ public class UserWashServiceImpl implements UserWashService {
 
         //判断是否从X区域进入X区域，如果是就进行新的洗手事件监控
         if ( Objects.nonNull(userCurrentRegionDto) && userCurrentRegionDto.getCurrentRegionEvent()==1 && !Objects.equals(userCurrentRegionDto.getRegionId(),userCurrentRegionDto.getPreviousRegionId())) {
-            List<Wash> list = redisUtil.getWash(userCurrentRegionDto.getRegionId());
+            Region region = redisUtil.getRegionById(userCurrentRegionDto.getRegionId());
+            ListWashTemplateItemVo washTemplateItemVo = redisUtil.getWashTemplate(region.getWashTemplateId());
+            if (Objects.isNull(washTemplateItemVo)) {
+                return;
+            }
             String uuid = UUID.randomUUID().toString();
             RegionWashMonitorDelayDto regionWashMonitorDelayDto = new RegionWashMonitorDelayDto();
             regionWashMonitorDelayDto.setUserId(user.getId());
             regionWashMonitorDelayDto.setMonitorId(uuid);
             regionWashMonitorDelayDto.setRegionId(userCurrentRegionDto.getRegionId());
             regionWashMonitorDelayDto.setTagId(tag.getId());
-            if (Objects.nonNull(list) && list.size() > 0) {
-                list.forEach(wash -> {
-                    //如果是全部用户
-                    if (Objects.nonNull(wash.getIsAllUser()) && wash.getIsAllUser()) {
-                        try {
-//                            log.info("推送延迟检测命令");
-                            redisTemplate.opsForValue().set(RedisConstants.WAH_MONITOR+user.getId(),userCurrentRegionDto.getRegionId()+"_"+uuid,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
-                            rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        Wash wash1 = redisUtil.getWash(userCurrentRegionDto.getRegionId(), user.getId());
-                        if (Objects.nonNull(wash1)) {
-                            try {
-//                                log.info("推送延迟检测命令");
-                                redisTemplate.opsForValue().set(RedisConstants.WAH_MONITOR+user.getId(),userCurrentRegionDto.getRegionId()+"_"+uuid,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
-                                rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
-                            } catch (JsonProcessingException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                });
-            }
+            redisTemplate.opsForValue().set(RedisConstants.WAH_MONITOR+user.getId(),userCurrentRegionDto.getRegionId()+"_"+uuid,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
+//            if (Objects.nonNull(list) && list.size() > 0) {
+//                list.forEach(wash -> {
+//                    //如果是全部用户
+//                    if (Objects.nonNull(wash.getIsAllUser()) && wash.getIsAllUser()) {
+//                        try {
+////                            log.info("推送延迟检测命令");
+//                            redisTemplate.opsForValue().set(RedisConstants.WAH_MONITOR+user.getId(),userCurrentRegionDto.getRegionId()+"_"+uuid,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+//                            rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
+//                        } catch (JsonProcessingException e) {
+//                            e.printStackTrace();
+//                        }
+//                    } else {
+//                        Wash wash1 = redisUtil.getWash(userCurrentRegionDto.getRegionId(), user.getId());
+//                        if (Objects.nonNull(wash1)) {
+//                            try {
+////                                log.info("推送延迟检测命令");
+//                                redisTemplate.opsForValue().set(RedisConstants.WAH_MONITOR+user.getId(),userCurrentRegionDto.getRegionId()+"_"+uuid,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+//                                rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
+//                            } catch (JsonProcessingException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                });
+//            }
         }
 
         userWashEevent(user,monitor,star,tag , deviceDataDto, userCurrentRegionDto);
