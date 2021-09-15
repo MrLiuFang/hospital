@@ -7,13 +7,9 @@ import com.lion.core.service.BaseService;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.entity.rule.dto.AddAlarmDto;
-import com.lion.manage.entity.rule.dto.AddWashDto;
 import com.lion.manage.entity.rule.dto.UpdateAlarmDto;
-import com.lion.manage.entity.rule.dto.UpdateWashDto;
 import com.lion.manage.entity.rule.vo.DetailsAlarmVo;
-import com.lion.manage.entity.rule.vo.DetailsWashVo;
 import com.lion.manage.entity.rule.vo.ListAlarmVo;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
 

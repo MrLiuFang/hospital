@@ -233,11 +233,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 departmentStatisticsDetailsVo.setDepartmentName(department.getName());
                 List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);
                 List<Long> deviceGroupIds = new ArrayList<>();
-                regionList.forEach(region -> {
-                    if (Objects.nonNull(region.getDeviceGroupId())) {
-                        deviceGroupIds.add(region.getDeviceGroupId());
-                    }
-                });
+//                regionList.forEach(region -> {
+//                    if (Objects.nonNull(region.getDeviceGroupId())) {
+//                        deviceGroupIds.add(region.getDeviceGroupId());
+//                    }
+//                });
                 departmentStatisticsDetailsVo.setLowPowerDeviceCount(deviceExposeService.countDevice(deviceGroupIds, 1));
                 departmentStatisticsDetailsVo.setLowPowerTagCount(tagExposeService.countTag(departmentId, 1));
                 Map<String, Integer> map = systemAlarmService.groupCount(departmentId);
@@ -513,34 +513,34 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     public DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetails(String name, Long regionId) {
         List<Long> list = departmentExposeService.responsibleDepartment(null);
         DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetailsVo = new DepartmentDeviceGroupStatisticsDetailsVo();
-        List<DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo> deviceGroupDetailsVos = new ArrayList<>();
+//        List<DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo> deviceGroupDetailsVos = new ArrayList<>();
         list.forEach(id->{
-            departmentDeviceGroupStatisticsDetailsVo.setDeviceGroupCount(departmentDeviceGroupStatisticsDetailsVo.getDeviceGroupCount() + deviceGroupExposeService.count(id));
+//            departmentDeviceGroupStatisticsDetailsVo.setDeviceGroupCount(departmentDeviceGroupStatisticsDetailsVo.getDeviceGroupCount() + deviceGroupExposeService.count(id));
             departmentDeviceGroupStatisticsDetailsVo.setNormalDeviceCount(departmentDeviceGroupStatisticsDetailsVo.getNormalDeviceCount() + deviceGroupExposeService.count(id, com.lion.device.entity.enums.State.NORMAL));
             departmentDeviceGroupStatisticsDetailsVo.setAbnormalDeviceCount(departmentDeviceGroupStatisticsDetailsVo.getAbnormalDeviceCount() + deviceGroupExposeService.count(id, com.lion.device.entity.enums.State.ALARM));
             List<Region> regionList = regionExposeService.findByDepartmentId(id);
-            regionList.forEach(region->{
-                DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo deviceGroupDetailsVo = new DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo();
-                DeviceGroup deviceGroup = deviceGroupExposeService.findById(region.getDeviceGroupId());
-                if (Objects.nonNull(deviceGroup)) {
-                    deviceGroupDetailsVo.setName(deviceGroup.getName());
-                    List<DetailsDeviceVo> detailsDeviceVos = new ArrayList<>();
-                    List<DeviceGroupDevice> deviceGroupDevices = deviceGroupDeviceExposeService.find(deviceGroup.getId());
-                    deviceGroupDevices.forEach(deviceGroupDevice -> {
-                        Device device = deviceExposeService.findById(deviceGroupDevice.getDeviceId());
-                        if (Objects.nonNull(device)) {
-                            DetailsDeviceVo detailsDeviceVo = new DetailsDeviceVo();
-                            BeanUtils.copyProperties(device,detailsDeviceVo);
-                            detailsDeviceVo.setImgUrl(fileExposeService.getUrl(device.getImg()));
-                            detailsDeviceVos.add(detailsDeviceVo);
-                        }
-                    });
-                    deviceGroupDetailsVo.setDetailsDeviceVos(detailsDeviceVos);
-                    deviceGroupDetailsVos.add(deviceGroupDetailsVo);
-                }
-            });
+//            regionList.forEach(region->{
+//                DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo deviceGroupDetailsVo = new DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo();
+//                DeviceGroup deviceGroup = deviceGroupExposeService.findById(region.getDeviceGroupId());
+//                if (Objects.nonNull(deviceGroup)) {
+//                    deviceGroupDetailsVo.setName(deviceGroup.getName());
+//                    List<DetailsDeviceVo> detailsDeviceVos = new ArrayList<>();
+//                    List<DeviceGroupDevice> deviceGroupDevices = deviceGroupDeviceExposeService.find(deviceGroup.getId());
+//                    deviceGroupDevices.forEach(deviceGroupDevice -> {
+//                        Device device = deviceExposeService.findById(deviceGroupDevice.getDeviceId());
+//                        if (Objects.nonNull(device)) {
+//                            DetailsDeviceVo detailsDeviceVo = new DetailsDeviceVo();
+//                            BeanUtils.copyProperties(device,detailsDeviceVo);
+//                            detailsDeviceVo.setImgUrl(fileExposeService.getUrl(device.getImg()));
+//                            detailsDeviceVos.add(detailsDeviceVo);
+//                        }
+//                    });
+//                    deviceGroupDetailsVo.setDetailsDeviceVos(detailsDeviceVos);
+//                    deviceGroupDetailsVos.add(deviceGroupDetailsVo);
+//                }
+//            });
         });
-        departmentDeviceGroupStatisticsDetailsVo.setDeviceGroupDetailsVos(deviceGroupDetailsVos);
+//        departmentDeviceGroupStatisticsDetailsVo.setDeviceGroupDetailsVos(deviceGroupDetailsVos);
         return departmentDeviceGroupStatisticsDetailsVo;
     }
 

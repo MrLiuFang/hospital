@@ -2,7 +2,6 @@ package com.lion.manage.dao.rule;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.rule.WashRegion;
-import com.lion.manage.entity.rule.WashUser;
 
 import java.util.List;
 

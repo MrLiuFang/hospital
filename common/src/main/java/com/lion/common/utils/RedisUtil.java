@@ -3,10 +3,8 @@ package com.lion.common.utils;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.enums.Type;
 import com.lion.device.entity.device.Device;
-//import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.entity.tag.*;
 import com.lion.device.expose.device.DeviceExposeService;
-//import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.tag.*;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.build.Build;
@@ -17,7 +15,9 @@ import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.enums.WashDeviceType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionDevice;
-import com.lion.manage.entity.rule.*;
+import com.lion.manage.entity.rule.Alarm;
+import com.lion.manage.entity.rule.WashTemplate;
+import com.lion.manage.entity.rule.WashTemplateItem;
 import com.lion.manage.entity.rule.vo.DetailsWashTemplateVo;
 import com.lion.manage.entity.rule.vo.ListWashTemplateItemVo;
 import com.lion.manage.entity.ward.WardRoom;
@@ -29,7 +29,10 @@ import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.expose.region.RegionDeviceExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
-import com.lion.manage.expose.rule.*;
+import com.lion.manage.expose.rule.AlarmExposeService;
+import com.lion.manage.expose.rule.WashDeviceTypeExposeService;
+import com.lion.manage.expose.rule.WashTemplateExposeService;
+import com.lion.manage.expose.rule.WashTemplateItemExposeService;
 import com.lion.manage.expose.ward.WardRoomExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.entity.person.Patient;
@@ -84,11 +87,11 @@ public class RedisUtil {
     @DubboReference
     private RegionExposeService regionExposeService;
 
-    @DubboReference
-    private WashExposeService washExposeService;
-
-    @DubboReference
-    private WashDeviceExposeService washDeviceExposeService;
+//    @DubboReference
+//    private WashExposeService washExposeService;
+//
+//    @DubboReference
+//    private WashDeviceExposeService washDeviceExposeService;
 
     @DubboReference
     private AlarmExposeService alarmExposeService;
@@ -669,130 +672,130 @@ public class RedisUtil {
         return washDeviceTypes;
     }
 
-    public List<Device> getWashDevice(Long washId) {
-        if (Objects.isNull(washId)){
-            return null;
-        }
-        List<Object> objectList = redisTemplate.opsForList().range(RedisConstants.WASH_DEVICE+washId,0,-1);
-        if (Objects.nonNull(objectList) && objectList.size()>0){
-            objectList.forEach(o -> {
-                if (!(o instanceof Long)){
-                    redisTemplate.delete(RedisConstants.WASH_DEVICE+washId);
-                }
-            });
-        }
+//    public List<Device> getWashDevice(Long washId) {
+//        if (Objects.isNull(washId)){
+//            return null;
+//        }
+//        List<Object> objectList = redisTemplate.opsForList().range(RedisConstants.WASH_DEVICE+washId,0,-1);
+//        if (Objects.nonNull(objectList) && objectList.size()>0){
+//            objectList.forEach(o -> {
+//                if (!(o instanceof Long)){
+//                    redisTemplate.delete(RedisConstants.WASH_DEVICE+washId);
+//                }
+//            });
+//        }
+//
+//        List<Long> washDeviceId = redisTemplate.opsForList().range(RedisConstants.WASH_DEVICE+washId,0,-1);
+//        List<Device> deviceList = new ArrayList<Device>();
+//        if (Objects.isNull(washDeviceId) || washDeviceId.size()<=0){
+//            washDeviceId = new ArrayList<Long>();
+//            List<WashDevice> list = washDeviceExposeService.find(washId);
+//            if (Objects.nonNull(list) && list.size()>0){
+//                for (WashDevice washDevice : list){
+//                    washDeviceId.add(washDevice.getDeviceId());
+//                }
+//            }
+//            if (washDeviceId.size()>0) {
+//                redisTemplate.opsForList().leftPushAll(RedisConstants.WASH_DEVICE+washId,washDeviceId);
+//                redisTemplate.expire(RedisConstants.WASH_DEVICE+washId,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+//            }
+//        }
+//        washDeviceId.forEach(id->{
+//            Device device = deviceExposeService.findById(id);
+//            if (Objects.nonNull(device)){
+//                deviceList.add(device);
+//            }
+//        });
+//        return deviceList;
+//    }
 
-        List<Long> washDeviceId = redisTemplate.opsForList().range(RedisConstants.WASH_DEVICE+washId,0,-1);
-        List<Device> deviceList = new ArrayList<Device>();
-        if (Objects.isNull(washDeviceId) || washDeviceId.size()<=0){
-            washDeviceId = new ArrayList<Long>();
-            List<WashDevice> list = washDeviceExposeService.find(washId);
-            if (Objects.nonNull(list) && list.size()>0){
-                for (WashDevice washDevice : list){
-                    washDeviceId.add(washDevice.getDeviceId());
-                }
-            }
-            if (washDeviceId.size()>0) {
-                redisTemplate.opsForList().leftPushAll(RedisConstants.WASH_DEVICE+washId,washDeviceId);
-                redisTemplate.expire(RedisConstants.WASH_DEVICE+washId,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
-            }
-        }
-        washDeviceId.forEach(id->{
-            Device device = deviceExposeService.findById(id);
-            if (Objects.nonNull(device)){
-                deviceList.add(device);
-            }
-        });
-        return deviceList;
-    }
-
-    public List<Wash> getLoopWash(){
-        List<Long> objList = redisTemplate.opsForList().range(RedisConstants.ALL_USER_LOOP_WASH,0,-1);
-        if (Objects.nonNull(objList) && objList.size()>0){
-            objList.forEach(o -> {
-                if (!(o instanceof Long)){
-                    redisTemplate.delete(RedisConstants.ALL_USER_LOOP_WASH);
-                }
-            });
-        }
-        List<Long> list = redisTemplate.opsForList().range(RedisConstants.ALL_USER_LOOP_WASH,0,-1);
-        List<Wash> washList = new ArrayList<Wash>();
-        if (Objects.nonNull(list) && list.size()>0){
-            for (Long id  : list){
-                Wash wash = getWashById(id);
-                if (Objects.nonNull(wash)) {
-                    washList.add(wash);
-                }
-            };
-        }
-        list.clear();
-        redisTemplate.delete(RedisConstants.ALL_USER_LOOP_WASH);
-        if (Objects.nonNull(washList) && washList.size()<=0){
-            washList = washExposeService.findLoopWash(true);
-            washList.forEach(wash -> {
-                list.add(wash.getId());
-                redisTemplate.opsForValue().set(RedisConstants.WASH + wash.getId(), wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-            });
-            if (Objects.nonNull(list) && list.size()>0) {
-                redisTemplate.opsForList().leftPushAll(RedisConstants.ALL_USER_LOOP_WASH, list);
-            }
-        }
-
-        return washList;
-    }
-
-    public Wash getWashById(Long washId) {
-        Object object = redisTemplate.opsForValue().get(RedisConstants.WASH + washId);
-        Wash wash = null;
-        if (Objects.nonNull(object) && !(object instanceof Wash )){
-            redisTemplate.delete(RedisConstants.WASH + washId);
-            wash = null;
-        }
-        if (Objects.nonNull(object)){
-            wash = (Wash) object;
-        }
-        if (Objects.isNull(wash)) {
-            wash = washExposeService.findById(washId);
-            if (Objects.nonNull(wash)) {
-                redisTemplate.opsForValue().set(RedisConstants.WASH + washId, wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-            }
-        }
-        return wash;
-    }
-
-    public List<Wash> getLoopWashByUserId(Long userId){
-        List<Object> objList = redisTemplate.opsForList().range(RedisConstants.USER_LOOP_WASH+userId,0,-1);
-        if (Objects.nonNull(objList) && objList.size()>0){
-            objList.forEach(o -> {
-                if (!(o instanceof Long)){
-                    redisTemplate.delete(RedisConstants.USER_LOOP_WASH+userId);
-                }
-            });
-        }
-
-        List<Long> list = redisTemplate.opsForList().range(RedisConstants.USER_LOOP_WASH+userId,0,-1);
-        List<Wash> washList = new ArrayList<Wash>();
-        if (Objects.nonNull(list) || list.size() >0 ) {
-            for (Long id : list) {
-                Wash wash = getWashById(id);
-                if (Objects.nonNull(wash)) {
-                    washList.add(wash);
-                }
-            }
-        }
-        list.clear();
-        if (washList.size()<=0){
-            washList= washExposeService.findLoopWash(userId);
-            washList.forEach(wash -> {
-                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                list.add(wash.getId());
-            });
-            if (list.size()>0){
-                redisTemplate.opsForList().leftPushAll(RedisConstants.USER_LOOP_WASH+userId,list);
-            }
-        }
-        return washList;
-    }
+//    public List<Wash> getLoopWash(){
+//        List<Long> objList = redisTemplate.opsForList().range(RedisConstants.ALL_USER_LOOP_WASH,0,-1);
+//        if (Objects.nonNull(objList) && objList.size()>0){
+//            objList.forEach(o -> {
+//                if (!(o instanceof Long)){
+//                    redisTemplate.delete(RedisConstants.ALL_USER_LOOP_WASH);
+//                }
+//            });
+//        }
+//        List<Long> list = redisTemplate.opsForList().range(RedisConstants.ALL_USER_LOOP_WASH,0,-1);
+//        List<Wash> washList = new ArrayList<Wash>();
+//        if (Objects.nonNull(list) && list.size()>0){
+//            for (Long id  : list){
+//                Wash wash = getWashById(id);
+//                if (Objects.nonNull(wash)) {
+//                    washList.add(wash);
+//                }
+//            };
+//        }
+//        list.clear();
+//        redisTemplate.delete(RedisConstants.ALL_USER_LOOP_WASH);
+//        if (Objects.nonNull(washList) && washList.size()<=0){
+//            washList = washExposeService.findLoopWash(true);
+//            washList.forEach(wash -> {
+//                list.add(wash.getId());
+//                redisTemplate.opsForValue().set(RedisConstants.WASH + wash.getId(), wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//            });
+//            if (Objects.nonNull(list) && list.size()>0) {
+//                redisTemplate.opsForList().leftPushAll(RedisConstants.ALL_USER_LOOP_WASH, list);
+//            }
+//        }
+//
+//        return washList;
+//    }
+//
+//    public Wash getWashById(Long washId) {
+//        Object object = redisTemplate.opsForValue().get(RedisConstants.WASH + washId);
+//        Wash wash = null;
+//        if (Objects.nonNull(object) && !(object instanceof Wash )){
+//            redisTemplate.delete(RedisConstants.WASH + washId);
+//            wash = null;
+//        }
+//        if (Objects.nonNull(object)){
+//            wash = (Wash) object;
+//        }
+//        if (Objects.isNull(wash)) {
+//            wash = washExposeService.findById(washId);
+//            if (Objects.nonNull(wash)) {
+//                redisTemplate.opsForValue().set(RedisConstants.WASH + washId, wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//            }
+//        }
+//        return wash;
+//    }
+//
+//    public List<Wash> getLoopWashByUserId(Long userId){
+//        List<Object> objList = redisTemplate.opsForList().range(RedisConstants.USER_LOOP_WASH+userId,0,-1);
+//        if (Objects.nonNull(objList) && objList.size()>0){
+//            objList.forEach(o -> {
+//                if (!(o instanceof Long)){
+//                    redisTemplate.delete(RedisConstants.USER_LOOP_WASH+userId);
+//                }
+//            });
+//        }
+//
+//        List<Long> list = redisTemplate.opsForList().range(RedisConstants.USER_LOOP_WASH+userId,0,-1);
+//        List<Wash> washList = new ArrayList<Wash>();
+//        if (Objects.nonNull(list) || list.size() >0 ) {
+//            for (Long id : list) {
+//                Wash wash = getWashById(id);
+//                if (Objects.nonNull(wash)) {
+//                    washList.add(wash);
+//                }
+//            }
+//        }
+//        list.clear();
+//        if (washList.size()<=0){
+//            washList= washExposeService.findLoopWash(userId);
+//            washList.forEach(wash -> {
+//                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                list.add(wash.getId());
+//            });
+//            if (list.size()>0){
+//                redisTemplate.opsForList().leftPushAll(RedisConstants.USER_LOOP_WASH+userId,list);
+//            }
+//        }
+//        return washList;
+//    }
 
     public ListWashTemplateItemVo getWashTemplate(Long washTemplateId) {
         Object obj = redisTemplate.opsForValue().get(RedisConstants.WASH_TEMPLATE+ washTemplateId);
@@ -831,71 +834,71 @@ public class RedisUtil {
         return washTemplateItemVo.get();
     }
 
-    public List<Wash> getWash(Long regionId){
-        if (Objects.isNull(regionId)){
-            return null;
-        }
-        List<Object> objList = redisTemplate.opsForList().range(RedisConstants.REGION_WASH+regionId,0,-1);
-        if (Objects.nonNull(objList) && objList.size()>0){
-            objList.forEach(o -> {
-                if (!(o instanceof Long)){
-                    redisTemplate.delete(RedisConstants.REGION_WASH+regionId);
-                }
-            });
-        }
-        List<Long> list = redisTemplate.opsForList().range(RedisConstants.REGION_WASH+regionId,0,-1);
-        List<Wash> washList = new ArrayList<Wash>();
-        if (Objects.nonNull(list) || list.size() >0 ) {
-            for (Long id : list) {
-                Wash wash = getWashById(id);
-                if (Objects.nonNull(wash)) {
-                    washList.add(wash);
-                }
-            }
-        }
-        list.clear();
-        redisTemplate.delete(RedisConstants.REGION_WASH+regionId);
-        if (washList.size()<=0){
-            washList = washExposeService.find(regionId);
-            washList.forEach(wash -> {
-                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                list.add(wash.getId());
-            });
-            if (list.size()>0){
-                redisTemplate.opsForList().leftPushAll(RedisConstants.REGION_WASH+regionId,list);
-            }
-        }
-        return washList;
-    }
-
-    public Wash getWash(Long regionId,Long userId){
-        if (Objects.isNull(regionId) || Objects.isNull(userId)){
-            return null;
-        }
-        Object obj = redisTemplate.opsForValue().get(RedisConstants.REGION_USER_WASH+regionId+userId);
-        Long washId = null;
-        if (Objects.nonNull(obj) && !(obj instanceof Long)){
-            redisTemplate.delete(RedisConstants.REGION_USER_WASH+regionId+userId);
-            obj = null;
-        }
-        if (Objects.nonNull(obj)){
-            washId = (Long) obj;
-        }
-
-        Wash wash = null;
-        if (Objects.nonNull(washId)) {
-            wash = getWashById(washId);
-        }
-
-        if (Objects.isNull(wash)){
-            wash = washExposeService.find(regionId,userId);
-            if (Objects.nonNull(wash)) {
-                redisTemplate.opsForValue().set(RedisConstants.REGION_USER_WASH+regionId+userId,wash.getId(),RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-            }
-        }
-        return wash;
-    }
+//    public List<Wash> getWash(Long regionId){
+//        if (Objects.isNull(regionId)){
+//            return null;
+//        }
+//        List<Object> objList = redisTemplate.opsForList().range(RedisConstants.REGION_WASH+regionId,0,-1);
+//        if (Objects.nonNull(objList) && objList.size()>0){
+//            objList.forEach(o -> {
+//                if (!(o instanceof Long)){
+//                    redisTemplate.delete(RedisConstants.REGION_WASH+regionId);
+//                }
+//            });
+//        }
+//        List<Long> list = redisTemplate.opsForList().range(RedisConstants.REGION_WASH+regionId,0,-1);
+//        List<Wash> washList = new ArrayList<Wash>();
+//        if (Objects.nonNull(list) || list.size() >0 ) {
+//            for (Long id : list) {
+//                Wash wash = getWashById(id);
+//                if (Objects.nonNull(wash)) {
+//                    washList.add(wash);
+//                }
+//            }
+//        }
+//        list.clear();
+//        redisTemplate.delete(RedisConstants.REGION_WASH+regionId);
+//        if (washList.size()<=0){
+//            washList = washExposeService.find(regionId);
+//            washList.forEach(wash -> {
+//                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                list.add(wash.getId());
+//            });
+//            if (list.size()>0){
+//                redisTemplate.opsForList().leftPushAll(RedisConstants.REGION_WASH+regionId,list);
+//            }
+//        }
+//        return washList;
+//    }
+//
+//    public Wash getWash(Long regionId,Long userId){
+//        if (Objects.isNull(regionId) || Objects.isNull(userId)){
+//            return null;
+//        }
+//        Object obj = redisTemplate.opsForValue().get(RedisConstants.REGION_USER_WASH+regionId+userId);
+//        Long washId = null;
+//        if (Objects.nonNull(obj) && !(obj instanceof Long)){
+//            redisTemplate.delete(RedisConstants.REGION_USER_WASH+regionId+userId);
+//            obj = null;
+//        }
+//        if (Objects.nonNull(obj)){
+//            washId = (Long) obj;
+//        }
+//
+//        Wash wash = null;
+//        if (Objects.nonNull(washId)) {
+//            wash = getWashById(washId);
+//        }
+//
+//        if (Objects.isNull(wash)){
+//            wash = washExposeService.find(regionId,userId);
+//            if (Objects.nonNull(wash)) {
+//                redisTemplate.opsForValue().set(RedisConstants.REGION_USER_WASH+regionId+userId,wash.getId(),RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//            }
+//        }
+//        return wash;
+//    }
 
     public Alarm getAlarm(AlarmClassify alarmClassify, SystemAlarmType code, Integer level){
         if (Objects.isNull(alarmClassify) || Objects.isNull(code)){

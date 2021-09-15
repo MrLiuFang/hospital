@@ -202,17 +202,17 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
             vo.setClassify(device.getDeviceClassify());
             vo.setCode(device.getCode());
             vo.setName(device.getName());
-            DeviceGroupDevice deviceGroupDevice = deviceGroupDeviceExposeService.findByDeviceId(device.getId());
-            if (Objects.nonNull(deviceGroupDevice)) {
-                DeviceGroup deviceGroup = deviceGroupExposeService.findById(deviceGroupDevice.getDeviceGroupId());
-                Region region = regionExposeService.find(deviceGroup.getId());
-                if (Objects.nonNull(region)) {
-                    Department department = departmentExposeService.findById(region.departmentId);
-                    if (Objects.nonNull(department)) {
-                        vo.setDepartmentName(department.getName());
-                    }
-                }
-            }
+//            DeviceGroupDevice deviceGroupDevice = deviceGroupDeviceExposeService.findByDeviceId(device.getId());
+//            if (Objects.nonNull(deviceGroupDevice)) {
+//                DeviceGroup deviceGroup = deviceGroupExposeService.findById(deviceGroupDevice.getDeviceGroupId());
+//                Region region = regionExposeService.find(deviceGroup.getId());
+//                if (Objects.nonNull(region)) {
+//                    Department department = departmentExposeService.findById(region.departmentId);
+//                    if (Objects.nonNull(department)) {
+//                        vo.setDepartmentName(department.getName());
+//                    }
+//                }
+//            }
             vo.setImg(device.getImg());
             vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
             vo.setState(device.getDeviceState());

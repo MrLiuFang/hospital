@@ -49,20 +49,20 @@ public interface RegionDao extends BaseDao<Region> {
      */
     public Region findFirstByName(String name);
 
-    /**
-     * 根据设备组id查询区域
-     * @param deviceGroupId
-     * @return
-     */
-    public Region findFirstByDeviceGroupId(Long deviceGroupId);
-
-    /**
-     * 删除区域关联的设备组（将deviceGroupId字段置为null）
-     * @param deviceGroupId
-     */
-    @Query(" update Region set deviceGroupId = null  ,version=version +1 where deviceGroupId = :deviceGroupId ")
-    @Modifying
-    public void deleteDeviceGroup(Long deviceGroupId);
+//    /**
+//     * 根据设备组id查询区域
+//     * @param deviceGroupId
+//     * @return
+//     */
+//    public Region findFirstByDeviceGroupId(Long deviceGroupId);
+//
+//    /**
+//     * 删除区域关联的设备组（将deviceGroupId字段置为null）
+//     * @param deviceGroupId
+//     */
+//    @Query(" update Region set deviceGroupId = null  ,version=version +1 where deviceGroupId = :deviceGroupId ")
+//    @Modifying
+//    public void deleteDeviceGroup(Long deviceGroupId);
 
     /**
      * 根据在规则模板统计

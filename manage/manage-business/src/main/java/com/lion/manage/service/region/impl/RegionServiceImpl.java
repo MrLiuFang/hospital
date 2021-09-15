@@ -207,15 +207,15 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         }
     }
 
-    private void assertDeviceGroupIsUse(Long deviceGroupId, Long id) {
-        if (Objects.isNull(deviceGroupId)){
-            return;
-        }
-        Region region = regionDao.findFirstByDeviceGroupId(deviceGroupId);
-        if ((Objects.isNull(id) && Objects.nonNull(region)) || (Objects.nonNull(id) && Objects.nonNull(region) && !Objects.equals(region.getId(),id)) ){
-            BusinessException.throwException(MessageI18nUtil.getMessage("2000081"));
-        }
-    }
+//    private void assertDeviceGroupIsUse(Long deviceGroupId, Long id) {
+//        if (Objects.isNull(deviceGroupId)){
+//            return;
+//        }
+//        Region region = regionDao.findFirstByDeviceGroupId(deviceGroupId);
+//        if ((Objects.isNull(id) && Objects.nonNull(region)) || (Objects.nonNull(id) && Objects.nonNull(region) && !Objects.equals(region.getId(),id)) ){
+//            BusinessException.throwException(MessageI18nUtil.getMessage("2000081"));
+//        }
+//    }
 
     private void assertBuildExist(Long buildId) {
         Build build = buildService.findById(buildId);

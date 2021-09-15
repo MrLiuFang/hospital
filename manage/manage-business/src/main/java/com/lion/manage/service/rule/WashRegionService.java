@@ -1,7 +1,6 @@
 package com.lion.manage.service.rule;
 
 import com.lion.core.service.BaseService;
-import com.lion.manage.entity.rule.WashDevice;
 import com.lion.manage.entity.rule.WashRegion;
 
 import java.util.List;

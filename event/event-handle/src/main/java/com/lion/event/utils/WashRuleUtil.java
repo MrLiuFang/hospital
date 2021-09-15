@@ -4,7 +4,6 @@ import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceType;
 import com.lion.manage.entity.enums.WashDeviceType;
-import com.lion.manage.entity.rule.Wash;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,19 +21,21 @@ public class WashRuleUtil {
     @Autowired
     private RedisUtil redisUtil;
 
-    public Boolean judgeDevide(Long deviceId, Wash wash){
-        List<Device> washDevice = redisUtil.getWashDevice(wash.getId());
-        Device device = redisUtil.getDevice(deviceId);
-        for (Device obj : washDevice){
-            if (Objects.equals(obj.getId(),device.getId())) {
-                return true;
-            }
-        };
-        return false;
-    }
+//    public Boolean judgeDevide(Long deviceId, Wash wash){
+//        List<Device> washDevice = redisUtil.getWashDevice(wash.getId());
+//        Device device = redisUtil.getDevice(deviceId);
+//        for (Device obj : washDevice){
+//            if (Objects.equals(obj.getId(),device.getId())) {
+//                return true;
+//            }
+//        };
+//        return false;
+//    }
 
-    public Boolean judgeDevideType(Long deviceId, Wash wash){
-        List<WashDeviceType> list = redisUtil.getWashDeviceType(wash.getId());
+    public Boolean judgeDevideType(Long deviceId, List<WashDeviceType> list){
+        if (Objects.isNull(list)) {
+            return true;
+        }
         Device device = redisUtil.getDevice(deviceId);
         if (Objects.nonNull(list) && list.size()>0 && Objects.nonNull(device)){
             for(WashDeviceType washDeviceType : list) {

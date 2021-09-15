@@ -2,19 +2,13 @@ package com.lion.manage.service.rule.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
-import com.lion.manage.dao.rule.WashDao;
 import com.lion.manage.dao.rule.WashRegionDao;
 import com.lion.manage.entity.region.Region;
-import com.lion.manage.entity.rule.Wash;
-import com.lion.manage.entity.rule.WashDevice;
 import com.lion.manage.entity.rule.WashRegion;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.rule.WashRegionService;
-import com.lion.manage.service.rule.WashService;
-import com.lion.upms.entity.user.User;
 import com.lion.utils.MessageI18nUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;

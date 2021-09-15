@@ -75,7 +75,7 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
         assertCodeExist(deviceGroup.getCode(),null);
         deviceGroup = save(deviceGroup);
         deviceGroupDeviceService.add(deviceGroup.getId(),addDeviceGroupDto.getDeviceIds());
-        persistenceRedis(addDeviceGroupDto.getDeviceIds(),Collections.EMPTY_LIST,deviceGroup.getId(),false);
+//        persistenceRedis(addDeviceGroupDto.getDeviceIds(),Collections.EMPTY_LIST,deviceGroup.getId(),false);
     }
 
     @Override
@@ -92,7 +92,7 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
         });
         update(deviceGroup);
         deviceGroupDeviceService.add(deviceGroup.getId(),updateDeviceGroupDto.getDeviceIds());
-        persistenceRedis(updateDeviceGroupDto.getDeviceIds(),oldDeviceIds,deviceGroup.getId(),false);
+//        persistenceRedis(updateDeviceGroupDto.getDeviceIds(),oldDeviceIds,deviceGroup.getId(),false);
     }
 
     @Override
@@ -142,29 +142,29 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
                 oldDeviceIds.add(deviceGroupDevice.getDeviceId());
             });
             deviceGroupDeviceService.deleteByDeviceGroupId(d.getId());
-            regionExposeService.deleteDeviceGroup(d.getId());
-            persistenceRedis(Collections.emptyList(),oldDeviceIds,d.getId(),true);
+//            regionExposeService.deleteDeviceGroup(d.getId());
+//            persistenceRedis(Collections.emptyList(),oldDeviceIds,d.getId(),true);
         });
     }
 
-    private void persistenceRedis(List<Long> newDeviceIds,List<Long> oldDeviceIds, Long deviceGroupId,Boolean isDelete){
-        Region region = regionExposeService.find(deviceGroupId);
-        if (Objects.nonNull(oldDeviceIds) && oldDeviceIds.size()>0){
-            oldDeviceIds.forEach(id->{
-                redisTemplate.delete(RedisConstants.DEVICE_REGION+id);
-            });
-        }
-        if (Objects.isNull(region)){
-            return;
-        }
-        if (Objects.equals(false,isDelete)){
-            if (Objects.nonNull(newDeviceIds) && newDeviceIds.size()>0){
-                newDeviceIds.forEach(id->{
-                    redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION+id,region.getId(),RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                });
-            }
-        }
-    }
+//    private void persistenceRedis(List<Long> newDeviceIds,List<Long> oldDeviceIds, Long deviceGroupId,Boolean isDelete){
+//        Region region = regionExposeService.find(deviceGroupId);
+//        if (Objects.nonNull(oldDeviceIds) && oldDeviceIds.size()>0){
+//            oldDeviceIds.forEach(id->{
+//                redisTemplate.delete(RedisConstants.DEVICE_REGION+id);
+//            });
+//        }
+//        if (Objects.isNull(region)){
+//            return;
+//        }
+//        if (Objects.equals(false,isDelete)){
+//            if (Objects.nonNull(newDeviceIds) && newDeviceIds.size()>0){
+//                newDeviceIds.forEach(id->{
+//                    redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION+id,region.getId(),RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                });
+//            }
+//        }
+//    }
 
     private void assertNameExist(String name, Long id) {
         DeviceGroup deviceGroup = deviceGroupDao.findFirstByName(name);

@@ -58,9 +58,9 @@ public class WorkController extends BaseControllerImpl implements BaseController
         loopWashDto.setUserId(workDto.getUserId());
         loopWashDto.setStartWashDateTime(LocalDateTime.now());
         loopWashDto.setUuid(uuid);
-        rocketMQTemplate.syncSend(TopicConstants.LOOP_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(loopWashDto)).build());
-        redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE+workDto.getUserId(),RedisConstants.USER_WORK_STATE_START,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE_UUID+workDto.getUserId(),uuid,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//        rocketMQTemplate.syncSend(TopicConstants.LOOP_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(loopWashDto)).build());
+//        redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE+workDto.getUserId(),RedisConstants.USER_WORK_STATE_START,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//        redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE_UUID+workDto.getUserId(),uuid,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
 
         return ResultData.instance();
     }
@@ -68,8 +68,8 @@ public class WorkController extends BaseControllerImpl implements BaseController
     @PutMapping("/end")
     @ApiOperation(value = "下班")
     public IResultData endWork(@RequestBody @Validated WorkDto workDto){
-        redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE+workDto.getUserId(),RedisConstants.USER_WORK_STATE_END,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.delete(RedisConstants.USER_WORK_STATE_UUID+workDto.getUserId());
+//        redisTemplate.opsForValue().set(RedisConstants.USER_WORK_STATE+workDto.getUserId(),RedisConstants.USER_WORK_STATE_END,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//        redisTemplate.delete(RedisConstants.USER_WORK_STATE_UUID+workDto.getUserId());
         return ResultData.instance();
     }
 }

@@ -12,7 +12,6 @@ import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.rule.dto.AddAlarmDto;
 import com.lion.manage.entity.rule.dto.UpdateAlarmDto;
 import com.lion.manage.entity.rule.vo.DetailsAlarmVo;
-import com.lion.manage.entity.rule.vo.DetailsWashVo;
 import com.lion.manage.entity.rule.vo.ListAlarmVo;
 import com.lion.manage.service.rule.AlarmService;
 import io.swagger.annotations.Api;

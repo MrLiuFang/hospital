@@ -3,7 +3,7 @@ mongo.exe -port 27018
 rs.initiate({
     _id:'repl1',  
     members:[
-        {_id:0, host:'172.16.30.130:27018'}
+        {_id:0, host:'127.0.0.1:27018'}
     ]
 })
 rs.status() 
@@ -14,7 +14,7 @@ mongo.exe -port 27019
 rs.initiate({
     _id:'repl2',  
     members:[
-        {_id:0, host:'172.16.30.130:27019'}
+        {_id:0, host:'127.0.0.1:27019'}
     ]
 })
 rs.status() 
@@ -24,7 +24,7 @@ mongo.exe -port 27020
 rs.initiate({
     _id:'repl3',  
     members:[
-        {_id:0, host:'172.16.30.130:27020'}
+        {_id:0, host:'127.0.0.1:27020'}
     ]
 })
 rs.status()
@@ -34,9 +34,9 @@ mongo.exe  -port 28018
 rs.initiate({
     _id:'configReplSet',  
     members:[
-        {_id:0, host:'172.16.30.130:28018'},
-        {_id:1, host:'172.16.30.130:28028'},
-        {_id:2, host:'172.16.30.130:28038'}
+        {_id:0, host:'127.0.0.1:28018'},
+        {_id:1, host:'127.0.0.1:28028'},
+        {_id:2, host:'127.0.0.1:28038'}
     ]
 })
 rs.status() 
@@ -47,18 +47,18 @@ mongo.exe -port 28007
 use admin
 
 db.runCommand({
-    addShard: "repl1/172.16.30.130:27018", 
+    addShard: "repl1/127.0.0.1:27018", 
     name: "shard1"
 })
 
 
 db.runCommand({
-    addShard: "repl2/172.16.30.130:27019", 
+    addShard: "repl2/127.0.0.1:27019", 
     name: "shard2"
 })
 
 db.runCommand({
-    addShard: "repl3/172.16.30.130:27020", 
+    addShard: "repl3/127.0.0.1:27020", 
     name: "shard3"
 })
 
@@ -69,6 +69,12 @@ db.runCommand({
 sh.status()
 
 db.runCommand({ enablesharding : "hospital"});
+
+
+db.runCommand({
+    shardcollection : "hospital.device_data",
+    key : {_id: 1}
+})
 
 db.runCommand({
     shardcollection : "hospital.wash_event",
@@ -126,19 +132,68 @@ db.current_position.drop();
 db.humiture_record.drop();
 db.user_tag_button_record.drop();
 
-db.wash_event.createIndex( { "pi":1 }, { sparse: true } )
-db.wash_event.createIndex( { "di":1 }, { sparse: true } )
-db.wash_event.createIndex( { "ri":1 }, { sparse: true } )
-db.wash_event.createIndex( { "ui":1 }, { sparse: true } )
-db.wash_event.createIndex( { "ddt":-1 }, { sparse: true } )
+db.wash_event.createIndex( { "pi":1 }, { sparse: true } );
+db.wash_event.createIndex( { "py":1 }, { sparse: true } );
+db.wash_event.createIndex( { "pdi":1 }, { sparse: true } );
+db.wash_event.createIndex( { "di":1 }, { sparse: true } );
+db.wash_event.createIndex( { "ri":1 }, { sparse: true } );
+db.wash_event.createIndex( { "ui":1 }, { sparse: true } );
+db.wash_event.createIndex( { "ddt":-1 }, { sparse: true } );
+db.wash_event.createIndex( { "sdt":-1 }, { sparse: true } );
 
-db.system_alarm.createIndex( { "pi":1 }, { sparse: true } )
-db.system_alarm.createIndex( { "dvi":1 }, { sparse: true } )
-db.system_alarm.createIndex( { "ti":1 }, { sparse: true } )
-db.system_alarm.createIndex( { "di":1 }, { sparse: true } )
-db.system_alarm.createIndex( { "ri":1 }, { sparse: true } )
-db.system_alarm.createIndex( { "ddt":-1 }, { sparse: true } )
-db.system_alarm.createIndex( { "sdt":-1 }, { sparse: true } )
+db.wash_record.createIndex( { "pi":1 }, { sparse: true } );
+db.wash_event.createIndex( { "ddt":-1 }, { sparse: true } );
+db.wash_event.createIndex( { "sdt":-1 }, { sparse: true } );
+
+db.system_alarm.createIndex( { "ty":1 }, { sparse: true } );
+db.system_alarm.createIndex( { "pi":1 }, { sparse: true } );
+db.system_alarm.createIndex( { "ai":1 }, { sparse: true } );
+db.system_alarm.createIndex( { "dvi":1 }, { sparse: true } );
+db.system_alarm.createIndex( { "ti":1 }, { sparse: true } );
+db.system_alarm.createIndex( { "di":1 }, { sparse: true } );
+db.system_alarm.createIndex( { "ri":1 }, { sparse: true } );
+db.system_alarm.createIndex( { "ddt":-1 }, { sparse: true } );
+db.system_alarm.createIndex( { "sdt":-1 }, { sparse: true } );
+
+db.current_position.createIndex( { "typ":1 }, { sparse: true } );
+db.current_position.createIndex( { "pi":1 }, { sparse: true } );
+db.current_position.createIndex( { "adi":1 }, { sparse: true } );
+db.current_position.createIndex( { "ti":1 }, { sparse: true } );
+db.current_position.createIndex( { "ri":1 }, { sparse: true } );
+db.current_position.createIndex( { "ddt":-1 }, { sparse: true } );
+db.current_position.createIndex( { "sdt":-1 }, { sparse: true } );
+
+db.device_data.createIndex( { "mi":1 }, { sparse: true } );
+db.device_data.createIndex( { "ti":1 }, { sparse: true } );
+db.device_data.createIndex( { "si":1 }, { sparse: true } );
+db.device_data.createIndex( { "ddt":-1 }, { sparse: true } );
+db.device_data.createIndex( { "sdt":-1 }, { sparse: true } );
+
+db.humiture_record.createIndex( { "ti":1 }, { sparse: true } );
+db.humiture_record.createIndex( { "ri":1 }, { sparse: true } );
+db.humiture_record.createIndex( { "ddt":-1 }, { sparse: true } );
+db.humiture_record.createIndex( { "sdt":-1 }, { sparse: true } );
+
+db.position.createIndex( { "typ":1 }, { sparse: true } );
+db.position.createIndex( { "pi":1 }, { sparse: true } );
+db.position.createIndex( { "adi":1 }, { sparse: true } );
+db.position.createIndex( { "ti":1 }, { sparse: true } );
+db.position.createIndex( { "ri":1 }, { sparse: true } );
+db.position.createIndex( { "ddt":-1 }, { sparse: true } );
+db.position.createIndex( { "sdt":-1 }, { sparse: true } );
+
+db.recycling_box_record.createIndex( { "rbi":1 }, { sparse: true } );
+db.recycling_box_record.createIndex( { "ti":1 }, { sparse: true } );
+db.recycling_box_record.createIndex( { "ri":1 }, { sparse: true } );
+db.recycling_box_record.createIndex( { "sdt":-1 }, { sparse: true } );
+
+db.system_alarm_report.createIndex( { "sli":1 }, { sparse: true } );
+db.system_alarm_report.createIndex( { "rdt":-1 }, { sparse: true } );
+
+db.user_tag_button_record.createIndex( { "pi":1 }, { sparse: true } );
+db.user_tag_button_record.createIndex( { "ti":-1 }, { sparse: true } );
+db.user_tag_button_record.createIndex( { "ddt":-1 }, { sparse: true } );
+db.user_tag_button_record.createIndex( { "sdt":-1 }, { sparse: true } );
 
 db.wash_event.stats();
 
@@ -179,3 +234,4 @@ db.washEvent.aggregate( [
         db.getCollection('system_alarm').update({"_id":item._id},{$set:{"ua":0,dt:ISODate("2021-05-22T13:47:16.339Z")}})
     }
  )
+

@@ -6,11 +6,9 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.RegionWashMonitorDelayDto;
 import com.lion.common.dto.UserCurrentRegionDto;
-import com.lion.common.utils.RedisUtil;
 import com.lion.common.utils.MessageDelayUtil;
-import com.lion.manage.entity.enums.WashRuleType;
+import com.lion.common.utils.RedisUtil;
 import com.lion.manage.entity.region.Region;
-import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.vo.ListWashTemplateItemVo;
 import lombok.extern.java.Log;
 import org.apache.rocketmq.common.message.MessageExt;
@@ -24,7 +22,6 @@ import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 /**

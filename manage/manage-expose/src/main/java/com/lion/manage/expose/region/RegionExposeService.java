@@ -15,18 +15,18 @@ import java.util.List;
  **/
 public interface RegionExposeService extends BaseService<Region> {
 
-    /**
-     * 根据设备组ID查询关联的区域
-     * @param deviceGroupId
-     * @return
-     */
-    public  Region find(Long deviceGroupId);
+//    /**
+//     * 根据设备组ID查询关联的区域
+//     * @param deviceGroupId
+//     * @return
+//     */
+//    public  Region find(Long deviceGroupId);
 
-    /**
-     * 删除区域关联的设备组（将deviceGroupId字段置为null）
-     * @param deviceGroupId
-     */
-    public void deleteDeviceGroup(Long deviceGroupId);
+//    /**
+//     * 删除区域关联的设备组（将deviceGroupId字段置为null）
+//     * @param deviceGroupId
+//     */
+//    public void deleteDeviceGroup(Long deviceGroupId);
 
     /**
      * 根据楼成查村区域

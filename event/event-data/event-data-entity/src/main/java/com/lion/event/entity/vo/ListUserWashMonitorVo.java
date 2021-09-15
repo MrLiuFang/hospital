@@ -37,8 +37,8 @@ public class ListUserWashMonitorVo {
     @ApiModelProperty(value = "用户类型")
     private UserType userType;
 
-    @ApiModelProperty(value = "是否有洗手规则")
-    private Boolean isExistWashRule = true;
+//    @ApiModelProperty(value = "是否有洗手规则")
+//    private Boolean isExistWashRule = true;
 
     @ApiModelProperty(value = "合规率")
     private BigDecimal conformance = new BigDecimal(0);

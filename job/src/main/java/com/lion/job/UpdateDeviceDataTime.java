@@ -1,13 +1,23 @@
 package com.lion.job;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
+import com.lion.common.constants.TopicConstants;
+import com.lion.common.dto.SystemAlarmDto;
+import com.lion.common.enums.Type;
+import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.State;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
+import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +44,12 @@ public class UpdateDeviceDataTime {
 
     @DubboReference
     private TagExposeService tagExposeService;
+
+    @Autowired
+    private RocketMQTemplate rocketMQTemplate;
+
+    @Autowired
+    private ObjectMapper jacksonObjectMapper;
 
     @Autowired
     private RedisTemplate redisTemplate;
@@ -67,10 +83,34 @@ public class UpdateDeviceDataTime {
         {
             List<Long> deviceId = deviceExposeService.allId();
             deviceId.forEach(id->{
+                Device device = null;
                 LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA+String.valueOf(id));
                 if (Objects.nonNull(dateTime)) {
                     deviceExposeService.updateDeviceDataTime(id,dateTime);
                     redisTemplate.delete(RedisConstants.LAST_DATA+String.valueOf(id));
+
+                }else {
+                    device = deviceExposeService.findById(id);
+                    if (Objects.nonNull(device)) {
+                        dateTime = device.getLastDataTime();
+                    }
+                }
+                if (Objects.nonNull(dateTime)) {
+                    java.time.Duration duration = java.time.Duration.between(dateTime, LocalDateTime.now());
+                    if (duration.toMinutes() > (60 * 24)) {
+                        if (!Objects.equals(device.getDeviceState(), State.ALARM)) {
+                            SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+                            systemAlarmDto.setDateTime(LocalDateTime.now());
+                            systemAlarmDto.setType(Type.DEVICE);
+                            systemAlarmDto.setDeviceId(id);
+                            systemAlarmDto.setSystemAlarmType(SystemAlarmType.SBGZ);
+                            try {
+                                rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+                            } catch (JsonProcessingException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
                 }
             });
             deviceId.clear();

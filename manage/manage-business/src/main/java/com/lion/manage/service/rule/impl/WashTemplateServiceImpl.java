@@ -12,7 +12,6 @@ import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.dao.rule.WashDeviceTypeDao;
 import com.lion.manage.dao.rule.WashTemplateDao;
 import com.lion.manage.dao.rule.WashTemplateItemDao;
-import com.lion.manage.entity.rule.Wash;
 import com.lion.manage.entity.rule.WashDeviceType;
 import com.lion.manage.entity.rule.WashTemplate;
 import com.lion.manage.entity.rule.WashTemplateItem;
@@ -30,14 +29,12 @@ import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.io.File;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 

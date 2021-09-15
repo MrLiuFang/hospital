@@ -1,16 +1,12 @@
 package com.lion.event.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import com.lion.common.constants.TopicConstants;
-import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.dto.UserLastWashDto;
-import com.lion.common.enums.Type;
 import com.lion.common.enums.WashEventType;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.RedisUtil;
@@ -31,14 +27,10 @@ import com.lion.event.service.WashEventService;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
-import com.lion.manage.entity.rule.Wash;
-import com.lion.manage.entity.rule.WashUser;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
-import com.lion.manage.expose.rule.WashExposeService;
-import com.lion.manage.expose.rule.WashUserExposeService;
 import com.lion.manage.expose.work.WorkExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.UserType;
@@ -54,11 +46,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.data.mongodb.core.query.Update;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletOutputStream;
@@ -96,11 +85,11 @@ public class WashEventServiceImpl implements WashEventService {
     @DubboReference
     private WorkExposeService workExposeService;
 
-    @DubboReference
-    private WashUserExposeService washUserExposeService;
-
-    @DubboReference
-    private WashExposeService washExposeService;
+//    @DubboReference
+//    private WashUserExposeService washUserExposeService;
+//
+//    @DubboReference
+//    private WashExposeService washExposeService;
 
     @Autowired
     private MongoTemplate mongoTemplate;
@@ -239,15 +228,15 @@ public class WashEventServiceImpl implements WashEventService {
             }else {
                 vo = init(startWorkTime, endWorkTime, userId, null);
             }
-            List<WashUser> washUserList = washUserExposeService.find(userId);
-            if (Objects.isNull(washUserList) || washUserList.size() <= 0) {
-                List<Wash> washList = washExposeService.findLoopWash(true);
-                if (Objects.isNull(washList) || washList.size() <= 0) {
-                    if (Objects.nonNull(vo)) {
-                        vo.setIsExistWashRule(false);
-                    }
-                }
-            }
+//            List<WashUser> washUserList = washUserExposeService.find(userId);
+//            if (Objects.isNull(washUserList) || washUserList.size() <= 0) {
+//                List<Wash> washList = washExposeService.findLoopWash(true);
+//                if (Objects.isNull(washList) || washList.size() <= 0) {
+//                    if (Objects.nonNull(vo)) {
+//                        vo.setIsExistWashRule(false);
+//                    }
+//                }
+//            }
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,lionPage,totalElements);
@@ -452,7 +441,7 @@ public class WashEventServiceImpl implements WashEventService {
             vo.setRegionId(region.getId());
             Department department = departmentExposeService.findById(region.getDepartmentId());
             vo.setDepartmentName(Objects.isNull(department)?"":department.getName());
-            vo.setDeviceCount(vo.getDeviceCount()+deviceGroupDeviceExposeService.countDevice(region.getDeviceGroupId()));
+//            vo.setDeviceCount(vo.getDeviceCount()+deviceGroupDeviceExposeService.countDevice(region.getDeviceGroupId()));
             Document document = washEventDao.eventCount(startDateTime, endDateTime, region.getId());
             if (Objects.nonNull(document)) {
                 vo.setRatio(new BigDecimal(document.getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP));
@@ -512,45 +501,45 @@ public class WashEventServiceImpl implements WashEventService {
 
     @Override
     public void updateWashTime(UserLastWashDto userLastWashDto) {
-        if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && Objects.nonNull(userLastWashDto.getUserId()) ) {
-            Document match = new Document();
-            match.put("pi",userLastWashDto.getUserId());
-            match.put("ddt",userLastWashDto.getDateTime());
-            match.put("sdt",userLastWashDto.getSystemDateTime());
-            Query query = new BasicQuery(match);
-            WashEvent washEvent = mongoTemplate.findOne(query, WashEvent.class);
-            if (Objects.nonNull(washEvent)) {
-                Query queryUpdate = new Query();
-                queryUpdate.addCriteria(Criteria.where("_id").is(washEvent.get_id()));
-                Update update = new Update();
-                update.set("t", userLastWashDto.getTime());
-                if (Objects.nonNull(washEvent.getWi())) {
-                    Wash wash = redisUtil.getWashById(washEvent.getWi());
-                    if (Objects.nonNull(wash)) {
-                        if (userLastWashDto.getTime()<wash.getDuration()) {
-                            update.set("ia",true);
-                            update.set("at",SystemAlarmType.WDDBZSXSC.getKey());
-                            // TODO 给硬件发消息
-                            log.info("给硬件发送消息-洗手时长不够");
-                            SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
-                            systemAlarmDto.setDateTime(LocalDateTime.now());
-                            systemAlarmDto.setType(Type.STAFF);
-                            systemAlarmDto.setTagId(userLastWashDto.getTagId());
-                            systemAlarmDto.setRegionId(washEvent.getRi());
-                            systemAlarmDto.setPeopleId(washEvent.getPi());
-                            systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-                            systemAlarmDto.setSystemAlarmType(SystemAlarmType.WDDBZSXSC);
-                            try {
-                                rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-                            } catch (JsonProcessingException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-                mongoTemplate.updateFirst(queryUpdate, update, "wash_event");
-            }
-        }
+//        if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && Objects.nonNull(userLastWashDto.getUserId()) ) {
+//            Document match = new Document();
+//            match.put("pi",userLastWashDto.getUserId());
+//            match.put("ddt",userLastWashDto.getDateTime());
+//            match.put("sdt",userLastWashDto.getSystemDateTime());
+//            Query query = new BasicQuery(match);
+//            WashEvent washEvent = mongoTemplate.findOne(query, WashEvent.class);
+//            if (Objects.nonNull(washEvent)) {
+//                Query queryUpdate = new Query();
+//                queryUpdate.addCriteria(Criteria.where("_id").is(washEvent.get_id()));
+//                Update update = new Update();
+//                update.set("t", userLastWashDto.getTime());
+//                if (Objects.nonNull(washEvent.getWi())) {
+//                    Wash wash = redisUtil.getWashById(washEvent.getWi());
+//                    if (Objects.nonNull(wash)) {
+//                        if (userLastWashDto.getTime()<wash.getDuration()) {
+//                            update.set("ia",true);
+//                            update.set("at",SystemAlarmType.WDDBZSXSC.getKey());
+//                            // TODO 给硬件发消息
+//                            log.info("给硬件发送消息-洗手时长不够");
+//                            SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+//                            systemAlarmDto.setDateTime(LocalDateTime.now());
+//                            systemAlarmDto.setType(Type.STAFF);
+//                            systemAlarmDto.setTagId(userLastWashDto.getTagId());
+//                            systemAlarmDto.setRegionId(washEvent.getRi());
+//                            systemAlarmDto.setPeopleId(washEvent.getPi());
+//                            systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
+//                            systemAlarmDto.setSystemAlarmType(SystemAlarmType.WDDBZSXSC);
+//                            try {
+//                                rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+//                            } catch (JsonProcessingException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }
+//                }
+//                mongoTemplate.updateFirst(queryUpdate, update, "wash_event");
+//            }
+//        }
     }
 
     @Override

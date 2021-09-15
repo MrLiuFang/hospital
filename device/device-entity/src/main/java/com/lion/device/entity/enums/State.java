@@ -15,7 +15,11 @@ import java.util.Objects;
 public enum State implements IEnum {
 
     NORMAL(1, "正常"),
-    ALARM(2, "警报");
+    ALARM(2, "警报"),
+    USED(3, "使用中"),
+    NOT_USED(4, "未使用"),
+    FAULT(5, "故障"),
+    REPAIR(6, "维修中");
 
     private final int key;
 

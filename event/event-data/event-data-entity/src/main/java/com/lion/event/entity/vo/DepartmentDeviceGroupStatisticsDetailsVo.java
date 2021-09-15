@@ -23,8 +23,8 @@ import java.util.List;
 @ApiModel
 public class DepartmentDeviceGroupStatisticsDetailsVo {
 
-    @ApiModelProperty(value = "设备组总数")
-    private Integer deviceGroupCount = 0;
+//    @ApiModelProperty(value = "设备组总数")
+//    private Integer deviceGroupCount = 0;
 
     @ApiModelProperty(value = "正常设备总数")
     private Integer normalDeviceCount = 0;
@@ -32,17 +32,17 @@ public class DepartmentDeviceGroupStatisticsDetailsVo {
     @ApiModelProperty(value = "异常设备总数")
     private Integer abnormalDeviceCount= 0;
 
-    @ApiModelProperty(value = "设备组")
-    private List<DeviceGroupDetailsVo> deviceGroupDetailsVos;
+//    @ApiModelProperty(value = "设备组")
+//    private List<DeviceGroupDetailsVo> deviceGroupDetailsVos;
 
-    @Data
-    @ApiModel
-    public static class DeviceGroupDetailsVo {
-
-        @ApiModelProperty(value = "设备组名称")
-        private String name;
-
-        @ApiModelProperty(value = "设备")
-        private List<DetailsDeviceVo> detailsDeviceVos;
-    }
+//    @Data
+//    @ApiModel
+//    public static class DeviceGroupDetailsVo {
+//
+//        @ApiModelProperty(value = "设备组名称")
+//        private String name;
+//
+//        @ApiModelProperty(value = "设备")
+//        private List<DetailsDeviceVo> detailsDeviceVos;
+//    }
 }

@@ -34,15 +34,15 @@ public class DeviceGroupExposeServiceImpl extends BaseServiceImpl<DeviceGroup> i
 
     @Override
     public int count(Long departmentId) {
-        List<Region> list = regionExposeService.findByDepartmentId(departmentId);
-        int count = list.stream().filter(region -> Objects.nonNull(region.getDeviceGroupId())).mapToInt(region -> deviceGroupDeviceDao.countByDeviceGroupId(region.getDeviceGroupId())).sum();
-        return count;
+//        List<Region> list = regionExposeService.findByDepartmentId(departmentId);
+//        int count = list.stream().filter(region -> Objects.nonNull(region.getDeviceGroupId())).mapToInt(region -> deviceGroupDeviceDao.countByDeviceGroupId(region.getDeviceGroupId())).sum();
+        return 0;
     }
 
     @Override
     public int count(Long departmentId, State state) {
-        List<Region> list = regionExposeService.findByDepartmentId(departmentId);
-        int count = list.stream().filter(region -> Objects.nonNull(region.getDeviceGroupId())).mapToInt(region -> deviceGroupDeviceDao.count(region.getDeviceGroupId(),state)).sum();
-        return count;
+//        List<Region> list = regionExposeService.findByDepartmentId(departmentId);
+//        int count = list.stream().filter(region -> Objects.nonNull(region.getDeviceGroupId())).mapToInt(region -> deviceGroupDeviceDao.count(region.getDeviceGroupId(),state)).sum();
+        return 0;
     }
 }

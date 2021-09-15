@@ -73,8 +73,8 @@ public class DepartmentExposeServiceImpl extends BaseServiceImpl<Department> imp
         return departmentIds;
     }
 
-    @Override
-    public Department find(Long deviceGroupId) {
-        return departmentDao.findByDeviceGroupId(deviceGroupId);
-    }
+//    @Override
+//    public Department find(Long deviceGroupId) {
+//        return departmentDao.findByDeviceGroupId(deviceGroupId);
+//    }
 }

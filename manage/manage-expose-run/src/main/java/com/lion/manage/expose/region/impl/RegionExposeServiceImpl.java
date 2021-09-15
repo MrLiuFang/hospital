@@ -24,16 +24,16 @@ public class RegionExposeServiceImpl extends BaseServiceImpl<Region> implements 
     @Autowired
     private RegionDao regionDao;
 
-    @Override
-    public Region find(Long deviceGroupId) {
-        return regionDao.findFirstByDeviceGroupId(deviceGroupId);
-    }
+//    @Override
+//    public Region find(Long deviceGroupId) {
+//        return regionDao.findFirstByDeviceGroupId(deviceGroupId);
+//    }
 
-    @Override
-    @Transactional
-    public void deleteDeviceGroup(Long deviceGroupId) {
-        regionDao.deleteDeviceGroup(deviceGroupId);
-    }
+//    @Override
+//    @Transactional
+//    public void deleteDeviceGroup(Long deviceGroupId) {
+//        regionDao.deleteDeviceGroup(deviceGroupId);
+//    }
 
     @Override
     public List<Region> findByBuildFloorId(Long buildFloorId) {

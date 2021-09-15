@@ -20,11 +20,11 @@ public interface DepartmentExposeService extends BaseService<Department> {
      */
     public List<Long> responsibleDepartment(Long departmentId);
 
-    /**
-     * 根据设备组查找科室
-     * @param deviceGroupId
-     * @return
-     */
-    public Department find(Long deviceGroupId);
+//    /**
+//     * 根据设备组查找科室
+//     * @param deviceGroupId
+//     * @return
+//     */
+//    public Department find(Long deviceGroupId);
 
 }
