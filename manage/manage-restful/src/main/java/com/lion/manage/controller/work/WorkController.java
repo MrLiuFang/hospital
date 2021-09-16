@@ -2,23 +2,16 @@ package com.lion.manage.controller.work;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lion.common.constants.RedisConstants;
-import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.LoopWashDto;
 import com.lion.core.IResultData;
 import com.lion.core.ResultData;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
-import com.lion.exception.BusinessException;
 import com.lion.manage.entity.work.dto.WorkDto;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,9 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -47,8 +38,8 @@ public class WorkController extends BaseControllerImpl implements BaseController
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @Autowired(required = false)
-    private RocketMQTemplate rocketMQTemplate;
+//    @Autowired(required = false)
+//    private RocketMQTemplate rocketMQTemplate;
 
     @PutMapping("/start")
     @ApiOperation(value = "上班")

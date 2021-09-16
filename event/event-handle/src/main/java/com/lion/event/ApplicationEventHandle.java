@@ -1,6 +1,7 @@
 package com.lion.event;
 
 import org.apache.dubbo.config.spring.context.annotation.DubboComponentScan;
+import org.apache.rocketmq.client.log.ClientLogger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -19,6 +20,7 @@ public class ApplicationEventHandle {
          * new SpringApplicationBuilder(Application.class)
          * .web(WebApplicationType.NONE) .run(args);
          */
+        System.setProperty(ClientLogger.CLIENT_LOG_USESLF4J,"true");
         SpringApplication.run(ApplicationEventHandle.class, args);
     }
 }
