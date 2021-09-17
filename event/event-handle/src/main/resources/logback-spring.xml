@@ -21,7 +21,7 @@
     </appender>
     <logger name="RocketmqClient" additivity="false">
     <!-- 这里可以按需配置日志级别 -->
-    <level value="WARN" />
+    <level value="ERROR" />
     <appender-ref ref="RocketmqClientAppender"/>
     </logger>
 </configuration>
