@@ -2,10 +2,10 @@
 <!-- ROCKETMQ START -->
 <configuration debug="false">
     <appender name="RocketmqClientAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${app.log.dir}/rocketmq_client.log</file>
+        <file>./rocketmq_client.log</file>
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <FileNamePattern>${app.log.dir}/%d{yyyyMMdd}/rocketMQclient.log.%d{yyyyMMdd}_%i</FileNamePattern>
+            <FileNamePattern>./%d{yyyyMMdd}/rocketMQclient.log.%d{yyyyMMdd}_%i</FileNamePattern>
             <!-- 日志文件最大尺寸 -->
             <maxFileSize>200MB</maxFileSize>
             <!--日志文件保留天数-->
