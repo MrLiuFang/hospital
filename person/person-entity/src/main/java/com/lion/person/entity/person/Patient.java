@@ -49,7 +49,7 @@ public class Patient extends Person implements Serializable {
 
     @ApiModelProperty(value = "病历号")
     @Column(name = "medical_record_no")
-    @NotBlank(message = "{1000001}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotBlank(message = "{1000001}", groups = {Validator.Insert.class, Validator.Update.class})
     private String medicalRecordNo;
 
     @ApiModelProperty(value = "科室ID")

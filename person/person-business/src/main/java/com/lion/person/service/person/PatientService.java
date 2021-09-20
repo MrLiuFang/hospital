@@ -53,10 +53,11 @@ public interface PatientService extends BaseService<Patient> {
      * @param sickbedId
      * @param startDateTime
      * @param endDateTime
+     * @param cardNumber
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave,LocalDateTime birthday,TransferState transferState,String tagCode,String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave,LocalDateTime birthday,TransferState transferState,String tagCode,String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime,String cardNumber, LionPage lionPage);
 
     /**
      * 详情

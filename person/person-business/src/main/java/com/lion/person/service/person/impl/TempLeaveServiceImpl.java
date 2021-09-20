@@ -1,11 +1,9 @@
 package com.lion.person.service.person.impl;
 
 import com.lion.common.expose.file.FileExposeService;
-import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
-import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
@@ -28,7 +26,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -88,7 +85,7 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
                 tempLeave.setEndDateTime(addTempLeaveDto.getEndDateTime());
                 tempLeave.setRemarks(addTempLeaveDto.getRemarks());
                 save(tempLeave);
-                patientLogService.add("新增临时离开权限",id);
+//                patientLogService.add("新增临时离开权限", , id);
             });
 
         }

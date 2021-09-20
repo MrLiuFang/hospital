@@ -90,6 +90,7 @@ public class RegionTypeServiceImpl extends BaseServiceImpl<RegionType> implement
         List<ListRegionTypeVo> returnList = new ArrayList<ListRegionTypeVo>();
         list.forEach(regionType -> {
             ListRegionTypeVo vo = new ListRegionTypeVo();
+            vo.setCount(regionDao.countByRegionTypeId(regionType.getId()));
             BeanUtils.copyProperties(regionType, vo);
             returnList.add(vo);
         });

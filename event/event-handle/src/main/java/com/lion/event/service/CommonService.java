@@ -7,6 +7,7 @@ import com.lion.device.entity.device.Device;
 import com.lion.device.entity.tag.Tag;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
 
@@ -33,9 +34,10 @@ public interface CommonService {
      * @param patient
      * @param regionId
      * @param tag
+     * @param patientTransfer
      * @throws JsonProcessingException
      */
-    public void position(DeviceDataDto deviceDataDto, Patient patient, Long regionId,Tag tag) throws JsonProcessingException;
+    public void position(DeviceDataDto deviceDataDto, Patient patient, Long regionId, Tag tag, PatientTransfer patientTransfer) throws JsonProcessingException;
 
     /**
      * 记录位置

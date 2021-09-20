@@ -33,6 +33,7 @@ import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.dao.person.PatientDao;
 import com.lion.person.dao.person.PatientTransferDao;
 import com.lion.person.dao.person.TempLeaveDao;
+import com.lion.person.entity.enums.LogType;
 import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.*;
@@ -44,8 +45,8 @@ import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.service.person.*;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
-import io.seata.spring.annotation.GlobalTransactional;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -151,7 +153,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         if (Objects.nonNull(patient.getTagCode())) {
             tagPatientExposeService.binding(patient.getId(),patient.getTagCode(),patient.getDepartmentId());
         }
-        patientLogService.add("添加患者",patient.getId());
+        patientLogService.add("", LogType.ADD, CurrentUserUtil.getCurrentUserId(), patient.getId());
         redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
@@ -169,35 +171,48 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         patientNurseService.add(updatePatientDto.getNurseIds(),patient.getId());
         patientDoctorService.add(updatePatientDto.getDoctorIds(),patient.getId());
         restrictedAreaService.add(updatePatientDto.getRegionId(), PersonType.PATIENT,patient.getId());
+        Long userId = CurrentUserUtil.getCurrentUserId();
         if (Objects.nonNull(patient.getTagCode())) {
             tagPatientExposeService.binding(patient.getId(),patient.getTagCode(),patient.getDepartmentId());
         }
         if (Objects.nonNull(patient.getBindPatientId()) && !Objects.equals(oldPatient.getBindPatientId(),patient.getBindPatientId())) {
-            patientLogService.add("修改绑定患者",patient.getId());
+            patientLogService.add("",LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
         }
         if (Objects.nonNull(patient.getTagCode()) && !Objects.equals(oldPatient.getTagCode(),patient.getTagCode())) {
-            patientLogService.add("修改标签码",patient.getId());
+            patientLogService.add(patient.getTagCode(), LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
         }
         if (Objects.nonNull(patient.getDepartmentId()) && !Objects.equals(oldPatient.getDepartmentId(),patient.getDepartmentId())) {
-            patientLogService.add("修改科室",patient.getId());
+            Department department = departmentExposeService.findById(patient.getDepartmentId());
+            patientLogService.add(Objects.nonNull(department)?department.getName():"",LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
         }
         if (Objects.nonNull(patient.getSickbedId()) && !Objects.equals(oldPatient.getSickbedId(),patient.getSickbedId())) {
-            patientLogService.add("修改床位",patient.getId());
+            WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
+            patientLogService.add(Objects.nonNull(wardRoomSickbed)?wardRoomSickbed.getBedCode():"",LogType.UPDATE_WARD, userId, patient.getId());
         }
         if (Objects.nonNull(patient.getBirthday()) && !Objects.equals(oldPatient.getBirthday(),patient.getBirthday())) {
-            patientLogService.add("修改出生日期",patient.getId());
+            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            patientLogService.add(Objects.nonNull(patient.getBirthday())?dtf2.format(patient.getBirthday()):"",LogType.UPDATE_BIRTHDAY, userId, patient.getId());
         }
         if (Objects.nonNull(patient.getMedicalRecordNo()) && !Objects.equals(oldPatient.getMedicalRecordNo(),patient.getMedicalRecordNo())) {
-            patientLogService.add("修改病历号",patient.getId());
+            patientLogService.add(patient.getMedicalRecordNo(),LogType.UPDATE_MEDICAL_RECORD_NO, userId, patient.getId());
         }
         if (Objects.nonNull(patient.getDisease()) && !Objects.equals(oldPatient.getDisease(),patient.getDisease())) {
-            patientLogService.add("修改疾病",patient.getId());
+            patientLogService.add(patient.getDisease(), LogType.UPDATE_DISEASE, userId, patient.getId());
         }
         if (Objects.nonNull(patient.getRemarks()) && !Objects.equals(oldPatient.getRemarks(),patient.getRemarks())) {
-            patientLogService.add("修改备注",patient.getId());
+            patientLogService.add(patient.getRemarks(), LogType.UPDATE_REMARKS, userId, patient.getId());
         }
         if (Objects.nonNull(patient.getAddress()) && !Objects.equals(oldPatient.getAddress(),patient.getAddress())) {
-            patientLogService.add("修改地址",patient.getId());
+            patientLogService.add(patient.getAddress(), LogType.UPDATE_ADDRESS, userId, patient.getId());
+        }
+        if (Objects.nonNull(patient.getLevel()) && !Objects.equals(oldPatient.getLevel(),patient.getLevel())) {
+            patientLogService.add(String.valueOf(patient.getLevel()), LogType.UPDATE_LEVEL, userId, patient.getId());
+        }
+        if (Objects.nonNull(patient.getActionMode()) && !Objects.equals(oldPatient.getActionMode(),patient.getActionMode())) {
+            patientLogService.add(patient.getActionMode().getName(), LogType.UPDATE_ACTION_MODE, userId, patient.getId());
+        }
+        if (Objects.nonNull(patient.getTimeQuantum()) && !Objects.equals(oldPatient.getTimeQuantum(),patient.getTimeQuantum())) {
+            patientLogService.add(patient.getTimeQuantum(), LogType.UPDATE_TIME_QUANTUM, userId, patient.getId());
         }
         redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
@@ -218,7 +233,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     @Override
-    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave, LocalDateTime birthday, TransferState transferState, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave, LocalDateTime birthday, TransferState transferState, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, String cardNumber, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
@@ -280,6 +295,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         }
         if (Objects.nonNull(endDateTime)){
             jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_createDateTime",endDateTime);
+        }
+        if (StringUtils.hasText(cardNumber)) {
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_cardNumber",cardNumber);
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);

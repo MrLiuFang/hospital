@@ -1,6 +1,5 @@
 package com.lion.person.service.person.impl;
 
-import com.lion.aop.PageRequestInjection;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -10,11 +9,9 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
-import com.lion.manage.entity.department.Department;
 import com.lion.person.dao.person.PatientReportDao;
-import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.enums.LogType;
 import com.lion.person.entity.person.PatientReport;
-import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.dto.AddPatientReportDto;
 import com.lion.person.entity.person.vo.ListPatientReportVo;
 import com.lion.person.service.person.PatientLogService;
@@ -31,7 +28,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +67,7 @@ public class PatientReportServiceImpl extends BaseServiceImpl<PatientReport> imp
         }
         patientReport.setReportUserId(user.getId());
         patientReport = save(patientReport);
-        patientLogService.add("添加汇报",patientReport.getPatientId());
+        patientLogService.add("",LogType.ADD_REPORT,CurrentUserUtil.getCurrentUserId() , patientReport.getPatientId());
     }
 
     @Override
@@ -113,7 +109,7 @@ public class PatientReportServiceImpl extends BaseServiceImpl<PatientReport> imp
         deleteDtoList.forEach(deleteDto -> {
             PatientReport patientReport = findById(deleteDto.getId());
             deleteById(deleteDto.getId());
-            patientLogService.add("删除汇报",patientReport.getPatientId());
+            patientLogService.add("", LogType.DELETE_REPORT, userId, patientReport.getPatientId());
         });
     }
 }

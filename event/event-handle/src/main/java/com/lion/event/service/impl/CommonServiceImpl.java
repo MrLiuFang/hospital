@@ -15,6 +15,7 @@ import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
 import com.lion.person.entity.enums.ActionMode;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
@@ -57,11 +58,11 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public void position(DeviceDataDto deviceDataDto, User user, Long regionId, Tag tag) throws JsonProcessingException {
         position(Type.STAFF,user.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime(), deviceDataDto.getMonitorId());
-        penaltyZoneAlarm(Type.STAFF,user.getId(),regionId,tag.getId());
+        penaltyZoneAlarm(Type.STAFF,user.getId(),regionId,tag.getId(),null );
     }
 
     @Override
-    public void position(DeviceDataDto deviceDataDto, Patient patient, Long regionId, Tag tag) throws JsonProcessingException {
+    public void position(DeviceDataDto deviceDataDto, Patient patient, Long regionId, Tag tag, PatientTransfer patientTransfer) throws JsonProcessingException {
         position(Type.PATIENT,patient.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime(),deviceDataDto.getMonitorId() );
         CurrentRegionDto currentRegionDto = commonService.currentRegion(deviceDataDto);
         if (Objects.nonNull(currentRegionDto)) {
@@ -85,13 +86,13 @@ public class CommonServiceImpl implements CommonService {
             currentRegionDto.setSystemDateTime(deviceDataDto.getSystemDateTime());
             redisTemplate.opsForValue().set(RedisConstants.LAST_REGION + patient.getId(), currentRegionDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         }
-        penaltyZoneAlarm(Type.PATIENT,patient.getId(),regionId,tag.getId());
+        penaltyZoneAlarm(Type.PATIENT,patient.getId(),regionId,tag.getId(), patientTransfer);
     }
 
     @Override
     public void position(DeviceDataDto deviceDataDto, TemporaryPerson temporaryPerson, Long regionId, Tag tag) throws JsonProcessingException {
         position(Type.MIGRANT,temporaryPerson.getId(), regionId,null,Objects.nonNull(tag)?tag.getId():null, deviceDataDto.getTime(),deviceDataDto.getSystemDateTime(), deviceDataDto.getMonitorId());
-        penaltyZoneAlarm(Type.MIGRANT,temporaryPerson.getId(),regionId,tag.getId());
+        penaltyZoneAlarm(Type.MIGRANT,temporaryPerson.getId(),regionId,tag.getId(), null);
     }
 
     @Override
@@ -146,10 +147,11 @@ public class CommonServiceImpl implements CommonService {
      * @param pi
      * @param ri
      * @param ti
+     * @param patientTransfer
      */
-    private void penaltyZoneAlarm(Type type,Long pi,Long ri, Long ti) throws JsonProcessingException {
+    private void penaltyZoneAlarm(Type type,Long pi,Long ri, Long ti,PatientTransfer patientTransfer) throws JsonProcessingException {
         Region region = redisUtil.getRegionById(ri);
-        if (Objects.isNull(region)) {
+        if (Objects.isNull(region) || Objects.nonNull(patientTransfer)) {
             return;
         }
         Region patientRegion = null;

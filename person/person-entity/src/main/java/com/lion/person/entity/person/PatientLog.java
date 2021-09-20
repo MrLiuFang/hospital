@@ -3,6 +3,8 @@ package com.lion.person.entity.person;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
+import com.lion.person.entity.enums.Gender;
+import com.lion.person.entity.enums.LogType;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,10 +12,7 @@ import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Index;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -42,7 +41,14 @@ public class PatientLog extends BaseEntity implements Serializable {
     @NotNull(message = "{1000005}",groups = {Validator.Update.class, Validator.Insert.class})
     private Long patientId;
 
-    @ApiModelProperty(value = "操作内容")
+    @ApiModelProperty(value = "日志类型")
+    @Convert(converter = LogType.LogTypeConverter.class)
+    private LogType logType;
+
+    @ApiModelProperty(value = "操作人ID")
+    private Long operationUserId;
+
+    @ApiModelProperty(value = "内容")
     @Column(name = "content")
     @NotBlank(message = "{1000007}",groups = {Validator.Update.class, Validator.Insert.class})
     private String content;

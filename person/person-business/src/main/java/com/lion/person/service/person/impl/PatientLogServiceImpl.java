@@ -8,6 +8,7 @@ import com.lion.core.PageResultData;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.person.dao.person.PatientLogDao;
+import com.lion.person.entity.enums.LogType;
 import com.lion.person.entity.person.PatientLog;
 import com.lion.person.entity.person.PatientReport;
 import com.lion.person.entity.person.vo.ListPatientLogVo;
@@ -45,9 +46,11 @@ public class PatientLogServiceImpl extends BaseServiceImpl<PatientLog> implement
 
 
     @Override
-    public void add(String content, Long patientId) {
+    public void add(String content, LogType logType,Long operationUserId,  Long patientId) {
         PatientLog patientLog = new PatientLog();
         patientLog.setContent(content);
+        patientLog.setLogType(logType);
+        patientLog.setOperationUserId(operationUserId);
         patientLog.setPatientId(patientId);
         save(patientLog);
     }
@@ -66,7 +69,7 @@ public class PatientLogServiceImpl extends BaseServiceImpl<PatientLog> implement
         list.forEach(patientLog -> {
             ListPatientLogVo vo = new ListPatientLogVo();
             BeanUtils.copyProperties(patientLog,vo);
-            User user = userExposeService.findById(vo.getCreateUserId());
+            User user = userExposeService.findById(vo.getOperationUserId());
             if (Objects.nonNull(user)) {
                 vo.setUserName(user.getName());
                 vo.setUserHeadPortrait(user.getHeadPortrait());
