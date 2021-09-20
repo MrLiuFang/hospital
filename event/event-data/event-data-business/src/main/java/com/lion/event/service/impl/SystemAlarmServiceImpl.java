@@ -25,17 +25,13 @@ import com.lion.event.service.SystemAlarmReportService;
 import com.lion.event.service.SystemAlarmService;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.SystemAlarmType;
-import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.rule.AlarmExposeService;
-import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.person.Patient;
-import com.lion.person.entity.person.RestrictedArea;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.PatientExposeService;
-import com.lion.person.expose.person.RestrictedAreaExposeService;
 import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
@@ -57,7 +53,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -96,8 +95,8 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     @DubboReference
     private AssetsExposeService assetsExposeService;
 
-    @DubboReference
-    private RestrictedAreaExposeService restrictedAreaExposeService;
+//    @DubboReference
+//    private RestrictedAreaExposeService restrictedAreaExposeService;
 
     @DubboReference
     private RegionExposeService regionExposeService;
@@ -313,13 +312,13 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                     vo.setImg(patient.getHeadPortrait());
                     vo.setImgUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
                 }
-                List<RestrictedArea> list = restrictedAreaExposeService.find(systemAlarm.getPi(), PersonType.PATIENT);
-                List<String> restrictedAreaStringList = new ArrayList<>();
-                list.forEach(restrictedArea -> {
-                    Region region = regionExposeService.findById(restrictedArea.getRegionId());
-                    restrictedAreaStringList.add(Objects.isNull(region)?"":region.getName());
-                });
-                vo.setRestrictedArea(restrictedAreaStringList);
+//                List<RestrictedArea> list = restrictedAreaExposeService.find(systemAlarm.getPi(), PersonType.PATIENT);
+//                List<String> restrictedAreaStringList = new ArrayList<>();
+//                list.forEach(restrictedArea -> {
+//                    Region region = regionExposeService.findById(restrictedArea.getRegionId());
+//                    restrictedAreaStringList.add(Objects.isNull(region)?"":region.getName());
+//                });
+//                vo.setRestrictedArea(restrictedAreaStringList);
             }
             if (Objects.equals(systemAlarm.getTy(),Type.MIGRANT.getKey())) {
                 TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());

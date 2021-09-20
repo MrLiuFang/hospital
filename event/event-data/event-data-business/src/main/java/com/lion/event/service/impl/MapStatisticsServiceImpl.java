@@ -12,10 +12,6 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.RedisUtil;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
-import com.lion.device.entity.device.Device;
-import com.lion.device.entity.device.DeviceGroup;
-import com.lion.device.entity.device.DeviceGroupDevice;
-import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
@@ -172,8 +168,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @Autowired
     private UserTagButtonRecordService userTagButtonRecordService;
 
-    @DubboReference
-    private RestrictedAreaExposeServiceService restrictedAreaExposeServiceService;
+//    @DubboReference
+//    private RestrictedAreaExposeServiceService restrictedAreaExposeServiceService;
 
     @DubboReference
     private PatientReportExposeService patientReportExposeService;
@@ -673,7 +669,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 vo.setReportUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
             }
         }
-        vo.setRestrictedAreaVos(this.restrictedArea(patientId,PersonType.PATIENT));
+//        vo.setRestrictedAreaVos(this.restrictedArea(patientId,PersonType.PATIENT));
         WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
         if (Objects.nonNull(wardRoomSickbed)) {
             vo.setBedCode(wardRoomSickbed.getBedCode());
@@ -729,7 +725,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             vo.setAlarmDataTime(systemAlarm.getDt());
             vo.setAlarmId(systemAlarm.get_id());
         }
-        vo.setRestrictedAreaVos(this.restrictedArea(temporaryPersonId,PersonType.TEMPORARY_PERSON));
+//        vo.setRestrictedAreaVos(this.restrictedArea(temporaryPersonId,PersonType.TEMPORARY_PERSON));
         return vo;
     }
 
@@ -854,29 +850,29 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
 
-    private List<RestrictedAreaVo> restrictedArea(Long pi,PersonType personType){
-        List<RestrictedArea> restrictedAreaList = restrictedAreaExposeServiceService.find(pi, personType);
-        List<RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
-        restrictedAreaList.forEach(restrictedArea -> {
-            RestrictedAreaVo restrictedAreaVo = new RestrictedAreaVo();
-            Region region = regionExposeService.findById(restrictedArea.getRegionId());
-            if (Objects.nonNull(region)){
-                restrictedAreaVo.setRegionName(region.getName());
-                restrictedAreaVo.setRegionId(region.getId());
-                restrictedAreaVo.setRemark(region.getRemarks());
-                Build build = buildExposeService.findById(region.getBuildId());
-                if (Objects.nonNull(build)){
-                    restrictedAreaVo.setBuildName(build.getName());
-                }
-                BuildFloor buildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)) {
-                    restrictedAreaVo.setBuildFloorName(buildFloor.getName());
-                }
-                restrictedAreaVoList.add(restrictedAreaVo);
-            }
-        });
-        return restrictedAreaVoList;
-    }
+//    private List<RestrictedAreaVo> restrictedArea(Long pi,PersonType personType){
+//        List<RestrictedArea> restrictedAreaList = restrictedAreaExposeServiceService.find(pi, personType);
+//        List<RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
+//        restrictedAreaList.forEach(restrictedArea -> {
+//            RestrictedAreaVo restrictedAreaVo = new RestrictedAreaVo();
+//            Region region = regionExposeService.findById(restrictedArea.getRegionId());
+//            if (Objects.nonNull(region)){
+//                restrictedAreaVo.setRegionName(region.getName());
+//                restrictedAreaVo.setRegionId(region.getId());
+//                restrictedAreaVo.setRemark(region.getRemarks());
+//                Build build = buildExposeService.findById(region.getBuildId());
+//                if (Objects.nonNull(build)){
+//                    restrictedAreaVo.setBuildName(build.getName());
+//                }
+//                BuildFloor buildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
+//                if (Objects.nonNull(buildFloor)) {
+//                    restrictedAreaVo.setBuildFloorName(buildFloor.getName());
+//                }
+//                restrictedAreaVoList.add(restrictedAreaVo);
+//            }
+//        });
+//        return restrictedAreaVoList;
+//    }
 
     private List<Long> find(Type type, Long regionId) {
        List<CurrentPosition>  list = this.currentPositionDao.findByTypAndRi(type.getKey(),regionId);

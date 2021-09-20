@@ -46,11 +46,11 @@ public class PatientDetailsVo extends Patient {
     @ApiModelProperty(value = "负责医生")
     private List<DoctorVo> doctorVos;
 
-    @ApiModelProperty(value = "限制区域")
-    private List<RestrictedAreaVo> restrictedAreaVoList;
+//    @ApiModelProperty(value = "限制区域")
+//    private List<RestrictedAreaVo> restrictedAreaVoList;
 
-    @ApiModelProperty(value = "临时离开权限")
-    private TempLeaveVo tempLeaveVo;
+//    @ApiModelProperty(value = "临时离开权限")
+//    private TempLeaveVo tempLeaveVo;
 
     @ApiModelProperty(value = "警告")
     private String alarm;
@@ -99,49 +99,49 @@ public class PatientDetailsVo extends Patient {
         private String nurseHeadPortraitUrl;
     }
 
-    @Data
-    @ApiModel
-    public static class RestrictedAreaVo{
+//    @Data
+//    @ApiModel
+//    public static class RestrictedAreaVo{
+//
+//        @ApiModelProperty(value = "区域id")
+//        private Long regionId;
+//
+//        @ApiModelProperty(value = "区域名称")
+//        private String regionName;
+//
+//        @ApiModelProperty(value = "建筑名称")
+//        private String buildName;
+//
+//        @ApiModelProperty(value = "建筑楼成名称")
+//        private String buildFloorName;
+//
+//        @ApiModelProperty(value = "备注")
+//        private String remark;
+//    }
 
-        @ApiModelProperty(value = "区域id")
-        private Long regionId;
-
-        @ApiModelProperty(value = "区域名称")
-        private String regionName;
-
-        @ApiModelProperty(value = "建筑名称")
-        private String buildName;
-
-        @ApiModelProperty(value = "建筑楼成名称")
-        private String buildFloorName;
-
-        @ApiModelProperty(value = "备注")
-        private String remark;
-    }
-
-    @Data
-    @ApiModel
-    public static class TempLeaveVo {
-
-        @ApiModelProperty(value = "登记人id")
-        private Long userId;
-
-        @ApiModelProperty(value = "登记人姓名")
-        private String userName;
-
-        @ApiModelProperty(value = "登记人头像（文件id）")
-        private Long headPortrait;
-
-        @ApiModelProperty(value = "登记人头像（文件id）")
-        private String headPortraitUrl;
-
-        @ApiModelProperty(value = "离开开始时间")
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime startDateTime;
-
-        @ApiModelProperty(value = "离开结束时间")
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        private LocalDateTime endDateTime;
-
-    }
+//    @Data
+//    @ApiModel
+//    public static class TempLeaveVo {
+//
+//        @ApiModelProperty(value = "登记人id")
+//        private Long userId;
+//
+//        @ApiModelProperty(value = "登记人姓名")
+//        private String userName;
+//
+//        @ApiModelProperty(value = "登记人头像（文件id）")
+//        private Long headPortrait;
+//
+//        @ApiModelProperty(value = "登记人头像（文件id）")
+//        private String headPortraitUrl;
+//
+//        @ApiModelProperty(value = "离开开始时间")
+//        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//        private LocalDateTime startDateTime;
+//
+//        @ApiModelProperty(value = "离开结束时间")
+//        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//        private LocalDateTime endDateTime;
+//
+//    }
 }

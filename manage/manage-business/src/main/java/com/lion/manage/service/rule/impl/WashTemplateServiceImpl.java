@@ -132,6 +132,9 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
     @Override
     public DetailsWashTemplateVo details(Long id) {
         WashTemplate washTemplate = this.findById(id);
+        if (Objects.isNull(washTemplate)) {
+            return null;
+        }
         DetailsWashTemplateVo detailsWashTemplateVo = new DetailsWashTemplateVo();
         BeanUtils.copyProperties(washTemplate,detailsWashTemplateVo);
         List<WashTemplateItem> list = washTemplateItemDao.findByWashTemplateId(washTemplate.getId());

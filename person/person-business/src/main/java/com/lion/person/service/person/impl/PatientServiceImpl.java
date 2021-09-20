@@ -32,17 +32,22 @@ import com.lion.manage.expose.ward.WardRoomExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.dao.person.PatientDao;
 import com.lion.person.dao.person.PatientTransferDao;
-import com.lion.person.dao.person.TempLeaveDao;
 import com.lion.person.entity.enums.LogType;
 import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.enums.TransferState;
-import com.lion.person.entity.person.*;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.PatientDoctor;
+import com.lion.person.entity.person.PatientNurse;
+import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.dto.AddPatientDto;
 import com.lion.person.entity.person.dto.PatientLeaveDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
 import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
-import com.lion.person.service.person.*;
+import com.lion.person.service.person.PatientDoctorService;
+import com.lion.person.service.person.PatientLogService;
+import com.lion.person.service.person.PatientNurseService;
+import com.lion.person.service.person.PatientService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
@@ -80,8 +85,8 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @Autowired
     private PatientDao patientDao;
 
-    @Autowired
-    private RestrictedAreaService restrictedAreaService;
+//    @Autowired
+//    private RestrictedAreaService restrictedAreaService;
 
     @DubboReference
     private WardRoomSickbedExposeService wardRoomSickbedExposeService;
@@ -113,8 +118,8 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @Autowired
     private PatientTransferDao patientTransferDao;
 
-    @Autowired
-    private TempLeaveDao tempLeaveDao;
+//    @Autowired
+//    private TempLeaveDao tempLeaveDao;
 
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
@@ -149,7 +154,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         patient = save(patient);
         patientNurseService.add(addPatientDto.getNurseIds(),patient.getId());
         patientDoctorService.add(addPatientDto.getDoctorIds(),patient.getId());
-        restrictedAreaService.add(addPatientDto.getRegionId(), PersonType.PATIENT,patient.getId());
+//        restrictedAreaService.add(addPatientDto.getRegionId(), PersonType.PATIENT,patient.getId());
         if (Objects.nonNull(patient.getTagCode())) {
             tagPatientExposeService.binding(patient.getId(),patient.getTagCode(),patient.getDepartmentId());
         }
@@ -170,7 +175,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         update(patient);
         patientNurseService.add(updatePatientDto.getNurseIds(),patient.getId());
         patientDoctorService.add(updatePatientDto.getDoctorIds(),patient.getId());
-        restrictedAreaService.add(updatePatientDto.getRegionId(), PersonType.PATIENT,patient.getId());
+//        restrictedAreaService.add(updatePatientDto.getRegionId(), PersonType.PATIENT,patient.getId());
         Long userId = CurrentUserUtil.getCurrentUserId();
         if (Objects.nonNull(patient.getTagCode())) {
             tagPatientExposeService.binding(patient.getId(),patient.getTagCode(),patient.getDepartmentId());
@@ -224,7 +229,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         if (Objects.nonNull(deleteDtos) ){
             deleteDtos.forEach(deleteDto -> {
                 this.deleteById(deleteDto.getId());
-                restrictedAreaService.delete(deleteDto.getId());
+//                restrictedAreaService.delete(deleteDto.getId());
                 tagPatientExposeService.unbinding(deleteDto.getId(),true);
                 redisTemplate.delete(RedisConstants.PATIENT+deleteDto.getId());
                 currentPositionExposeService.delete(deleteDto.getId(),null,null);
@@ -372,27 +377,27 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         });
         vo.setDoctorVos(doctorVos);
 
-        List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(patient.getId(), PersonType.PATIENT);
-        List<PatientDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
-        restrictedAreaList.forEach(restrictedArea -> {
-            PatientDetailsVo.RestrictedAreaVo restrictedAreaVo = new PatientDetailsVo.RestrictedAreaVo();
-            Region region = regionExposeService.findById(restrictedArea.getRegionId());
-            if (Objects.nonNull(region)){
-                restrictedAreaVo.setRegionName(region.getName());
-                restrictedAreaVo.setRegionId(region.getId());
-                restrictedAreaVo.setRemark(region.getRemarks());
-                Build build = buildExposeService.findById(region.getBuildId());
-                if (Objects.nonNull(build)){
-                    restrictedAreaVo.setBuildName(build.getName());
-                }
-                BuildFloor buildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)) {
-                    restrictedAreaVo.setBuildFloorName(buildFloor.getName());
-                }
-                restrictedAreaVoList.add(restrictedAreaVo);
-            }
-        });
-        vo.setRestrictedAreaVoList(restrictedAreaVoList);
+//        List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(patient.getId(), PersonType.PATIENT);
+//        List<PatientDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
+//        restrictedAreaList.forEach(restrictedArea -> {
+//            PatientDetailsVo.RestrictedAreaVo restrictedAreaVo = new PatientDetailsVo.RestrictedAreaVo();
+//            Region region = regionExposeService.findById(restrictedArea.getRegionId());
+//            if (Objects.nonNull(region)){
+//                restrictedAreaVo.setRegionName(region.getName());
+//                restrictedAreaVo.setRegionId(region.getId());
+//                restrictedAreaVo.setRemark(region.getRemarks());
+//                Build build = buildExposeService.findById(region.getBuildId());
+//                if (Objects.nonNull(build)){
+//                    restrictedAreaVo.setBuildName(build.getName());
+//                }
+//                BuildFloor buildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
+//                if (Objects.nonNull(buildFloor)) {
+//                    restrictedAreaVo.setBuildFloorName(buildFloor.getName());
+//                }
+//                restrictedAreaVoList.add(restrictedAreaVo);
+//            }
+//        });
+//        vo.setRestrictedAreaVoList(restrictedAreaVoList);
         List<TransferState> state = new ArrayList<>();
         state.add(TransferState.CANCEL);
         state.add(TransferState.FINISH);
@@ -404,20 +409,20 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
                 vo.setNewDepartmentName(department.getName());
             }
         }
-        TempLeave tempLeave = tempLeaveDao.findFirstByPatientIdOrderByCreateDateTimeDesc(patient.getId());
-        if (Objects.nonNull(tempLeave)){
-            PatientDetailsVo.TempLeaveVo tempLeaveVo = new PatientDetailsVo.TempLeaveVo();
-            tempLeaveVo.setUserId(tempLeave.getUserId());
-            User user = userExposeService.findById(tempLeave.getUserId());
-            if (Objects.nonNull(user)){
-                tempLeaveVo.setUserName(user.getName());
-                tempLeaveVo.setHeadPortrait(user.getHeadPortrait());
-                tempLeaveVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
-                tempLeaveVo.setStartDateTime(tempLeave.getStartDateTime());
-                tempLeaveVo.setEndDateTime(tempLeave.getEndDateTime());
-            }
-            vo.setTempLeaveVo(tempLeaveVo);
-        }
+//        TempLeave tempLeave = tempLeaveDao.findFirstByPatientIdOrderByCreateDateTimeDesc(patient.getId());
+//        if (Objects.nonNull(tempLeave)){
+//            PatientDetailsVo.TempLeaveVo tempLeaveVo = new PatientDetailsVo.TempLeaveVo();
+//            tempLeaveVo.setUserId(tempLeave.getUserId());
+//            User user = userExposeService.findById(tempLeave.getUserId());
+//            if (Objects.nonNull(user)){
+//                tempLeaveVo.setUserName(user.getName());
+//                tempLeaveVo.setHeadPortrait(user.getHeadPortrait());
+//                tempLeaveVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+//                tempLeaveVo.setStartDateTime(tempLeave.getStartDateTime());
+//                tempLeaveVo.setEndDateTime(tempLeave.getEndDateTime());
+//            }
+//            vo.setTempLeaveVo(tempLeaveVo);
+//        }
 
         SystemAlarm systemAlarm =  systemAlarmExposeService.findLastByPi(patient.getId());
         if (Objects.nonNull(systemAlarm)) {

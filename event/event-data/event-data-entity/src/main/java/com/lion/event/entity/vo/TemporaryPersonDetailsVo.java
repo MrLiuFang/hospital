@@ -41,6 +41,6 @@ public class TemporaryPersonDetailsVo extends TemporaryPerson {
     @ApiModelProperty(value = "警告id")
     private String alarmId;
 
-    @ApiModelProperty(value = "限制区域")
-    private List<RestrictedAreaVo> restrictedAreaVos;
+//    @ApiModelProperty(value = "限制区域")
+//    private List<RestrictedAreaVo> restrictedAreaVos;
 }

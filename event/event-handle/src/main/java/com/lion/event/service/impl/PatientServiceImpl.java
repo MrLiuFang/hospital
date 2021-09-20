@@ -46,11 +46,11 @@ public class PatientServiceImpl implements PatientService {
     @DubboReference
     private PatientTransferExposeService patientTransferExposeService;
 
-    @DubboReference
-    private TempLeaveExposeService tempLeaveExposeService;
-
-    @DubboReference
-    private RestrictedAreaExposeService restrictedAreaExposeService;
+//    @DubboReference
+//    private TempLeaveExposeService tempLeaveExposeService;
+//
+//    @DubboReference
+//    private RestrictedAreaExposeService restrictedAreaExposeService;
 
     @Autowired
     private ObjectMapper jacksonObjectMapper;

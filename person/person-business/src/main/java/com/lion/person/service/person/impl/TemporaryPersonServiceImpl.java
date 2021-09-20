@@ -16,20 +16,15 @@ import com.lion.event.entity.SystemAlarm;
 import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.event.expose.service.SystemAlarmExposeService;
 import com.lion.exception.BusinessException;
-import com.lion.manage.entity.build.Build;
-import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.SystemAlarmType;
-import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.person.dao.person.TemporaryPersonDao;
-import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.person.Patient;
-import com.lion.person.entity.person.RestrictedArea;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.entity.person.dto.AddTemporaryPersonDto;
 import com.lion.person.entity.person.dto.TemporaryPersonLeaveDto;
@@ -37,11 +32,8 @@ import com.lion.person.entity.person.dto.UpdateTemporaryPersonDto;
 import com.lion.person.entity.person.vo.ListTemporaryPersonVo;
 import com.lion.person.entity.person.vo.TemporaryPersonDetailsVo;
 import com.lion.person.service.person.PatientService;
-import com.lion.person.service.person.RestrictedAreaService;
 import com.lion.person.service.person.TemporaryPersonService;
-import com.lion.upms.entity.role.Role;
 import com.lion.upms.expose.role.RoleExposeService;
-import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
@@ -70,8 +62,8 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     @Autowired
     private TemporaryPersonDao temporaryPersonDao;
 
-    @Autowired
-    private RestrictedAreaService restrictedAreaService;
+//    @Autowired
+//    private RestrictedAreaService restrictedAreaService;
 
     @DubboReference
     private TagPostdocsExposeService tagPostdocsExposeService;
@@ -119,7 +111,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         BeanUtils.copyProperties(addTemporaryPersonDto,temporaryPerson);
         temporaryPerson = assertPatientExist(temporaryPerson, temporaryPerson.getPatientId());
         temporaryPerson = save(temporaryPerson);
-        restrictedAreaService.add(addTemporaryPersonDto.getRegionId(), PersonType.TEMPORARY_PERSON,temporaryPerson.getId());
+//        restrictedAreaService.add(addTemporaryPersonDto.getRegionId(), PersonType.TEMPORARY_PERSON,temporaryPerson.getId());
         tagPostdocsExposeService.binding(temporaryPerson.getId(),addTemporaryPersonDto.getTagCode());
         redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON+temporaryPerson.getId(),temporaryPerson, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
@@ -131,7 +123,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         BeanUtils.copyProperties(updateTemporaryPersonDto,temporaryPerson);
         temporaryPerson = assertPatientExist(temporaryPerson, temporaryPerson.getPatientId());
         update(temporaryPerson);
-        restrictedAreaService.add(updateTemporaryPersonDto.getRegionId(), PersonType.TEMPORARY_PERSON,temporaryPerson.getId());
+//        restrictedAreaService.add(updateTemporaryPersonDto.getRegionId(), PersonType.TEMPORARY_PERSON,temporaryPerson.getId());
         tagPostdocsExposeService.binding(temporaryPerson.getId(),updateTemporaryPersonDto.getTagCode());
         redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON+temporaryPerson.getId(),temporaryPerson, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
@@ -142,7 +134,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         if (Objects.nonNull(deleteDtos) ){
             deleteDtos.forEach(deleteDto -> {
                 this.deleteById(deleteDto.getId());
-                restrictedAreaService.delete(deleteDto.getId());
+//                restrictedAreaService.delete(deleteDto.getId());
                 tagPostdocsExposeService.unbinding(deleteDto.getId(),true);
                 redisTemplate.delete(RedisConstants.TEMPORARY_PERSON+deleteDto.getId());
                 currentPositionExposeService.delete(deleteDto.getId(),null,null);
@@ -206,27 +198,27 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         if (Objects.nonNull(department)) {
             temporaryPersonDetailsVo.setDepartmentName(department.getName());
         }
-        List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(temporaryPerson.getId(), PersonType.TEMPORARY_PERSON);
-        List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
-        restrictedAreaList.forEach(restrictedArea -> {
-            TemporaryPersonDetailsVo.RestrictedAreaVo restrictedAreaVo = new TemporaryPersonDetailsVo.RestrictedAreaVo();
-            Region region = regionExposeService.findById(restrictedArea.getRegionId());
-            if (Objects.nonNull(region)){
-                restrictedAreaVo.setRegionName(region.getName());
-                restrictedAreaVo.setRegionId(region.getId());
-                restrictedAreaVo.setRemark(region.getRemarks());
-                Build build = buildExposeService.findById(region.getBuildId());
-                if (Objects.nonNull(build)){
-                    restrictedAreaVo.setBuildName(build.getName());
-                }
-                BuildFloor buildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)) {
-                    restrictedAreaVo.setBuildFloorName(buildFloor.getName());
-                }
-                restrictedAreaVoList.add(restrictedAreaVo);
-            }
-        });
-        temporaryPersonDetailsVo.setRestrictedAreaVoList(restrictedAreaVoList);
+//        List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(temporaryPerson.getId(), PersonType.TEMPORARY_PERSON);
+//        List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
+//        restrictedAreaList.forEach(restrictedArea -> {
+//            TemporaryPersonDetailsVo.RestrictedAreaVo restrictedAreaVo = new TemporaryPersonDetailsVo.RestrictedAreaVo();
+//            Region region = regionExposeService.findById(restrictedArea.getRegionId());
+//            if (Objects.nonNull(region)){
+//                restrictedAreaVo.setRegionName(region.getName());
+//                restrictedAreaVo.setRegionId(region.getId());
+//                restrictedAreaVo.setRemark(region.getRemarks());
+//                Build build = buildExposeService.findById(region.getBuildId());
+//                if (Objects.nonNull(build)){
+//                    restrictedAreaVo.setBuildName(build.getName());
+//                }
+//                BuildFloor buildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
+//                if (Objects.nonNull(buildFloor)) {
+//                    restrictedAreaVo.setBuildFloorName(buildFloor.getName());
+//                }
+//                restrictedAreaVoList.add(restrictedAreaVo);
+//            }
+//        });
+//        temporaryPersonDetailsVo.setRestrictedAreaVoList(restrictedAreaVoList);
         SystemAlarm systemAlarm =  systemAlarmExposeService.findLastByPi(temporaryPerson.getId());
         if (Objects.nonNull(systemAlarm)) {
             SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());

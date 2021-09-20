@@ -33,8 +33,8 @@ public class TemporaryPersonDetailsVo extends TemporaryPerson {
     @ApiModelProperty(value = "科室名称（来源于拜访人）")
     private String departmentName;
 
-    @ApiModelProperty(value = "限制区域")
-    private List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList;
+//    @ApiModelProperty(value = "限制区域")
+//    private List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList;
 
     @ApiModelProperty(value = "警告")
     private String alarm;
@@ -49,25 +49,25 @@ public class TemporaryPersonDetailsVo extends TemporaryPerson {
     @ApiModelProperty(value = "警报ID")
     private String alarmId;
 
-    @Data
-    @ApiModel
-    public static class RestrictedAreaVo{
-
-        @ApiModelProperty(value = "区域id")
-        private Long regionId;
-
-        @ApiModelProperty(value = "区域名称")
-        private String regionName;
-
-        @ApiModelProperty(value = "建筑名称")
-        private String buildName;
-
-        @ApiModelProperty(value = "建筑楼成名称")
-        private String buildFloorName;
-
-        @ApiModelProperty(value = "备注")
-        private String remark;
-    }
+//    @Data
+//    @ApiModel
+//    public static class RestrictedAreaVo{
+//
+//        @ApiModelProperty(value = "区域id")
+//        private Long regionId;
+//
+//        @ApiModelProperty(value = "区域名称")
+//        private String regionName;
+//
+//        @ApiModelProperty(value = "建筑名称")
+//        private String buildName;
+//
+//        @ApiModelProperty(value = "建筑楼成名称")
+//        private String buildFloorName;
+//
+//        @ApiModelProperty(value = "备注")
+//        private String remark;
+//    }
 
 
 }

@@ -7,8 +7,10 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
+import com.lion.device.entity.device.WarningBell;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.device.expose.device.WarningBellExposeService;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -21,6 +23,7 @@ import com.lion.manage.entity.region.vo.DetailsRegionTypeVo;
 import com.lion.manage.entity.region.vo.DetailsRegionVo;
 import com.lion.manage.entity.region.vo.ListRegionTypeVo;
 import com.lion.manage.entity.region.vo.ListRegionVo;
+import com.lion.manage.entity.rule.WashTemplateItem;
 import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.expose.ward.WardRoomExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
@@ -30,6 +33,8 @@ import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionCctvService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.region.RegionTypeService;
+import com.lion.manage.service.rule.WashTemplateItemService;
+import com.lion.manage.service.rule.WashTemplateService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -89,6 +94,12 @@ public class RegionController extends BaseControllerImpl implements BaseControll
 
     @DubboReference
     private WardRoomSickbedExposeService wardRoomSickbedExposeService;
+
+    @Autowired
+    private WashTemplateService washTemplateService;
+
+    @DubboReference
+    private WarningBellExposeService warningBellExposeService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增区域")
@@ -154,6 +165,7 @@ public class RegionController extends BaseControllerImpl implements BaseControll
             detailsRegionVo.setDevices(deviceExposeService.findByRegionId(region.getId()));
             detailsRegionVo.setWardRooms(wardRoomExposeService.find(region.getId()));
             detailsRegionVo.setWardRoomSickbeds(wardRoomSickbedExposeService.find(region.getId()));
+            detailsRegionVo.setRegionType(regionTypeService.findById(region.getRegionTypeId()));
             List<RegionCctv> list = regionCctvService.find(region.getId());
             List<Long> cctvIds = new ArrayList<>();
             list.forEach(regionCctv -> {
@@ -168,6 +180,8 @@ public class RegionController extends BaseControllerImpl implements BaseControll
 //                exposeObjectList.add(regionExposeObject.getExposeObject());
 //            });
 //            detailsRegionVo.setExposeObjects(exposeObjectList);
+            detailsRegionVo.setWashTemplateVo(washTemplateService.details(region.getWashTemplateId()));
+            detailsRegionVo.setWarningBells(warningBellExposeService.findByRegionId(region.getId()));
             resultData.setData(detailsRegionVo);
         }
         return resultData;

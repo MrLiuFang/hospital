@@ -3,7 +3,10 @@ package com.lion.manage.entity.region.vo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.device.WarningBell;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.entity.region.RegionType;
+import com.lion.manage.entity.rule.vo.DetailsWashTemplateVo;
 import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import io.swagger.annotations.ApiModel;
@@ -36,6 +39,17 @@ public class DetailsRegionVo extends Region {
     @ApiModelProperty(value = "所有关联的病床")
     @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
     private List<WardRoomSickbed> wardRoomSickbeds;
+
+    @ApiModelProperty(value = "区域类型")
+    private RegionType regionType;
+
+    @ApiModelProperty(value = "洗手规则模板")
+    @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
+    private DetailsWashTemplateVo washTemplateVo;
+
+    @ApiModelProperty(value = "警示。铃")
+    @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
+    private List<WarningBell> warningBells;
 
 
 

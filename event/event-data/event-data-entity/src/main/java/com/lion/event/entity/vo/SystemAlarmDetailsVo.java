@@ -35,8 +35,8 @@ public class SystemAlarmDetailsVo extends SystemAlarm {
     @ApiModelProperty(value = "图片url")
     private String imgUrl;
 
-    @ApiModelProperty(value = "患者行动限制区域")
-    private List<String> restrictedArea;
+//    @ApiModelProperty(value = "患者行动限制区域")
+//    private List<String> restrictedArea;
 
     @ApiModelProperty(value = "警告内容")
     private String alarmContent;

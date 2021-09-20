@@ -40,8 +40,8 @@ public class PatientDetailsVo extends Patient {
     @ApiModelProperty(value = "负责医生")
     private List<PatientDetailsVo.DoctorVo> doctorVos;
 
-    @ApiModelProperty(value = "限制区域")
-    private List<RestrictedAreaVo> restrictedAreaVos;
+//    @ApiModelProperty(value = "限制区域")
+//    private List<RestrictedAreaVo> restrictedAreaVos;
 
     @ApiModelProperty(value = "床位")
     private String bedCode;

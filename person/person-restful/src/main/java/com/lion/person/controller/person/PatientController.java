@@ -11,7 +11,10 @@ import com.lion.core.persistence.Validator;
 import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.dto.*;
 import com.lion.person.entity.person.vo.*;
-import com.lion.person.service.person.*;
+import com.lion.person.service.person.PatientLogService;
+import com.lion.person.service.person.PatientReportService;
+import com.lion.person.service.person.PatientService;
+import com.lion.person.service.person.PatientTransferService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -41,8 +44,8 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     @Autowired
     private PatientTransferService patientTransferService;
 
-    @Autowired
-    private TempLeaveService tempLeaveService;
+//    @Autowired
+//    private TempLeaveService tempLeaveService;
 
     @Autowired
     private PatientReportService patientReportService;
@@ -130,28 +133,28 @@ public class PatientController extends BaseControllerImpl implements BaseControl
         ResultData resultData = ResultData.instance();
         return resultData;
     }
-
-    @PostMapping("/add/temp/leave")
-    @ApiOperation(value = "新增临时离开")
-    public IResultData addTempLeave(@RequestBody @Validated AddTempLeaveDto addTempLeaveDto){
-        tempLeaveService.addTempLeave(addTempLeaveDto);
-        ResultData resultData = ResultData.instance();
-        return resultData;
-    }
-
-    @PutMapping("/advance/over/temp/leave")
-    @ApiOperation(value = "提前结束临时离开权限(取消/返回)")
-    public IResultData advanceOverTempLeave(@RequestBody @Validated AdvanceOverTempLeaveDto advanceOverTempLeaveDto) {
-        tempLeaveService.advanceOverTempLeave(advanceOverTempLeaveDto);
-        ResultData resultData = ResultData.instance();
-        return resultData;
-    }
-
-    @GetMapping("/temp/leave/list")
-    @ApiOperation(value = "临时离开列表")
-    public IPageResultData<List<ListTempLeaveVo>> tempLeaveList(@ApiParam(value = "标签编码") String tagCode,@ApiParam(value = "科室id") Long departmentId,@ApiParam(value = "患者id") Long patientId, @ApiParam(value = "登记人id") Long userId, @ApiParam(value = "开始离开时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "结束离开时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
-        return tempLeaveService.list(tagCode, departmentId, patientId, userId, startDateTime, endDateTime, lionPage);
-    }
+//
+//    @PostMapping("/add/temp/leave")
+//    @ApiOperation(value = "新增临时离开")
+//    public IResultData addTempLeave(@RequestBody @Validated AddTempLeaveDto addTempLeaveDto){
+//        tempLeaveService.addTempLeave(addTempLeaveDto);
+//        ResultData resultData = ResultData.instance();
+//        return resultData;
+//    }
+//
+//    @PutMapping("/advance/over/temp/leave")
+//    @ApiOperation(value = "提前结束临时离开权限(取消/返回)")
+//    public IResultData advanceOverTempLeave(@RequestBody @Validated AdvanceOverTempLeaveDto advanceOverTempLeaveDto) {
+//        tempLeaveService.advanceOverTempLeave(advanceOverTempLeaveDto);
+//        ResultData resultData = ResultData.instance();
+//        return resultData;
+//    }
+//
+//    @GetMapping("/temp/leave/list")
+//    @ApiOperation(value = "临时离开列表")
+//    public IPageResultData<List<ListTempLeaveVo>> tempLeaveList(@ApiParam(value = "标签编码") String tagCode,@ApiParam(value = "科室id") Long departmentId,@ApiParam(value = "患者id") Long patientId, @ApiParam(value = "登记人id") Long userId, @ApiParam(value = "开始离开时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "结束离开时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
+//        return tempLeaveService.list(tagCode, departmentId, patientId, userId, startDateTime, endDateTime, lionPage);
+//    }
 
     @PostMapping("/report/add")
     @ApiOperation(value = "添加医护汇报")

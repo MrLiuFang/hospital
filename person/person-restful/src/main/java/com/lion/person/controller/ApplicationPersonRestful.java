@@ -1,4 +1,4 @@
-package com.lion.upms.controller;
+package com.lion.person.controller;
 
 import com.lion.core.persistence.BaseDaoFactoryBean;
 import org.apache.dubbo.config.spring.context.annotation.DubboComponentScan;

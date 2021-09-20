@@ -25,7 +25,7 @@ import java.util.List;
 )
 public class AddWashTemplateDto extends WashTemplate {
 
-    @ApiModelProperty(value = "规则项")
+    @ApiModelProperty(value = "规则项-全量（先删后增）")
     @Size(min = 2,max = 2,message = "{2000103}",groups = {Validator.Insert.class})
     @NotNull(message = "{2000103}",groups = {Validator.Insert.class})
     private List<AddWashTemplateItemDto> washTemplateItems;
