@@ -22,7 +22,6 @@
 		<module>person</module>
 		<module>job</module>
 		<module>i18n</module>
-		<module>test</module>
     </modules>
 
 	<dependencyManagement>
