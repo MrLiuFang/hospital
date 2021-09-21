@@ -98,4 +98,7 @@ public class Region extends BaseEntity implements Serializable {
     @ApiModelProperty("区域类型id")
     @NotNull(message = "{2000108}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long regionTypeId;
+
+    @ApiModelProperty("设备数量定义")
+    private String deviceQuantityDefinition;
 }
