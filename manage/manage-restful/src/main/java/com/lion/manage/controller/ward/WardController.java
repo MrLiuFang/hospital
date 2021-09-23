@@ -1,5 +1,6 @@
 package com.lion.manage.controller.ward;
 
+import com.lion.common.utils.RedisUtil;
 import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.common.dto.DeleteDto;
@@ -8,6 +9,7 @@ import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.Ward;
 import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.entity.ward.WardRoomSickbed;
@@ -18,6 +20,7 @@ import com.lion.manage.entity.ward.vo.DetailsWardVo;
 import com.lion.manage.entity.ward.vo.ListWardVo;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.service.department.DepartmentService;
+import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
 import com.lion.manage.service.ward.WardService;
@@ -63,6 +66,9 @@ public class WardController extends BaseControllerImpl implements BaseController
 
     @DubboReference
     private DepartmentUserExposeService departmentUserExposeService;
+
+    @Autowired
+    private RegionService regionService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增病房")
@@ -160,6 +166,19 @@ public class WardController extends BaseControllerImpl implements BaseController
             }
         }
         return (IPageResultData<List<WardRoomSickbed>>) wardRoomSickbedService.list(bedCode, departmentId, wardId, wardRoomId, lionPage);
+    }
+
+    @GetMapping("/region")
+    @ApiOperation(value = "获取病床/病房所在的区域")
+    public IResultData<Region> getRegion(@ApiParam(value = "病床id")Long wardRoomSickbedId,@ApiParam(value = "病房id")Long wardRoomId) {
+        WardRoomSickbed wardRoomSickbed = wardRoomSickbedService.findById(wardRoomSickbedId);
+        WardRoom wardRoom = wardRoomService.findById(wardRoomId);
+        Region region =null;
+        region = regionService.findById(wardRoomSickbed.getWardRoomId());
+        if (Objects.isNull(region)){
+            region = regionService.findById(wardRoom.getRegionId());
+        }
+        return ResultData.instance().setData(region);
     }
 
 }

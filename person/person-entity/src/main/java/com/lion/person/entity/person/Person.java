@@ -35,17 +35,17 @@ public abstract class Person extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "性别")
     @Column(name = "gender")
     @Convert(converter = Gender.GenderConverter.class)
-    @NotNull(message = "{1000010}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotNull(message = "{1000010}", groups = {Validator.Insert.class, Validator.Update.class})
     private Gender gender;
 
     @ApiModelProperty(value = "姓名")
     @Column(name = "name")
-    @NotBlank(message = "{1000011}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotBlank(message = "{1000011}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
     @ApiModelProperty(value = "联系电话")
     @Column(name = "phone_number")
-    @NotBlank(message = "{1000012}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotBlank(message = "{1000012}", groups = {Validator.Insert.class, Validator.Update.class})
     private String phoneNumber;
 
     @ApiModelProperty(value = "紧急联络人")
@@ -58,7 +58,7 @@ public abstract class Person extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "标签码")
     @Column(name = "tag_code")
-    @NotBlank(message = "{1000013}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotBlank(message = "{1000013}", groups = {Validator.Insert.class, Validator.Update.class})
     private String tagCode;
 
     @ApiModelProperty(value = "住址")
@@ -80,6 +80,10 @@ public abstract class Person extends BaseEntity implements Serializable {
     @ApiModelProperty(value = "登出原因")
     @Column(name = "leave_emarks")
     private String leaveRemarks;
+
+    @ApiModelProperty(value = "可通行时间段 [[\"09:00\",\"12:00\"],[\"13:00\",\"16:00\"]] json数据格式,时间范围不能乱,否则会影响警告")
+    @Column(name = "time_quantum")
+    private String timeQuantum;
 
     @ApiModelProperty(value = "设备状态")
     @Column(name = "device_state")

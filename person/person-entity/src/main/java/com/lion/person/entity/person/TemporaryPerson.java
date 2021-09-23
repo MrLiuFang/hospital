@@ -32,16 +32,16 @@ public class TemporaryPerson extends Person implements Serializable {
     @ApiModelProperty(value = "证件类型")
     @Column(name = "identity_document_type")
     @Convert(converter = IdentityDocumentType.IdentityDocumentTypeConverter.class)
-    @NotNull(message = "{1000017}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotNull(message = "{1000017}", groups = {Validator.Insert.class, Validator.Update.class})
     private IdentityDocumentType identityDocumentType;
 
     @ApiModelProperty(value = "证件号码")
     @Column(name = "id_no")
-    @NotBlank(message = "{1000018}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotBlank(message = "{1000018}", groups = {Validator.Insert.class, Validator.Update.class})
     private String idNo;
 
     @ApiModelProperty(value = "拜访人ID")
-    @NotNull(message = "{1000019}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotNull(message = "{1000019}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "patient_Id")
     private Long patientId;
 
@@ -52,5 +52,9 @@ public class TemporaryPerson extends Person implements Serializable {
     @ApiModelProperty(value = "拜访原因")
     @Column(name = "remarks")
     private String remarks;
+
+    @ApiModelProperty(value = "通行级别")
+    @NotNull(message = "{1000050}", groups = {Validator.Insert.class, Validator.Update.class})
+    private Integer trafficLevel;
 
 }

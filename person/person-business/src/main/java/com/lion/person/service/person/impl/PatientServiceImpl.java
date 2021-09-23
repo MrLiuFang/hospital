@@ -150,6 +150,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         BeanUtils.copyProperties(addPatientDto,patient);
         sickbedIsCanUse(patient.getSickbedId(),null);
         assertMedicalRecordNoExist(patient.getMedicalRecordNo(),null);
+        checkSickbedHavingRegion(patient.getSickbedId());
         patient = setOtherInfo(patient);
         patient = save(patient);
         patientNurseService.add(addPatientDto.getNurseIds(),patient.getId());
@@ -171,6 +172,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         BeanUtils.copyProperties(updatePatientDto,patient);
         sickbedIsCanUse(patient.getSickbedId(),patient.getId());
         assertMedicalRecordNoExist(patient.getMedicalRecordNo(),patient.getId());
+        checkSickbedHavingRegion(patient.getSickbedId());
         patient = setOtherInfo(patient);
         update(patient);
         patientNurseService.add(updatePatientDto.getNurseIds(),patient.getId());
@@ -488,6 +490,25 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         Patient patient = patientDao.findFirstByMedicalRecordNo(medicalRecordNo);
         if ((Objects.isNull(id) && Objects.nonNull(patient)) || (Objects.nonNull(id) && Objects.nonNull(patient) && !Objects.equals(patient.getId(),id)) ){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000040"));
+        }
+    }
+
+    private void checkSickbedHavingRegion(Long sickbedId){
+        WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(sickbedId);
+        if (Objects.isNull(wardRoomSickbed)) {
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000035"));
+        }
+        if (Objects.isNull(wardRoomSickbed.getRegionId())) {
+            WardRoom wardRoom = wardRoomExposeService.findById(wardRoomSickbed.getWardRoomId());
+            Region region = regionExposeService.findById(wardRoom.getRegionId());
+            if (Objects.isNull(wardRoom) || Objects.isNull(wardRoom.getRegionId()) || Objects.isNull(region)) {
+                BusinessException.throwException(MessageI18nUtil.getMessage("1000049"));
+            }
+        }else {
+            Region region = regionExposeService.findById(wardRoomSickbed.getRegionId());
+            if (Objects.isNull(region)) {
+                BusinessException.throwException(MessageI18nUtil.getMessage("1000049"));
+            }
         }
     }
 

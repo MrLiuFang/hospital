@@ -184,6 +184,15 @@ public class CommonServiceImpl implements CommonService {
                     }
                 }
             }
+        }else if (Objects.equals(type,Type.MIGRANT)) {
+            TemporaryPerson temporaryPerson = redisUtil.getTemporaryPerson(pi);
+            if (!Objects.equals(temporaryPerson.getTrafficLevel(),region.getTrafficLevel())) {
+                sendAlarm(type,pi,ri,ti);
+            }else {
+                if (!isCanWalk(temporaryPerson.getTimeQuantum())) {
+                    sendAlarm(type,pi,ri,ti);
+                }
+            }
         }
 //        if (Objects.equals(region.isPublic,true)) {
 //            List<ExposeObject> exposeObjects = redisTemplate.opsForList().range(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(),0,-1);
