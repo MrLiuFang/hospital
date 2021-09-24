@@ -32,6 +32,9 @@ public class RegionWarningBellServiceImpl extends BaseServiceImpl<RegionWarningB
     @Override
     public void add(List<Long> warningBellIds, Long regionId) {
         regionWarningBellDao.deleteByRegionId(regionId);
+        if (Objects.isNull(warningBellIds) || warningBellIds.size()<=0) {
+            return;
+        }
         warningBellIds.forEach(id->{
             RegionWarningBell regionWarningBell = regionWarningBellDao.findFirstByWarningBellIdAndRegionIdNot(id,regionId);
             if (Objects.nonNull(regionWarningBell)) {
