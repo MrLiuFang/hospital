@@ -267,7 +267,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
             });
         }
 
-        if (Objects.nonNull(deviceIds) && oldDeviceIds.size()>0) {
+        if (Objects.nonNull(deviceIds) && deviceIds.size()>0) {
             deviceIds.forEach(id -> {
                 redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION + id, region.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });

@@ -51,3 +51,33 @@ public class PersonFieldConfigureController extends BaseControllerImpl implement
         return ResultData.instance().setData(personFieldConfigureService.find(configureType));
     }
 }
+
+//[{"headPortrait":{"name":"头像","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"gender":{"name":"性别","isRequired":true,"isDefault":true,"permission":"","remarks":"男/女"}}
+// ,{"name":{"name":"姓名","isRequired":true,"isDefault":true,"permission":"","remarks":""}}
+// ,{"phoneNumber":{"name":"联系电话","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"emergencyContact":{"name":"紧急联络人","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"emergencyContactPhoneNumber":{"name":"紧急联络人电话","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"tagCode":{"name":"标签码","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"address":{"name":"住址","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"birthday":{"name":"出生日期","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"medicalRecordNo":{"name":"病历号","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"disease":{"name":"疾病","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"level":{"name":"患者级别","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"actionMode":{"name":"行动限制","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"remarks":{"name":"备注","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"cardNumber":{"name":"金卡号","isRequired":true,"isDefault":true,"permission":"admin","remarks":""}}]
+
+
+//[{"headPortrait":{"name":"头像","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"gender":{"name":"性别","isRequired":true,"isDefault":true,"permission":"","remarks":"男/女"}}
+// ,{"name":{"name":"姓名","isRequired":true,"isDefault":true,"permission":"","remarks":""}}
+// ,{"phoneNumber":{"name":"联系电话","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"emergencyContact":{"name":"紧急联络人","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"emergencyContactPhoneNumber":{"name":"紧急联络人电话","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"tagCode":{"name":"标签码","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"address":{"name":"住址","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"identityDocumentType":{"name":"证件类型","isRequired":true,"isDefault":true,"permission":"","remarks":"身份证/港澳通行证/军官证"}}
+// ,{"idNo":{"name":"证件号码","isRequired":true,"isDefault":true,"permission":"admin","remarks":""}}
+// ,{"remarks":{"name":"拜访原因","isRequired":false,"isDefault":false,"permission":"","remarks":""}}
+// ,{"trafficLevel":{"name":"通行级别","isRequired":false,"isDefault":false,"permission":"","remarks":""}}]

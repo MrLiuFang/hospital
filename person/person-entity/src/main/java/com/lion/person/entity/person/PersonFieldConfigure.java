@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
@@ -27,7 +28,9 @@ public class PersonFieldConfigure extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -3693905501287233798L;
 
+    @Column(name = "content" ,length = 2000)
     private String content;
+
 
     private ConfigureType configureType;
 }
