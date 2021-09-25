@@ -19,8 +19,10 @@ import com.lion.device.service.device.WarningBellService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.entity.region.RegionWarningBell;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
+import com.lion.manage.expose.region.RegionWarningBellExposeService;
 import com.lion.upms.entity.user.QUserType;
 import com.lion.upms.entity.user.UserType;
 import com.lion.upms.entity.user.vo.ListUserTypeVo;
@@ -59,6 +61,9 @@ public class WarningBellServiceImpl extends BaseServiceImpl<WarningBell> impleme
 
     @Autowired
     private JPAQueryFactory jpaQueryFactory;
+
+    @DubboReference
+    private RegionWarningBellExposeService regionWarningBellExposeService;
 
     @Override
     public void add(AddWarningBellDto addWarningBellDto) {
@@ -117,12 +122,14 @@ public class WarningBellServiceImpl extends BaseServiceImpl<WarningBell> impleme
                     detailsWarningBellVo.setDepartmentName(department.getName());
                 }
             }
-            if (Objects.nonNull(warningBell.getRegionId())) {
-                Region region = regionExposeService.findById(warningBell.getRegionId());
+            RegionWarningBell regionWarningBell = regionWarningBellExposeService.find(warningBell.getId());
+            if (Objects.nonNull(regionWarningBell)) {
+                Region region = regionExposeService.findById(regionWarningBell.getRegionId());
                 if (Objects.nonNull(region)) {
                     detailsWarningBellVo.setRegionName(region.getName());
                 }
             }
+
             detailsWarningBellVo.setImgUrl(fileExposeService.getUrl(warningBell.getImg()));
             return detailsWarningBellVo;
         }

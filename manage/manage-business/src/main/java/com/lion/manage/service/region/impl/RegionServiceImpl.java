@@ -4,6 +4,7 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.expose.cctv.CctvExposeService;
+import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.region.RegionCctvDao;
@@ -100,6 +101,9 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @Autowired
     private RegionDeviceDao regionDeviceDao;
 
+    @DubboReference
+    private DeviceExposeService deviceExposeService;
+
     @Override
     public List<Region> find(Long departmentId) {
         return regionDao.findByDepartmentId(departmentId);
@@ -129,6 +133,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         regionWarningBellService.add(addRegionDto.getWarningBellIds(),region.getId());
         wardRoomExposeService.updateRegionId(addRegionDto.wardRoomIds,region.getId());
         wardRoomSickbedExposeService.updateRegionId(addRegionDto.getWardRoomSickbedIds(),region.getId());
+        deviceExposeService.relationRegion(region.getId(),addRegionDto.deviceIds);
 //        regionExposeObjectService.save(region.getId(),addRegionDto.getExposeObjects());
         persistenceRedis(region, addRegionDto.deviceIds,null, false);
     }
@@ -152,6 +157,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         regionWarningBellService.add(updateRegionDto.getWarningBellIds(),region.getId());
         wardRoomExposeService.updateRegionId(updateRegionDto.wardRoomIds,region.getId());
         wardRoomSickbedExposeService.updateRegionId(updateRegionDto.getWardRoomSickbedIds(),region.getId());
+        deviceExposeService.relationRegion(region.getId(),updateRegionDto.deviceIds);
 //        regionExposeObjectService.save(region.getId(),updateRegionDto.getExposeObjects());
         persistenceRedis(region, updateRegionDto.deviceIds,getDeviceId(region.getId()), false);
     }

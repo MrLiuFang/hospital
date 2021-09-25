@@ -13,6 +13,7 @@ import org.apache.commons.lang3.ThreadUtils;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
@@ -108,5 +109,12 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     @Override
     public List<Device> findByRegionId(Long regionId) {
         return deviceDao.findByRegionId(regionId);
+    }
+
+    @Override
+    @Transactional
+    public void relationRegion(Long regionId, List<Long> ids) {
+        deviceDao.updateRegionIdIsNull(regionId);
+        deviceDao.updateRegion(regionId, ids);
     }
 }

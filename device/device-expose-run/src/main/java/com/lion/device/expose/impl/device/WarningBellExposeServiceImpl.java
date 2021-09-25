@@ -19,9 +19,4 @@ public class WarningBellExposeServiceImpl extends BaseServiceImpl<WarningBell> i
 
     @Autowired
     private WarningBellDao warningBellDao;
-
-    @Override
-    public List<WarningBell> findByRegionId(Long regionId) {
-        return warningBellDao.findByRegionId(regionId);
-    }
 }

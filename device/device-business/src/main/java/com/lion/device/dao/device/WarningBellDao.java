@@ -13,10 +13,4 @@ import java.util.List;
  */
 public interface WarningBellDao extends BaseDao<WarningBell> {
 
-    /**
-     * 根据区域查询
-     * @param regionId
-     * @return
-     */
-    List<WarningBell> findByRegionId(Long regionId);
 }

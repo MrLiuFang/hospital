@@ -96,4 +96,25 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
      * @return
      */
     public List<Device> findByRegionId(Long regionId);
+
+    /**
+     * 置空区域id
+     * @param regionId
+     * @return
+     */
+    @Modifying
+    @Transactional
+    @Query(" update Device set regionId =null ,version=version+1 where regionId = :regionId ")
+    public int updateRegionIdIsNull(@Param("regionId")Long regionId);
+
+    /**
+     * 关联区域
+     * @param regionId
+     * @param ids
+     * @return
+     */
+    @Modifying
+    @Transactional
+    @Query(" update Device set regionId =:regionId ,version=version+1 where id in :ids ")
+    public int updateRegion(@Param("regionId")Long regionId,@Param("ids")List<Long> ids);
 }

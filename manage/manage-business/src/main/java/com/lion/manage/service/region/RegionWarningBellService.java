@@ -18,4 +18,11 @@ public interface RegionWarningBellService extends BaseService<RegionWarningBell>
      * @param regionId
      */
     public void add(List<Long> warningBellIds, Long regionId);
+
+    /**
+     * 根据区域查询关联关系
+     * @param regionId
+     * @return
+     */
+    public List<RegionWarningBell> find(Long regionId);
 }

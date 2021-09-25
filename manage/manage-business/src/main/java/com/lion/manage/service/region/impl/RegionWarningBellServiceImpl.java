@@ -11,6 +11,7 @@ import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +31,7 @@ public class RegionWarningBellServiceImpl extends BaseServiceImpl<RegionWarningB
     private WarningBellExposeService warningBellExposeService;
 
     @Override
+    @Transactional
     public void add(List<Long> warningBellIds, Long regionId) {
         regionWarningBellDao.deleteByRegionId(regionId);
         if (Objects.isNull(warningBellIds) || warningBellIds.size()<=0) {
@@ -50,5 +52,10 @@ public class RegionWarningBellServiceImpl extends BaseServiceImpl<RegionWarningB
             warningBell.setRegionId(regionId);
             save(warningBell);
         });
+    }
+
+    @Override
+    public List<RegionWarningBell> find(Long regionId) {
+        return regionWarningBellDao.findByRegionId(regionId);
     }
 }

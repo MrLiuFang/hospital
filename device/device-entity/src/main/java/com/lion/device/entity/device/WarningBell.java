@@ -45,9 +45,6 @@ public class WarningBell extends BaseEntity {
     @NotNull(message = "{0000009}",groups = {Validator.Insert.class,Validator.Update.class})
     private Long departmentId;
 
-    @ApiModelProperty(value = "区域id")
-    private Long regionId;
-
     @ApiModelProperty(value = "图片")
     private Long img;
 }

@@ -47,7 +47,7 @@ public class DetailsRegionVo extends Region {
     @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
     private DetailsWashTemplateVo washTemplateVo;
 
-    @ApiModelProperty(value = "警示。铃")
+    @ApiModelProperty(value = "警示铃")
     @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
     private List<WarningBell> warningBells;
 

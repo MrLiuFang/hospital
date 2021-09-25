@@ -8,10 +8,13 @@ import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.exception.BusinessException;
 import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.dao.rule.WashDeviceTypeDao;
 import com.lion.manage.dao.rule.WashTemplateDao;
 import com.lion.manage.dao.rule.WashTemplateItemDao;
+import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.rule.WashDeviceType;
 import com.lion.manage.entity.rule.WashTemplate;
 import com.lion.manage.entity.rule.WashTemplateItem;
@@ -75,6 +78,7 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
     public WashTemplate add(AddWashTemplateDto addWashTemplateDto) {
         WashTemplate washTemplate = new WashTemplate();
         BeanUtils.copyProperties(addWashTemplateDto,washTemplate);
+        assertNameExist(washTemplate.getName(),null);
         washTemplate = save(washTemplate);
         washTemplateItemService.add(addWashTemplateDto.getWashTemplateItems(),washTemplate.getId());
         persistence2Redis(details(washTemplate.getId()),washTemplate.getId(),false);
@@ -86,6 +90,7 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
     public void update(UpdateWashTemplateDto updateWashTemplateDto) {
         WashTemplate washTemplate = new WashTemplate();
         BeanUtils.copyProperties(updateWashTemplateDto,washTemplate);
+        assertNameExist(washTemplate.getName(),washTemplate.getId());
         update(washTemplate);
         washTemplateItemService.add(updateWashTemplateDto.getWashTemplateItems(),washTemplate.getId());
         persistence2Redis(details(washTemplate.getId()),washTemplate.getId(),false);
@@ -161,5 +166,12 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
             return;
         }
         redisTemplate.opsForValue().set(RedisConstants.WASH_TEMPLATE+ id,detailsWashTemplateVo,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+    }
+
+    private void assertNameExist(String name, Long id) {
+        WashTemplate washTemplate = washTemplateDao.findFirstByName(name);
+        if ((Objects.isNull(id) && Objects.nonNull(washTemplate)) || (Objects.nonNull(id) && Objects.nonNull(washTemplate) && !Objects.equals(washTemplate.getId(),id)) ){
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000073"));
+        }
     }
 }

@@ -11,6 +11,7 @@ import com.lion.device.entity.device.WarningBell;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.WarningBellExposeService;
+import com.lion.manage.dao.region.RegionWarningBellDao;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -18,6 +19,7 @@ import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.region.RegionType;
+import com.lion.manage.entity.region.RegionWarningBell;
 import com.lion.manage.entity.region.dto.*;
 import com.lion.manage.entity.region.vo.DetailsRegionTypeVo;
 import com.lion.manage.entity.region.vo.DetailsRegionVo;
@@ -33,6 +35,7 @@ import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionCctvService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.region.RegionTypeService;
+import com.lion.manage.service.region.RegionWarningBellService;
 import com.lion.manage.service.rule.WashTemplateItemService;
 import com.lion.manage.service.rule.WashTemplateService;
 import io.swagger.annotations.Api;
@@ -100,6 +103,10 @@ public class RegionController extends BaseControllerImpl implements BaseControll
 
     @DubboReference
     private WarningBellExposeService warningBellExposeService;
+
+    @Autowired
+    private RegionWarningBellService regionWarningBellService;
+
 
     @PostMapping("/add")
     @ApiOperation(value = "新增区域")
@@ -181,7 +188,12 @@ public class RegionController extends BaseControllerImpl implements BaseControll
 //            });
 //            detailsRegionVo.setExposeObjects(exposeObjectList);
             detailsRegionVo.setWashTemplateVo(washTemplateService.details(region.getWashTemplateId()));
-            detailsRegionVo.setWarningBells(warningBellExposeService.findByRegionId(region.getId()));
+            List<RegionWarningBell> regionWarningBells = regionWarningBellService.find(region.getId());
+            List<WarningBell> warningBells = new ArrayList<>();
+            regionWarningBells.forEach(regionWarningBell -> {
+                warningBells.add(warningBellExposeService.findById(regionWarningBell.getWarningBellId()));
+            });
+            detailsRegionVo.setWarningBells(warningBells);
             resultData.setData(detailsRegionVo);
         }
         return resultData;

@@ -12,11 +12,6 @@ import java.util.List;
  */
 public interface WarningBellExposeService extends BaseService<WarningBell> {
 
-    /**
-     * 根据区域id查询
-     * @param regionId
-     * @return
-     */
-    public List<WarningBell> findByRegionId(Long regionId);
+
 }
 

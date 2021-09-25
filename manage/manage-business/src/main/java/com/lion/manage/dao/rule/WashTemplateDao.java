@@ -9,4 +9,11 @@ import com.lion.manage.entity.rule.WashTemplate;
  * @createDateTime 2021/9/7 上午10:51
  */
 public interface WashTemplateDao extends BaseDao<WashTemplate> {
+
+    /**
+     * 根据名称查询
+     * @param name
+     * @return
+     */
+    public WashTemplate findFirstByName(String name);
 }
