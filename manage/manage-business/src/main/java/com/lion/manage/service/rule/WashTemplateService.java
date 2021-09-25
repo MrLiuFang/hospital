@@ -1,21 +1,15 @@
 package com.lion.manage.service.rule;
 
 import com.lion.core.IPageResultData;
-import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.rule.WashTemplate;
-import com.lion.manage.entity.rule.WashTemplateItem;
 import com.lion.manage.entity.rule.dto.AddWashTemplateDto;
 import com.lion.manage.entity.rule.dto.UpdateWashTemplateDto;
 import com.lion.manage.entity.rule.vo.DetailsWashTemplateVo;
 import com.lion.manage.entity.rule.vo.ListWashTemplateVo;
-import com.lion.upms.entity.user.dto.AddUserTypeDto;
-import com.lion.upms.entity.user.dto.UpdateUserTypeDto;
-import com.lion.upms.entity.user.vo.ListUserTypeVo;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -28,8 +22,9 @@ public interface WashTemplateService extends BaseService<WashTemplate> {
     /**
      * 新增
      * @param addWashTemplateDto
+     * @return
      */
-    public void add(AddWashTemplateDto addWashTemplateDto);
+    public WashTemplate add(AddWashTemplateDto addWashTemplateDto);
 
     /**
      * 修改

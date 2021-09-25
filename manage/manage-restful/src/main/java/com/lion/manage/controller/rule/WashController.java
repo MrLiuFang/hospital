@@ -9,6 +9,7 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
 import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.manage.entity.rule.WashTemplate;
 import com.lion.manage.entity.rule.dto.AddWashTemplateDto;
 import com.lion.manage.entity.rule.dto.UpdateWashTemplateDto;
 import com.lion.manage.entity.rule.vo.DetailsWashTemplateVo;
@@ -121,10 +122,9 @@ public class WashController extends BaseControllerImpl implements BaseController
 
     @PostMapping("/add/template")
     @ApiOperation(value = "新增洗手规则模板")
-    public IResultData addTemplate(@RequestBody @Validated({Validator.Insert.class})AddWashTemplateDto addWashTemplateDto) {
-        washTemplateService.add(addWashTemplateDto);
-        ResultData resultData = ResultData.instance();
-        return resultData;
+    public IResultData<DetailsWashTemplateVo> addTemplate(@RequestBody @Validated({Validator.Insert.class})AddWashTemplateDto addWashTemplateDto) {
+        WashTemplate  washTemplate = washTemplateService.add(addWashTemplateDto);
+        return ResultData.instance().setData(washTemplateService.details(washTemplate.getId()));
     }
 
     @PutMapping("/update/template")

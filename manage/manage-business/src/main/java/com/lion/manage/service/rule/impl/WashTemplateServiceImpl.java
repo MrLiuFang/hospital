@@ -72,12 +72,13 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
 
     @Override
     @Transactional
-    public void add(AddWashTemplateDto addWashTemplateDto) {
+    public WashTemplate add(AddWashTemplateDto addWashTemplateDto) {
         WashTemplate washTemplate = new WashTemplate();
         BeanUtils.copyProperties(addWashTemplateDto,washTemplate);
         washTemplate = save(washTemplate);
         washTemplateItemService.add(addWashTemplateDto.getWashTemplateItems(),washTemplate.getId());
         persistence2Redis(details(washTemplate.getId()),washTemplate.getId(),false);
+        return washTemplate;
     }
 
     @Override
