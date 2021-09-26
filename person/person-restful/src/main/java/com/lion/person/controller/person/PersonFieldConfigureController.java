@@ -36,8 +36,8 @@ public class PersonFieldConfigureController extends BaseControllerImpl implement
     private PersonFieldConfigureService personFieldConfigureService;
 
     @PostMapping("/save")
-    @ApiOperation(value = "保存配置")
-    @ApiImplicitParams(value = {@ApiImplicitParam(name="id",value="id"),@ApiImplicitParam(name="version",value="version"),@ApiImplicitParam(name="conetnt",value="配置项-json格式传送")})
+    @ApiOperation(value = "保存配置(传id,version,conetnt参数)")
+//    @ApiImplicitParams(value = {@ApiImplicitParam(name="id",value="id"),@ApiImplicitParam(name="version",value="version"),@ApiImplicitParam(name="conetnt",value="json")})
     public IResultData add(@RequestBody Map<String,Object> map){
         PersonFieldConfigure personFieldConfigure = new PersonFieldConfigure();
         BeanUtil.fillBeanWithMap(map, personFieldConfigure.getClass(),true);
