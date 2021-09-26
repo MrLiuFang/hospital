@@ -482,22 +482,4 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                                    @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
         return washEventService.violationWashEvent(startDateTime, endDateTime, lionPage);
     }
-
-    @PutMapping("/set/alarm/mode")
-    @ApiOperation(value = "切换洗手模式")
-    public IResultData setAlarmMode(@RequestBody SetAlarmModeDto alarmMode) {
-        if (Objects.nonNull(alarmMode.getAlarmMode())) {
-            Long userId = CurrentUserUtil.getCurrentUserId();
-            User user = userExposeService.findById(userId);
-            AssertUtil.isFlase(!passwordEncoder.matches(alarmMode.getPassword(),user.getPassword()), MessageI18nUtil.getMessage("3000035"));
-            redisTemplate.opsForValue().set(RedisConstants.ALARM_MODE,alarmMode.getAlarmMode());
-        }
-        return ResultData.instance();
-    }
-
-    @PutMapping("/alarm/mode")
-    @ApiOperation(value = "获取洗手模式")
-    public IResultData<AlarmMode> alarmMode() {
-        return ResultData.instance().setData(redisTemplate.opsForValue().get(RedisConstants.ALARM_MODE));
-    }
 }
