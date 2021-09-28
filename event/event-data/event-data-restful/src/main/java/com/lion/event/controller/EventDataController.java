@@ -329,6 +329,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return positionService.list(temporaryPersonId,null,regionId , startDateTime, endDateTime, lionPage);
     }
 
+    @GetMapping("/position/export")
+    @ApiOperation(value = "轨迹导出")
+    public void positionExport(@ApiParam("人员(员工,病人,流动人员)id") Long personId,@ApiParam("区域id") Long regionId,
+                               @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                               @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) {
+
+    }
+
     @GetMapping("/temporary/person/system/alarm")
     @ApiOperation(value = "地图监控流动人员警告列表(不返回总行数)")
     public IPageResultData<List<ListSystemAlarmVo>> temporaryPersonSystemAlarm(@ApiParam("流动人员id") @NotNull(message = "{3000023}") Long temporaryPersonId,@ApiParam("区域id") Long regionId,

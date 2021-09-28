@@ -205,9 +205,14 @@ public class RedisConstants {
     public static final String FLOOR_BUILD = "floor_build_";
 
     /**
-     * 部门(key:departmentId,value:department)
+     * 科室(key:departmentId,value:department)
      */
     public static final String DEPARTMENT = "department_";
+
+    /**
+     * 科室警告设置(key:departmentId,value:DepartmentAlarm)
+     */
+    public static final String DEPARTMENT_ALARM = "department_alarm_";
 
     /**
      * 患者(key:patientId,value:patient)

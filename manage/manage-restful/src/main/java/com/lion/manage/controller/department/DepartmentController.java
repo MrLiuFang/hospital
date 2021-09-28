@@ -1,6 +1,7 @@
 package com.lion.manage.controller.department;
 
 import com.fasterxml.jackson.databind.ser.impl.MapEntrySerializer;
+import com.lion.common.constants.RedisConstants;
 import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.common.dto.DeleteDto;
@@ -33,6 +34,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +43,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author Mr.Liu
@@ -67,6 +70,9 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
 
     @Autowired
     private DepartmentUserService departmentUserService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增科室")
@@ -145,7 +151,8 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
         if (Objects.nonNull(department)) {
             departmentAlarm.setDepartmentId(department.getId());
         }
-        departmentAlarmService.save(departmentAlarm);
+        departmentAlarm = departmentAlarmService.save(departmentAlarm);
+        persistenceRedis(departmentAlarm);
         return ResultData.instance();
     }
 
@@ -155,6 +162,7 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
         DepartmentAlarm departmentAlarm = new DepartmentAlarm();
         BeanUtils.copyProperties(updateDepartmentAlarmDto,departmentAlarm);
         departmentAlarmService.update(departmentAlarm);
+        persistenceRedis(departmentAlarm);
         return ResultData.instance();
     }
 
@@ -178,5 +186,9 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
             resultData.setData(this.departmentAlarmService.find(department.getId()));
         }
         return resultData;
+    }
+
+    private void persistenceRedis(DepartmentAlarm departmentAlarm){
+        redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT_ALARM+departmentAlarm.getDepartmentId(),departmentAlarm,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 }

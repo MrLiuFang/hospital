@@ -10,6 +10,7 @@ import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.department.DepartmentAlarm;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.enums.WashDeviceType;
@@ -25,6 +26,7 @@ import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
+import com.lion.manage.expose.department.DepartmentAlarmExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.expose.region.RegionDeviceExposeService;
@@ -140,6 +142,9 @@ public class RedisUtil {
 
     @DubboReference
     private WashTemplateItemExposeService washTemplateItemExposeService;
+
+    @DubboReference
+    private DepartmentAlarmExposeService departmentAlarmExposeService;
 
     public TemporaryPerson getTemporaryPerson(Long temporaryPersonId) {
         if (Objects.isNull(temporaryPersonId)){
@@ -1071,5 +1076,20 @@ public class RedisUtil {
         return null;
     }
 
+
+    public DepartmentAlarm getDepartmentAlarm(Long departmentId) {
+        Object obj = redisTemplate.opsForValue().get(RedisConstants.DEPARTMENT_ALARM+departmentId);
+        DepartmentAlarm departmentAlarm = null;
+        if (Objects.nonNull(obj) && !(obj instanceof DepartmentAlarm)) {
+            redisTemplate.delete(RedisConstants.DEPARTMENT_ALARM+departmentId);
+        }else if (Objects.nonNull(obj) && obj instanceof DepartmentAlarm) {
+            departmentAlarm = (DepartmentAlarm) obj;
+        }
+        if (Objects.isNull(departmentAlarm)) {
+            departmentAlarm = departmentAlarmExposeService.find(departmentId);
+            redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT_ALARM+departmentId,departmentAlarm,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+        }
+        return departmentAlarm;
+    }
 
 }

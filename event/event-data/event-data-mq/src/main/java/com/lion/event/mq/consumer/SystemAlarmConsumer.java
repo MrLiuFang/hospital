@@ -11,6 +11,7 @@ import com.lion.common.enums.Type;
 import com.lion.common.utils.MessageDelayUtil;
 import com.lion.common.utils.RedisUtil;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.tag.Tag;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.service.SystemAlarmService;
@@ -18,6 +19,7 @@ import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.department.DepartmentAlarm;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
@@ -26,6 +28,7 @@ import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
 import lombok.extern.java.Log;
+import org.apache.el.lang.ELArithmetic;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.spring.annotation.RocketMQMessageListener;
 import org.apache.rocketmq.spring.core.RocketMQListener;
@@ -72,7 +75,7 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
             SystemAlarmDto systemAlarmDto = jacksonObjectMapper.readValue(msg, SystemAlarmDto.class);
-
+            SystemAlarm newSystemAlarm = new SystemAlarm();
             if (Objects.nonNull(systemAlarmDto.getId())) {
                 Boolean b = (Boolean) redisTemplate.opsForValue().get(RedisConstants.UNALARM + systemAlarmDto.getId());
                 if (Objects.equals(b, true)) {
@@ -100,7 +103,7 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                     systemAlarmDto.setCount(systemAlarmDto.getCount()+1);
                     systemAlarmService.updateSdt(systemAlarmDto.getId());
                 }else {
-                    SystemAlarm newSystemAlarm = new SystemAlarm();
+
                     newSystemAlarm.setAi(systemAlarmDto.getAssetsId());
                     if (Objects.nonNull(systemAlarmDto.getHumidity())) {
                         newSystemAlarm.setH(systemAlarmDto.getHumidity());
@@ -147,16 +150,28 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                             newSystemAlarm.setDn(department.getName());
                         }
                     }
+                    DepartmentAlarm departmentAlarm = null;
                     if (Objects.equals(newSystemAlarm.getTy(),Type.STAFF.getKey())) {
                         User user = redisUtil.getUserById(newSystemAlarm.getPi()) ;
                         if (Objects.nonNull(user)) {
                             Department department = redisUtil.getDepartmentByUserId(user.getId());
                             newSystemAlarm.setSdi(department.getId());
+                            departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
+                            if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getStaffWash(),true) && (Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.ZZDQYWJXXSCZ.getKey()) || Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.WXYBZDXSSBXS.getKey()))) {
+                                newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
+                            }
+                            if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getStaffBattery(),true) && Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
+                                newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
+                            }
                         }
                     }else if (Objects.equals(newSystemAlarm.getTy(),Type.PATIENT.getKey())) {
                         Patient patient = redisUtil.getPatient(newSystemAlarm.getPi());
                         if (Objects.nonNull(patient)) {
                             newSystemAlarm.setSdi(patient.getDepartmentId());
+                            departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
+                            if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getLeaveDepartment(),true) &&(Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.CCXDFW.getKey())||Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.JRJQ.getKey())) ) {
+                                newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
+                            }
                         }
                     }else if (Objects.equals(newSystemAlarm.getTy(),Type.MIGRANT.getKey())) {
                         TemporaryPerson temporaryPerson = redisUtil.getTemporaryPerson(newSystemAlarm.getPi());
@@ -167,6 +182,10 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                         Assets assets = redisUtil.getAssets(newSystemAlarm.getTi());
                         if (Objects.nonNull(assets)){
                             newSystemAlarm.setSdi(assets.getDepartmentId());
+                            departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
+                            if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getAssetsBattery(),true) &&Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
+                                newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
+                            }
                         }
                     }else if (Objects.equals(newSystemAlarm.getTy(),Type.DEVICE.getKey())) {
                         Device device = redisUtil.getDevice(newSystemAlarm.getDvi());
@@ -175,11 +194,19 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                             if (Objects.nonNull(department)){
                                 newSystemAlarm.setSdi(department.getId());
                             }
+                            departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
+                            if ((Objects.equals(device.getDeviceClassify(), DeviceClassify.MONITOR) ||Objects.equals(device.getDeviceClassify(), DeviceClassify.LF_EXCITER) ) && Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getMonitorBattery(),true) &&Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
+                                newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
+                            }
                         }
                     }else if (Objects.equals(newSystemAlarm.getTy(),Type.HUMIDITY.getKey()) || Objects.equals(newSystemAlarm.getTy(),Type.TEMPERATURE.getKey()) ) {
                         Tag tag = redisUtil.getTagById(newSystemAlarm.getTi());
                         if (Objects.nonNull(tag)) {
                             newSystemAlarm.setSdi(tag.getDepartmentId());
+                        }
+                        departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
+                        if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getHumidBattery(),true) &&Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
+                            newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
                         }
                     }
                     newSystemAlarm = systemAlarmService.save(newSystemAlarm);
@@ -200,7 +227,9 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                     }
                     rocketMQTemplate.syncSend(TopicConstants.UPDATE_STATE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(updateStateDto)).build());
                 }
-                if (Objects.nonNull(alarm) && Objects.equals(alarm.getAgain(),true )) {
+
+
+                if (Objects.nonNull(alarm) && Objects.equals(alarm.getAgain(),true ) && !Objects.equals(newSystemAlarm.getUa(),SystemAlarmState.PROCESSED.getKey())) {
                     systemAlarmDto.setDelayDateTime(LocalDateTime.now().plusMinutes(alarm.getInterval()));
                     againAlarm(systemAlarmDto);
                 }
