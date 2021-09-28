@@ -10,15 +10,22 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.department.DepartmentAlarm;
+import com.lion.manage.entity.department.dto.AddDepartmentAlarmDto;
 import com.lion.manage.entity.department.dto.AddDepartmentDto;
+import com.lion.manage.entity.department.dto.UpdateDepartmentAlarmDto;
 import com.lion.manage.entity.department.dto.UpdateDepartmentDto;
 import com.lion.manage.entity.department.vo.DetailsDepartmentVo;
 import com.lion.manage.entity.department.vo.ListDepartmentVo;
 import com.lion.manage.entity.department.vo.TreeDepartmentVo;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.service.department.DepartmentAlarmService;
 import com.lion.manage.service.department.DepartmentResponsibleUserService;
 import com.lion.manage.service.department.DepartmentService;
+import com.lion.manage.service.department.DepartmentUserService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.upms.entity.user.User;
+import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,6 +40,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Mr.Liu
@@ -53,6 +61,12 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
 
     @Autowired
     private RegionService regionService;
+
+    @Autowired
+    private DepartmentAlarmService departmentAlarmService;
+
+    @Autowired
+    private DepartmentUserService departmentUserService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增科室")
@@ -121,4 +135,48 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
         return resultData;
     }
 
+    @PostMapping("/alarm/add")
+    @ApiOperation(value = "新增科室警告设置")
+    public IResultData addAlarm(@RequestBody AddDepartmentAlarmDto addDepartmentAlarmDto){
+        DepartmentAlarm departmentAlarm = new DepartmentAlarm();
+        BeanUtils.copyProperties(addDepartmentAlarmDto,departmentAlarm);
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        Department department = departmentUserService.findDepartment(userId);
+        if (Objects.nonNull(department)) {
+            departmentAlarm.setDepartmentId(department.getId());
+        }
+        departmentAlarmService.save(departmentAlarm);
+        return ResultData.instance();
+    }
+
+    @PostMapping("/alarm/update")
+    @ApiOperation(value = "修改科室警告设置")
+    public IResultData addAlarm(@RequestBody UpdateDepartmentAlarmDto updateDepartmentAlarmDto){
+        DepartmentAlarm departmentAlarm = new DepartmentAlarm();
+        BeanUtils.copyProperties(updateDepartmentAlarmDto,departmentAlarm);
+        departmentAlarmService.update(departmentAlarm);
+        return ResultData.instance();
+    }
+
+//    @ApiOperation(value = "删除科室警告设置")
+//    @DeleteMapping("/alarm/delete")
+//    public IResultData deleteAlarm(@RequestBody List<DeleteDto> deleteDtoList){
+//        deleteDtoList.forEach(d->{
+//            departmentAlarmService.deleteById(d.getId());
+//        });
+//        ResultData resultData = ResultData.instance();
+//        return resultData;
+//    }
+
+    @GetMapping("/alarm/details")
+    @ApiOperation(value = "科室警告详情")
+    public IResultData<DepartmentAlarm> detailsAlarm(){
+        ResultData resultData = ResultData.instance();
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        Department department = departmentUserService.findDepartment(userId);
+        if (Objects.nonNull(department)) {
+            resultData.setData(this.departmentAlarmService.find(department.getId()));
+        }
+        return resultData;
+    }
 }
