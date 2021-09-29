@@ -26,30 +26,30 @@ import javax.persistence.Table;
 @ApiModel(description = "科室警告设置")
 public class DepartmentAlarm extends BaseEntity {
 
-    @ApiModelProperty(name = "科室id")
+    @ApiModelProperty(value = "科室id")
     private Long departmentId;
 
-    @ApiModelProperty(name = "患者离开科室")
-    private Boolean leaveDepartment;
+    @ApiModelProperty(value = "患者离开科室")
+    private Boolean leaveDepartment = true;
 
-    @ApiModelProperty(name = "患者标签电池电量不足")
-    private Boolean patientBattery;
+    @ApiModelProperty(value = "患者标签电池电量不足")
+    private Boolean patientBattery = true;
 
-    @ApiModelProperty(name = "员工标签电池电量不足")
-    private Boolean staffBattery;
+    @ApiModelProperty(value = "员工标签电池电量不足")
+    private Boolean staffBattery = true;
 
-    @ApiModelProperty(name = "员工未遵循洗手规则")
-    private Boolean staffWash;
+    @ApiModelProperty(value = "员工未遵循洗手规则")
+    private Boolean staffWash = true;
 
-    @ApiModelProperty(name = "资产标签电池电量不足")
-    private Boolean assetsBattery;
+    @ApiModelProperty(value = "资产标签电池电量不足")
+    private Boolean assetsBattery = true;
 
-    @ApiModelProperty(name = "温湿标签电池电量不足")
-    private Boolean humidBattery;
+    @ApiModelProperty(value = "温湿标签电池电量不足")
+    private Boolean humidBattery = true;
 
-    @ApiModelProperty(name = "定位设备电池电量不足")
-    private Boolean monitorBattery;
+    @ApiModelProperty(value = "定位设备电池电量不足")
+    private Boolean monitorBattery = true;
 
-    @ApiModelProperty(name = "资产未登记被移出存放区域")
-    private Boolean assetsLeave;
+    @ApiModelProperty(value = "资产未登记被移出存放区域")
+    private Boolean assetsLeave = true;
 }

@@ -3,6 +3,7 @@ package com.lion.event;
 import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceAutoConfigure;
 import com.lion.config.JPAQueryFactoryConfiguration;
 import org.apache.dubbo.config.spring.context.annotation.DubboComponentScan;
+import org.apache.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -18,6 +19,7 @@ import springfox.documentation.oas.annotations.EnableOpenApi;
         DruidDataSourceAutoConfigure.class ,
         HibernateJpaAutoConfiguration.class})
 @EnableDiscoveryClient
+@EnableDubbo
 @DubboComponentScan(basePackages = {"com.lion.**"})
 @EnableOpenApi
 public class ApplicationEventRestful {

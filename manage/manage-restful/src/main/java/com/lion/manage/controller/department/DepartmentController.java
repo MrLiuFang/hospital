@@ -183,7 +183,14 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
         Long userId = CurrentUserUtil.getCurrentUserId();
         Department department = departmentUserService.findDepartment(userId);
         if (Objects.nonNull(department)) {
-            resultData.setData(this.departmentAlarmService.find(department.getId()));
+            DepartmentAlarm departmentAlarm = departmentAlarmService.find(department.getId());
+            if (Objects.isNull(departmentAlarm)) {
+                departmentAlarm = new DepartmentAlarm();
+                departmentAlarm.setDepartmentId(department.getId());
+                departmentAlarm = departmentAlarmService.save(departmentAlarm);
+                persistenceRedis(departmentAlarm);
+            }
+            resultData.setData(departmentAlarm);
         }
         return resultData;
     }

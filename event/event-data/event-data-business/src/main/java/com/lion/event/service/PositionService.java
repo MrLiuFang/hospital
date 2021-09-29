@@ -6,7 +6,14 @@ import com.lion.core.LionPage;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.vo.ListPositionVo;
+import com.lion.manage.entity.event.vo.EventRecordVo;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -50,6 +57,19 @@ public interface PositionService {
     public IPageResultData<List<Position>> list(Long pi, Long adi,Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 
     /**
+     * 导出
+     * @param pi
+     * @param ri
+     * @param startDateTime
+     * @param endDateTime
+     * @param code
+     * @param remarks
+     * @param response
+     * @param request
+     */
+    public void positionExport(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, String code, String remarks, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException;
+
+    /**
      * 病人/流动人员所到区域
      * @param personId
      * @param regionId
@@ -78,4 +98,8 @@ public interface PositionService {
      * @param dto
      */
     public void updatePositionLeaveTime(UpdatePositionLeaveTimeDto dto);
+
+    public IPageResultData<List<EventRecordVo>> eventRecordList(String code, String name,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+
+    public EventRecordVo eventRecordDetails( Long id);
 }

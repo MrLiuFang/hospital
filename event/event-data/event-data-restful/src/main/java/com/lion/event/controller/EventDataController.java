@@ -2,7 +2,6 @@ package com.lion.event.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itextpdf.text.DocumentException;
-import com.lion.common.constants.RedisConstants;
 import com.lion.common.enums.Type;
 import com.lion.common.enums.WashEventType;
 import com.lion.common.utils.RedisUtil;
@@ -21,16 +20,13 @@ import com.lion.event.entity.Position;
 import com.lion.event.entity.WashRecord;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.dto.OldAlarmToNewAlarm;
-import com.lion.event.entity.dto.SetAlarmModeDto;
 import com.lion.event.entity.dto.UnalarmDto;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
-import com.lion.upms.entity.enums.AlarmMode;
-import com.lion.upms.entity.user.User;
+import com.lion.manage.entity.event.EventRecord;
+import com.lion.manage.entity.event.vo.EventRecordVo;
+import com.lion.manage.expose.event.EventRecordExposeService;
 import com.lion.upms.expose.user.UserExposeService;
-import com.lion.utils.AssertUtil;
-import com.lion.utils.CurrentUserUtil;
-import com.lion.utils.MessageI18nUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -42,11 +38,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @Author Mr.Liu
@@ -100,11 +97,6 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @Autowired
     private SystemAlarmReportService systemAlarmReportService;
 
-    @DubboReference
-    private UserExposeService userExposeService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/user/current/region")
     @ApiOperation(value = "员工当前位置")
@@ -331,10 +323,25 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/position/export")
     @ApiOperation(value = "轨迹导出")
-    public void positionExport(@ApiParam("人员(员工,病人,流动人员)id") Long personId,@ApiParam("区域id") Long regionId,
+    public void positionExport(@ApiParam("人员(员工,病人,流动人员)id") Long personId, @ApiParam("区域id") Long regionId, @ApiParam("事件编号") String code, @ApiParam("备注") String remarks,
                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
-                               @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) {
+                               @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException {
+        positionService.positionExport(personId,regionId,startDateTime,endDateTime,code,remarks,response,request );
+    }
 
+    @GetMapping("/event/record")
+    @ApiOperation(value = "事件记录列表")
+    public IPageResultData<List<EventRecordVo>> eventRecordList(@ApiParam("时间编号")String code, @ApiParam("创建人姓名")String name,
+                                                           @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                           @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                           LionPage lionPage) {
+        return positionService.eventRecordList(code, name, startDateTime, endDateTime, lionPage);
+    }
+
+    @GetMapping("/event/record/details")
+    @ApiOperation(value = "事件记录详情")
+    public EventRecordVo eventRecordDetails(@ApiParam("id") @NotNull(message = "{0000000}") Long id) {
+        return positionService.eventRecordDetails(id);
     }
 
     @GetMapping("/temporary/person/system/alarm")

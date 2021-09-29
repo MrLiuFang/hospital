@@ -1,5 +1,6 @@
 package com.lion.event.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.dto.UpdatePositionLeaveTimeDto;
 import com.lion.common.enums.Type;
 import com.lion.constant.SearchConstant;
@@ -11,12 +12,16 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.PositionDao;
 import com.lion.event.entity.Position;
-import com.lion.event.entity.WashRecord;
 import com.lion.event.entity.vo.ListPositionVo;
 import com.lion.event.service.CurrentPositionService;
 import com.lion.event.service.PositionService;
+import com.lion.event.utils.ExcelColumn;
+import com.lion.event.utils.ExportExcelUtil;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.event.vo.EventRecordVo;
 import com.lion.manage.expose.department.DepartmentExposeService;
+import com.lion.manage.expose.event.EventRecordExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
 import org.springframework.beans.BeanUtils;
@@ -30,8 +35,13 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 /**
@@ -56,6 +66,13 @@ public class PositionServiceImpl implements PositionService {
 
     @DubboReference
     private DepartmentExposeService departmentExposeService;
+
+    @DubboReference
+    private EventRecordExposeService eventRecordExposeService;
+
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Override
     public void save(Position position) {
@@ -92,9 +109,9 @@ public class PositionServiceImpl implements PositionService {
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
             criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
         }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
-            criteria.and("ddt").gte(startDateTime);
+            criteria.andOperator( Criteria.where("ddt").gte(startDateTime));
         }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
-            criteria.and("ddt").lte(endDateTime);
+            criteria.andOperator( Criteria.where("ddt").lte(endDateTime));
         }
         query.addCriteria(criteria);
         query.with(lionPage);
@@ -104,6 +121,55 @@ public class PositionServiceImpl implements PositionService {
 //        PageableExecutionUtils.getPage(items, lionPage, () -> count);
         IPageResultData<List<Position>> pageResultData =new PageResultData<>(items,lionPage,0L);
         return pageResultData;
+    }
+
+    @Override
+    public void positionExport(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, String code, String remarks, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.parse("2000-01-01 00:00:00", dateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        }
+        IPageResultData<List<Position>> pageResultData = list(pi,null,ri,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+        List<Position> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("3000036"), "rn"));
+        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("3000037"), "ddt"));
+        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("3000038"), "ldt"));
+        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("3000039"), "t"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("position.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
+        List<Map<String,String>> searchCriteria = new ArrayList<Map<String,String>>();
+        if (Objects.nonNull(startDateTime)) {
+            Map<String,String> map = new HashMap<String,String>();
+            map.put("name","开始时间");
+            map.put("key","startDateTime");
+            map.put("value",dateTimeFormatter.format(startDateTime));
+            searchCriteria.add(map);
+        }
+        if (Objects.nonNull(endDateTime)) {
+            Map<String,String> map = new HashMap<String,String>();
+            map.put("name","结束时间");
+            map.put("key","endDateTime");
+            map.put("value",dateTimeFormatter.format(endDateTime));
+            searchCriteria.add(map);
+        }
+        if (Objects.nonNull(pi)) {
+            Map<String,String> map = new HashMap<String,String>();
+            map.put("name","人员id");
+            map.put("key","personId");
+            map.put("value", String.valueOf(pi));
+            searchCriteria.add(map);
+        }
+        if (Objects.nonNull(ri)) {
+            Map<String,String> map = new HashMap<String,String>();
+            map.put("name","区域id");
+            map.put("key","regionId");
+            map.put("value", String.valueOf(ri));
+            searchCriteria.add(map);
+        }
+        eventRecordExposeService.add(code,remarks,"轨迹导出",objectMapper.writeValueAsString(searchCriteria),request.getServletPath());
     }
 
     @Override
@@ -183,5 +249,15 @@ public class PositionServiceImpl implements PositionService {
             update.set("ldt", dto.getCddt());
             mongoTemplate.updateFirst(queryUpdate, update, "position");
         }
+    }
+
+    @Override
+    public IPageResultData<List<EventRecordVo>> eventRecordList(String code, String name, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        return eventRecordExposeService.list(endDateTime,endDateTime,code,name,lionPage);
+    }
+
+    @Override
+    public EventRecordVo eventRecordDetails(Long id) {
+        return eventRecordExposeService.details(id);
     }
 }
