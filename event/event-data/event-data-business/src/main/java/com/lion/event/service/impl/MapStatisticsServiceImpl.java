@@ -39,6 +39,7 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.assets.AssetsFaultExposeService;
@@ -47,9 +48,9 @@ import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.manage.expose.region.RegionCctvExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
-import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.enums.State;
 import com.lion.person.entity.person.*;
 import com.lion.person.expose.person.*;
@@ -68,7 +69,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.*;
@@ -180,6 +183,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @DubboReference
     private UserTypeExposeService userTypeExposeService;
 
+    @DubboReference
+    private RegionCctvExposeService regionCctvExposeService;
+
     @Autowired
     private HttpServletResponse response;
 
@@ -218,10 +224,10 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public DepartmentStatisticsDetailsVo departmentStatisticsDetails() {
-        List<Long> list = departmentExposeService.responsibleDepartment(null);
-        List<DepartmentStatisticsDetailsVo> returnList = new ArrayList<>();
-        list.forEach(departmentId -> {
+    public DepartmentStatisticsDetailsVo departmentStatisticsDetails(Long departmentId) {
+//        List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
+//        List<DepartmentStatisticsDetailsVo> returnList = new ArrayList<>();
+//        list.forEach(id -> {
             DepartmentStatisticsDetailsVo departmentStatisticsDetailsVo = new DepartmentStatisticsDetailsVo();
             Department department = departmentExposeService.findById(departmentId);
             if (Objects.nonNull(department)) {
@@ -249,27 +255,50 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(departmentId, null, null));
                 departmentStatisticsDetailsVo.setTagCount(tagExposeService.countTag(departmentId));
                 departmentStatisticsDetailsVo.setCctvCount(cctvExposeService.count(departmentId));
-                returnList.add(departmentStatisticsDetailsVo);
+//                returnList.add(departmentStatisticsDetailsVo);
+            }
+//        });
+//        DepartmentStatisticsDetailsVo returnVo = new DepartmentStatisticsDetailsVo();
+//        returnList.forEach(o->{
+//            returnVo.setDepartmentName((Objects.isNull(returnVo.getDepartmentName())?"":returnVo.getDepartmentName()+"/")+o.getDepartmentName());
+//            returnVo.setAssetsCount(returnVo.getAssetsCount()+o.getAssetsCount());
+//            returnVo.setAlarmCount(returnVo.getAlarmCount()+o.getAlarmCount());
+//            returnVo.setAllAlarmCount(returnVo.getAllAlarmCount()+o.getAllAlarmCount());
+//            returnVo.setCctvCount(returnVo.getCctvCount()+o.getCctvCount());
+//            returnVo.setFaultCount(returnVo.getFaultCount()+o.getFaultCount());
+//            returnVo.setPatientCount(returnVo.getPatientCount()+o.getPatientCount());
+//            returnVo.setLowPowerDeviceCount(returnVo.getLowPowerDeviceCount()+o.getLowPowerDeviceCount());
+//            returnVo.setLowPowerTagCount(returnVo.getLowPowerTagCount()+o.getLowPowerTagCount());
+//            returnVo.setTagCount(returnVo.getTagCount()+o.getTagCount());
+//            returnVo.setUnalarmCount(returnVo.getUnalarmCount()+o.getUnalarmCount());
+//            returnVo.setCctvAlarmCount(returnVo.getCctvAlarmCount()+o.getCctvAlarmCount());
+//            returnVo.setOnlineStaffCount(returnVo.getOnlineStaffCount()+o.getOnlineStaffCount());
+//            returnVo.setPatientAlarmCount(returnVo.getPatientAlarmCount()+o.getPatientAlarmCount());
+//        });
+        return departmentStatisticsDetailsVo;
+    }
+
+    @Override
+    public RegionStatisticsDetailsVo regionStatisticsDetails1(Long regionId) {
+        Region region = regionExposeService.findById(regionId);
+        if (Objects.isNull(region)) {
+            return null;
+        }
+        List<RegionStatisticsDetails> list = regionStatisticsDetails(region.getBuildFloorId());
+        RegionStatisticsDetailsVo vo = new RegionStatisticsDetailsVo();
+        list.forEach(regionStatisticsDetails -> {
+            if (Objects.equals(regionStatisticsDetails.getRegionId(),regionId)) {
+                BeanUtils.copyProperties(regionStatisticsDetails,vo);
             }
         });
-        DepartmentStatisticsDetailsVo returnVo = new DepartmentStatisticsDetailsVo();
-        returnList.forEach(o->{
-            returnVo.setDepartmentName((Objects.isNull(returnVo.getDepartmentName())?"":returnVo.getDepartmentName()+"/")+o.getDepartmentName());
-            returnVo.setAssetsCount(returnVo.getAssetsCount()+o.getAssetsCount());
-            returnVo.setAlarmCount(returnVo.getAlarmCount()+o.getAlarmCount());
-            returnVo.setAllAlarmCount(returnVo.getAllAlarmCount()+o.getAllAlarmCount());
-            returnVo.setCctvCount(returnVo.getCctvCount()+o.getCctvCount());
-            returnVo.setFaultCount(returnVo.getFaultCount()+o.getFaultCount());
-            returnVo.setPatientCount(returnVo.getPatientCount()+o.getPatientCount());
-            returnVo.setLowPowerDeviceCount(returnVo.getLowPowerDeviceCount()+o.getLowPowerDeviceCount());
-            returnVo.setLowPowerTagCount(returnVo.getLowPowerTagCount()+o.getLowPowerTagCount());
-            returnVo.setTagCount(returnVo.getTagCount()+o.getTagCount());
-            returnVo.setUnalarmCount(returnVo.getUnalarmCount()+o.getUnalarmCount());
-            returnVo.setCctvAlarmCount(returnVo.getCctvAlarmCount()+o.getCctvAlarmCount());
-            returnVo.setOnlineStaffCount(returnVo.getOnlineStaffCount()+o.getOnlineStaffCount());
-            returnVo.setPatientAlarmCount(returnVo.getPatientAlarmCount()+o.getPatientAlarmCount());
-        });
-        return returnVo;
+        vo.setCctvCount(regionCctvExposeService.count(regionId));
+        LocalDateTime startDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime endDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+        vo.setTodayAssetsCount(positionService.count(Type.ASSET,regionId,startDateTime,endDateTime));
+        vo.setTodayMigrantCount(positionService.count(Type.MIGRANT,regionId,startDateTime,endDateTime));
+        vo.setTodayStaffCount(positionService.count(Type.STAFF,regionId,startDateTime,endDateTime));
+        vo.setTodayPatientCount(positionService.count(Type.PATIENT,regionId,startDateTime,endDateTime));
+        return vo;
     }
 
     @Override

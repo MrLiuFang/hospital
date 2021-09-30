@@ -3,6 +3,7 @@ package com.lion.event.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.dto.UpdatePositionLeaveTimeDto;
 import com.lion.common.enums.Type;
+import com.lion.common.utils.BasicDBObjectUtil;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
@@ -22,8 +23,11 @@ import com.lion.manage.entity.event.vo.EventRecordVo;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.event.EventRecordExposeService;
 import com.lion.utils.MessageI18nUtil;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.AggregateIterable;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -43,6 +47,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Author Mr.Liu
@@ -259,5 +264,31 @@ public class PositionServiceImpl implements PositionService {
     @Override
     public EventRecordVo eventRecordDetails(Long id) {
         return eventRecordExposeService.details(id);
+    }
+
+    @Override
+    public int count(Type type, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<Bson> pipeline = new ArrayList<Bson>();
+        BasicDBObject match = new BasicDBObject();
+        match = BasicDBObjectUtil.put(match,"$match","ddt", new BasicDBObject("$gte",startDateTime).append("$lte",endDateTime));
+        match = BasicDBObjectUtil.put(match,"$match","ri",new BasicDBObject("$eq",ri) );
+        match = BasicDBObjectUtil.put(match,"$match","typ",new BasicDBObject("$eq",type.getKey()) );
+        pipeline.add(match);
+        BasicDBObject group = new BasicDBObject();
+        if (Objects.equals(type,Type.ASSET)) {
+            group = BasicDBObjectUtil.put(group, "$group", "_id", "$adi");
+        }else {
+            group = BasicDBObjectUtil.put(group, "$group", "_id", "$pi");
+        }
+        group = BasicDBObjectUtil.put(group,"$group","count",new BasicDBObject("$sum",1));
+        pipeline.add(group);
+        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("position").aggregate(pipeline);
+        AtomicInteger count = new AtomicInteger(0);
+        aggregateIterable.forEach(document -> {
+            if (document.containsKey("_id")) {
+                count.set(count.get()+1);
+            }
+        });
+        return count.get();
     }
 }

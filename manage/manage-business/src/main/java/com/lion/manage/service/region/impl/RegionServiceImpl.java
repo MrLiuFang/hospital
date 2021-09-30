@@ -3,13 +3,13 @@ package com.lion.manage.service.region.impl;
 import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.entity.device.Device;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.region.RegionCctvDao;
 import com.lion.manage.dao.region.RegionDao;
-import com.lion.manage.dao.region.RegionDeviceDao;
 import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
 import com.lion.manage.entity.build.Build;
@@ -17,7 +17,6 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
-import com.lion.manage.entity.region.RegionDevice;
 import com.lion.manage.entity.region.dto.AddRegionDto;
 import com.lion.manage.entity.region.dto.UpdateRegionCoordinatesDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
@@ -98,8 +97,8 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @DubboReference
     private WardRoomSickbedExposeService wardRoomSickbedExposeService;
 
-    @Autowired
-    private RegionDeviceDao regionDeviceDao;
+//    @Autowired
+//    private RegionDeviceDao regionDeviceDao;
 
     @DubboReference
     private DeviceExposeService deviceExposeService;
@@ -199,9 +198,9 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
 
     private List<Long> getDeviceId(Long regionId) {
         List<Long> devideIds = new ArrayList<>();
-        List<RegionDevice> list = regionDeviceDao.findByRegionId(regionId);
-        list.forEach(regionDevice -> {
-            devideIds.add(regionDevice.getDeviceId());
+        List<Device> list = deviceExposeService.findByRegionId(regionId);
+        list.forEach(device -> {
+            devideIds.add(device.getId());
         });
         return devideIds;
     }

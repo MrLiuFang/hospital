@@ -23,18 +23,13 @@ import com.lion.event.entity.dto.OldAlarmToNewAlarm;
 import com.lion.event.entity.dto.UnalarmDto;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
-import com.lion.manage.entity.event.EventRecord;
 import com.lion.manage.entity.event.vo.EventRecordVo;
-import com.lion.manage.expose.event.EventRecordExposeService;
-import com.lion.upms.expose.user.UserExposeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -211,8 +206,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/department/statistics/details")
     @ApiOperation(value = "地图监控科室统计(左边列表)")
-    public IResultData<DepartmentStatisticsDetailsVo> departmentStatisticsDetails() {
-        return ResultData.instance().setData(mapStatisticsService.departmentStatisticsDetails());
+    public IResultData<DepartmentStatisticsDetailsVo> departmentStatisticsDetails(@ApiParam("科室ID") Long departmentId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentStatisticsDetails(departmentId));
+    }
+
+    @GetMapping("/region/statistics/details1")
+    @ApiOperation(value = "选中区域统计台(左边列表)")
+    public IResultData<RegionStatisticsDetailsVo> regionStatisticsDetails1(@ApiParam("区域ID") Long regionId) {
+        return ResultData.instance().setData(mapStatisticsService.regionStatisticsDetails1(regionId));
     }
 
     @GetMapping("/department/staff/statistics/details")

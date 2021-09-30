@@ -15,28 +15,28 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-
-/**
- * @author Mr.Liu
- * @Description:
- * @date 2021/4/1上午10:01
- */
-@EqualsAndHashCode(callSuper = true)
-@Entity
-@Table(name = "t_region_device" )
-
-@DynamicInsert
-@Data
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "区域关联的设备")
-public class RegionDevice extends BaseEntity implements Serializable {
-
-    private static final long serialVersionUID = -1422275392378141382L;
-    @ApiModelProperty(value = "区域id")
-    @Column(name = "region_id")
-    private Long regionId;
-
-    @ApiModelProperty(value = "设备ID/警示铃")
-    @Column(name = "device_id")
-    private Long deviceId;
-}
+//
+///**
+// * @author Mr.Liu
+// * @Description:
+// * @date 2021/4/1上午10:01
+// */
+//@EqualsAndHashCode(callSuper = true)
+//@Entity
+//@Table(name = "t_region_device" )
+//
+//@DynamicInsert
+//@Data
+//@JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
+//@ApiModel(description = "区域关联的设备")
+//public class RegionDevice extends BaseEntity implements Serializable {
+//
+//    private static final long serialVersionUID = -1422275392378141382L;
+//    @ApiModelProperty(value = "区域id")
+//    @Column(name = "region_id")
+//    private Long regionId;
+//
+//    @ApiModelProperty(value = "设备ID/警示铃")
+//    @Column(name = "device_id")
+//    private Long deviceId;
+//}

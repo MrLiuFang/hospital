@@ -15,7 +15,6 @@ import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.enums.WashDeviceType;
 import com.lion.manage.entity.region.Region;
-import com.lion.manage.entity.region.RegionDevice;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.entity.rule.WashTemplate;
 import com.lion.manage.entity.rule.WashTemplateItem;
@@ -29,7 +28,6 @@ import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentAlarmExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
-import com.lion.manage.expose.region.RegionDeviceExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.rule.AlarmExposeService;
 import com.lion.manage.expose.rule.WashDeviceTypeExposeService;
@@ -74,8 +72,8 @@ public class RedisUtil {
 //    @DubboReference
 //    private DeviceGroupDeviceExposeService deviceGroupDeviceExposeService;
 
-    @DubboReference
-    private RegionDeviceExposeService regionDeviceExposeService;
+//    @DubboReference
+//    private RegionDeviceExposeService regionDeviceExposeService;
 
     @DubboReference
     private TagExposeService tagExposeService;
@@ -305,9 +303,9 @@ public class RedisUtil {
         if (Objects.isNull(deviceId)){
             return null;
         }
-        RegionDevice regionDevice = regionDeviceExposeService.find(deviceId);
-        if (Objects.nonNull(regionDevice)) {
-            Region region = regionExposeService.findById(regionDevice.getRegionId());
+        Device device =  getDevice(deviceId);
+        if (Objects.nonNull(device)) {
+            Region region = regionExposeService.findById(device.getRegionId());
             if (Objects.nonNull(region)) {
                 Department department = departmentExposeService.findById(region.getDepartmentId());
                 return department;

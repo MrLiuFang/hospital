@@ -3,6 +3,7 @@ package com.lion.event.service;
 import com.itextpdf.text.DocumentException;
 import com.lion.common.enums.Type;
 import com.lion.core.IPageResultData;
+import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.device.entity.enums.TagType;
 import com.lion.event.entity.vo.*;
@@ -29,8 +30,16 @@ public interface MapStatisticsService {
     /**
      * 科室统计
      * @return
+     * @param departmentId
      */
-    public DepartmentStatisticsDetailsVo departmentStatisticsDetails();
+    public DepartmentStatisticsDetailsVo departmentStatisticsDetails(Long departmentId);
+
+    /**
+     * 选中区域统计台
+     * @param regionId
+     * @return
+     */
+    public RegionStatisticsDetailsVo regionStatisticsDetails1(Long regionId);
 
     /**
      * 科室员工统计

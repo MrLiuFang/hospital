@@ -156,7 +156,7 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
         return ResultData.instance();
     }
 
-    @PostMapping("/alarm/update")
+    @PutMapping("/alarm/update")
     @ApiOperation(value = "修改科室警告设置")
     public IResultData addAlarm(@RequestBody UpdateDepartmentAlarmDto updateDepartmentAlarmDto){
         DepartmentAlarm departmentAlarm = new DepartmentAlarm();

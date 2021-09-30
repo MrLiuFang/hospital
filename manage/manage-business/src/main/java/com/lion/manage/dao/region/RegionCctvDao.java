@@ -26,4 +26,11 @@ public interface RegionCctvDao extends BaseDao<RegionCctv> {
      */
     public List<RegionCctv> findByRegionId(Long regionId);
 
+    /**
+     * 根据区域统计
+     * @param regionId
+     * @return
+     */
+    public int countByRegionId(Long regionId);
+
 }
