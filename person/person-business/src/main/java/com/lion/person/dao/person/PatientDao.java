@@ -42,7 +42,7 @@ public interface PatientDao extends BaseDao<Patient> {
     @Modifying
     @Transactional
     @Query(" update Patient  set patientState =:patientState  ,version=version +1 where id = :id ")
-    public void updatePatientState(@Param("id")Long id, @Param("state") PatientState patientState);
+    public void updatePatientState(@Param("id")Long id, @Param("patientState") PatientState patientState);
 
     @Modifying
     @Transactional
