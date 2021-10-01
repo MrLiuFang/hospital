@@ -3,6 +3,9 @@ package com.lion.event.expose.service;
 import com.lion.core.service.BaseService;
 import com.lion.event.entity.HumitureRecord;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * @description:
  * @author: Mr.Liu
@@ -16,4 +19,13 @@ public interface HumitureRecordExposeService  {
      * @return
      */
     public HumitureRecord findLast(Long tagId);
+
+    /**
+     * 获取指定时间内的记录
+     * @param tagId
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public List< HumitureRecord> find(Long tagId, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

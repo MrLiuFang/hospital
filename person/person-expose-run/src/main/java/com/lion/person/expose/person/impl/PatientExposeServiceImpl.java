@@ -2,6 +2,7 @@ package com.lion.person.expose.person.impl;
 
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.person.dao.person.PatientDao;
+import com.lion.person.entity.enums.PatientState;
 import com.lion.person.entity.enums.State;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.expose.person.PatientExposeService;
@@ -27,6 +28,14 @@ public class PatientExposeServiceImpl extends BaseServiceImpl<Patient> implement
     @Override
     public void updateState(Long id, Integer state) {
         patientDao.updateState(id, State.instance(state));
+    }
+
+    @Override
+    public void updatePatientState(Long id, PatientState patientState) {
+        if (Objects.isNull(patientState)) {
+            patientDao.updatePatientStateIsNull(id);
+        }
+        patientDao.updatePatientState(id,patientState);
     }
 
     @Override
@@ -56,16 +65,16 @@ public class PatientExposeServiceImpl extends BaseServiceImpl<Patient> implement
     @Override
     public List<Patient> find(Long departmentId, String name, List<Long> ids) {
         if (StringUtils.hasText(name) && (Objects.isNull(ids)|| ids.size()<=0 )  ){
-            return patientDao.findByDepartmentIdAndIsLeaveAndNameLike(departmentId,false,"%"+name+"%");
+            return patientDao.findByDepartmentIdAndIsLeaveAndNameLikeOrderByPatientStateDesc(departmentId,false,"%"+name+"%");
         }else if (StringUtils.hasText(name) && (Objects.nonNull(ids)|| ids.size()>0 )  ){
             return patientDao.findByDepartmentIdAndIsLeaveAndNameLikeAndIdIn(departmentId,false,"%"+name+"%",ids);
         }
         if (!StringUtils.hasText(name) && (Objects.isNull(ids)|| ids.size()<=0 )  ) {
-            return patientDao.findByDepartmentIdAndIsLeave(departmentId, false);
+            return patientDao.findByDepartmentIdAndIsLeaveOrderByPatientStateDesc(departmentId, false);
         }else if (!StringUtils.hasText(name) && (Objects.nonNull(ids)|| ids.size()>0 )  ) {
             return patientDao.findByDepartmentIdAndIsLeaveAndIdIn(departmentId, false,ids);
         }
 
-        return patientDao.findByDepartmentIdAndIsLeave(departmentId, false);
+        return patientDao.findByDepartmentIdAndIsLeaveOrderByPatientStateDesc(departmentId, false);
     }
 }

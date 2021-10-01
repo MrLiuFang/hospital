@@ -1,6 +1,7 @@
 package com.lion.person.dao.person;
 
 import com.lion.core.persistence.curd.BaseDao;
+import com.lion.person.entity.enums.PatientState;
 import com.lion.person.entity.enums.State;
 import com.lion.person.entity.person.Patient;
 import org.springframework.data.jpa.repository.Modifying;
@@ -37,6 +38,16 @@ public interface PatientDao extends BaseDao<Patient> {
     @Transactional
     @Query(" update Patient  set deviceState =:state  ,version=version +1 where id = :id ")
     public void updateState(@Param("id")Long id, @Param("state") State state);
+
+    @Modifying
+    @Transactional
+    @Query(" update Patient  set patientState =:patientState  ,version=version +1 where id = :id ")
+    public void updatePatientState(@Param("id")Long id, @Param("state") PatientState patientState);
+
+    @Modifying
+    @Transactional
+    @Query(" update Patient  set patientState =null  ,version=version +1 where id = :id ")
+    public void updatePatientStateIsNull(@Param("id")Long id);
 
     @Modifying
     @Transactional
@@ -91,7 +102,7 @@ public interface PatientDao extends BaseDao<Patient> {
      * @param name
      * @return
      */
-    public List<Patient> findByDepartmentIdAndIsLeaveAndNameLike(Long departmentId,Boolean isLeave,String name);
+    public List<Patient> findByDepartmentIdAndIsLeaveAndNameLikeOrderByPatientStateDesc(Long departmentId,Boolean isLeave,String name);
 
     /**
      *
@@ -109,7 +120,7 @@ public interface PatientDao extends BaseDao<Patient> {
      * @param isLeave
      * @return
      */
-    public List<Patient> findByDepartmentIdAndIsLeave(Long departmentId, Boolean isLeave);
+    public List<Patient> findByDepartmentIdAndIsLeaveOrderByPatientStateDesc(Long departmentId, Boolean isLeave);
 
     public List<Patient> findByDepartmentIdAndIsLeaveAndIdIn(Long departmentId, Boolean isLeave,List<Long> ids);
 }

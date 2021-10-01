@@ -94,4 +94,6 @@ public abstract class Person extends BaseEntity implements Serializable {
     @Column(name = "last_data_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastDataTime;
+
+    
 }

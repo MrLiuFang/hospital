@@ -35,4 +35,13 @@ public interface HumitureRecordService {
      * @return
      */
     public HumitureRecord findLast(Long tagId);
+
+    /**
+     * 查询
+     * @param tagId
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public List<HumitureRecord> find(Long tagId,LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

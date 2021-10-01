@@ -32,13 +32,11 @@ import com.lion.manage.expose.ward.WardRoomExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.dao.person.PatientDao;
 import com.lion.person.dao.person.PatientTransferDao;
+import com.lion.person.dao.person.TempLeaveDao;
 import com.lion.person.entity.enums.LogType;
 import com.lion.person.entity.enums.PersonType;
 import com.lion.person.entity.enums.TransferState;
-import com.lion.person.entity.person.Patient;
-import com.lion.person.entity.person.PatientDoctor;
-import com.lion.person.entity.person.PatientNurse;
-import com.lion.person.entity.person.PatientTransfer;
+import com.lion.person.entity.person.*;
 import com.lion.person.entity.person.dto.AddPatientDto;
 import com.lion.person.entity.person.dto.PatientLeaveDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
@@ -118,8 +116,8 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @Autowired
     private PatientTransferDao patientTransferDao;
 
-//    @Autowired
-//    private TempLeaveDao tempLeaveDao;
+    @Autowired
+    private TempLeaveDao tempLeaveDao;
 
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
@@ -411,20 +409,20 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
                 vo.setNewDepartmentName(department.getName());
             }
         }
-//        TempLeave tempLeave = tempLeaveDao.findFirstByPatientIdOrderByCreateDateTimeDesc(patient.getId());
-//        if (Objects.nonNull(tempLeave)){
-//            PatientDetailsVo.TempLeaveVo tempLeaveVo = new PatientDetailsVo.TempLeaveVo();
-//            tempLeaveVo.setUserId(tempLeave.getUserId());
-//            User user = userExposeService.findById(tempLeave.getUserId());
-//            if (Objects.nonNull(user)){
-//                tempLeaveVo.setUserName(user.getName());
-//                tempLeaveVo.setHeadPortrait(user.getHeadPortrait());
-//                tempLeaveVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
-//                tempLeaveVo.setStartDateTime(tempLeave.getStartDateTime());
-//                tempLeaveVo.setEndDateTime(tempLeave.getEndDateTime());
-//            }
-//            vo.setTempLeaveVo(tempLeaveVo);
-//        }
+        TempLeave tempLeave = tempLeaveDao.findFirstByPatientIdOrderByCreateDateTimeDesc(patient.getId());
+        if (Objects.nonNull(tempLeave)){
+            PatientDetailsVo.TempLeaveVo tempLeaveVo = new PatientDetailsVo.TempLeaveVo();
+            tempLeaveVo.setUserId(tempLeave.getUserId());
+            User user = userExposeService.findById(tempLeave.getUserId());
+            if (Objects.nonNull(user)){
+                tempLeaveVo.setUserName(user.getName());
+                tempLeaveVo.setHeadPortrait(user.getHeadPortrait());
+                tempLeaveVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                tempLeaveVo.setStartDateTime(tempLeave.getStartDateTime());
+                tempLeaveVo.setEndDateTime(tempLeave.getEndDateTime());
+            }
+            vo.setTempLeaveVo(tempLeaveVo);
+        }
 
         SystemAlarm systemAlarm =  systemAlarmExposeService.findLastByPi(patient.getId());
         if (Objects.nonNull(systemAlarm)) {

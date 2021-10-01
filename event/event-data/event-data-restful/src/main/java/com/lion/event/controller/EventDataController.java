@@ -218,8 +218,8 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/department/staff/statistics/details")
     @ApiOperation(value = "地图监控科室员工统计(左边列表)")
-    public IResultData<DepartmentStaffStatisticsDetailsVo> departmentStaffStatisticsDetails(@ApiParam(value = "姓名") String name,@ApiParam(value = "区域id") Long regionId) {
-        return ResultData.instance().setData(mapStatisticsService.departmentStaffStatisticsDetails(name, regionId));
+    public IResultData<DepartmentStaffStatisticsDetailsVo> departmentStaffStatisticsDetails(@ApiParam(value = "是否所有员工-false=当前,true=所有") Boolean isAll,@ApiParam(value = "姓名") String name,@ApiParam(value = "区域id") Long regionId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentStaffStatisticsDetails(isAll, name, regionId));
     }
 
     @GetMapping("/department/assets/statistics/details")

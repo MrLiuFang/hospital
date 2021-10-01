@@ -7,36 +7,21 @@ import com.lion.core.common.enums.EnumConverter;
 
 import java.util.Objects;
 
-public enum LogType implements IEnum {
+/**
+ * @description:
+ * @author: Mr.Liu
+ * @time: 2021/10/1 上午9:32
+ */
+public enum PatientState implements IEnum {
 
-    IN_REGION(0, "进入区域"),
-    ADD_REPORT(1, "添加汇报"),
-    UPDATE_HEAD_PORTRAIT(2, "修改头像"),
-    UPDATE_GENDER(3, "修改性别"),
-    UPDATE_PHONE_NUMBER(4, "修改联系电话"),
-    UPDATE_EMERGENCY_CONTACT(5, "修改紧急联络人"),
-    UPDATE_TAG_CODE(6, "修改标签码"),
-    UPDATE_ADDRESS(7, "修改地址"),
-    UPDATE_BIRTHDAY(8, "修改出生日期"),
-    UPDATE_MEDICAL_RECORD_NO(9, "修改病历号"),
-    UPDATE_DISEASE(10, "修改疾病"),
-    UPDATE_DEPARTMENT(11, "修改所属科室"),
-    UPDATE_WARD(12, "修改病房信息"),
-    UPDATE_LEVEL(13, "修改级别"),
-    UPDATE_ACTION_MODE(14, "修改行动限制信息"),
-    UPDATE_TIME_QUANTUM(15, "修改可通行时间段"),
-    UPDATE_REMARKS(16, "修改备注"),
-    UPDATE_CARD_NUMBER(17, "修改金卡"),
-    ADD(18, "添加患者"),
-    UPDATE_BIND_PATIENT(19, "修改绑定患者"),
-    DELETE_REPORT(20, "删除汇报"),
-    ADD_TEMP_LEAVE(20, "新增临时离开权限");
+    TEMPORARY_DEPARTURE(1, "临时离开"),
+    ABNORMAL_DEPARTURE(2, "失联/擅自离开");
 
     private final int key;
 
     private final String desc;
 
-    private LogType(int key, String desc) {
+    private PatientState(int key, String desc) {
         this.key = key;
         this.desc = desc;
     }
@@ -71,7 +56,7 @@ public enum LogType implements IEnum {
     }
 
     @JsonCreator
-    public static LogType instance(Object value){
+    public static PatientState instance(Object value){
         if (Objects.isNull(value)){
             return null;
         }
@@ -81,8 +66,8 @@ public enum LogType implements IEnum {
         return instance(String.valueOf(value));
     }
 
-    private static LogType instance(Integer key){
-        for(LogType item : values()){
+    private static PatientState instance(Integer key){
+        for(PatientState item : values()){
             if (item.getKey()==key){
                 return item;
             }
@@ -90,8 +75,8 @@ public enum LogType implements IEnum {
         return null;
     }
 
-    private static LogType instance(String name){
-        for(LogType item : values()){
+    private static PatientState instance(String name){
+        for(PatientState item : values()){
             if(Objects.equals(item.getName(),name)){
                 return item;
             }
@@ -99,6 +84,6 @@ public enum LogType implements IEnum {
         return null;
     }
 
-    public static class LogTypeConverter extends EnumConverter<LogType,Integer> {
+    public static class PatientStateConverter extends EnumConverter<PatientState,Integer> {
     }
 }

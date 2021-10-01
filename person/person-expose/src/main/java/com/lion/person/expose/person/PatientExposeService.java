@@ -1,6 +1,7 @@
 package com.lion.person.expose.person;
 
 import com.lion.core.service.BaseService;
+import com.lion.person.entity.enums.PatientState;
 import com.lion.person.entity.enums.State;
 import com.lion.person.entity.person.Patient;
 
@@ -20,6 +21,13 @@ public interface PatientExposeService extends BaseService<Patient> {
      * @param state
      */
     public void updateState(Long id,Integer state);
+
+    /**
+     * 修改病人状态
+     * @param id
+     * @param patientState
+     */
+    public void updatePatientState(Long id, PatientState patientState);
 
     /**
      * 修改状态

@@ -246,9 +246,9 @@ public class RedisConstants {
 
     public static final String USER_WORK_STATE_UUID = "user_work_state_uuid_";
 
-    public static final String USER_WORK_STATE_START = "start";
+    public static final String USER_WORK_STATE_START = "start_";
 
-    public static final String USER_WORK_STATE_END = "end";
+    public static final String USER_WORK_STATE_END = "end_";
 
     /**
      * 员工标签按钮规则(key:userId,value:tagRuleId)
@@ -278,17 +278,22 @@ public class RedisConstants {
     /**
      * 病房(key:wardRoomId,value:WardRoom)
      */
-    public static final String WARD_ROOM ="ward_room";
+    public static final String WARD_ROOM ="ward_room_";
 
     /**
      * 标签绑定类型
      */
-    public static final String TAG_BIND_TYPE = "tag_bind_type";
+    public static final String TAG_BIND_TYPE = "tag_bind_type_";
 
     /**
      * 洗手模式
      */
-    public static final String ALARM_MODE = "alarm_mode";
+    public static final String ALARM_MODE = "alarm_mode_";
+
+    /**
+     * 患者十分钟内超出行动范围的不再警告
+     */
+    public static final String PATIENT_NOT_LEAVE_ALARM = "patient_not_leave_alarm_";
 
     /**
      * 缓存过期时间

@@ -6,6 +6,7 @@ import com.lion.core.LionObjectMapper;
 import com.lion.core.persistence.Validator;
 import com.lion.person.entity.enums.ActionMode;
 import com.lion.person.entity.enums.NurseLevel;
+import com.lion.person.entity.enums.PatientState;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -90,8 +91,10 @@ public class Patient extends Person implements Serializable {
     @Convert(converter = ActionMode.ActionModeConverter.class)
     private ActionMode actionMode;
 
-
-
+    @ApiModelProperty(value = "病人状态")
+    @Column(name = "patient_state")
+    @Convert(converter = PatientState.PatientStateConverter.class)
+    private PatientState patientState;
 
     @ApiModelProperty(value = "备注")
     @Column(name = "remarks")

@@ -5,11 +5,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.device.entity.tag.Tag;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @description:
@@ -58,5 +60,36 @@ public class DetailsTagVo extends Tag {
 
     @ApiModelProperty(value = "警报ID")
     private String alarmId;
+
+    @ApiModelProperty(value = "24小时温度")
+    private List<Temperature24hour> temperature24hour;
+
+    @ApiModelProperty(value = "24小时湿度")
+    private List<Humidity24hour> humidity24hour;
+
+    @Data
+    @ApiModel
+    @Builder
+    public static class Temperature24hour {
+
+        @ApiModelProperty(value = "时间")
+        private LocalDateTime dateTime;
+
+        @ApiModelProperty(value = "温度")
+        private BigDecimal temperature;
+    }
+
+    @Data
+    @ApiModel
+    @Builder
+    public static class Humidity24hour {
+
+        @ApiModelProperty(value = "时间")
+        private LocalDateTime dateTime;
+
+        @ApiModelProperty(value = "湿度")
+        private BigDecimal humidity;
+
+    }
 
 }

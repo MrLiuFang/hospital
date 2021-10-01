@@ -53,6 +53,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -353,6 +354,28 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             vo.setAlarmDataTime(systemAlarm.getDt());
             vo.setAlarmId(systemAlarm.get_id());
         }
+        List<HumitureRecord> humitureRecordList =  humitureRecordExposeService.find(tag.getId(), LocalDateTime.now().minusHours(24),LocalDateTime.now());
+        List<DetailsTagVo.Temperature24hour> temperature24hour = new ArrayList<>();
+        List<DetailsTagVo.Humidity24hour> humidity24hour = new ArrayList<>();
+        humitureRecordList.forEach(humitureRecord -> {
+            if (Objects.nonNull(humitureRecord.getH())) {
+                DetailsTagVo.Humidity24hour h = DetailsTagVo.Humidity24hour.builder()
+                        .humidity(humitureRecord.getH())
+                        .dateTime(humitureRecord.getDdt())
+                        .build();
+                humidity24hour.add(h);
+            }
+            if (Objects.nonNull(humitureRecord.getT())) {
+                DetailsTagVo.Temperature24hour t = DetailsTagVo.Temperature24hour.builder()
+                        .temperature(humitureRecord.getT())
+                        .dateTime(humitureRecord.getDdt())
+                        .build();
+                temperature24hour.add(t);
+            }
+        });
+        vo.setTemperature24hour(temperature24hour);
+        vo.setHumidity24hour(humidity24hour);
+
         return vo;
     }
 

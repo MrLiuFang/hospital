@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @description:
@@ -48,7 +49,7 @@ public class DepartmentStaffStatisticsDetailsVo {
 
     @ApiModel
     @Data
-    public static class DepartmentStaffVo{
+    public static class DepartmentStaffVo implements Comparable<DepartmentStaffVo>{
 
         @ApiModelProperty(value = "员工ID")
         private Long userId;
@@ -86,5 +87,13 @@ public class DepartmentStaffStatisticsDetailsVo {
 
         @ApiModelProperty(value = "是否异常")
         private State deviceState = State.NORMAL;
+
+        @ApiModelProperty(value = "是否在科室区域内")
+        private Boolean isInRegion = true;
+
+        @Override
+        public int compareTo(DepartmentStaffVo o) {
+            return Objects.equals(isInRegion,true)?1:-1;
+        }
     }
 }

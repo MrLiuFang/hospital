@@ -6,6 +6,9 @@ import com.lion.event.service.HumitureRecordService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 /**
  * @description:
  * @author: Mr.Liu
@@ -20,5 +23,10 @@ public class HumitureRecordExposeServiceImpl implements HumitureRecordExposeServ
     @Override
     public HumitureRecord findLast(Long tagId) {
         return humitureRecordService.findLast(tagId);
+    }
+
+    @Override
+    public List<HumitureRecord> find(Long tagId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return humitureRecordService.find(tagId, startDateTime, endDateTime);
     }
 }

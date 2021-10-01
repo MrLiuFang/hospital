@@ -101,20 +101,38 @@ public class HumitureRecordServiceImpl implements HumitureRecordService {
 
     @Override
     public HumitureRecord findLast(Long tagId) {
+        List<HumitureRecord> items = find(tagId,null,null,0,1);
+        if (Objects.nonNull(items) && items.size()>0){
+            return items.get(0);
+        }
+        return null;
+    }
+
+    @Override
+    public List<HumitureRecord> find(Long tagId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<HumitureRecord> items = find(tagId,startDateTime,endDateTime,0,Integer.MAX_VALUE);
+        return items;
+    }
+
+    private List<HumitureRecord> find(Long tagId, LocalDateTime startDateTime, LocalDateTime endDateTime,int page,int size) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(tagId)) {
             criteria.and("ti").is(tagId);
         }
         LocalDateTime now = LocalDateTime.now();
-        criteria.andOperator( Criteria.where("ddt").gte(now.minusDays(30)) ,Criteria.where("ddt").lte(now));
+        if (Objects.isNull(startDateTime)) {
+            startDateTime =  now.minusDays(30);
+        }
+        if (Objects.isNull(endDateTime)) {
+            endDateTime =  now;
+        }
+        criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
         query.addCriteria(criteria);
-        PageRequest pageRequest = PageRequest.of(0,1,Sort.by(Sort.Order.desc("ddt")));
+        PageRequest pageRequest = PageRequest.of(page,size,Sort.by(Sort.Order.desc("ddt")));
         query.with(pageRequest);
         List<HumitureRecord> items = mongoTemplate.find(query, HumitureRecord.class);
-        if (Objects.nonNull(items) && items.size()>0){
-            return items.get(0);
-        }
-        return null;
+
+        return items;
     }
 }

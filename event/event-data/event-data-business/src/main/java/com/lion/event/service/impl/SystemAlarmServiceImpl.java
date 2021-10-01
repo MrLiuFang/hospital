@@ -144,6 +144,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 query.addCriteria(criteria);
                 SystemAlarm systemAlarm = mongoTemplate.findOne(query,SystemAlarm.class);
                 alarmDao.unalarm( id, userId, user.getName());
+                if (Objects.equals(systemAlarm.getTy(),Type.PATIENT.getKey()) && (Objects.equals(systemAlarm.getSat(),SystemAlarmType.CCXDFW.getKey())||Objects.equals(systemAlarm.getSat(),SystemAlarmType.JRJQ.getKey()))) {
+                    redisTemplate.opsForValue().set(RedisConstants.PATIENT_NOT_LEAVE_ALARM+systemAlarm.getPi(),"true",10,TimeUnit.MINUTES);
+                }
                 if (Objects.nonNull(systemAlarm)) {
                     updateDeviceState(systemAlarm);
                 }

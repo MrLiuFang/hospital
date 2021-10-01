@@ -14,10 +14,17 @@ import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
 import com.lion.person.entity.enums.ActionMode;
+import com.lion.person.entity.enums.PatientState;
+import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.PatientTransfer;
+import com.lion.person.entity.person.TempLeave;
 import com.lion.person.entity.person.TemporaryPerson;
+import com.lion.person.expose.person.PatientExposeService;
+import com.lion.person.expose.person.PatientTransferExposeService;
+import com.lion.person.expose.person.TempLeaveExposeService;
 import com.lion.upms.entity.user.User;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -53,6 +60,15 @@ public class CommonServiceImpl implements CommonService {
 
     @Autowired
     private CommonService commonService;
+
+    @DubboReference
+    private TempLeaveExposeService tempLeaveExposeService;
+
+    @DubboReference
+    private PatientTransferExposeService patientTransferExposeService;
+
+    @DubboReference
+    private PatientExposeService patientExposeService;
 
 
     @Override
@@ -150,12 +166,37 @@ public class CommonServiceImpl implements CommonService {
      * @param patientTransfer
      */
     private void penaltyZoneAlarm(Type type,Long pi,Long ri, Long ti,PatientTransfer patientTransfer) throws JsonProcessingException {
+        String s = (String) redisTemplate.opsForValue().get(RedisConstants.PATIENT_NOT_LEAVE_ALARM+pi);
+        if (StringUtils.hasText(s)) {
+            return;
+        }
         Region region = redisUtil.getRegionById(ri);
         if (Objects.isNull(region) || Objects.nonNull(patientTransfer)) {
             return;
         }
         Region patientRegion = null;
         if (Objects.equals(type,Type.PATIENT)) {
+            if (Objects.nonNull(patientTransfer) ){
+                if (Objects.equals(patientTransfer.getNewDepartmentId(),region.departmentId)) {
+                    patientTransferExposeService.updateState(pi, TransferState.WAITING_TO_RECEIVE);
+                }else {
+                    patientTransferExposeService.updateState(pi, TransferState.TRANSFERRING);
+                }
+                return;
+            }
+            List<TempLeave> tempLeaves =tempLeaveExposeService.find(pi);
+            if (Objects.nonNull(tempLeaves) && tempLeaves.size()>0 ) {
+                for (TempLeave tempLeave :tempLeaves) {
+                    LocalDateTime now = LocalDateTime.now();
+                    if ( now.isAfter(tempLeave.getStartDateTime()) && now.isBefore(tempLeave.getEndDateTime()) ){
+                        TempLeaveMonitorDto tempLeaveMonitorDto = new TempLeaveMonitorDto();
+                        tempLeaveMonitorDto.setPatientId(pi);
+                        tempLeaveMonitorDto.setDelayDateTime(tempLeave.getEndDateTime());
+                        rocketMQTemplate.syncSend(TopicConstants.TEMP_LEAVE_MONITOR, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(tempLeaveMonitorDto)).build());
+                        return;
+                    }
+                }
+            }
             Patient patient = redisUtil.getPatient(pi);
             if (Objects.nonNull(patient) || Objects.isNull(patient.getActionMode())) {
                 return;
@@ -168,19 +209,23 @@ public class CommonServiceImpl implements CommonService {
                     if (!isCanWalk(patient.getTimeQuantum())) {
                         if (!Objects.equals(patientRegion.getId(),region.getId())) {
                             sendAlarm(type,pi,ri,ti);
+                            patientExposeService.updatePatientState(patient.getId(), PatientState.ABNORMAL_DEPARTURE);
                         }
                     }
                 }else {
                     if (!Objects.equals(patientRegion.getId(),region.getId())) {
                         sendAlarm(type,pi,ri,ti);
+                        patientExposeService.updatePatientState(patient.getId(), PatientState.ABNORMAL_DEPARTURE);
                     }
                 }
             }else if (Objects.equals(patient.getActionMode(), ActionMode.OUTPATIENT) || Objects.equals(patient.getActionMode(), ActionMode.PATIENT_VISITORS)) {
                 if (!isCanWalk(patient.getTimeQuantum())) {
                     sendAlarm(type,pi,ri,ti);
+                    patientExposeService.updatePatientState(patient.getId(), PatientState.ABNORMAL_DEPARTURE);
                 }else {
                     if (region.getTrafficLevel()>patient.getActionMode().getKey()) {
                         sendAlarm(type,pi,ri,ti);
+                        patientExposeService.updatePatientState(patient.getId(), PatientState.ABNORMAL_DEPARTURE);
                     }
                 }
             }

@@ -39,7 +39,6 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
-import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.assets.AssetsFaultExposeService;
@@ -302,15 +301,24 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetails(String name, Long regionId) {
+    public DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetails(Boolean isAll, String name, Long regionId) {
         List<Long> list = departmentExposeService.responsibleDepartment(null);
         DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetailsVo = new DepartmentStaffStatisticsDetailsVo();
         List<DepartmentStaffStatisticsDetailsVo.DepartmentVo> departmentVos = new ArrayList<>();
         departmentStaffStatisticsDetailsVo.setDepartmentVos(departmentVos);
+        List<Region> regionList = new ArrayList<>();
+        list.forEach(departmentId -> {
+            regionList.addAll(regionExposeService.findByDepartmentId(departmentId));
+        });
         List<Long> listIds = new ArrayList<>();
         if (Objects.nonNull(regionId)) {
             listIds = this.find(Type.STAFF, regionId);
+        }else {
+            for (Region region : regionList) {
+                listIds.addAll(this.find(Type.STAFF, region.getId()));
+            }
         }
+
         List<Long> finalListIds = listIds;
         list.forEach(departmentId -> {
             Department department = departmentExposeService.findById(departmentId);
@@ -320,7 +328,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             departmentStaffStatisticsDetailsVo.setStaffCount(departmentStaffStatisticsDetailsVo.getStaffCount() + departmentUserExposeService.count(department.getId(),null, finalListIds));
             departmentStaffStatisticsDetailsVo.setNormalStaffCount(departmentStaffStatisticsDetailsVo.getNormalStaffCount() + departmentUserExposeService.count(department.getId(), com.lion.upms.entity.enums.State.NORMAL, finalListIds));
             departmentStaffStatisticsDetailsVo.setAbnormalStaffCount(departmentStaffStatisticsDetailsVo.getAbnormalStaffCount() + departmentUserExposeService.count(department.getId(), com.lion.upms.entity.enums.State.ALARM, finalListIds));
-            List<Long> userIds = departmentUserExposeService.findAllUser(department.getId(),name, finalListIds);
+            List<Long> userIds = departmentUserExposeService.findAllUser(department.getId(),name, (Objects.equals(false,isAll) || Objects.nonNull(regionId)) ?finalListIds:null);
             List<DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo> listStaff = new ArrayList<>();
             userIds.forEach(id->{
                 User user = userExposeService.findById(id);
@@ -329,6 +337,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     staff.setUserId(user.getId());
                     staff.setUserName(user.getName());
                     staff.setDeviceState(user.getDeviceState());
+                    staff.setIsInRegion(finalListIds.contains(user.getId()));
                     staff.setUserType(userTypeExposeService.findById(user.getUserTypeId()));
                     staff.setHeadPortrait(user.getHeadPortrait());
                     staff.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
@@ -350,6 +359,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     listStaff.add(staff);
                 }
             });
+            Collections.sort(listStaff);
             vo.setDepartmentStaffVos(listStaff);
             departmentVos.add(vo);
         });
