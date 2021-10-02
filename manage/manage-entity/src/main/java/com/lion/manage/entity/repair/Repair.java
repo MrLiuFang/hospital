@@ -36,6 +36,9 @@ public class Repair extends BaseEntity {
     @ApiModelProperty(value = "内容")
     private String content;
 
+    @ApiModelProperty(value = "html")
+    private String html;
+
     @ApiModelProperty(value = "设备ID用逗号隔开")
     private String deviceId;
 }
