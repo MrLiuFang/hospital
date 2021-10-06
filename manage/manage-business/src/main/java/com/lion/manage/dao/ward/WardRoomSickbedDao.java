@@ -46,4 +46,11 @@ public interface WardRoomSickbedDao extends BaseDao<WardRoomSickbed> ,WardRoomSi
      * @return
      */
     public List<WardRoomSickbed> findByRegionId(Long regionId);
+
+    /**
+     * 根据病房房间统计
+     * @param wardRoomId
+     * @return
+     */
+    public int countByWardRoomId(Long wardRoomId);
 }

@@ -3,6 +3,7 @@ package com.lion.device.expose.device;
 import com.lion.core.service.BaseService;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceClassify;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -89,5 +90,13 @@ public interface DeviceExposeService extends BaseService<Device> {
      * @param ids
      */
     public void relationRegion(Long regionId,List<Long> ids);
+
+    /**
+     * 根据大类统计数量
+     * @param classify
+     * @param regionId
+     * @return
+     */
+    public Integer count(DeviceClassify classify, Long regionId);
 
 }

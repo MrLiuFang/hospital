@@ -1,5 +1,7 @@
 package com.lion.manage.controller.ward;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.utils.RedisUtil;
 import com.lion.constant.SearchConstant;
 import com.lion.core.*;
@@ -8,6 +10,9 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
+import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.Ward;
@@ -15,9 +20,7 @@ import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.entity.ward.dto.AddWardDto;
 import com.lion.manage.entity.ward.dto.UpdateWardDto;
-import com.lion.manage.entity.ward.vo.DetailsWardRoomVo;
-import com.lion.manage.entity.ward.vo.DetailsWardVo;
-import com.lion.manage.entity.ward.vo.ListWardVo;
+import com.lion.manage.entity.ward.vo.*;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
@@ -25,6 +28,7 @@ import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
 import com.lion.manage.service.ward.WardService;
 import com.lion.utils.CurrentUserUtil;
+import com.lion.utils.MessageI18nUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -37,9 +41,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @author Mr.Liu
@@ -69,6 +71,12 @@ public class WardController extends BaseControllerImpl implements BaseController
 
     @Autowired
     private RegionService regionService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @DubboReference
+    private DeviceExposeService deviceExposeService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增病房")
@@ -152,25 +160,59 @@ public class WardController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/room/list")
     @ApiOperation(value = "病房房间列表")
-    public IPageResultData<List<WardRoom>> roomList(@ApiParam(value = "科室")Long departmentId,@ApiParam(value = "病房")Long wardId,LionPage lionPage) {
-        return (IPageResultData<List<WardRoom>>) wardRoomService.list(departmentId, wardId,  lionPage);
+    public IPageResultData<List<ListWardRoomVo>> roomList(@ApiParam(value = "科室")Long departmentId, @ApiParam(value = "病房")Long wardId, LionPage lionPage) {
+        return (IPageResultData<List<ListWardRoomVo>>) wardRoomService.list(departmentId, wardId,  lionPage);
     }
 
     @GetMapping("/sickbed/list")
     @ApiOperation(value = "病床列表")
-    public IPageResultData<List<WardRoomSickbed>> sickbedList(@ApiParam(value = "床位编码")String bedCode,@ApiParam("是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室")Long departmentId,@ApiParam(value = "病房")Long wardId,@ApiParam(value = "病房房间")Long wardRoomId,LionPage lionPage) {
+    public IPageResultData<List<ListWardRoomSickbedVo>> sickbedList(@ApiParam(value = "床位编码")String bedCode, @ApiParam("是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室")Long departmentId, @ApiParam(value = "病房")Long wardId, @ApiParam(value = "病房房间")Long wardRoomId, LionPage lionPage) {
         if (Objects.equals(isMyDepartment,true)) {
             Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
             if (Objects.nonNull(department)) {
                 departmentId = department.getId();
             }
         }
-        return (IPageResultData<List<WardRoomSickbed>>) wardRoomSickbedService.list(bedCode, departmentId, wardId, wardRoomId, lionPage);
+        return (IPageResultData<List<ListWardRoomSickbedVo>>) wardRoomSickbedService.list(bedCode, departmentId, wardId, wardRoomId, lionPage);
     }
 
     @GetMapping("/region")
     @ApiOperation(value = "获取病床/病房所在的区域")
-    public IResultData<Region> getRegion(@ApiParam(value = "病床id")Long wardRoomSickbedId,@ApiParam(value = "病房id")Long wardRoomId) {
+    public IResultData<Region> region(@ApiParam(value = "病床id")Long wardRoomSickbedId,@ApiParam(value = "病房id")Long wardRoomId) {
+        Region region = getRegion(wardRoomSickbedId,wardRoomId);
+        return ResultData.instance().setData(region);
+    }
+
+    @GetMapping("/having/monitor")
+    @ApiOperation(value = "获取病床/病房所在的区域有没有定位设备(邮件通知复用之前的维修通知接口)")
+    public IResultData<Boolean> havingMonitor(@ApiParam(value = "病床id")Long wardRoomSickbedId,@ApiParam(value = "病房id")Long wardRoomId) throws JsonProcessingException {
+        Region region = getRegion(wardRoomSickbedId,wardRoomId);
+//        [{"code":"STAR_AP"},{"code":"MONITOR"},{"code":"VIRTUAL_WALL","count":"2"},{"code":"LF_EXCITER"},{"code":"HAND_WASHING"},{"code":"RECYCLING_BOX"}]
+        String json = region.getDeviceQuantityDefinition();
+        if (StringUtils.hasText(json)) {
+            List list = objectMapper.readValue(json,List.class);
+            list.forEach(o->{
+                LinkedHashMap linkedHashMap = (LinkedHashMap) o;
+                if (linkedHashMap.containsKey("count") && Objects.nonNull(linkedHashMap.get("count"))) {
+                    int count = Integer.valueOf(String.valueOf(linkedHashMap.get("count")));
+                    if (count >0){
+                        if (linkedHashMap.containsKey("code")) {
+                            DeviceClassify classify = DeviceClassify.valueOf(String.valueOf(linkedHashMap.get("code")));
+                            if (Objects.nonNull(classify)) {
+                                int regionDeviceCount = deviceExposeService.count(classify,region.getId());
+                                if (regionDeviceCount<count) {
+                                    BusinessException.throwException(MessageI18nUtil.getMessage("{2000118}",new Object[]{classify.getName()}));
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        return ResultData.instance().setData(true);
+    }
+
+    private Region getRegion(Long wardRoomSickbedId,Long wardRoomId){
         WardRoomSickbed wardRoomSickbed = wardRoomSickbedService.findById(wardRoomSickbedId);
         WardRoom wardRoom = wardRoomService.findById(wardRoomId);
         Region region =null;
@@ -178,7 +220,16 @@ public class WardController extends BaseControllerImpl implements BaseController
         if (Objects.isNull(region)){
             region = regionService.findById(wardRoom.getRegionId());
         }
-        return ResultData.instance().setData(region);
+        return region;
     }
+
+//    public static void main(String agrs[]) throws JsonProcessingException {
+//        String json = "[{\"code\":\"STAR_AP\"},{\"code\":\"MONITOR\"},{\"code\":\"VIRTUAL_WALL\",\"count\":\"2\"},{\"code\":\"LF_EXCITER\"},{\"code\":\"HAND_WASHING\"},{\"code\":\"RECYCLING_BOX\"}]";
+//        List list = new ObjectMapper().readValue(json,List.class);
+//        list.forEach(o->{
+//            LinkedHashMap linkedHashMap = (LinkedHashMap) o;
+//            System.out.println(linkedHashMap);
+//        });
+//    }
 
 }

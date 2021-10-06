@@ -2,16 +2,23 @@ package com.lion.manage.service.ward.impl;
 
 import com.lion.common.constants.RedisConstants;
 import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
 import com.lion.manage.entity.ward.WardRoomSickbed;
+import com.lion.manage.entity.ward.vo.ListWardRoomSickbedVo;
 import com.lion.manage.service.ward.WardRoomSickbedService;
+import com.lion.person.expose.person.PatientExposeService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +36,9 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private PatientExposeService patientExposeService;
 
     @Override
     public void save(List<? extends WardRoomSickbed> addWardRoomSickbedDto, Long wardRoomId) {
@@ -72,8 +82,18 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
     }
 
     @Override
-    public Page<WardRoomSickbed> list(String bedCode, Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage) {
+    public Page<ListWardRoomSickbedVo> list(String bedCode, Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage) {
         Page<WardRoomSickbed> page = wardRoomSickbedDao.list(bedCode, departmentId, wardId, wardRoomId, lionPage);
-        return page;
+        List<WardRoomSickbed> list = page.getContent();
+        List<ListWardRoomSickbedVo> returnList = new ArrayList<>();
+        list.forEach(wardRoomSickbed -> {
+            ListWardRoomSickbedVo vo = new ListWardRoomSickbedVo();
+            BeanUtils.copyProperties(wardRoomSickbed,vo);
+            List<Long> sickbedIds = new ArrayList<>();
+            sickbedIds.add(wardRoomSickbed.getId());
+            vo.setIsUse(patientExposeService.countUseSickbed(sickbedIds)>0);
+            returnList.add(vo);
+        });
+        return new PageResultData(returnList,lionPage,page.getTotalElements());
     }
 }

@@ -28,6 +28,14 @@ public interface PatientDao extends BaseDao<Patient> {
     public Patient findFirstBySickbedIdAndIsLeave(Long sickbedId,Boolean isLeave);
 
     /**
+     * 统计被使用的床位数量
+     * @param sickbedIds
+     * @param isLeave
+     * @return
+     */
+    public int countBySickbedIdInAndIsLeave(List<Long> sickbedIds, Boolean isLeave);
+
+    /**
      * 根据病历号查询
      * @param medicalRecordNo
      * @return

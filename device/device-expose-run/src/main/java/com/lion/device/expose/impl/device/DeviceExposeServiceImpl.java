@@ -117,4 +117,11 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
         deviceDao.updateRegionIdIsNull(regionId);
         deviceDao.updateRegion(regionId, ids);
     }
+
+    @Override
+    public Integer count(DeviceClassify classify, Long regionId) {
+        return deviceDao.countByDeviceClassifyAndRegionId(classify,regionId);
+    }
+
+
 }

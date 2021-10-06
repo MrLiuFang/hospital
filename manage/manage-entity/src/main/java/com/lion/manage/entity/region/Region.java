@@ -101,4 +101,6 @@ public class Region extends BaseEntity implements Serializable {
 
     @ApiModelProperty("设备数量定义")
     private String deviceQuantityDefinition;
+
+//    [{"code":"STAR_AP"},{"code":"MONITOR"},{"code":"VIRTUAL_WALL","count":"2"},{"code":"LF_EXCITER"},{"code":"HAND_WASHING"},{"code":"RECYCLING_BOX"}]
 }

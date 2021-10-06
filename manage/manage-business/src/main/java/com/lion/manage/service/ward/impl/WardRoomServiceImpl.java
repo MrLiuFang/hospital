@@ -2,6 +2,7 @@ package com.lion.manage.service.ward.impl;
 
 import com.lion.common.constants.RedisConstants;
 import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
@@ -9,9 +10,12 @@ import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.entity.ward.dto.AddWardRoomDto;
 import com.lion.manage.entity.ward.dto.UpdateWardRoomDto;
+import com.lion.manage.entity.ward.vo.ListWardRoomVo;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
+import com.lion.person.expose.person.PatientExposeService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +23,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -45,6 +50,9 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private PatientExposeService patientExposeService;
 
     @Override
     @Transactional
@@ -118,7 +126,23 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
     }
 
     @Override
-    public Page<WardRoom> list(Long departmentId, Long wardId, LionPage lionPage) {
-        return wardRoomDao.list(departmentId, wardId, lionPage);
+    public Page<ListWardRoomVo> list(Long departmentId, Long wardId, LionPage lionPage) {
+        Page<WardRoom> page = wardRoomDao.list(departmentId, wardId, lionPage);
+        List<WardRoom> list = page.getContent();
+        List<ListWardRoomVo> returnList = new ArrayList<>();
+        list.forEach(wardRoom -> {
+            ListWardRoomVo vo = new ListWardRoomVo();
+            BeanUtils.copyProperties(wardRoom,vo);
+            vo.setTotal(wardRoomSickbedDao.countByWardRoomId(wardRoom.getId()));
+            List<WardRoomSickbed> wardRoomSickbeds = wardRoomSickbedDao.findByWardRoomId(wardRoom.getId());
+            List<Long> sickbedIds = new ArrayList<>();
+            wardRoomSickbeds.forEach(wardRoomSickbed -> {
+                sickbedIds.add(wardRoomSickbed.getId());
+            });
+            sickbedIds.add(Long.MAX_VALUE);
+            vo.setUseTotal(patientExposeService.countUseSickbed(sickbedIds));
+            returnList.add(vo);
+        });
+        return new PageResultData<>(returnList,lionPage,page.getTotalElements());
     }
 }

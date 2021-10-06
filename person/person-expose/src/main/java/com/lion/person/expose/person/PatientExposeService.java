@@ -60,4 +60,11 @@ public interface PatientExposeService extends BaseService<Patient> {
      * @return
      */
     public List<Patient> find(Long departmentId,String name,List<Long> ids);
+
+    /**
+     * 统计被使用的床位
+     * @param sickbedIds
+     * @return
+     */
+    public int countUseSickbed(List<Long> sickbedIds);
 }

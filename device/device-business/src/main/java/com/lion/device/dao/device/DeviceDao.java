@@ -117,4 +117,14 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
     @Transactional
     @Query(" update Device set regionId =:regionId ,version=version+1 where id in :ids ")
     public int updateRegion(@Param("regionId")Long regionId,@Param("ids")List<Long> ids);
+
+
+    /**
+     * 根据大类统计数量
+     * @param classify
+     * @param regionId
+     * @return
+     */
+    public Integer countByDeviceClassifyAndRegionId(DeviceClassify classify,Long regionId);
+
 }

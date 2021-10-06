@@ -77,4 +77,9 @@ public class PatientExposeServiceImpl extends BaseServiceImpl<Patient> implement
 
         return patientDao.findByDepartmentIdAndIsLeaveOrderByPatientStateDesc(departmentId, false);
     }
+
+    @Override
+    public int countUseSickbed(List<Long> sickbedIds) {
+        return patientDao.countBySickbedIdInAndIsLeave(sickbedIds,false);
+    }
 }

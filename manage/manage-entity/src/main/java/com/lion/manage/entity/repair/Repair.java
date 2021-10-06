@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 
@@ -37,7 +38,9 @@ public class Repair extends BaseEntity {
     private String content;
 
     @ApiModelProperty(value = "html")
+    @Column(name = "html",length = 2000)
     private String html;
+
 
     @ApiModelProperty(value = "设备ID用逗号隔开")
     private String deviceId;

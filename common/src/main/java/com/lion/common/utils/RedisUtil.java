@@ -824,12 +824,16 @@ public class RedisUtil {
         }
 
         AlarmMode alarmMode = (AlarmMode) redisTemplate.opsForValue().get(RedisConstants.ALARM_MODE);
+        if (Objects.isNull(alarmMode)) {
+            alarmMode = AlarmMode.STANDARD;
+        }
         List<ListWashTemplateItemVo> listWashTemplateItemVos = detailsWashTemplateVo.getListWashTemplateItemVos();
         AtomicReference<ListWashTemplateItemVo> washTemplateItemVo = new AtomicReference<>(null);
+        AlarmMode finalAlarmMode = alarmMode;
         listWashTemplateItemVos.forEach(listWashTemplateItemVo -> {
-            if (Objects.equals(alarmMode, AlarmMode.URGENT) && Objects.equals(true, listWashTemplateItemVo.getIsUrgent())) {
+            if (Objects.equals(finalAlarmMode, AlarmMode.URGENT) && Objects.equals(true, listWashTemplateItemVo.getIsUrgent())) {
                 washTemplateItemVo.set(listWashTemplateItemVo);
-            } else if (Objects.equals(alarmMode, AlarmMode.STANDARD) && Objects.equals(false, listWashTemplateItemVo.getIsUrgent())) {
+            } else if (Objects.equals(finalAlarmMode, AlarmMode.STANDARD) && Objects.equals(false, listWashTemplateItemVo.getIsUrgent())) {
                 washTemplateItemVo.set(listWashTemplateItemVo);
             }
         });

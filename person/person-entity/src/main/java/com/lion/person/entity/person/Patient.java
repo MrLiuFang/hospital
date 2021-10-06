@@ -29,7 +29,7 @@ import java.time.LocalDate;
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "t_patient",indexes = {@Index(columnList = "name"),@Index(columnList = "phone_number")})
+@Table(name = "t_patient",indexes = {@Index(columnList = "name"),@Index(columnList = "phone_number"),@Index(columnList = "sickbed_id")})
 
 @DynamicInsert
 @Data

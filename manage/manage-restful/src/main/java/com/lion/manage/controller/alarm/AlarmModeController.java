@@ -1,6 +1,5 @@
 package com.lion.manage.controller.alarm;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
@@ -65,26 +64,26 @@ public class AlarmModeController extends BaseControllerImpl implements BaseContr
 
     @PostMapping("/set/mode")
     @ApiOperation(value = "切换洗手模式")
-    public IResultData setAlarmMode(@RequestBody SetAlarmModeDto alarmMode) {
+    public IResultData<AlarmMode> setAlarmMode(@RequestBody SetAlarmModeDto alarmMode) {
         if (Objects.nonNull(alarmMode.getAlarmMode())) {
             Long userId = CurrentUserUtil.getCurrentUserId();
             User user = userExposeService.findById(userId);
             AssertUtil.isFlase(passwordEncoder.matches(alarmMode.getPassword(),user.getPassword()), MessageI18nUtil.getMessage("3000035"));
             redisTemplate.opsForValue().set(RedisConstants.ALARM_MODE,alarmMode.getAlarmMode());
-
             AlarmModeRecord alarmModeRecord = new AlarmModeRecord();
             alarmModeRecord.setAlarmMode(alarmMode.getAlarmMode());
             alarmModeRecord.setUserId(userId);
             alarmModeRecordService.save(alarmModeRecord);
 
         }
-        return ResultData.instance();
+        return alarmMode();
     }
 
     @GetMapping("/current/mode")
     @ApiOperation(value = "获取当前洗手模式")
     public IResultData<AlarmMode> alarmMode() {
-        return ResultData.instance().setData(redisTemplate.opsForValue().get(RedisConstants.ALARM_MODE));
+        AlarmMode alarmMode = (AlarmMode) redisTemplate.opsForValue().get(RedisConstants.ALARM_MODE);
+        return ResultData.instance().setData(Objects.isNull(alarmMode)?AlarmMode.STANDARD:alarmMode);
     }
 
 
