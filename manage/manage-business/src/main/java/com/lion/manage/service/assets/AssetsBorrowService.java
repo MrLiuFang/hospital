@@ -6,6 +6,7 @@ import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.AssetsBorrow;
 import com.lion.manage.entity.assets.dto.AddAssetsBorrowDto;
 import com.lion.manage.entity.assets.dto.ReturnAssetsBorrowDto;
+import com.lion.manage.entity.assets.vo.DetailsAssetsBorrowVo;
 import com.lion.manage.entity.assets.vo.ListAssetsBorrowVo;
 
 import java.time.LocalDateTime;
@@ -45,4 +46,11 @@ public interface AssetsBorrowService extends BaseService<AssetsBorrow> {
      * @param returnAssetsBorrowDto
      */
     public void returnAssetsBorrow(ReturnAssetsBorrowDto returnAssetsBorrowDto);
+
+    /**
+     * 最后一次借用
+     * @param assetsId
+     * @return
+     */
+    public DetailsAssetsBorrowVo lastDetails(Long assetsId);
 }

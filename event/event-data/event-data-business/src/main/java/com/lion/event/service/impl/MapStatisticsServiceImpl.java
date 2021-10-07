@@ -546,7 +546,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetails(String name, Long regionId) {
+    public DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetails(String keyword, Long regionId) {
         List<Long> list = departmentExposeService.responsibleDepartment(null);
         DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetailsVo = new DepartmentDeviceGroupStatisticsDetailsVo();
 //        List<DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo> deviceGroupDetailsVos = new ArrayList<>();

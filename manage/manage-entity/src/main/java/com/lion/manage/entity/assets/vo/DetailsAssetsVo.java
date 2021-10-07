@@ -63,4 +63,9 @@ public class DetailsAssetsVo extends Assets {
 
     @ApiModelProperty(value = "标签Id")
     private Long tagId;
+
+    @ApiModelProperty(value = "最后一此借用")
+    private DetailsAssetsBorrowVo detailsAssetsBorrowVo;
+
+
 }

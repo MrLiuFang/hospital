@@ -87,7 +87,7 @@ public interface MapStatisticsService {
      * @param regionId
      * @return
      */
-    public DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetails(String name,Long regionId);
+    public DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetails(String keyword,Long regionId);
 
     /**
      * 员工详情

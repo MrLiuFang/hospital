@@ -17,6 +17,7 @@ import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.AssetsBorrow;
 import com.lion.manage.entity.assets.dto.AddAssetsBorrowDto;
 import com.lion.manage.entity.assets.dto.ReturnAssetsBorrowDto;
+import com.lion.manage.entity.assets.vo.DetailsAssetsBorrowVo;
 import com.lion.manage.entity.assets.vo.ListAssetsBorrowVo;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -247,6 +248,33 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
                 }
             });
         }
+    }
+
+    @Override
+    public DetailsAssetsBorrowVo lastDetails(Long assetsId) {
+        AssetsBorrow assetsBorrow = this.assetsBorrowDao.findFirstByAssetsIdOrderByCreateDateTimeDesc(assetsId);
+        if (Objects.isNull(assetsBorrow)) {
+            return null;
+        }
+        DetailsAssetsBorrowVo vo = new DetailsAssetsBorrowVo();
+        BeanUtils.copyProperties(assetsBorrow,vo);
+        Department department = departmentService.findById(vo.getBorrowDepartmentId());
+        if (Objects.nonNull(department)) {
+            vo.setBorrowDepartmentName(department.getName());
+        }
+        User borrowUser = userExposeService.findById(vo.getBorrowUserId());
+        if (Objects.nonNull(borrowUser)) {
+            vo.setBorrowUserName(borrowUser.getName());
+            vo.setBorrowUserHeadPortrait(borrowUser.getHeadPortrait());
+            vo.setBorrowUserHeadPortraitUrl(fileExposeService.getUrl(borrowUser.getHeadPortrait()));
+        }
+        User returnUser = userExposeService.findById(vo.getBorrowUserId());
+        if (Objects.nonNull(returnUser)) {
+            vo.setReturnUserName(returnUser.getName());
+            vo.setReturnUserHeadPort(returnUser.getHeadPortrait());
+            vo.setReturnUserHeadPortraitUrl(fileExposeService.getUrl(returnUser.getHeadPortrait()));
+        }
+        return vo;
     }
 
     private void assertAssetsExist(Long id) {

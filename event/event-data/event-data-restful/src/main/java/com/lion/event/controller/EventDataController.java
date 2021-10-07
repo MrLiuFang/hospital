@@ -248,8 +248,8 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/department/device/group/statistics/details")
     @ApiOperation(value = "地图监控监控器列表(左边列表)")
-    public IResultData<DepartmentDeviceGroupStatisticsDetailsVo> departmentDeviceGroupStatisticsDetails(@ApiParam(value = "设备组名称") String name,@ApiParam(value = "区域id") Long regionId){
-        return ResultData.instance().setData(mapStatisticsService.departmentDeviceGroupStatisticsDetails(name, regionId));
+    public IResultData<DepartmentDeviceGroupStatisticsDetailsVo> departmentDeviceGroupStatisticsDetails(@ApiParam(value = "设备名称/编号") String keyword,@ApiParam(value = "区域id") Long regionId){
+        return ResultData.instance().setData(mapStatisticsService.departmentDeviceGroupStatisticsDetails(keyword, regionId));
     }
 
     @GetMapping("/patient/details")

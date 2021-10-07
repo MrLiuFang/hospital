@@ -32,4 +32,11 @@ public interface AssetsBorrowDao extends BaseDao<AssetsBorrow> {
      * @return
      */
     public AssetsBorrow findFirstByAssetsIdAndReturnUserIdIsNull(Long assetsId);
+
+    /**
+     * 最后的借用
+     * @param assetsId
+     * @return
+     */
+    public AssetsBorrow findFirstByAssetsIdOrderByCreateDateTimeDesc(Long assetsId);
 }

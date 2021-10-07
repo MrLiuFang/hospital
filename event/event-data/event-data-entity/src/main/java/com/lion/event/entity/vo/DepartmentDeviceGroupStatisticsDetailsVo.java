@@ -35,6 +35,9 @@ public class DepartmentDeviceGroupStatisticsDetailsVo {
 //    @ApiModelProperty(value = "设备组")
 //    private List<DeviceGroupDetailsVo> deviceGroupDetailsVos;
 
+    @ApiModelProperty(value = "科室")
+    private List<DepartmentDeviceDetailsVo> departmentDeviceDetailsVos;
+
 //    @Data
 //    @ApiModel
 //    public static class DeviceGroupDetailsVo {
@@ -45,4 +48,12 @@ public class DepartmentDeviceGroupStatisticsDetailsVo {
 //        @ApiModelProperty(value = "设备")
 //        private List<DetailsDeviceVo> detailsDeviceVos;
 //    }
+
+    @Data
+    @ApiModel
+    public static class DepartmentDeviceDetailsVo {
+
+        @ApiModelProperty(value = "设备")
+        private List<DetailsDeviceVo> detailsDeviceVos;
+    }
 }

@@ -33,7 +33,7 @@ import java.time.LocalDateTime;
 
 @DynamicInsert
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"updateDateTime","createUserId","updateUserId"})
 @ApiModel(description = "资产借用")
 public class AssetsBorrow extends BaseEntity implements Serializable {
 

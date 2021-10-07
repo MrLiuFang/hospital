@@ -26,6 +26,7 @@ import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsFaultState;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
 import com.lion.manage.service.build.BuildFloorService;
@@ -57,6 +58,9 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 
     @Autowired
     private AssetsBorrowDao assetsBorrowDao;
+
+    @Autowired
+    private AssetsBorrowService assetsBorrowService;
 
     @Autowired
     private AssetsFaultDao assetsFaultDao;
@@ -215,6 +219,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             detailsAssetsVo.setAlarmDataTime(systemAlarm.getDt());
             detailsAssetsVo.setAlarmId(systemAlarm.get_id());
         }
+        detailsAssetsVo.setDetailsAssetsBorrowVo(assetsBorrowService.lastDetails(assets.getId()));
         return detailsAssetsVo;
     }
 
