@@ -341,8 +341,8 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/event/record/details")
     @ApiOperation(value = "事件记录详情")
-    public EventRecordVo eventRecordDetails(@ApiParam("id") @NotNull(message = "{0000000}") Long id) {
-        return positionService.eventRecordDetails(id);
+    public IResultData<EventRecordVo> eventRecordDetails(@ApiParam("id") @NotNull(message = "{0000000}") Long id) {
+        return ResultData.instance().setData(positionService.eventRecordDetails(id));
     }
 
     @GetMapping("/temporary/person/system/alarm")
