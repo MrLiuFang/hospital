@@ -24,6 +24,10 @@ import java.io.Serializable;
 @DynamicInsert
 @Data
 @ApiModel(description = "事件记录")
+@JsonIgnoreProperties(
+        ignoreUnknown = true,
+        value = {"updateDateTime", "createUserId", "updateUserId"}
+)
 public class EventRecord extends BaseEntity implements Serializable {
 
     @ApiModelProperty(value = "事件编号")
