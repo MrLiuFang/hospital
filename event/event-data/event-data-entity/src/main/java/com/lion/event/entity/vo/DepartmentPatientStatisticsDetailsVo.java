@@ -1,10 +1,13 @@
 package com.lion.event.entity.vo;
 
+import com.lion.person.entity.enums.PatientState;
 import com.lion.person.entity.enums.State;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.persistence.Convert;
 import java.util.List;
 
 /**
@@ -69,5 +72,8 @@ public class DepartmentPatientStatisticsDetailsVo {
 
         @ApiModelProperty(value = "是否异常")
         private com.lion.person.entity.enums.State deviceState = State.NORMAL;
+
+        @ApiModelProperty(value = "病人状态")
+        private PatientState patientState;
     }
 }

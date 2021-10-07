@@ -489,6 +489,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     vo.setId(patient.getId());
                     vo.setName(patient.getName());
                     vo.setDeviceState(patient.getDeviceState());
+                    vo.setPatientState(patient.getPatientState());
                     vo.setTagCode(patient.getTagCode());
                     vo.setHeadPortrait(patient.getHeadPortrait());
                     vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
