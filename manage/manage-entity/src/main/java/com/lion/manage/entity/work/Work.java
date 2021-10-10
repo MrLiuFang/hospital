@@ -2,8 +2,8 @@ package com.lion.manage.entity.work;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -28,18 +28,18 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "员工上下班")
+@Schema(description = "员工上下班")
 public class Work extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 6314578566875824981L;
-    @ApiModelProperty(value = "员工id")
+    @Schema(description = "员工id")
     @Column(name = "user_id")
     private Long userId;
 
-    @ApiModelProperty(value = "上班时间")
+    @Schema(description = "上班时间")
     private LocalDateTime startWorkTime;
 
-    @ApiModelProperty(value = "下班时间")
+    @Schema(description = "下班时间")
     private LocalDateTime endWorkTime;
 
 }

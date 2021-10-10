@@ -2,21 +2,21 @@ package com.lion.event.entity.vo;
 
 import com.lion.event.entity.WashEvent;
 import com.lion.manage.entity.enums.SystemAlarmType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 @Data
-@ApiModel
+@Schema
 public class ListViolationWashEventVo extends WashEvent {
 
-    @ApiModelProperty(value = "不合规原因")
+    @Schema(description = "不合规原因")
     private SystemAlarmType alarmType;
 
-    @ApiModelProperty(value = "不合规原因说明")
+    @Schema(description = "不合规原因说明")
     private String alarmTypeStr;
 
-    @ApiModelProperty(value = "姓名")
+    @Schema(description = "姓名")
     private String name;
 }
 

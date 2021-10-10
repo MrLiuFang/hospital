@@ -1,10 +1,10 @@
 package com.lion.device.expose.device;
 
 import com.lion.core.service.BaseService;
-import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.enums.DeviceClassify;
-import lombok.Data;
+import com.lion.device.entity.enums.State;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -85,6 +85,13 @@ public interface DeviceExposeService extends BaseService<Device> {
     public List<Device> findByRegionId(Long regionId);
 
     /**
+     * 根据科室查询设备
+     * @param departmentId
+     * @return
+     */
+    public List<Device> findByDepartmentId(Long departmentId);
+
+    /**
      * 关联区域
      * @param regionId
      * @param ids
@@ -97,6 +104,21 @@ public interface DeviceExposeService extends BaseService<Device> {
      * @param regionId
      * @return
      */
-    public Integer count(DeviceClassify classify, Long regionId);
+    public int count(DeviceClassify classify, Long regionId);
+
+    /**
+     * 根据科室统计
+     * @param departmentId
+     * @param states
+     * @return
+     */
+    public int count(Long departmentId, List<State> states);
+
+    /**
+     * 详情
+     * @param id
+     * @return
+     */
+    public DetailsDeviceVo details(Long id);
 
 }

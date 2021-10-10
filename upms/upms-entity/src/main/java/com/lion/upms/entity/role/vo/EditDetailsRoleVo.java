@@ -2,7 +2,7 @@ package com.lion.upms.entity.role.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.upms.entity.role.Role;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -11,7 +11,7 @@ import lombok.Data;
  * @date 2021/3/23上午11:21
  */
 @Data
-@ApiModel
+@Schema
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
 public class EditDetailsRoleVo extends Role {
 }

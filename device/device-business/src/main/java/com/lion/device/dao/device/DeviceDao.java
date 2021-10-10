@@ -5,7 +5,6 @@ import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.State;
-import com.lion.manage.entity.region.Region;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -98,6 +97,21 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
     public List<Device> findByRegionId(Long regionId);
 
     /**
+     * 根据ID查询设备是否有绑定区域
+     * @param Id
+     * @return
+     */
+    public Device findFirstByIdAndRegionIdNotNull(Long Id);
+
+
+    /**
+     * 根据区域查询设备
+     * @param regionIds
+     * @return
+     */
+    public List<Device> findByRegionIdIn(List<Long> regionIds);
+
+    /**
      * 置空区域id
      * @param regionId
      * @return
@@ -125,6 +139,14 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
      * @param regionId
      * @return
      */
-    public Integer countByDeviceClassifyAndRegionId(DeviceClassify classify,Long regionId);
+    public int countByDeviceClassifyAndRegionId(DeviceClassify classify,Long regionId);
+
+    /**
+     * 根据状态统计
+     * @param reginIds
+     * @param states
+     * @return
+     */
+    public int countByRegionIdInAndDeviceStateIn(List<Long> reginIds,List<State> states );
 
 }

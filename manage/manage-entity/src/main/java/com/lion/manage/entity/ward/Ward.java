@@ -3,8 +3,8 @@ package com.lion.manage.entity.ward;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -30,21 +30,21 @@ import java.io.Serializable;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "病房基本信息")
+@Schema(description = "病房基本信息")
 public class Ward extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -5639555457643057253L;
-    @ApiModelProperty(value = "病房名称")
+    @Schema(description = "病房名称")
     @Column(name = "name")
     @NotBlank(message = "{2000054}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
-    @ApiModelProperty(value = "科室")
+    @Schema(description = "科室")
     @Column(name = "department_id")
     @NotNull(message = "{2000029}", groups = {Validator.Insert.class, Validator.Update.class})
     public Long departmentId;
 
-    @ApiModelProperty(value = "备注")
+    @Schema(description = "备注")
     @Column(name = "remarks")
     private String remarks;
 

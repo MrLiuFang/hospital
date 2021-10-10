@@ -3,8 +3,8 @@ package com.lion.device.entity.tag;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -30,26 +30,26 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "标签与员工关联")
+@Schema(description = "标签与员工关联")
 public class TagUser extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 7470517760288238683L;
-    @ApiModelProperty(value = "标签id")
+    @Schema(description = "标签id")
     @NotNull(message = "{3000019}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "tag_id")
     private Long tagId;
 
-    @ApiModelProperty(value = "员工(用户)id")
+    @Schema(description = "员工(用户)id")
     @NotNull(message = "{3000024}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "user_id")
     private Long userId;
 
-    @ApiModelProperty(value = "绑定时间")
+    @Schema(description = "绑定时间")
     @NotNull(message = "{4000019}", groups = {Validator.Insert.class})
     @Column(name = "binding_time",updatable = false)
     private LocalDateTime bindingTime = LocalDateTime.now();
 
-    @ApiModelProperty(value = "解绑时间")
+    @Schema(description = "解绑时间")
     @NotNull(message = "{4000020}", groups = { Validator.Update.class})
     @Column(name = "unbinding_time",insertable = false)
     private LocalDateTime unbindingTime;

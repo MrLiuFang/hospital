@@ -2,9 +2,6 @@ package com.lion.device.dao.tag;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.tag.TagPatient;
-import org.omg.CORBA.PUBLIC_MEMBER;
-
-import java.security.PublicKey;
 
 /**
  * @author Mr.Liu

@@ -1,8 +1,8 @@
 package com.lion.event.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,48 +18,48 @@ import java.time.LocalDateTime;
  **/
 @Data
 @Document(value = "device_data")
-@ApiModel
+@Schema
 public class DeviceData implements Serializable {
 
     private static final long serialVersionUID = -2540094505107531820L;
     @Id
     private String _id;
 
-    @ApiModelProperty(value = "tag id")
+    @Schema(description = "tag id")
     private Long ti;
 
-    @ApiModelProperty(value = "tag code")
+    @Schema(description = "tag code")
     private String tc;
 
-    @ApiModelProperty(value = "tag name")
+    @Schema(description = "tag name")
     private String tn;
 
-    @ApiModelProperty(value = "monitor id")
+    @Schema(description = "monitor id")
     private Long mi;
 
-    @ApiModelProperty(value = "monitor code")
+    @Schema(description = "monitor code")
     private String mc;
 
-    @ApiModelProperty(value = "monitor name")
+    @Schema(description = "monitor name")
     private String mn;
 
-    @ApiModelProperty(value = "star id")
+    @Schema(description = "star id")
     private Long si;
 
-    @ApiModelProperty(value = "star code")
+    @Schema(description = "star code")
     private String sc;
 
-    @ApiModelProperty(value = "star name")
+    @Schema(description = "star name")
     private String sn;
 
-    @ApiModelProperty(value = "事件")
+    @Schema(description = "事件")
     private String e;
 
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
-    @ApiModelProperty(value = "设备产生時間")
+    @Schema(description = "设备产生時間")
     private LocalDateTime ddt;
 
-    @ApiModelProperty(value = "系统接受到时间")
+    @Schema(description = "系统接受到时间")
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sdt;
 }

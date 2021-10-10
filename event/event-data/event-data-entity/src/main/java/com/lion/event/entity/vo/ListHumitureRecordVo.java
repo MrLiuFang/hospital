@@ -2,8 +2,8 @@ package com.lion.event.entity.vo;
 
 import com.lion.common.enums.Type;
 import com.lion.event.entity.HumitureRecord;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 /**
@@ -12,19 +12,19 @@ import lombok.Data;
  * @time: 2021/6/9 下午4:54
  */
 @Data
-@ApiModel
+@Schema
 public class ListHumitureRecordVo extends HumitureRecord {
 
-    @ApiModelProperty(value = "温度/湿度仪")
+    @Schema(description = "温度/湿度仪")
     private Type type;
 
-    @ApiModelProperty(value = "设备编码")
+    @Schema(description = "设备编码")
     private String deviceCode;
 
-    @ApiModelProperty(value = "设备名称")
+    @Schema(description = "设备名称")
     private String deviceName;
 
-    @ApiModelProperty(value = "标签编码")
+    @Schema(description = "标签编码")
     private String tagCode;
 
 

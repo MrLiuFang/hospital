@@ -3,8 +3,8 @@ package com.lion.manage.entity.build;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -31,38 +31,38 @@ import java.math.BigDecimal;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "楼层")
+@Schema(description = "楼层")
 public class BuildFloor extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 4430569449863892569L;
-    @ApiModelProperty(value = "建筑id")
+    @Schema(description = "建筑id")
     @NotNull(message = "{2000022}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "build_id")
     private Long buildId;
 
-    @ApiModelProperty(value = "地图url")
+    @Schema(description = "地图url")
     @NotBlank(message = "{2000023}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "map_url")
     private String mapUrl;
 
-    @ApiModelProperty(value = "楼层名称")
+    @Schema(description = "楼层名称")
     @Column(name = "name")
     @NotBlank(message = "{2000024}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
-    @ApiModelProperty(value = "地图高")
+    @Schema(description = "地图高")
     @Column(name = "map_height")
     private BigDecimal mapHeight;
 
-    @ApiModelProperty(value = "地图宽")
+    @Schema(description = "地图宽")
     @Column(name = "map_width")
     private BigDecimal mapWidth;
 
-    @ApiModelProperty(value = "放大级别")
+    @Schema(description = "放大级别")
     @Column(name = "level")
     private Integer level;
 
-    @ApiModelProperty(value = "备注")
+    @Schema(description = "备注")
     @Column(name = "remarks")
     private String remarks;
 }

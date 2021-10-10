@@ -3,8 +3,8 @@ package com.lion.manage.entity.ward.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.entity.ward.WardRoomSickbed;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import org.springframework.data.domain.PageImpl;
 
@@ -17,9 +17,9 @@ import java.util.List;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"wardId","id","createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel
+@Schema
 public class AddWardRoomDto extends WardRoom {
 
-    @ApiModelProperty(value = "床位")
+    @Schema(description = "床位")
     private List<AddWardRoomSickbedDto> wardRoomSickbed;
 }

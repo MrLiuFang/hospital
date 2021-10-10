@@ -2,8 +2,8 @@ package com.lion.person.entity.person.vo;
 
 import com.lion.core.persistence.Validator;
 import com.lion.person.entity.person.Patient;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -16,13 +16,13 @@ import java.time.LocalDateTime;
  * @time: 2021/5/25 下午2:16
  */
 @Data
-@ApiModel
+@Schema
 public class ListPatientVo extends PatientDetailsVo {
 
-    @ApiModelProperty(value = "离开时间")
+    @Schema(description = "离开时间")
     private LocalDateTime leaveDateTime;
 
-    @ApiModelProperty(value = "转移触发时间")
+    @Schema(description = "转移触发时间")
     private LocalDateTime triggerDateTime;
 
 

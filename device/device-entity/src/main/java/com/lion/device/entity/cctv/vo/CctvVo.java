@@ -1,8 +1,9 @@
 package com.lion.device.entity.cctv.vo;
 
 import com.lion.device.entity.cctv.Cctv;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -13,22 +14,22 @@ import javax.persistence.Column;
  * @Date 2021/5/7 上午8:48
  **/
 @Data
-@ApiModel
+@Schema
 public class CctvVo extends Cctv {
 
-    @ApiModelProperty(value = "建筑名称")
+    @Schema(description = "建筑名称")
     private String buildName;
 
-    @ApiModelProperty(value = "楼层名称")
+    @Schema(description = "楼层名称")
     private String buildFloorName;
 
-    @ApiModelProperty(value = "区域名称")
+    @Schema(description = "区域名称")
     private String regionName;
 
-    @ApiModelProperty(value = "科室名称")
+    @Schema(description = "科室名称")
     private String departmentName;
 
-    @ApiModelProperty(value = "图片")
+    @Schema(description = "图片")
     private String imgUrl;
 
 }

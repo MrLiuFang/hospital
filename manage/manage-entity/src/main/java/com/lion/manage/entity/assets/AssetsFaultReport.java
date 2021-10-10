@@ -3,8 +3,8 @@ package com.lion.manage.entity.assets;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -29,16 +29,16 @@ import java.io.Serializable;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "资产故障汇报")
+@Schema(description = "资产故障汇报")
 public class AssetsFaultReport extends BaseEntity implements Serializable {
     private static final long serialVersionUID = -311081976548403331L;
 
-    @ApiModelProperty(value = "资产故障iId")
+    @Schema(description = "资产故障iId")
     @Column(name = "assets_fault_id")
     @NotNull(message = "{2000015}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long assetsFaultId;
 
-    @ApiModelProperty(value = "汇报")
+    @Schema(description = "汇报")
     @Column(name = "report")
     @NotNull(message = "{2000016}", groups = {Validator.Insert.class, Validator.Update.class})
     @Length(max = 250,message ="{2000017}" , groups = {Validator.Insert.class, Validator.Update.class})

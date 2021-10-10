@@ -2,8 +2,8 @@ package com.lion.manage.entity.region;
 
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -24,13 +24,13 @@ import javax.validation.constraints.NotBlank;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "区域类型")
+@Schema(description = "区域类型")
 public class RegionType extends BaseEntity {
 
-    @ApiModelProperty(value = "名称")
+    @Schema(description = "名称")
     @NotBlank(message = "{2000105}", groups = {Validator.Insert.class, Validator.Update.class})
     private String regionTypeName;
 
-    @ApiModelProperty(value = "备注")
+    @Schema(description = "备注")
     private String remark;
 }

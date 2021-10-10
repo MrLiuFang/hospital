@@ -1,8 +1,8 @@
 package com.lion.manage.entity.region.vo;
 
 import com.lion.manage.entity.region.RegionType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 /**
@@ -11,9 +11,9 @@ import lombok.Data;
  * @createDateTime 2021/9/8 上午8:53
  */
 @Data
-@ApiModel
+@Schema
 public class ListRegionTypeVo extends RegionType {
 
-    @ApiModelProperty(value = "关联数量")
+    @Schema(description = "关联数量")
     private Integer count;
 }

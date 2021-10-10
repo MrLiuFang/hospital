@@ -2,8 +2,8 @@ package com.lion.device.entity.tag.vo;
 
 import com.lion.core.persistence.Validator;
 import com.lion.device.entity.enums.TagPurpose;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -18,16 +18,16 @@ import javax.validation.constraints.NotNull;
  **/
 @Data
 @Builder
-@ApiModel
+@Schema
 public class PurposeStatisticsVo {
 
-    @ApiModelProperty(value = "标签用途")
+    @Schema(description = "标签用途")
     private TagPurpose purpose;
 
-    @ApiModelProperty(value = "已用数量")
+    @Schema(description = "已用数量")
     private int count;
 
-    @ApiModelProperty(value = "剩余数量-空着，目前计算不出这个值")
+    @Schema(description = "剩余数量-空着，目前计算不出这个值")
     private int surplusCount;
 
 

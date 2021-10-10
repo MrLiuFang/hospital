@@ -1,8 +1,8 @@
 package com.lion.person.entity.person.dto;
 
 import com.lion.person.entity.enums.TransferState;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -13,13 +13,13 @@ import javax.validation.constraints.NotNull;
  * @time: 2021/6/19 上午9:48
  */
 @Data
-@ApiModel
+@Schema
 public class UpdateTransferDto {
-    @ApiModelProperty(value = "患者id")
+    @Schema(description = "患者id")
     @NotNull(message = "{1000026}")
     private Long patientId;
 
-    @ApiModelProperty(value = "状态")
+    @Schema(description = "状态")
     @NotNull(message = "{1000030}")
     private TransferState transferState;
 

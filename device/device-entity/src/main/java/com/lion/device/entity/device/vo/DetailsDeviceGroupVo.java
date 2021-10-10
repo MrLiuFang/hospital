@@ -2,8 +2,8 @@ package com.lion.device.entity.device.vo;
 
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.DeviceGroup;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.util.List;
@@ -14,16 +14,16 @@ import java.util.List;
  * @date 2021/3/31下午8:49
  */
 @Data
-@ApiModel
+@Schema
 public class DetailsDeviceGroupVo extends DeviceGroup {
 
-    @ApiModelProperty(value = "设备")
+    @Schema(description = "设备")
     private List<DeviceVo> devices;
 
     @Data
-    @ApiModel
+    @Schema
     public static class DeviceVo extends Device {
-        @ApiModelProperty(value = "设备组id")
+        @Schema(description = "设备组id")
         private Long deviceGroupId;
     }
 }

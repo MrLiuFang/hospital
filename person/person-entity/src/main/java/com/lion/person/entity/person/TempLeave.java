@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.core.service.BaseService;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -30,34 +30,34 @@ import java.time.LocalDateTime;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "临时离开权限")
+@Schema(description = "临时离开权限")
 public class TempLeave extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 2751099054472220914L;
-    @ApiModelProperty(value = "患者id")
+    @Schema(description = "患者id")
     @NotNull(message = "{1000005}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "patient_id")
     private Long patientId;
 
-    @ApiModelProperty(value = "登记人id")
+    @Schema(description = "登记人id")
     @Column(name = "user_id")
     private Long userId;
 
-    @ApiModelProperty(value = "离开开始时间")
+    @Schema(description = "离开开始时间")
     @Column(name = "start_date_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime startDateTime;
 
-    @ApiModelProperty(value = "离开结束时间")
+    @Schema(description = "离开结束时间")
     @Column(name = "end_date_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime endDateTime;
 
-    @ApiModelProperty(value = "是否提前结束临时权限放开")
+    @Schema(description = "是否提前结束临时权限放开")
     @Column(name = "is_closure")
     private Boolean isClosure = false;
 
-    @ApiModelProperty(value = "离开原因")
+    @Schema(description = "离开原因")
     @Column(name = "remarks")
     private String remarks;
 }

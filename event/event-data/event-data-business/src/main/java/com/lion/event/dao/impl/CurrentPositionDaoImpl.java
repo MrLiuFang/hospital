@@ -47,6 +47,7 @@ public class CurrentPositionDaoImpl implements CurrentPositionDaoEx {
                 Integer count =document.getInteger("count");
                 for (Document d :_id){
                     if (d.containsKey("type")) {
+                        System.out.println(d.get("type"));
                         type = Type.instance(d.getInteger("type"));
                     }
                     if (d.containsKey("regionId")) {

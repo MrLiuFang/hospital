@@ -1,8 +1,8 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -15,14 +15,14 @@ import java.time.LocalDateTime;
  * @create: 2021-08-18 10:27
  **/
 @Data
-@ApiModel
+@Schema
 @Builder
 public class SevenDaysStatisticsVo {
 
-    @ApiModelProperty(value = "日期")
+    @Schema(description = "日期")
     @JsonFormat(pattern = "MM-dd")
     private LocalDate date;
 
-    @ApiModelProperty(value = "数量")
+    @Schema(description = "数量")
     private int count;
 }

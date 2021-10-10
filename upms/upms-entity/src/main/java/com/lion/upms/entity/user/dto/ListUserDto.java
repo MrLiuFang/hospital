@@ -1,7 +1,7 @@
 package com.lion.upms.entity.user.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.util.Collection;
@@ -12,18 +12,18 @@ import java.util.Collection;
  * @date 2021/3/31上午8:49
  */
 @Data
-@ApiModel
+@Schema
 public class ListUserDto {
 
-    @ApiModelProperty(value = "所属科室ID")
+    @Schema(description = "所属科室ID")
     private Long departmentId;
 
-    @ApiModelProperty(value = "员工类型Id")
+    @Schema(description = "员工类型Id")
     private Collection<Long> userTypeIds;
 
-    @ApiModelProperty(value = "员工编号")
+    @Schema(description = "员工编号")
     private Integer number;
 
-    @ApiModelProperty(value = "员工姓名")
+    @Schema(description = "员工姓名")
     private String name;
 }

@@ -13,6 +13,7 @@ import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.dao.tag.TagDao;
 import com.lion.device.entity.device.DeviceGroup;
 import com.lion.device.entity.device.DeviceGroupDevice;
+import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
 import com.lion.device.entity.enums.DeviceClassify;
@@ -34,6 +35,7 @@ import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -223,6 +225,39 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
+    }
+
+    @Override
+    public DetailsDeviceVo details(Long id) {
+        Device device = findById(id);
+        DetailsDeviceVo detailsDeviceVo = new DetailsDeviceVo();
+        BeanUtils.copyProperties(device,detailsDeviceVo);
+        if (Objects.nonNull(device.getBuildId())){
+            Build build = buildExposeService.findById(device.getBuildId());
+            if (Objects.nonNull(build)){
+                detailsDeviceVo.setBuildName(build.getName());
+            }
+        }
+        if (Objects.nonNull(device.getBuildFloorId())){
+            BuildFloor buildFloor = buildFloorExposeService.findById(device.getBuildFloorId());
+            if (Objects.nonNull(buildFloor)){
+                detailsDeviceVo.setBuildFloorName(buildFloor.getName());
+                detailsDeviceVo.setMapUrl(buildFloor.getMapUrl());
+            }
+        }
+        detailsDeviceVo.setImgUrl(fileExposeService.getUrl(device.getImg()));
+        if (Objects.nonNull(device.getRegionId())) {
+            Region region = regionExposeService.findById(device.getRegionId());
+            if (Objects.nonNull(region)) {
+                Department department = departmentExposeService.findById(region.getDepartmentId());
+                if (Objects.nonNull(department)) {
+                    detailsDeviceVo.setDepartmentId(department.getId());
+                    detailsDeviceVo.setDepartmentName(department.getName());
+                }
+            }
+
+        }
+        return detailsDeviceVo;
     }
 
     private DeviceStatisticsVo.DeviceStatisticsData count(DeviceClassify classify){

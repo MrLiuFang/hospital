@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.common.enums.Type;
 import com.lion.device.entity.enums.TagType;
 import com.lion.event.entity.SystemAlarm;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import io.swagger.annotations.Tag;
 import lombok.Data;
 
@@ -17,38 +17,38 @@ import java.time.LocalDateTime;
  * @time: 2021/5/22 下午7:40
  */
 @Data
-@ApiModel
+@Schema
 public class SystemAlarmVo extends SystemAlarm {
 
-    @ApiModelProperty(value = "警告来源(com.lion.common.enums.Type 获取该字典)")
+    @Schema(description = "警告来源(com.lion.common.enums.Type 获取该字典)")
     private Type type;
 
-    @ApiModelProperty(value = "标签码")
+    @Schema(description = "标签码")
     private String tagCode;
 
-    @ApiModelProperty(value = "标签属性")
+    @Schema(description = "标签属性")
     private TagType tagType;
 
-    @ApiModelProperty(value = "警告内容")
+    @Schema(description = "警告内容")
     private String alarmContent;
 
-    @ApiModelProperty(value = "警告内容编码(com.lion.manage.entity.enums.SystemAlarmType 获取该字典)")
+    @Schema(description = "警告内容编码(com.lion.manage.entity.enums.SystemAlarmType 获取该字典)")
     private String alarmCode;
 
-    @ApiModelProperty(value = "警告人姓名/资产名称/tag名称.......")
+    @Schema(description = "警告人姓名/资产名称/tag名称.......")
     private String title;
 
-    @ApiModelProperty(value = "图片ID")
+    @Schema(description = "图片ID")
     private Long imgId;
 
-    @ApiModelProperty(value = "图片url")
+    @Schema(description = "图片url")
     private String imgUrl;
 
-    @ApiModelProperty(value = "警告发生时间")
+    @Schema(description = "警告发生时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime deviceDateTime;
 
-    @ApiModelProperty(value = "排序时间（循环警报提醒时置顶显示）前端可判断该时间是否发生变化来进行声音/闪耀提醒")
+    @Schema(description = "排序时间（循环警报提醒时置顶显示）前端可判断该时间是否发生变化来进行声音/闪耀提醒")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sortDateTime;
 }

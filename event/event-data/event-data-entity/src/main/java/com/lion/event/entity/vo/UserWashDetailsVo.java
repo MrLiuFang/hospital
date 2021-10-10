@@ -3,8 +3,8 @@ package com.lion.event.entity.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.UserType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -17,41 +17,41 @@ import java.util.List;
  * @Date 2021/5/12 下午5:40
  **/
 @Data
-@ApiModel
+@Schema
 public class UserWashDetailsVo extends User {
 
-    @ApiModelProperty(value = "科室名称")
+    @Schema(description = "科室名称")
     private String departmentName;
 
-    @ApiModelProperty(value = "头像")
+    @Schema(description = "头像")
     private String headPortraitUrl;
 
-    @ApiModelProperty(value = "用户类型")
+    @Schema(description = "用户类型")
     private UserType userType;
 
-    @ApiModelProperty(value = "合规率")
+    @Schema(description = "合规率")
     private BigDecimal conformance = new BigDecimal(0);
 
-    @ApiModelProperty(value = "洗手事件列表（不返回总行数）")
+    @Schema(description = "洗手事件列表（不返回总行数）")
     private List<UserWashEvent> userWashEvent;
 
     @Data
-    @ApiModel
+    @Schema
     public static class UserWashEvent{
 
-        @ApiModelProperty(value = "使用设备")
+        @Schema(description = "使用设备")
         private String deviceName;
 
-        @ApiModelProperty(value = "所属区域")
+        @Schema(description = "所属区域")
         private String regionName;
 
-        @ApiModelProperty(value = "是否合规")
+        @Schema(description = "是否合规")
         private Boolean isConformance;
 
-        @ApiModelProperty(value = "洗手时长(秒)")
+        @Schema(description = "洗手时长(秒)")
         private Integer time;
 
-        @ApiModelProperty(value = "时间")
+        @Schema(description = "时间")
         @JsonFormat(
                 pattern = "YYYY-MM-dd HH:mm:ss"
         )

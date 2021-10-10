@@ -3,8 +3,8 @@ package com.lion.device.entity.device;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -26,25 +26,25 @@ import javax.validation.constraints.NotNull;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "警示铃")
+@Schema(description = "警示铃")
 public class WarningBell extends BaseEntity {
 
-    @ApiModelProperty(value = "名称")
+    @Schema(description = "名称")
     @NotBlank(message = "{2000111}",groups = {Validator.Insert.class,Validator.Update.class})
     private String name;
 
-    @ApiModelProperty(value = "编号")
+    @Schema(description = "编号")
     @NotBlank(message = "{2000112}",groups = {Validator.Insert.class,Validator.Update.class})
     private String code;
 
-    @ApiModelProperty(value = "设备id")
+    @Schema(description = "设备id")
     @NotBlank(message = "{2000113}",groups = {Validator.Insert.class,Validator.Update.class})
     private String warningBellId;
 
-    @ApiModelProperty(value = "科室")
+    @Schema(description = "科室")
     @NotNull(message = "{0000009}",groups = {Validator.Insert.class,Validator.Update.class})
     private Long departmentId;
 
-    @ApiModelProperty(value = "图片")
+    @Schema(description = "图片")
     private Long img;
 }

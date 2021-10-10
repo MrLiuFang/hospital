@@ -1,8 +1,8 @@
 package com.lion.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,27 +15,27 @@ import java.time.format.DateTimeFormatter;
  * @Date 2021/5/18 下午3:51
  **/
 @Data
-@ApiModel
+@Schema
 public class WashEventDto extends WashRecordDto implements Serializable {
 
     private static final long serialVersionUID = 7308806002975275332L;
-    @ApiModelProperty(value = "用于统计所有员工(仅限sql语法统计,无实际含义)")
+    @Schema(description = "用于统计所有员工(仅限sql语法统计,无实际含义)")
     private Integer a = 0;
 
-    @ApiModelProperty(value = "洗手事件类型 (com.lion.common.enums.WashEventType)")
+    @Schema(description = "洗手事件类型 (com.lion.common.enums.WashEventType)")
     private Integer wet;
 
-    @ApiModelProperty(value = "是否触发警告(合规/不合规)")
+    @Schema(description = "是否触发警告(合规/不合规)")
     private Boolean ia = false;
 
-    @ApiModelProperty(value = "触发警告原因(com.lion.manage.entity.enums.SystemAlarmType)")
+    @Schema(description = "触发警告原因(com.lion.manage.entity.enums.SystemAlarmType)")
     private Integer at;
 
-    @ApiModelProperty(value = "洗手时间(针对区域洗手规则-有记录为违规洗手,没有记录为错过洗手)定时洗手规则一律为错过洗手")
+    @Schema(description = "洗手时间(针对区域洗手规则-有记录为违规洗手,没有记录为错过洗手)定时洗手规则一律为错过洗手")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime wt = LocalDateTime.parse("9999-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-    @ApiModelProperty(value = "触发警告时间")
+    @Schema(description = "触发警告时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime adt = LocalDateTime.now();
 }

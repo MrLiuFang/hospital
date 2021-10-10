@@ -2,8 +2,8 @@ package com.lion.device.entity.tag;
 
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -27,16 +27,16 @@ import java.io.Serializable;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "标签规则关联的用户")
+@Schema(description = "标签规则关联的用户")
 public class TagRuleUser extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -8844894716739235743L;
-    @ApiModelProperty(value = "标签id")
+    @Schema(description = "标签id")
     @NotNull(message = "{3000019}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "tag_rule_id")
     private Long tagRuleId;
 
-    @ApiModelProperty(value = "用户id")
+    @Schema(description = "用户id")
     @NotNull(message = "{2000053}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "user_id")
     private Long userId;

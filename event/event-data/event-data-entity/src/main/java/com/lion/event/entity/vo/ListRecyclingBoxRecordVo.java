@@ -3,8 +3,8 @@ package com.lion.event.entity.vo;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
 import com.lion.event.entity.RecyclingBoxRecord;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 /**
@@ -13,12 +13,12 @@ import lombok.Data;
  * @time: 2021/6/16 下午3:11
  */
 @Data
-@ApiModel
+@Schema
 public class ListRecyclingBoxRecordVo extends RecyclingBoxRecord {
 
-    @ApiModelProperty(value = "tag用途")
+    @Schema(description = "tag用途")
     private TagPurpose tagPurpose;
 
-    @ApiModelProperty(value = "tag类型")
+    @Schema(description = "tag类型")
     private TagType tagType;
 }

@@ -71,7 +71,7 @@ public class UserWashServiceImpl implements UserWashService {
         if (Objects.isNull(userCurrentRegionDto)){
             return;
         }
-
+        userWashEevent(user,monitor,star,tag , deviceDataDto, userCurrentRegionDto);
         //判断是否从X区域进入X区域，如果是就进行新的洗手事件监控
         if ( Objects.nonNull(userCurrentRegionDto) && userCurrentRegionDto.getCurrentRegionEvent()==1 && !Objects.equals(userCurrentRegionDto.getRegionId(),userCurrentRegionDto.getPreviousRegionId())) {
             Region region = redisUtil.getRegionById(userCurrentRegionDto.getRegionId());
@@ -114,7 +114,7 @@ public class UserWashServiceImpl implements UserWashService {
 //            }
         }
 
-        userWashEevent(user,monitor,star,tag , deviceDataDto, userCurrentRegionDto);
+
     }
 
     /**

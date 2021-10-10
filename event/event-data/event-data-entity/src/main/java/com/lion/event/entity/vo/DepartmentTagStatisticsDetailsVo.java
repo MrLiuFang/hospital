@@ -2,8 +2,8 @@ package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.device.entity.tag.Tag;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -16,56 +16,56 @@ import java.util.List;
  * @time: 2021/5/22 上午10:44
  */
 @Data
-@ApiModel
+@Schema
 public class DepartmentTagStatisticsDetailsVo {
 
-    @ApiModelProperty(value = "标签总数")
+    @Schema(description = "标签总数")
     private Integer tagCount = 0;
 
-    @ApiModelProperty(value = "正常标签总数")
+    @Schema(description = "正常标签总数")
     private Integer normalTagCount= 0;
 
-    @ApiModelProperty(value = "异常标签总数")
+    @Schema(description = "异常标签总数")
     private Integer abnormalTagCount= 0;
 
-    @ApiModelProperty(value = "部门信息")
+    @Schema(description = "部门信息")
     private List<TagDepartmentVo> tagDepartmentVos;
 
-    @ApiModel
+    @Schema
     @Data
     public static class TagDepartmentVo {
 
-        @ApiModelProperty(value = "科室id")
+        @Schema(description = "科室id")
         private Long departmentId;
 
-        @ApiModelProperty(value = "科室名称")
+        @Schema(description = "科室名称")
         private String departmentName;
 
-        @ApiModelProperty(value = "标签信息")
+        @Schema(description = "标签信息")
         private List<DepartmentTagStatisticsDetailsVo.TagVo> tagVos;
     }
 
-    @ApiModel
+    @Schema
     @Data
     public static class TagVo extends Tag {
 
-        @ApiModelProperty(value = "上次温度")
+        @Schema(description = "上次温度")
         private BigDecimal previousTemperature;
 
-        @ApiModelProperty(value = "上次湿度")
+        @Schema(description = "上次湿度")
         private BigDecimal previousHumidity;
 
-        @ApiModelProperty(value = "当前温度")
+        @Schema(description = "当前温度")
         private BigDecimal temperature;
 
-        @ApiModelProperty(value = "当前湿度")
+        @Schema(description = "当前湿度")
         private BigDecimal humidity;
 
-        @ApiModelProperty(value = "数据记录时间")
+        @Schema(description = "数据记录时间")
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime dataDateTime;
 
-        @ApiModelProperty(value = "上次数据记录时间")
+        @Schema(description = "上次数据记录时间")
         @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
         private LocalDateTime previousDataDateTime;
     }

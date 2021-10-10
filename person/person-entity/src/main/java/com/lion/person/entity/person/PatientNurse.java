@@ -2,8 +2,8 @@ package com.lion.person.entity.person;
 
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -27,16 +27,16 @@ import java.io.Serializable;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "患者负责的护士")
+@Schema(description = "患者负责的护士")
 public class PatientNurse extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -5151149865866950108L;
-    @ApiModelProperty(value = "患者ID")
+    @Schema(description = "患者ID")
     @Column(name = "patient_id")
     @NotNull(message = "{1000005}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long patientId;
 
-    @ApiModelProperty(value = "负责护士")
+    @Schema(description = "负责护士")
     @Column(name = "nurse_id")
     @NotNull(message = "{1000008}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long nurseId;

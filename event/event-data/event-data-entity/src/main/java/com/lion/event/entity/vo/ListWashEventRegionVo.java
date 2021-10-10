@@ -1,8 +1,8 @@
 package com.lion.event.entity.vo;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -13,21 +13,21 @@ import java.math.BigDecimal;
  * @time: 2021/6/7 下午2:23
  */
 @Data
-@ApiModel
+@Schema
 public class ListWashEventRegionVo {
 
-    @ApiModelProperty(value = "区域id")
+    @Schema(description = "区域id")
     private Long regionId;
 
-    @ApiModelProperty(value = "区域名称")
+    @Schema(description = "区域名称")
     private String regionName;
 
-    @ApiModelProperty(value = "科室名称")
+    @Schema(description = "科室名称")
     private String departmentName;
 
-    @ApiModelProperty(value = "设备数量")
+    @Schema(description = "设备数量")
     private Integer deviceCount = 0;
 
-    @ApiModelProperty(value = "合规率")
+    @Schema(description = "合规率")
     private BigDecimal ratio;
 }

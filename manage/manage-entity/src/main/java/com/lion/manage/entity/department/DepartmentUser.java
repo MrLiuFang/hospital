@@ -2,8 +2,8 @@ package com.lion.manage.entity.department;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -28,7 +28,7 @@ import java.io.Serializable;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "科室用户关联")
+@Schema(description = "科室用户关联")
 public class DepartmentUser extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -3932412863865447235L;

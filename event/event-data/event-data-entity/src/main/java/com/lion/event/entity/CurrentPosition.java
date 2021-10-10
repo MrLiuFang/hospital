@@ -1,6 +1,6 @@
 package com.lion.event.entity;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,7 +13,7 @@ import java.io.Serializable;
  **/
 @Data
 @Document(value = "current_position")
-@ApiModel
+@Schema
 public class CurrentPosition extends Position implements Serializable {
 
     private static final long serialVersionUID = 1210769701993214844L;

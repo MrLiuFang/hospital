@@ -134,26 +134,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
     @GetMapping("/details")
     @ApiOperation(value = "设备详情")
     public IResultData<DetailsDeviceVo> details(@ApiParam(value = "设备id") @NotNull(message = "{0000000}") Long id){
-        ResultData resultData = ResultData.instance();
-        Device device = deviceService.findById(id);
-        DetailsDeviceVo detailsDeviceVo = new DetailsDeviceVo();
-        BeanUtils.copyProperties(device,detailsDeviceVo);
-        if (Objects.nonNull(device.getBuildId())){
-            Build build = buildExposeService.findById(device.getBuildId());
-            if (Objects.nonNull(build)){
-                detailsDeviceVo.setBuildName(build.getName());
-            }
-        }
-        if (Objects.nonNull(device.getBuildFloorId())){
-            BuildFloor buildFloor = buildFloorExposeService.findById(device.getBuildFloorId());
-            if (Objects.nonNull(buildFloor)){
-                detailsDeviceVo.setBuildFloorName(buildFloor.getName());
-                detailsDeviceVo.setMapUrl(buildFloor.getMapUrl());
-            }
-        }
-        detailsDeviceVo.setImgUrl(fileExposeService.getUrl(device.getImg()));
-        resultData.setData(detailsDeviceVo);
-        return resultData;
+        return ResultData.instance().setData(deviceService.details(id));
     }
 
     @ApiOperation(value = "删除设备")

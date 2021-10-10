@@ -1,7 +1,7 @@
 package com.lion.manage.entity.assets.vo;
 
 import com.lion.manage.entity.rule.WashTemplateItem;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -10,7 +10,7 @@ import lombok.Data;
  * @createDateTime 2021/9/7 上午11:34
  */
 @Data
-@ApiModel
+@Schema
 public class ListWashTemplateItemVo extends WashTemplateItem {
 
 

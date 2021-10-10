@@ -6,8 +6,8 @@ import com.lion.core.persistence.Validator;
 import com.lion.event.entity.CurrentPosition;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.person.entity.person.Patient;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -21,89 +21,89 @@ import java.util.List;
  * @time: 2021/6/3 下午2:16
  */
 @Data
-@ApiModel
+@Schema
 @JsonIgnoreProperties(
         ignoreUnknown = true,
         value = { "updateDateTime", "createUserId", "updateUserId"}
 )
 public class PatientDetailsVo extends Patient {
 
-    @ApiModelProperty(value = "最后为值（当前位置）")
+    @Schema(description = "最后为值（当前位置）")
     private CurrentRegionVo currentRegionVo;
 
-    @ApiModelProperty(value = "患者头像")
+    @Schema(description = "患者头像")
     private String headPortraitUrl;
 
-    @ApiModelProperty(value = "负责护士")
+    @Schema(description = "负责护士")
     private List<PatientDetailsVo.NurseVo> nurseVos;
 
-    @ApiModelProperty(value = "负责医生")
+    @Schema(description = "负责医生")
     private List<PatientDetailsVo.DoctorVo> doctorVos;
 
-//    @ApiModelProperty(value = "限制区域")
+//    @Schema(description = "限制区域")
 //    private List<RestrictedAreaVo> restrictedAreaVos;
 
-    @ApiModelProperty(value = "床位")
+    @Schema(description = "床位")
     private String bedCode;
 
-    @ApiModelProperty(value = "标签电量")
+    @Schema(description = "标签电量")
     private Integer battery;
 
-    @ApiModelProperty(value = "警告")
+    @Schema(description = "警告")
     private String alarm;
 
-    @ApiModelProperty(value = "警告编码")
+    @Schema(description = "警告编码")
     private SystemAlarmType alarmType;
 
-    @ApiModelProperty(value = "警告时间")
+    @Schema(description = "警告时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime alarmDataTime;
 
-    @ApiModelProperty(value = "警告id")
+    @Schema(description = "警告id")
     private String alarmId;
 
-    @ApiModelProperty(value = "汇报时间")
+    @Schema(description = "汇报时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime reportDataTime;
 
-    @ApiModelProperty(value = "汇报内容")
+    @Schema(description = "汇报内容")
     private String reportContent;
 
-    @ApiModelProperty(value = "汇报员工ID")
+    @Schema(description = "汇报员工ID")
     private Long reportUserId;
 
-    @ApiModelProperty(value = "汇报员工姓名")
+    @Schema(description = "汇报员工姓名")
     private String reportUserName;
 
-    @ApiModelProperty(value = "汇报员工头像")
+    @Schema(description = "汇报员工头像")
     private Long reportUserHeadPortrait;
 
-    @ApiModelProperty(value = "汇报员工头像url")
+    @Schema(description = "汇报员工头像url")
     private String reportUserHeadPortraitUrl;
 
     @Data
-    @ApiModel
+    @Schema
     public static class DoctorVo {
-        @ApiModelProperty(value = "负责医生姓名")
+        @Schema(description = "负责医生姓名")
         private String doctorName;
 
-        @ApiModelProperty(value = "负责医生头像（文件id）")
+        @Schema(description = "负责医生头像（文件id）")
         private Long doctorHeadPortrait;
 
-        @ApiModelProperty(value = "负责医生头像")
+        @Schema(description = "负责医生头像")
         private String doctorHeadPortraitUrl;
     }
 
     @Data
-    @ApiModel
+    @Schema
     public static class NurseVo {
-        @ApiModelProperty(value = "负责护士姓名")
+        @Schema(description = "负责护士姓名")
         private String nurseName;
 
-        @ApiModelProperty(value = "负责护士头像（文件id）")
+        @Schema(description = "负责护士头像（文件id）")
         private Long nurseHeadPortrait;
 
-        @ApiModelProperty(value = "负责护士头像")
+        @Schema(description = "负责护士头像")
         private String nurseHeadPortraitUrl;
     }
 }

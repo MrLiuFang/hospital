@@ -2,8 +2,8 @@ package com.lion.device.entity.device.vo;
 
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.State;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 /**
@@ -12,40 +12,40 @@ import lombok.Data;
  * @time: 2021/5/27 上午10:59
  */
 @Data
-@ApiModel
+@Schema
 public class ListDeviceMonitorVo {
 
-    @ApiModelProperty(value = "设备名称")
+    @Schema(description = "设备名称")
     private String name;
 
-    @ApiModelProperty(value = "设备图片")
+    @Schema(description = "设备图片")
     private Long img;
 
-    @ApiModelProperty(value = "设备图片")
+    @Schema(description = "设备图片")
     private String imgUrl;
 
-    @ApiModelProperty(value = "设备类型")
+    @Schema(description = "设备类型")
     private DeviceClassify classify;
 
-    @ApiModelProperty(value = "科室名称")
+    @Schema(description = "科室名称")
     private String departmentName;
 
-    @ApiModelProperty(value = "设备编码")
+    @Schema(description = "设备编码")
     private String code;
 
-    @ApiModelProperty(value = "建筑id(安装位置)")
+    @Schema(description = "建筑id(安装位置)")
     private String buildName;
 
-    @ApiModelProperty(value = "楼层id(安装位置)")
+    @Schema(description = "楼层id(安装位置)")
     private String buildFloorName;
 
-    @ApiModelProperty(value = "状态")
+    @Schema(description = "状态")
     private State state;
 
-    @ApiModelProperty(value = "是否在线")
+    @Schema(description = "是否在线")
     private Boolean isOnline =false;
 
-    @ApiModelProperty(value = "电量")
+    @Schema(description = "电量")
     private Integer battery;
 
 }

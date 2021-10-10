@@ -167,6 +167,25 @@ public class RedisUtil {
         return temporaryPerson;
     }
 
+    public Type getTagBindType(Long tagId) {
+        Type type = (Type) redisTemplate.opsForValue().get(RedisConstants.TAG_BIND_TYPE+tagId);
+        if (Objects.isNull(type)) {
+            if (Objects.nonNull(getUser(tagId))) {
+                type = Type.STAFF;
+            }else if (Objects.nonNull(getPatientByTagId(tagId))) {
+                type = Type.PATIENT;
+            }else if (Objects.nonNull(getTemporaryPersonByTagId(tagId))) {
+                type = Type.MIGRANT;
+            }else if (Objects.nonNull(getAssets(tagId))) {
+                type = Type.ASSET;
+            }
+        }
+        if (Objects.nonNull(type)) {
+            redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, type, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        }
+        return type;
+    }
+
     public TemporaryPerson getTemporaryPersonByTagId(Long tagId) {
         if (Objects.isNull(tagId)){
             return null;
@@ -801,6 +820,9 @@ public class RedisUtil {
 //    }
 
     public ListWashTemplateItemVo getWashTemplate(Long washTemplateId) {
+        if (Objects.isNull(washTemplateId)) {
+            return null;
+        }
         Object obj = redisTemplate.opsForValue().get(RedisConstants.WASH_TEMPLATE+ washTemplateId);
         DetailsWashTemplateVo detailsWashTemplateVo = null;
         if (!(obj instanceof DetailsWashTemplateVo)) {
@@ -810,6 +832,12 @@ public class RedisUtil {
         }
         if (Objects.isNull(detailsWashTemplateVo)) {
             WashTemplate washTemplate = washTemplateExposeService.findById(washTemplateId);
+            if (Objects.isNull(washTemplate)) {
+                return null;
+            }
+            if (Objects.isNull(detailsWashTemplateVo)) {
+                detailsWashTemplateVo = new DetailsWashTemplateVo();
+            }
             BeanUtils.copyProperties(washTemplate,detailsWashTemplateVo);
             List<WashTemplateItem> list = washTemplateItemExposeService.findByWashTemplateId(washTemplate.getId());
             List<ListWashTemplateItemVo> listWashTemplateItemVos = new ArrayList<ListWashTemplateItemVo>();
@@ -833,11 +861,11 @@ public class RedisUtil {
         listWashTemplateItemVos.forEach(listWashTemplateItemVo -> {
             if (Objects.equals(finalAlarmMode, AlarmMode.URGENT) && Objects.equals(true, listWashTemplateItemVo.getIsUrgent())) {
                 washTemplateItemVo.set(listWashTemplateItemVo);
-            } else if (Objects.equals(finalAlarmMode, AlarmMode.STANDARD) && Objects.equals(false, listWashTemplateItemVo.getIsUrgent())) {
+            } else if (Objects.equals(finalAlarmMode, AlarmMode.STANDARD) && (Objects.equals(false, listWashTemplateItemVo.getIsUrgent()) || Objects.isNull(listWashTemplateItemVo.getIsUrgent() ))) {
                 washTemplateItemVo.set(listWashTemplateItemVo);
             }
         });
-        redisTemplate.opsForValue().set(RedisConstants.WASH_TEMPLATE,detailsWashTemplateVo,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.WASH_TEMPLATE+washTemplateId,detailsWashTemplateVo,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
         return washTemplateItemVo.get();
     }
 

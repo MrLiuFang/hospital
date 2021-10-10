@@ -8,8 +8,9 @@ import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.tag.Tag;
 import com.lion.manage.entity.assets.vo.DetailsAssetsVo;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.util.List;
@@ -20,40 +21,46 @@ import java.util.List;
  * @time: 2021/6/20 下午2:17
  */
 @Data
-@ApiModel
-public class DepartmentDeviceGroupStatisticsDetailsVo {
+@Schema
+public class DepartmentDeviceStatisticsDetailsVo {
 
-//    @ApiModelProperty(value = "设备组总数")
+//    @Schema(description = "设备组总数")
 //    private Integer deviceGroupCount = 0;
 
-    @ApiModelProperty(value = "正常设备总数")
+    @Schema(description = "正常设备总数")
     private Integer normalDeviceCount = 0;
 
-    @ApiModelProperty(value = "异常设备总数")
+    @Schema(description = "异常设备总数")
     private Integer abnormalDeviceCount= 0;
 
-//    @ApiModelProperty(value = "设备组")
+//    @Schema(description = "设备组")
 //    private List<DeviceGroupDetailsVo> deviceGroupDetailsVos;
 
-    @ApiModelProperty(value = "科室")
+    @Schema(description = "科室")
     private List<DepartmentDeviceDetailsVo> departmentDeviceDetailsVos;
 
 //    @Data
-//    @ApiModel
+//    @Schema
 //    public static class DeviceGroupDetailsVo {
 //
-//        @ApiModelProperty(value = "设备组名称")
+//        @Schema(description = "设备组名称")
 //        private String name;
 //
-//        @ApiModelProperty(value = "设备")
+//        @Schema(description = "设备")
 //        private List<DetailsDeviceVo> detailsDeviceVos;
 //    }
 
     @Data
-    @ApiModel
+    @Schema
     public static class DepartmentDeviceDetailsVo {
 
-        @ApiModelProperty(value = "设备")
+        @Schema(name = "科室名称")
+        private String departmentName;
+
+        @Schema(name = "科室ID")
+        private Long departmentId;
+
+        @Schema(name = "设备")
         private List<DetailsDeviceVo> detailsDeviceVos;
     }
 }

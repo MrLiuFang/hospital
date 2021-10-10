@@ -2,7 +2,7 @@ package com.lion.person.entity.person;
 
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.person.entity.enums.ConfigureType;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -23,7 +23,7 @@ import java.io.Serializable;
 @Table(name = "t_person_field_configure")
 @DynamicInsert
 @Data
-@ApiModel(description = "患者自定义字段")
+@Schema(description = "患者自定义字段")
 public class PersonFieldConfigure extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -3693905501287233798L;

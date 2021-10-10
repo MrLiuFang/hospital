@@ -3,8 +3,8 @@ package com.lion.person.entity.person;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -29,7 +29,7 @@ import java.io.Serializable;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "患者医护汇报")
+@Schema(description = "患者医护汇报")
 @JsonIgnoreProperties(
         ignoreUnknown = true,
         value = { "updateDateTime", "createUserId", "updateUserId"}
@@ -37,17 +37,17 @@ import java.io.Serializable;
 public class PatientReport extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -5482937945633708331L;
-    @ApiModelProperty(value = "患者ID")
+    @Schema(description = "患者ID")
     @Column(name = "patient_id")
     @NotNull(message = "{1000005}",groups = {Validator.Update.class, Validator.Insert.class})
     private Long patientId;
 
-    @ApiModelProperty(value = "汇报内容")
+    @Schema(description = "汇报内容")
     @Column(name = "content")
     @NotBlank(message = "{1000009}",groups = {Validator.Update.class, Validator.Insert.class})
     private String content;
 
-    @ApiModelProperty(value = "汇报员工ID")
+    @Schema(description = "汇报员工ID")
     @Column(name = "report_user_id")
     private Long reportUserId;
 }

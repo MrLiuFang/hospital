@@ -2,7 +2,7 @@ package com.lion.upms.entity.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.upms.entity.user.UserType;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -11,7 +11,7 @@ import lombok.Data;
  * @createDateTime 2021/9/6 下午2:52
  */
 @Data
-@ApiModel
+@Schema
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"id","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class AddUserTypeDto extends UserType {
 }

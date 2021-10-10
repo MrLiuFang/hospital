@@ -3,8 +3,8 @@ package com.lion.manage.entity.alarm;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.upms.entity.enums.AlarmMode;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -25,13 +25,13 @@ import javax.persistence.Table;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "警告模式切换记录")
+@Schema(description = "警告模式切换记录")
 public class AlarmModeRecord extends BaseEntity {
 
-    @ApiModelProperty(name = "切换用户id")
+    @Schema(description = "切换用户id")
     private Long userId;
 
-    @ApiModelProperty(name = "警告模式")
+    @Schema(description = "警告模式")
     @Convert(converter = AlarmMode.AlarmModeConverter.class)
     private AlarmMode alarmMode;
 }

@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.device.entity.enums.*;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -34,75 +34,75 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"lastDataTime","deviceState","createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "标签")
+@Schema(description = "标签")
 public class Tag extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 610297207210388788L;
-    @ApiModelProperty(value = "标签分类")
+    @Schema(description = "标签分类")
     @Convert(converter = TagType.TagTypeConverter.class)
     @NotNull(message = "{4000016}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "type")
     private TagType type;
 
-    @ApiModelProperty(value = "标签用途")
+    @Schema(description = "标签用途")
     @Convert(converter = TagPurpose.TagPurposeConverter.class)
     @NotNull(message = "{4000017}", groups = {Validator.Insert.class})
     @Column(name = "purpose")
     private TagPurpose purpose;
 
-    @ApiModelProperty(value = "标签编码")
+    @Schema(description = "标签编码")
     @NotBlank(message = "{4000018}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "tag_code")
     private String tagCode;
 
-    @ApiModelProperty(value = "所属科室")
+    @Schema(description = "所属科室")
     @Column(name = "department_id")
     @NotNull(message = "{0000009}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long departmentId;
 
-    @ApiModelProperty(value = "设备名称")
+    @Schema(description = "设备名称")
     @Column(name = "device_name")
     private String deviceName;
 
-    @ApiModelProperty(value = "设备编码")
+    @Schema(description = "设备编码")
     @Column(name = "device_code")
     private String deviceCode;
 
-    @ApiModelProperty(value = "最高温度")
+    @Schema(description = "最高温度")
     @Column(name = "max_temperature")
     private BigDecimal maxTemperature;
 
-    @ApiModelProperty(value = "最低温度")
+    @Schema(description = "最低温度")
     @Column(name = "min_temperature")
     private BigDecimal minTemperature;
 
-    @ApiModelProperty(value = "最高湿度")
+    @Schema(description = "最高湿度")
     @Column(name = "max_humidity")
     private BigDecimal maxHumidity;
 
-    @ApiModelProperty(value = "最低湿度")
+    @Schema(description = "最低湿度")
     @Column(name = "min_humidity")
     private BigDecimal minHumidity;
 
-    @ApiModelProperty(value = "电量(0=正常,1=少於90 天,2=少於30天)")
+    @Schema(description = "电量(0=正常,1=少於90 天,2=少於30天)")
     @Column(name = "battery")
     private Integer battery;
 
-    @ApiModelProperty(value = "使用使用状态")
+    @Schema(description = "使用使用状态")
     @Column(name = "use_state")
     private TagUseState useState = TagUseState.NOT_USED;
 
-    @ApiModelProperty(value = "状态")
+    @Schema(description = "状态")
     @Column(name = "state")
     @Convert(converter = TagState.TagStateConverter.class)
     private TagState state = TagState.NORMAL;
 
-    @ApiModelProperty(value = "设备状态")
+    @Schema(description = "设备状态")
     @Column(name = "device_state")
     @Convert(converter = com.lion.device.entity.enums.State.StateConverter.class)
     private com.lion.device.entity.enums.State deviceState = State.NORMAL;
 
-    @ApiModelProperty(value = "最后的设备数据时间")
+    @Schema(description = "最后的设备数据时间")
     @Column(name = "last_data_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastDataTime;

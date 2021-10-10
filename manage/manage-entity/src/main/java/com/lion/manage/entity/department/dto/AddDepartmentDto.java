@@ -2,8 +2,8 @@ package com.lion.manage.entity.department.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.manage.entity.department.Department;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.util.List;
@@ -14,10 +14,10 @@ import java.util.List;
  * @date 2021/3/23下午2:35
  */
 @Data
-@ApiModel
+@Schema
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"id","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class AddDepartmentDto extends Department {
 
-    @ApiModelProperty(value = "负责人ID")
+    @Schema(description = "负责人ID")
     private List<Long> responsible;
 }

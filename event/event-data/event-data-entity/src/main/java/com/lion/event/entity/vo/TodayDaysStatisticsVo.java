@@ -1,7 +1,7 @@
 package com.lion.event.entity.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,24 +12,24 @@ import lombok.Data;
  **/
 @Data
 @Builder
-@ApiModel
+@Schema
 public class TodayDaysStatisticsVo {
 
-    @ApiModelProperty(value = "警报总数")
+    @Schema(description = "警报总数")
     private int total;
 
-    @ApiModelProperty(value = "患者数量")
+    @Schema(description = "患者数量")
     private int patientCount;
 
-    @ApiModelProperty(value = "流动人员数量")
+    @Schema(description = "流动人员数量")
     private int temporaryPersonCount;
 
-    @ApiModelProperty(value = "职员数量")
+    @Schema(description = "职员数量")
     private int staffCount;
 
-    @ApiModelProperty(value = "资产数量")
+    @Schema(description = "资产数量")
     private int assetsCount;
 
-    @ApiModelProperty(value = "温湿数量")
+    @Schema(description = "温湿数量")
     private int humidCount;
 }

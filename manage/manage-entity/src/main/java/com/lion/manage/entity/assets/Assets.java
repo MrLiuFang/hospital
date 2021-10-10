@@ -6,8 +6,8 @@ import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.enums.State;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -34,71 +34,71 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "资产")
+@Schema(description = "资产")
 public class Assets extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 2129036984572348881L;
-    @ApiModelProperty(value = "资产名称")
+    @Schema(description = "资产名称")
     @Column(name = "name")
     @NotBlank(message = "{2000000}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
-    @ApiModelProperty(value = "资产编号")
+    @Schema(description = "资产编号")
     @Column(name = "code")
     @NotBlank(message = "{2000001}", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 
-    @ApiModelProperty(value = "资产分类")
+    @Schema(description = "资产分类")
     @Column(name = "assets_type_id")
 //    @Convert(converter = AssetsType.AssetsTypeConverter.class)
 //    @NotNull(message = "{2000002}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long assetsTypeId;
 
-    @ApiModelProperty(value = "所属区域")
+    @Schema(description = "所属区域")
     @Column(name = "region_id")
     @NotNull(message = "{2000003}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long regionId;
 
-    @ApiModelProperty(value = "所属建筑")
+    @Schema(description = "所属建筑")
     @Column(name = "build_id")
 //    @NotNull(message = "所属建筑不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long buildId;
 
-    @ApiModelProperty(value = "所属建筑楼层")
+    @Schema(description = "所属建筑楼层")
     @Column(name = "build_floor_id")
 //    @NotNull(message = "所属建筑楼层不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long buildFloorId;
 
-    @ApiModelProperty(value = "所属科室")
+    @Schema(description = "所属科室")
     @Column(name = "department_id")
 //    @NotNull(message = "所属科室不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long departmentId;
 
-    @ApiModelProperty(value = "使用状态")
+    @Schema(description = "使用状态")
     @Column(name = "use_state")
     @Convert(converter = AssetsUseState.AssetsUseStateConverter.class)
 //    @NotNull(message = "使用状态不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private AssetsUseState useState = AssetsUseState.NOT_USED;
 
-    @ApiModelProperty(value = "是否需要使用登记")
+    @Schema(description = "是否需要使用登记")
     @Column(name = "use_registration")
     @NotNull(message = "{2000004}", groups = {Validator.Insert.class, Validator.Update.class})
     private Boolean useRegistration;
 
-    @ApiModelProperty(value = "图片")
+    @Schema(description = "图片")
     @Column(name = "img")
     private Long img;
 
-    @ApiModelProperty(value = "备注")
+    @Schema(description = "备注")
     @Column(name = "remarks")
     private String remarks;
 
-    @ApiModelProperty(value = "设备状态")
+    @Schema(description = "设备状态")
     @Column(name = "device_state")
     @Convert(converter = com.lion.manage.entity.enums.State.StateConverter.class)
     private com.lion.manage.entity.enums.State deviceState = State.NORMAL;
 
-    @ApiModelProperty(value = "最后的设备数据时间")
+    @Schema(description = "最后的设备数据时间")
     @Column(name = "last_data_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastDataTime;

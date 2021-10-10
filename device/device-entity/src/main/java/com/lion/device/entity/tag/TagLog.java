@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.device.entity.enums.TagLogContent;
 import com.lion.device.entity.enums.TagState;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -25,19 +25,19 @@ import java.io.Serializable;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "标签日志")
+@Schema(description = "标签日志")
 public class TagLog extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 8039008614074904670L;
-    @ApiModelProperty(value = "标签id")
+    @Schema(description = "标签id")
     @Column(name = "tag_id")
     private Long tagId;
 
-    @ApiModelProperty(value = "操作人id")
+    @Schema(description = "操作人id")
     @Column(name = "user_id")
     private Long userId;
 
-    @ApiModelProperty(value = "操作内容")
+    @Schema(description = "操作内容")
     @Column(name = "content")
     @Convert(converter = TagLogContent.TagLogContentConverter.class)
     private TagLogContent content;

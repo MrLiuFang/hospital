@@ -2,8 +2,8 @@ package com.lion.upms.entity.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.upms.entity.user.User;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -16,18 +16,18 @@ import javax.persistence.Column;
  * @date 2021/3/31上午9:32
  */
 @Data
-@ApiModel
+@Schema
 public class UpdateCurrentUserDto{
 
-    @ApiModelProperty(value = "头像（文件id）")
+    @Schema(description = "头像（文件id）")
     private Long headPortrait;
 
-    @ApiModelProperty(value = "姓名")
+    @Schema(description = "姓名")
     private String name;
 
-    @ApiModelProperty(value = "新密码（md5密码)")
+    @Schema(description = "新密码（md5密码)")
     private String newPassword;
 
-    @ApiModelProperty(value = "旧密码（md5密码)")
+    @Schema(description = "旧密码（md5密码)")
     private String oldPassword;
 }

@@ -207,7 +207,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @GetMapping("/department/statistics/details")
     @ApiOperation(value = "地图监控科室统计(左边列表)")
     public IResultData<DepartmentStatisticsDetailsVo> departmentStatisticsDetails(@ApiParam("科室ID") Long departmentId) {
-        return ResultData.instance().setData(mapStatisticsService.departmentStatisticsDetails(departmentId));
+        return ResultData.instance().setData(mapStatisticsService.departmentStatisticsDetails(departmentId ));
     }
 
     @GetMapping("/region/statistics/details1")
@@ -246,10 +246,10 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return ResultData.instance().setData(mapStatisticsService.departmentTemporaryPersonStatisticsDetails(name, regionId));
     }
 
-    @GetMapping("/department/device/group/statistics/details")
+    @GetMapping("/department/device/statistics/details")
     @ApiOperation(value = "地图监控监控器列表(左边列表)")
-    public IResultData<DepartmentDeviceGroupStatisticsDetailsVo> departmentDeviceGroupStatisticsDetails(@ApiParam(value = "设备名称/编号") String keyword,@ApiParam(value = "区域id") Long regionId){
-        return ResultData.instance().setData(mapStatisticsService.departmentDeviceGroupStatisticsDetails(keyword, regionId));
+    public IResultData<DepartmentDeviceStatisticsDetailsVo> departmentDeviceGroupStatisticsDetails(@ApiParam(value = "设备名称/编号") String keyword, @ApiParam(value = "区域id") Long regionId){
+        return ResultData.instance().setData(mapStatisticsService.departmentDeviceStatisticsDetails(keyword, regionId));
     }
 
     @GetMapping("/patient/details")

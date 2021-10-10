@@ -1,6 +1,6 @@
 package com.lion.common.dto;
 
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
  * @time: 2021/6/8 上午10:57
  */
 @Data
-@ApiModel
+@Schema
 public class TempLeaveMonitorDto implements Serializable {
 
     private static final long serialVersionUID = 3832909425985165822L;

@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.core.persistence.Validator;
 import com.lion.person.entity.enums.Gender;
 import com.lion.person.entity.person.TempLeave;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -21,46 +21,46 @@ import java.time.LocalDate;
  * @time: 2021/5/26 上午9:47
  */
 @Data
-@ApiModel
+@Schema
 public class ListTempLeaveVo extends TempLeave {
 
-    @ApiModelProperty(value = "性别")
+    @Schema(description = "性别")
     private Gender gender;
 
-    @ApiModelProperty(value = "年龄")
+    @Schema(description = "年龄")
     private Integer age;
 
-    @ApiModelProperty(value = "出生日期")
+    @Schema(description = "出生日期")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate birthday;
 
-    @ApiModelProperty(value = "疾病")
+    @Schema(description = "疾病")
     private String disease;
 
-    @ApiModelProperty(value = "病历号")
+    @Schema(description = "病历号")
     private String medicalRecordNo;
 
-    @ApiModelProperty(value = "标签码")
+    @Schema(description = "标签码")
     private String tagCode;
 
-    @ApiModelProperty(value = "科室名称")
+    @Schema(description = "科室名称")
     private String departmentName;
 
-    @ApiModelProperty(value = "患者名字")
+    @Schema(description = "患者名字")
     private String patientName;
 
-    @ApiModelProperty(value = "患者头像（文件id）")
+    @Schema(description = "患者头像（文件id）")
     private Long headPortrait;
 
-    @ApiModelProperty(value = "患者头像")
+    @Schema(description = "患者头像")
     private String headPortraitUrl;
 
-    @ApiModelProperty(value = "登记人姓名")
+    @Schema(description = "登记人姓名")
     private String userName;
 
-    @ApiModelProperty(value = "登记人头像（文件id）")
+    @Schema(description = "登记人头像（文件id）")
     private Long userHeadPortrait;
 
-    @ApiModelProperty(value = "登记人头像")
+    @Schema(description = "登记人头像")
     private String userHeadPortraitUrl;
 }

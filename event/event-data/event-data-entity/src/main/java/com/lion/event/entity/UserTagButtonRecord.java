@@ -1,8 +1,8 @@
 package com.lion.event.entity;
 
 import com.lion.common.dto.UserTagButtonRecordDto;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -16,13 +16,13 @@ import java.io.Serializable;
  */
 @Data
 @Document(value = "user_tag_button_record")
-@ApiModel
+@Schema
 public class UserTagButtonRecord extends UserTagButtonRecordDto implements Serializable {
 
     private static final long serialVersionUID = -8445564254600194613L;
     @Id
     private String _id;
 
-    @ApiModelProperty(value = "员工姓名")
+    @Schema(description = "员工姓名")
     private String n;
 }

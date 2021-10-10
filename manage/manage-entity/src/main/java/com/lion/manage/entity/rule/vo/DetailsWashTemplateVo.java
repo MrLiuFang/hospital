@@ -1,8 +1,8 @@
 package com.lion.manage.entity.rule.vo;
 
 import com.lion.manage.entity.rule.WashTemplate;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.util.List;
@@ -13,9 +13,9 @@ import java.util.List;
  * @createDateTime 2021/9/7 上午11:25
  */
 @Data
-@ApiModel
+@Schema
 public class DetailsWashTemplateVo extends WashTemplate {
 
-    @ApiModelProperty(value = "规则项")
+    @Schema(description = "规则项")
     List<ListWashTemplateItemVo> listWashTemplateItemVos;
 }

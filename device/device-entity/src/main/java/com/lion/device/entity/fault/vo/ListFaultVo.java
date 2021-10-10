@@ -1,8 +1,8 @@
 package com.lion.device.entity.fault.vo;
 
 import com.lion.device.entity.fault.Fault;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -13,6 +13,6 @@ import javax.persistence.Column;
  * @time: 2021/5/24 上午9:57
  */
 @Data
-@ApiModel
+@Schema
 public class ListFaultVo extends FaultDetailsVo {
 }

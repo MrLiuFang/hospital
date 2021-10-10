@@ -2,7 +2,7 @@ package com.lion.upms.entity.role;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -26,7 +26,7 @@ import java.io.Serializable;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "角色与用户关联表")
+@Schema(description = "角色与用户关联表")
 public class RoleUser extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -471663775678035086L;

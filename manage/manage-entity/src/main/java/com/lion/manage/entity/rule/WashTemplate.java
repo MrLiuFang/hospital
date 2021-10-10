@@ -3,8 +3,8 @@ package com.lion.manage.entity.rule;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -27,21 +27,21 @@ import javax.validation.constraints.NotBlank;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "洗手规则模板")
+@Schema(description = "洗手规则模板")
 public class WashTemplate extends BaseEntity {
 
     private static final long serialVersionUID = 6103915473684030413L;
-    @ApiModelProperty(value = "洗手规则模板名称")
+    @Schema(description = "洗手规则模板名称")
     @Column(name = "name")
     @NotBlank(message = "{2000102}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
-    @ApiModelProperty(value = "备注")
+    @Schema(description = "备注")
     private String remark;
 
-    @ApiModelProperty("false=通用模板，true=区域自定义模板（自定义模板在通用模板中不显示）")
+    @Schema(description = "false=通用模板，true=区域自定义模板（自定义模板在通用模板中不显示）")
     private Boolean isCustom=false;
 
-    @ApiModelProperty(value = "是否启用(true=启用，false=停用)")
+    @Schema(description = "是否启用(true=启用，false=停用)")
     private Boolean state = true;
 }

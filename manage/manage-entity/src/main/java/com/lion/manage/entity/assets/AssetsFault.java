@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.manage.entity.enums.AssetsFaultState;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -30,47 +30,47 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "资产故障")
+@Schema(description = "资产故障")
 public class AssetsFault extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 4868910888962338123L;
-    @ApiModelProperty(value = "资产Id")
+    @Schema(description = "资产Id")
     @Column(name = "assets_id",updatable = false)
     @NotNull(message = "{2000005}", groups = {Validator.Insert.class})
     private Long assetsId;
 
-    @ApiModelProperty(value = "故障编码")
+    @Schema(description = "故障编码")
     @Column(name = "code",updatable = false)
     @NotBlank(message = "{2000011}", groups = {Validator.Insert.class})
     private String code;
 
-    @ApiModelProperty(value = "故障描述")
+    @Schema(description = "故障描述")
     @Column(name = "describe" ,updatable = false)
     @NotBlank(message = "{2000012}", groups = {Validator.Insert.class})
     private String describe;
 
-    @ApiModelProperty(value = "申报人")
+    @Schema(description = "申报人")
     @Column(name = "declarant_user_id",updatable = false)
     @NotNull(message = "{2000013}", groups = {Validator.Insert.class})
     private Long declarantUserId;
 
-    @ApiModelProperty(value = "状态")
+    @Schema(description = "状态")
     @Column(name = "state")
     @Convert(converter = AssetsFaultState.AssetsFaultStateConverter.class)
     @NotNull(message = "{2000014}", groups = {Validator.Insert.class, Validator.Update.class})
     private AssetsFaultState state = AssetsFaultState.NOT_FINISHED;
 
-    @ApiModelProperty(value = "申报时间(yyyy-MM-dd HH:mm:ss)")
+    @Schema(description = "申报时间(yyyy-MM-dd HH:mm:ss)")
     @Column(name = "declarant_time",updatable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime declarantTime;
 
-    @ApiModelProperty(value = "完成时间(yyyy-MM-dd HH:mm:ss)")
+    @Schema(description = "完成时间(yyyy-MM-dd HH:mm:ss)")
     @Column(name = "finish_time",insertable = false)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime finishTime;
 
-//    @ApiModelProperty(value = "完成人")
+//    @Schema(description = "完成人")
 //    @Column(name = "finish_user_id",insertable = false)
 //    @NotNull(message = "完成人不能为空", groups = {Validator.Update.class})
 //    private Long finishUserId;

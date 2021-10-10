@@ -3,8 +3,8 @@ package com.lion.upms.entity.user;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -27,23 +27,23 @@ import java.io.Serializable;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "用户类型")
+@Schema(description = "用户类型")
 public class UserType extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 7341159678436570822L;
 
-    @ApiModelProperty(value = "名称")
+    @Schema(description = "名称")
     @NotBlank(message = "{0000022}", groups = {Validator.Insert.class, Validator.Update.class})
     private String userTypeName;
 
-    @ApiModelProperty(value = "备注")
+    @Schema(description = "备注")
     private String remark;
 
-    @ApiModelProperty(value = "病房洗手规则")
+    @Schema(description = "病房洗手规则")
     private Boolean wardRoomWashRule;
 
-    @ApiModelProperty(value = "定时洗手规则")
+    @Schema(description = "定时洗手规则")
     private Boolean loopWashRule;
 
-    @ApiModelProperty(value = "定时洗手规则")
+    @Schema(description = "定时洗手规则")
     private Boolean other;
 }

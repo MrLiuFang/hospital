@@ -1,7 +1,7 @@
 package com.lion.event.entity.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 /**
@@ -10,12 +10,12 @@ import lombok.Data;
  * @time: 2021/6/1 上午10:46
  */
 @Data
-@ApiModel
+@Schema
 public class UnalarmDto {
 
-    @ApiModelProperty(value = "_id")
+    @Schema(description = "_id")
     private String id;
 
-    @ApiModelProperty(value = "uuid")
+    @Schema(description = "uuid")
     private String uuid;
 }

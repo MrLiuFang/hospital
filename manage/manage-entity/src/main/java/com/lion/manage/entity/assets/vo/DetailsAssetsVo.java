@@ -3,8 +3,8 @@ package com.lion.manage.entity.assets.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.SystemAlarmType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -15,56 +15,56 @@ import java.time.LocalDateTime;
  * @date 2021/4/6下午3:40
  */
 @Data
-@ApiModel
+@Schema
 public class DetailsAssetsVo extends Assets {
 
-    @ApiModelProperty(value = "位置")
+    @Schema(description = "位置")
     private String position;
 
-    @ApiModelProperty(value = "故障申报记录-最后一次")
+    @Schema(description = "故障申报记录-最后一次")
     private DetailsAssetsFaultVo assetsFault;
 
-    @ApiModelProperty(value = "警告")
+    @Schema(description = "警告")
     private String alarm;
 
-    @ApiModelProperty(value = "警告编码")
+    @Schema(description = "警告编码")
     private SystemAlarmType alarmType;
 
-    @ApiModelProperty(value = "警告时间")
+    @Schema(description = "警告时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime alarmDataTime;
 
-    @ApiModelProperty(value = "警报ID")
+    @Schema(description = "警报ID")
     private String alarmId;
 
-    @ApiModelProperty(value = "借用总次数")
+    @Schema(description = "借用总次数")
     private Integer borrowCount;
 
-    @ApiModelProperty(value = "故障总次数")
+    @Schema(description = "故障总次数")
     private Integer faultCount;
 
-    @ApiModelProperty(value = "图片Url")
+    @Schema(description = "图片Url")
     private String imgUrl;
 
-    @ApiModelProperty(value = "所属科室名称")
+    @Schema(description = "所属科室名称")
     private String departmentName;
 
-    @ApiModelProperty(value = "所属区域名称")
+    @Schema(description = "所属区域名称")
     private String regionName;
 
-    @ApiModelProperty(value = "所属建筑名称")
+    @Schema(description = "所属建筑名称")
     private String buildName;
 
-    @ApiModelProperty(value = "所属建筑楼层名称")
+    @Schema(description = "所属建筑楼层名称")
     private String buildFloorName;
 
-    @ApiModelProperty(value = "标签编码")
+    @Schema(description = "标签编码")
     private String tagCode;
 
-    @ApiModelProperty(value = "标签Id")
+    @Schema(description = "标签Id")
     private Long tagId;
 
-    @ApiModelProperty(value = "最后一此借用")
+    @Schema(description = "最后一此借用")
     private DetailsAssetsBorrowVo detailsAssetsBorrowVo;
 
 

@@ -12,6 +12,8 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.RedisUtil;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.device.entity.device.Device;
+import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
@@ -218,6 +220,16 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         List<RegionStatisticsDetails> returnList = new ArrayList<>();
         map.forEach((key,value) ->{
             returnList.add(value);
+        });
+        LocalDateTime startDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        LocalDateTime endDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
+        returnList.forEach(regionStatisticsDetails -> {
+            Long regionId = regionStatisticsDetails.getRegionId();
+            regionStatisticsDetails.setCctvCount(regionCctvExposeService.count(regionId));
+            regionStatisticsDetails.setTodayAssetsCount(positionService.count(Type.ASSET,regionId,startDateTime,endDateTime));
+            regionStatisticsDetails.setTodayMigrantCount(positionService.count(Type.MIGRANT,regionId,startDateTime,endDateTime));
+            regionStatisticsDetails.setTodayStaffCount(positionService.count(Type.STAFF,regionId,startDateTime,endDateTime));
+            regionStatisticsDetails.setTodayPatientCount(positionService.count(Type.PATIENT,regionId,startDateTime,endDateTime));
         });
         return returnList;
     }
@@ -546,15 +558,29 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetails(String keyword, Long regionId) {
+    public DepartmentDeviceStatisticsDetailsVo departmentDeviceStatisticsDetails(String keyword, Long regionId) {
         List<Long> list = departmentExposeService.responsibleDepartment(null);
-        DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetailsVo = new DepartmentDeviceGroupStatisticsDetailsVo();
+        DepartmentDeviceStatisticsDetailsVo departmentDeviceStatisticsDetailsVo = new DepartmentDeviceStatisticsDetailsVo();
+        List<DepartmentDeviceStatisticsDetailsVo.DepartmentDeviceDetailsVo> departmentDeviceDetailsVos = new ArrayList<DepartmentDeviceStatisticsDetailsVo.DepartmentDeviceDetailsVo>();
 //        List<DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo> deviceGroupDetailsVos = new ArrayList<>();
         list.forEach(id->{
 //            departmentDeviceGroupStatisticsDetailsVo.setDeviceGroupCount(departmentDeviceGroupStatisticsDetailsVo.getDeviceGroupCount() + deviceGroupExposeService.count(id));
-            departmentDeviceGroupStatisticsDetailsVo.setNormalDeviceCount(departmentDeviceGroupStatisticsDetailsVo.getNormalDeviceCount() + deviceGroupExposeService.count(id, com.lion.device.entity.enums.State.NORMAL));
-            departmentDeviceGroupStatisticsDetailsVo.setAbnormalDeviceCount(departmentDeviceGroupStatisticsDetailsVo.getAbnormalDeviceCount() + deviceGroupExposeService.count(id, com.lion.device.entity.enums.State.ALARM));
-            List<Region> regionList = regionExposeService.findByDepartmentId(id);
+            departmentDeviceStatisticsDetailsVo.setNormalDeviceCount(departmentDeviceStatisticsDetailsVo.getNormalDeviceCount() + deviceExposeService.count(id, Arrays.asList(new com.lion.device.entity.enums.State[]{com.lion.device.entity.enums.State.NORMAL})));
+            departmentDeviceStatisticsDetailsVo.setAbnormalDeviceCount(departmentDeviceStatisticsDetailsVo.getAbnormalDeviceCount() + deviceExposeService.count(id, Arrays.asList(new com.lion.device.entity.enums.State[]{com.lion.device.entity.enums.State.ALARM,com.lion.device.entity.enums.State.FAULT,com.lion.device.entity.enums.State.REPAIR})));
+            DepartmentDeviceStatisticsDetailsVo.DepartmentDeviceDetailsVo deviceDetailsVo = new DepartmentDeviceStatisticsDetailsVo.DepartmentDeviceDetailsVo();
+            deviceDetailsVo.setDepartmentId(id);
+            Department department = departmentExposeService.findById(id);
+            deviceDetailsVo.setDepartmentName(Objects.nonNull(department)?department.getName():"");
+            List<Device> devices = deviceExposeService.findByDepartmentId(id);
+            List<DetailsDeviceVo> detailsDeviceVos =  new ArrayList<DetailsDeviceVo>();
+            devices.forEach(device -> {
+                DetailsDeviceVo detailsDeviceVo = deviceExposeService.details(device.getId());
+                detailsDeviceVos.add(detailsDeviceVo);
+            });
+            deviceDetailsVo.setDetailsDeviceVos(detailsDeviceVos);
+            departmentDeviceDetailsVos.add(deviceDetailsVo);
+
+//            List<Region> regionList = regionExposeService.findByDepartmentId(id);
 //            regionList.forEach(region->{
 //                DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo deviceGroupDetailsVo = new DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo();
 //                DeviceGroup deviceGroup = deviceGroupExposeService.findById(region.getDeviceGroupId());
@@ -577,7 +603,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 //            });
         });
 //        departmentDeviceGroupStatisticsDetailsVo.setDeviceGroupDetailsVos(deviceGroupDetailsVos);
-        return departmentDeviceGroupStatisticsDetailsVo;
+        departmentDeviceStatisticsDetailsVo.setDepartmentDeviceDetailsVos(departmentDeviceDetailsVos);
+        return departmentDeviceStatisticsDetailsVo;
     }
 
     @Override

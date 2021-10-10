@@ -2,8 +2,8 @@ package com.lion.person.entity.person.dto;
 
 import com.lion.core.persistence.Validator;
 import com.lion.person.entity.enums.TransferState;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -16,18 +16,18 @@ import javax.validation.constraints.NotNull;
  */
 
 @Data
-@ApiModel
+@Schema
 public class ReceivePatientDto extends UpdatePatientDto {
 
 
-//    @ApiModelProperty(value = "病床ID(该参数由接收转移患者后 修改新的床位带过来)")
+//    @Schema(description = "病床ID(该参数由接收转移患者后 修改新的床位带过来)")
 //    private Long newSickbedId;
 
-//    @ApiModelProperty(value = "患者id")
+//    @Schema(description = "患者id")
 //    @NotNull(message = "患者id不能为空",groups = {Validator.OtherOne.class})
 //    private Long patientId;
 
-    @ApiModelProperty(value = "转移状态")
+    @Schema(description = "转移状态")
     @NotNull(message = "{1000028}",groups = {Validator.OtherOne.class})
     private TransferState state = TransferState.FINISH;
 

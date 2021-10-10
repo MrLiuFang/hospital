@@ -1,8 +1,8 @@
 package com.lion.device.entity.device.vo;
 
 import com.lion.device.entity.device.Device;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -13,19 +13,25 @@ import javax.persistence.Column;
  * @date 2021/4/1上午11:35
  */
 @Data
-@ApiModel
+@Schema
 public class DetailsDeviceVo extends Device {
 
-    @ApiModelProperty(value = "建筑名称(安装位置)")
+    @Schema(description = "归属科室名称")
+    private String departmentName;
+
+    @Schema(description = "归属科室id")
+    private Long departmentId;
+
+    @Schema(description = "建筑名称(安装位置)")
     private String buildName;
 
-    @ApiModelProperty(value = "楼层名称(安装位置)")
+    @Schema(description = "楼层名称(安装位置)")
     private String buildFloorName;
 
-    @ApiModelProperty(value = "地图")
+    @Schema(description = "地图")
     private String mapUrl;
 
-    @ApiModelProperty(value = "图片")
+    @Schema(description = "图片")
     private String imgUrl;
 
 }

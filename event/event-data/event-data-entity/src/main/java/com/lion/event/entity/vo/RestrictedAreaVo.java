@@ -1,7 +1,7 @@
 package com.lion.event.entity.vo;
 //
-//import io.swagger.annotations.ApiModel;
-//import io.swagger.annotations.ApiModelProperty;
+//import io.swagger.v3.oas.annotations.media.Schema;
+//
 //import lombok.Data;
 //
 ///**
@@ -10,21 +10,21 @@ package com.lion.event.entity.vo;
 // * @time: 2021/7/4 上午9:47
 // */
 //@Data
-//@ApiModel
+//@Schema
 //public class RestrictedAreaVo {
 //
-//    @ApiModelProperty(value = "区域id")
+//    @Schema(description = "区域id")
 //    private Long regionId;
 //
-//    @ApiModelProperty(value = "区域名称")
+//    @Schema(description = "区域名称")
 //    private String regionName;
 //
-//    @ApiModelProperty(value = "建筑名称")
+//    @Schema(description = "建筑名称")
 //    private String buildName;
 //
-//    @ApiModelProperty(value = "建筑楼成名称")
+//    @Schema(description = "建筑楼成名称")
 //    private String buildFloorName;
 //
-//    @ApiModelProperty(value = "备注")
+//    @Schema(description = "备注")
 //    private String remark;
 //}

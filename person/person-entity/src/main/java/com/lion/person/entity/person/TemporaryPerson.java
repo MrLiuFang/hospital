@@ -2,8 +2,8 @@ package com.lion.person.entity.person;
 
 import com.lion.core.persistence.Validator;
 import com.lion.person.entity.enums.IdentityDocumentType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -25,35 +25,35 @@ import java.io.Serializable;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "临时人员")
+@Schema(description = "临时人员")
 public class TemporaryPerson extends Person implements Serializable {
 
     private static final long serialVersionUID = -5294943964036491904L;
-    @ApiModelProperty(value = "证件类型")
+    @Schema(description = "证件类型")
     @Column(name = "identity_document_type")
     @Convert(converter = IdentityDocumentType.IdentityDocumentTypeConverter.class)
 //    @NotNull(message = "{1000017}", groups = {Validator.Insert.class, Validator.Update.class})
     private IdentityDocumentType identityDocumentType;
 
-    @ApiModelProperty(value = "证件号码")
+    @Schema(description = "证件号码")
     @Column(name = "id_no")
 //    @NotBlank(message = "{1000018}", groups = {Validator.Insert.class, Validator.Update.class})
     private String idNo;
 
-    @ApiModelProperty(value = "拜访人ID")
+    @Schema(description = "拜访人ID")
 //    @NotNull(message = "{1000019}", groups = {Validator.Insert.class, Validator.Update.class})
     @Column(name = "patient_Id")
     private Long patientId;
 
-    @ApiModelProperty(value = "科室ID（来源于拜访人）")
+    @Schema(description = "科室ID（来源于拜访人）")
     @Column(name = "department_id")
     private Long departmentId;
 
-    @ApiModelProperty(value = "拜访原因")
+    @Schema(description = "拜访原因")
     @Column(name = "remarks")
     private String remarks;
 
-    @ApiModelProperty(value = "通行级别")
+    @Schema(description = "通行级别")
     @NotNull(message = "{1000050}", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer trafficLevel;
 

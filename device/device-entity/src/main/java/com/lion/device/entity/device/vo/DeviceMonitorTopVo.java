@@ -1,7 +1,7 @@
 package com.lion.device.entity.device.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 /**
@@ -10,15 +10,15 @@ import lombok.Data;
  * @time: 2021/5/27 上午9:58
  */
 @Data
-@ApiModel
+@Schema
 public class DeviceMonitorTopVo {
 
-    @ApiModelProperty(value = "正常设备")
+    @Schema(description = "正常设备")
     private Integer normalCount = 0;
 
-    @ApiModelProperty(value = "离线设备")
+    @Schema(description = "离线设备")
     private Integer offlineCount =0 ;
 
-    @ApiModelProperty(value = "故障设备")
+    @Schema(description = "故障设备")
     private Integer faultCount = 0;
 }

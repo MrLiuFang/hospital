@@ -3,8 +3,8 @@ package com.lion.common.dto;
 import com.lion.common.enums.SystemAlarmState;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.common.enums.Type;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -19,7 +19,7 @@ import java.util.UUID;
  * @Date 2021/5/17 下午2:04
  **/
 @Data
-@ApiModel
+@Schema
 public class SystemAlarmDto implements Serializable {
 
     private static final long serialVersionUID = -4723208189836453408L;

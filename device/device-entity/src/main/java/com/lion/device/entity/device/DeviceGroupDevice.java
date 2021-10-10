@@ -3,8 +3,8 @@ package com.lion.device.entity.device;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -29,16 +29,16 @@ import java.io.Serializable;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "设备组关联的设备")
+@Schema(description = "设备组关联的设备")
 public class DeviceGroupDevice extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -5786186112857864557L;
-    @ApiModelProperty(value = "设备组id")
+    @Schema(description = "设备组id")
     @Column(name = "device_group_id")
     @NotNull(message = "{4000010}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long deviceGroupId;
 
-    @ApiModelProperty(value = "设备id")
+    @Schema(description = "设备id")
     @Column(name = "device_id")
     @NotNull(message = "{4000011}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long deviceId;

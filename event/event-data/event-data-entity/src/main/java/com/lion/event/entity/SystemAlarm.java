@@ -2,8 +2,8 @@ package com.lion.event.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.common.enums.SystemAlarmState;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
@@ -22,85 +22,85 @@ import java.util.Objects;
  **/
 @Data
 @Document(value = "system_alarm")
-@ApiModel
+@Schema
 public class SystemAlarm implements Serializable {
 
     private static final long serialVersionUID = 8357470689294387808L;
     @Id
     private String _id;
 
-    @ApiModelProperty(value = "警告类型(com.lion.common.enums.Type)")
+    @Schema(description = "警告类型(com.lion.common.enums.Type)")
     private Integer ty;
 
-    @ApiModelProperty(value = "员工/患者/流动人员id")
+    @Schema(description = "员工/患者/流动人员id")
     private Long pi;
 
-    @ApiModelProperty(value = "资产id")
+    @Schema(description = "资产id")
     private Long ai;
 
-    @ApiModelProperty(value = "设备id")
+    @Schema(description = "设备id")
     private Long dvi;
 
-    @ApiModelProperty(value = "标签id")
+    @Schema(description = "标签id")
     private Long ti;
 
-    @ApiModelProperty(value = "警告规则id")
+    @Schema(description = "警告规则id")
     private Long ali;
 
-    @ApiModelProperty(value = "温湿标签警告湿度")
+    @Schema(description = "温湿标签警告湿度")
     private BigDecimal h;
 
-    @ApiModelProperty(value = "温湿标签标签警告温度")
+    @Schema(description = "温湿标签标签警告温度")
     private BigDecimal t;
 
-    @ApiModelProperty(value = "警告类型(com.lion.manage.entity.enums.SystemAlarmType)")
+    @Schema(description = "警告类型(com.lion.manage.entity.enums.SystemAlarmType)")
     private Integer sat;
 
-    @ApiModelProperty(value = "警告状态（com.lion.manage.entity.enums.SystemAlarmState)（0, 未处理),(1, 已处理(熟知)操作员处理),(2, 主动呼叫),(3, 取消呼叫),(4, 警告熟知(员工通过按钮熟知)")
+    @Schema(description = "警告状态（com.lion.manage.entity.enums.SystemAlarmState)（0, 未处理),(1, 已处理(熟知)操作员处理),(2, 主动呼叫),(3, 取消呼叫),(4, 警告熟知(员工通过按钮熟知)")
     private Integer ua;
 
-    @ApiModelProperty(value = "建筑id")
+    @Schema(description = "建筑id")
     private Long bui;
 
-    @ApiModelProperty(value = "建筑名称")
+    @Schema(description = "建筑名称")
     private String bun;
 
-    @ApiModelProperty(value = "楼层id")
+    @Schema(description = "楼层id")
     private Long bfi;
 
-    @ApiModelProperty(value = "楼层名称")
+    @Schema(description = "楼层名称")
     private String bfn;
 
-    @ApiModelProperty(value = "警告所属科室id")
+    @Schema(description = "警告所属科室id")
     private Long sdi;
 
-    @ApiModelProperty(value = "科室id")
+    @Schema(description = "科室id")
     private Long di;
 
-    @ApiModelProperty(value = "科室名称")
+    @Schema(description = "科室名称")
     private String dn;
 
-    @ApiModelProperty(value = "区域id")
+    @Schema(description = "区域id")
     private Long ri;
 
-    @ApiModelProperty(value = "区域名称")
+    @Schema(description = "区域名称")
     private String rn;
 
-    @ApiModelProperty(value = "警告发生时间")
+    @Schema(description = "警告发生时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime dt;
 
-    @ApiModelProperty(value = "排序时间（用户多次警报时置顶显示）前端可判断该时间是否发生变化来进行声音/闪耀提醒")
+    @Schema(description = "排序时间（用户多次警报时置顶显示）前端可判断该时间是否发生变化来进行声音/闪耀提醒")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sdt;
 
-    @ApiModelProperty(value = "处理人id")
+    @Schema(description = "处理人id")
     private Long uui;
 
-    @ApiModelProperty(value = "处理人姓名")
+    @Schema(description = "处理人姓名")
     private String uun;
 
-    @ApiModelProperty(value = "处理时间")
+    @Schema(description = "处理时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime udt;
 

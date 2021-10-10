@@ -5,11 +5,16 @@ import com.lion.constant.SearchConstant;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.State;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.service.device.DeviceService;
-import org.apache.commons.lang3.ThreadUtils;
+import com.lion.exception.BusinessException;
+import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.region.RegionExposeService;
+import com.lion.utils.MessageI18nUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -18,10 +23,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -40,6 +42,9 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private RegionExposeService regionExposeService;
 
     @Override
     public List<Device> findByDeviceGruopId(Long deviceGroupId) {
@@ -112,16 +117,48 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     }
 
     @Override
+    public List<Device> findByDepartmentId(Long departmentId) {
+        List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);
+        List<Long> reginIds = new ArrayList<>();
+        reginIds.add(Long.MAX_VALUE);
+        regionList.forEach(region -> {
+            reginIds.add(region.getId());
+        });
+        return deviceDao.findByRegionIdIn(reginIds);
+    }
+
+    @Override
     @Transactional
     public void relationRegion(Long regionId, List<Long> ids) {
+        ids.forEach(deviceId ->{
+            Device device = deviceDao.findFirstByIdAndRegionIdNotNull(deviceId);
+            if (Objects.nonNull(device)) {
+                BusinessException.throwException(MessageI18nUtil.getMessage("2000119",new Object[]{device.getName()}));
+            }
+        });
         deviceDao.updateRegionIdIsNull(regionId);
         deviceDao.updateRegion(regionId, ids);
     }
 
     @Override
-    public Integer count(DeviceClassify classify, Long regionId) {
+    public int count(DeviceClassify classify, Long regionId) {
         return deviceDao.countByDeviceClassifyAndRegionId(classify,regionId);
     }
 
+    @Override
+    public int count(Long departmentId, List<State> states) {
+        List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);
+        List<Long> reginIds = new ArrayList<>();
+        reginIds.add(Long.MAX_VALUE);
+        regionList.forEach(region -> {
+            reginIds.add(region.getId());
+        });
+        return deviceDao.countByRegionIdInAndDeviceStateIn(reginIds,states);
+    }
+
+    @Override
+    public DetailsDeviceVo details(Long id) {
+        return deviceService.details(id);
+    }
 
 }

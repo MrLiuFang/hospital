@@ -3,8 +3,8 @@ package com.lion.manage.entity.rule;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -25,16 +25,16 @@ import java.io.Serializable;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "洗手规则设备类型")
+@Schema(description = "洗手规则设备类型")
 public class WashDeviceType extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 6794032758736876013L;
-    @ApiModelProperty(value = "洗手规则id/洗手规则模板项Id")
+    @Schema(description = "洗手规则id/洗手规则模板项Id")
     @Column(name = "wash_id")
     @NotNull(message = "{2000049}", groups = {Validator.Insert.class, Validator.Update.class})
     private Long washId;
 
-    @ApiModelProperty(value = "洗手设备类型")
+    @Schema(description = "洗手设备类型")
     @Column(name = "type")
     @Convert(converter = com.lion.manage.entity.enums.WashDeviceType.WashDeviceTypeConverter.class)
     @NotNull(message = "{2000051}", groups = {Validator.Insert.class, Validator.Update.class})

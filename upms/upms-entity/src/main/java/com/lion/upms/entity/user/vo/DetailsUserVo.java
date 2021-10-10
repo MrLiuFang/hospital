@@ -3,8 +3,8 @@ package com.lion.upms.entity.user.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.UserType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import org.springframework.util.StringUtils;
 
@@ -18,44 +18,44 @@ import java.util.List;
  * @date 2021/3/24下午3:04
  */
 @Data
-@ApiModel
+@Schema
 public class DetailsUserVo extends User {
 
-    @ApiModelProperty(value = "角色名称")
+    @Schema(description = "角色名称")
     private String roleName;
 
-    @ApiModelProperty(value = "角色id")
+    @Schema(description = "角色id")
     private Long roleId;
 
-    @ApiModelProperty(value = "所在科室名称")
+    @Schema(description = "所在科室名称")
     private String departmentName;
 
-    @ApiModelProperty(value = "所在科室id")
+    @Schema(description = "所在科室id")
     private Long departmentId;
 
-    @ApiModelProperty(value = "头像url")
+    @Schema(description = "头像url")
     private String headPortraitUrl;
 
-    @ApiModelProperty(value = "负责的科室")
+    @Schema(description = "负责的科室")
     private List<ResponsibleDepartmentVo> responsibleDepartment;
 
-    @ApiModelProperty(value = "是否创建账号")
+    @Schema(description = "是否创建账号")
     private Boolean isCreateAccount;
 
-    @ApiModelProperty(value = "警告")
+    @Schema(description = "警告")
     private String alarm;
 
-    @ApiModelProperty(value = "警告编码")
+    @Schema(description = "警告编码")
     private String alarmType;
 
-    @ApiModelProperty(value = "警告时间")
+    @Schema(description = "警告时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime alarmDataTime;
 
-    @ApiModelProperty(value = "警报ID")
+    @Schema(description = "警报ID")
     private String alarmId;
 
-    @ApiModelProperty(value = "用户类型")
+    @Schema(description = "用户类型")
     private UserType userType;
 
     public Boolean getIsCreateAccount() {
@@ -63,26 +63,26 @@ public class DetailsUserVo extends User {
     }
 
     @Data
-    @ApiModel
+    @Schema
     public static class ResponsibleDepartmentVo{
 
-        @ApiModelProperty("所负责的科室名称")
+        @Schema(description = "所负责的科室名称")
         private String departmentName;
 
-        @ApiModelProperty("所负责的科室id")
+        @Schema(description = "所负责的科室id")
         private Long departmentId;
 
-        @ApiModelProperty(value = "负责人")
+        @Schema(description = "负责人")
         private List<ResponsibleUserVo> responsibleUser;
 
     }
 
     @Data
-    @ApiModel
+    @Schema
     public static class ResponsibleUserVo{
-        @ApiModelProperty(value = "负责人姓名")
+        @Schema(description = "负责人姓名")
         private String name;
-        @ApiModelProperty(value = "负责人头像")
+        @Schema(description = "负责人头像")
         private String headPortraitUrl;
     }
 

@@ -1,7 +1,7 @@
 package com.lion.person.entity.person.dto;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -12,14 +12,14 @@ import javax.validation.constraints.NotNull;
  * @time: 2021/5/25 下午8:30
  */
 @Data
-@ApiModel
+@Schema
 public class TransferDto {
 
-    @ApiModelProperty(value = "患者id")
+    @Schema(description = "患者id")
     @NotNull(message = "{1000026}")
     private Long patientId;
 
-    @ApiModelProperty(value = "转移新科室Id")
+    @Schema(description = "转移新科室Id")
     @NotNull(message = "{1000029}")
     private Long departmentId;
 }

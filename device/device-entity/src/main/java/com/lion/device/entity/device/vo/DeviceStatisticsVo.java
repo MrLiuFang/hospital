@@ -1,7 +1,7 @@
 package com.lion.device.entity.device.vo;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.swing.*;
@@ -13,22 +13,22 @@ import java.util.List;
  * @Date 2021/5/5 上午9:07
  **/
 @Data
-@ApiModel
+@Schema
 public class DeviceStatisticsVo {
 
-    @ApiModelProperty(value = "统计")
+    @Schema(description = "统计")
     private List<DeviceStatisticsData> list;
 
     @Data
-    @ApiModel
+    @Schema
     public static class DeviceStatisticsData{
-        @ApiModelProperty(value = "统计名称")
+        @Schema(description = "统计名称")
         private String name;
 
-        @ApiModelProperty(value = "编码")
+        @Schema(description = "编码")
         private String code;
 
-        @ApiModelProperty(value = "统计数量")
+        @Schema(description = "统计数量")
         private long count;
     }
 }

@@ -2,7 +2,7 @@ package com.lion.manage.entity.assets.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.manage.entity.assets.AssetsFaultReport;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -11,7 +11,7 @@ import lombok.Data;
  * @create: 2021-08-09 10:19
  **/
 @Data
-@ApiModel
+@Schema
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"id","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class AddAssetsFaultReportDto extends AssetsFaultReport {
 }

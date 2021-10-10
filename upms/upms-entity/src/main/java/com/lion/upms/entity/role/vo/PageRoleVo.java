@@ -2,8 +2,8 @@ package com.lion.upms.entity.role.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.upms.entity.role.Role;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 /**
@@ -13,9 +13,9 @@ import lombok.Data;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel
+@Schema
 public class PageRoleVo extends Role {
 
-    @ApiModelProperty("人数")
+    @Schema(description = "人数")
     private Integer userCount;
 }

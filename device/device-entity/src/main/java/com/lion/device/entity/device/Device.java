@@ -7,8 +7,8 @@ import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.enums.State;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -34,86 +34,86 @@ import java.time.LocalDateTime;
 @DynamicInsert
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel(description = "设备")
+@Schema(description = "设备")
 public class Device extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 3432969462078655827L;
-    @ApiModelProperty(value = "设备名称")
+    @Schema(description = "设备名称")
     @Column(name = "name")
     @NotBlank(message = "{4000003}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
 
-    @ApiModelProperty(value = "设备编号")
+    @Schema(description = "设备编号")
     @Column(name = "code")
     @NotNull(message = "{4000004}", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 
-    @ApiModelProperty(value = "设备大类")
+    @Schema(description = "设备大类")
     @Convert(converter = DeviceClassify.DeviceClassifyConverter.class)
     @Column(name = "device_classify")
     private DeviceClassify deviceClassify;
 
-    @ApiModelProperty(value = "设备分类")
+    @Schema(description = "设备分类")
     @Convert(converter = DeviceType.DeviceTypeConverter.class)
     @Column(name = "device_type")
     private DeviceType deviceType;
 
-    @ApiModelProperty(value = "保修期(月)")
+    @Schema(description = "保修期(月)")
     @Column(name = "warranty_period")
     @NotNull(message = "{4000005}", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer warrantyPeriod;
 
-    @ApiModelProperty(value = "购买日期(yyyy-MM-dd)")
+    @Schema(description = "购买日期(yyyy-MM-dd)")
     @Column(name = "purchase_pate" )
     @NotNull(message = "{4000006}", groups = {Validator.Insert.class, Validator.Update.class})
     @Past(message = "{4000007}", groups = {Validator.Insert.class, Validator.Update.class})
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate purchaseDate;
 
-    @ApiModelProperty(value = "保修期截止日(根据购买日期+保修期(月)推算)")
+    @Schema(description = "保修期截止日(根据购买日期+保修期(月)推算)")
     @Column(name = "warranty_period_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate warrantyPeriodDate;
 
-    @ApiModelProperty(value = "电量(0=正常,1=少於90 天,2=少於30天)")
+    @Schema(description = "电量(0=正常,1=少於90 天,2=少於30天)")
     @Column(name = "battery")
     private Integer battery;
 
-    @ApiModelProperty(value = "图片id")
+    @Schema(description = "图片id")
     @Column(name = "img")
     private Long img;
 
-    @ApiModelProperty(value = "建筑id(安装位置)")
+    @Schema(description = "建筑id(安装位置)")
     @Column(name = "build_id")
     private Long buildId;
 
-    @ApiModelProperty(value = "楼层id(安装位置)")
+    @Schema(description = "楼层id(安装位置)")
     @Column(name = "build_floor_id")
     private Long buildFloorId;
 
-    @ApiModelProperty(value = "区域id可空(安装位置)")
+    @Schema(description = "区域id可空(安装位置)")
     @Column(name = "region_id")
     private Long regionId;
 
-    @ApiModelProperty(value = "地图X坐标(安装位置)")
+    @Schema(description = "地图X坐标(安装位置)")
     @Column(name = "x")
     private String x;
 
-    @ApiModelProperty(value = "地图Y坐标(安装位置)")
+    @Schema(description = "地图Y坐标(安装位置)")
     @Column(name = "y")
     private String y;
 
-    @ApiModelProperty(value = "设备状态")
+    @Schema(description = "设备状态")
     @Column(name = "device_state")
     @Convert(converter = State.StateConverter.class)
     private State deviceState = State.NORMAL;
 
-    @ApiModelProperty(value = "最后的设备数据时间")
+    @Schema(description = "最后的设备数据时间")
     @Column(name = "last_data_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastDataTime;
 
-    @ApiModelProperty(value = "上次消毒时间-回收箱特有字段")
+    @Schema(description = "上次消毒时间-回收箱特有字段")
     @Column(name = "previous_disinfect_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate previousDisinfectDate;

@@ -2,8 +2,8 @@ package com.lion.common.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.io.Serializable;
@@ -15,60 +15,60 @@ import java.time.LocalDateTime;
  * @time: 2021/6/16 上午10:17
  */
 @Data
-@ApiModel
+@Schema
 public class RecyclingBoxRecordDto implements Serializable {
 
     private static final long serialVersionUID = 5169920111697099159L;
-    @ApiModelProperty(value = "回收箱id")
+    @Schema(description = "回收箱id")
     private Long rbi;
 
-    @ApiModelProperty(value = "回收箱名称")
+    @Schema(description = "回收箱名称")
     private String rbn;
 
-    @ApiModelProperty(value = "回收箱编码")
+    @Schema(description = "回收箱编码")
     private String rbc;
 
-    @ApiModelProperty(value = "tagid")
+    @Schema(description = "tagid")
     private Long ti;
 
-    @ApiModelProperty(value = "tag用途")
+    @Schema(description = "tag用途")
     private Integer tp;
 
-    @ApiModelProperty(value = "tag类型")
+    @Schema(description = "tag类型")
     private Integer tt;
 
-    @ApiModelProperty(value = "tag编码")
+    @Schema(description = "tag编码")
     private String tc;
 
-    @ApiModelProperty(value = "建筑id")
+    @Schema(description = "建筑id")
     private Long bui;
 
-    @ApiModelProperty(value = "建筑名称")
+    @Schema(description = "建筑名称")
     private String bun;
 
-    @ApiModelProperty(value = "楼层id")
+    @Schema(description = "楼层id")
     private Long bfi;
 
-    @ApiModelProperty(value = "楼层名称")
+    @Schema(description = "楼层名称")
     private String bfn;
 
-    @ApiModelProperty(value = "科室id")
+    @Schema(description = "科室id")
     private Long di;
 
-    @ApiModelProperty(value = "科室名称")
+    @Schema(description = "科室名称")
     private String dn;
 
-    @ApiModelProperty(value = "区域id")
+    @Schema(description = "区域id")
     private Long ri;
 
-    @ApiModelProperty(value = "区域名称")
+    @Schema(description = "区域名称")
     private String rn;
 
-    @ApiModelProperty(value = "设备产生時間")
+    @Schema(description = "设备产生時間")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime ddt;
 
-    @ApiModelProperty(value = "系统接受到时间")
+    @Schema(description = "系统接受到时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sdt;
 }

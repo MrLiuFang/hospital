@@ -5,8 +5,8 @@ import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.person.entity.enums.Gender;
 import com.lion.person.entity.enums.LogType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -28,7 +28,7 @@ import java.io.Serializable;
 
 @DynamicInsert
 @Data
-@ApiModel(description = "患者日志")
+@Schema(description = "患者日志")
 @JsonIgnoreProperties(
         ignoreUnknown = true,
         value = { "updateDateTime", "createUserId", "updateUserId"}
@@ -36,19 +36,19 @@ import java.io.Serializable;
 public class PatientLog extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = -744298217698937325L;
-    @ApiModelProperty(value = "患者ID")
+    @Schema(description = "患者ID")
     @Column(name = "patient_id")
     @NotNull(message = "{1000005}",groups = {Validator.Update.class, Validator.Insert.class})
     private Long patientId;
 
-    @ApiModelProperty(value = "日志类型")
+    @Schema(description = "日志类型")
     @Convert(converter = LogType.LogTypeConverter.class)
     private LogType logType;
 
-    @ApiModelProperty(value = "操作人ID")
+    @Schema(description = "操作人ID")
     private Long operationUserId;
 
-    @ApiModelProperty(value = "内容")
+    @Schema(description = "内容")
     @Column(name = "content")
     @NotBlank(message = "{1000007}",groups = {Validator.Update.class, Validator.Insert.class})
     private String content;

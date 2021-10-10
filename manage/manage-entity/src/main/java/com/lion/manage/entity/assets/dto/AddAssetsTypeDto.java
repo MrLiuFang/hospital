@@ -2,7 +2,7 @@ package com.lion.manage.entity.assets.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.manage.entity.assets.AssetsType;
-import io.swagger.annotations.ApiModel;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 /**
@@ -11,7 +11,7 @@ import lombok.Data;
  * @createDateTime 2021/9/7 上午9:35
  */
 @Data
-@ApiModel
+@Schema
 @JsonIgnoreProperties(
         ignoreUnknown = true,
         value = {"id","createDateTime", "updateDateTime", "createUserId", "updateUserId"}

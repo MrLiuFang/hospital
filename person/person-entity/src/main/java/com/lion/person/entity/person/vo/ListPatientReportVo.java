@@ -1,8 +1,8 @@
 package com.lion.person.entity.person.vo;
 
 import com.lion.person.entity.person.PatientReport;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.persistence.Column;
@@ -13,15 +13,15 @@ import javax.persistence.Column;
  * @time: 2021/5/28 下午3:58
  */
 @Data
-@ApiModel
+@Schema
 public class ListPatientReportVo extends PatientReport {
 
-    @ApiModelProperty(value = "汇报员工姓名")
+    @Schema(description = "汇报员工姓名")
     private String reportUserName;
 
-    @ApiModelProperty(value = "汇报员工头像")
+    @Schema(description = "汇报员工头像")
     private Long reportUserHeadPortrait;
 
-    @ApiModelProperty(value = "汇报员工头像")
+    @Schema(description = "汇报员工头像")
     private String reportUserHeadPortraitUrl;
 }

@@ -83,11 +83,11 @@ public interface MapStatisticsService {
 
     /**
      *
-     * @param name
+     * @param keyword
      * @param regionId
      * @return
      */
-    public DepartmentDeviceGroupStatisticsDetailsVo departmentDeviceGroupStatisticsDetails(String keyword,Long regionId);
+    public DepartmentDeviceStatisticsDetailsVo departmentDeviceStatisticsDetails(String keyword, Long regionId);
 
     /**
      * 员工详情

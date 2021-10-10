@@ -2,8 +2,8 @@ package com.lion.upms.entity.user.vo;
 
 import com.google.common.collect.PeekingIterator;
 import com.lion.upms.entity.user.UserType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 /**
@@ -12,10 +12,10 @@ import lombok.Data;
  * @createDateTime 2021/9/6 下午9:35
  */
 @Data
-@ApiModel
+@Schema
 public class ListUserTypeVo extends UserType {
 
-    @ApiModelProperty(value = "用户数量")
+    @Schema(description = "用户数量")
     private Integer userCount;
 
     private Long userTypeId;

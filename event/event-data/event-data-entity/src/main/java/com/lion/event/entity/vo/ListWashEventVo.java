@@ -3,8 +3,8 @@ package com.lion.event.entity.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.upms.entity.enums.Gender;
 import com.lion.upms.entity.user.UserType;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -15,34 +15,34 @@ import java.time.LocalDateTime;
  * @time: 2021/6/6 上午10:03
  */
 @Data
-@ApiModel
+@Schema
 public class ListWashEventVo {
 
-    @ApiModelProperty(value = "姓名")
+    @Schema(description = "姓名")
     private String name;
 
-    @ApiModelProperty(value = "科室")
+    @Schema(description = "科室")
     private String departmentName;
 
-    @ApiModelProperty(value = "工号")
+    @Schema(description = "工号")
     private Integer number;
 
-    @ApiModelProperty(value = "类型")
+    @Schema(description = "类型")
     private UserType userType;
 
-    @ApiModelProperty(value = "性别")
+    @Schema(description = "性别")
     private Gender gender;
 
-    @ApiModelProperty(value = "使用设备")
+    @Schema(description = "使用设备")
     private String deviceName;
 
-    @ApiModelProperty(value = "使用时间")
+    @Schema(description = "使用时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime useDateTime;
 
-    @ApiModelProperty(value = "是否合规")
+    @Schema(description = "是否合规")
     private Boolean ia;
 
-    @ApiModelProperty(value = "洗手时长")
+    @Schema(description = "洗手时长")
     private Integer time;
 }

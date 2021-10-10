@@ -3,8 +3,8 @@ package com.lion.manage.entity.region;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
@@ -28,15 +28,15 @@ import java.io.Serializable;
 //@DynamicInsert
 //@Data
 //@JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-//@ApiModel(description = "区域关联的设备")
+//@Schema(description = "区域关联的设备")
 //public class RegionDevice extends BaseEntity implements Serializable {
 //
 //    private static final long serialVersionUID = -1422275392378141382L;
-//    @ApiModelProperty(value = "区域id")
+//    @Schema(description = "区域id")
 //    @Column(name = "region_id")
 //    private Long regionId;
 //
-//    @ApiModelProperty(value = "设备ID/警示铃")
+//    @Schema(description = "设备ID/警示铃")
 //    @Column(name = "device_id")
 //    private Long deviceId;
 //}

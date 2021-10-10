@@ -1,8 +1,8 @@
 package com.lion.upms.entity.user.dto;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
@@ -13,10 +13,10 @@ import javax.validation.constraints.NotNull;
  * @date 2021/3/24下午9:29
  */
 @Data
-@ApiModel
+@Schema
 public class ResetPasswordUserDto {
 
-    @ApiModelProperty(value = "用户ID")
+    @Schema(description = "用户ID")
     @NotNull(message = "{0000000}")
     private Long id;
 }

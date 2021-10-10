@@ -2,8 +2,8 @@ package com.lion.manage.entity.ward.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.manage.entity.ward.Ward;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import lombok.Data;
 
 import java.util.List;
@@ -15,9 +15,9 @@ import java.util.List;
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"id","createDateTime","updateDateTime","createUserId","updateUserId"})
-@ApiModel
+@Schema
 public class AddWardDto extends Ward {
 
-    @ApiModelProperty(value = "病房房间")
+    @Schema(description = "病房房间")
     private List<AddWardRoomDto> wardRoom;
 }
