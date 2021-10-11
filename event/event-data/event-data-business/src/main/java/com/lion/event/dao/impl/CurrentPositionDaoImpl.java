@@ -38,6 +38,7 @@ public class CurrentPositionDaoImpl implements CurrentPositionDaoEx {
         group = BasicDBObjectUtil.put(group,"$group","count",new BasicDBObject("$sum",1));
         pipeline.add(group);
         AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("current_position").aggregate(pipeline);
+//        [{"$match": {"bfi": {"$eq": 852498362870530048}}}, {"$group": {"_id": [{"type": "$typ"}, {"regionId": "$ri"}], "count": {"$sum": 1}}}]
         List<RegionStatisticsDetails> list = new ArrayList<RegionStatisticsDetails>();
         aggregateIterable.forEach(document -> {
             if (document.containsKey("_id")) {
@@ -47,7 +48,6 @@ public class CurrentPositionDaoImpl implements CurrentPositionDaoEx {
                 Integer count =document.getInteger("count");
                 for (Document d :_id){
                     if (d.containsKey("type")) {
-                        System.out.println(d.get("type"));
                         type = Type.instance(d.getInteger("type"));
                     }
                     if (d.containsKey("regionId")) {
