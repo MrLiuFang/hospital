@@ -79,17 +79,6 @@ public class DetailsTagVo extends Tag {
 
         @Schema(description = "温度")
         private BigDecimal temperature;
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            return Objects.equals(time,o);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(time);
-        }
     }
 
     @Data
@@ -113,9 +102,6 @@ public class DetailsTagVo extends Tag {
         public int hashCode() {
             return Objects.hash(time);
         }
-
-
-
     }
 
 }

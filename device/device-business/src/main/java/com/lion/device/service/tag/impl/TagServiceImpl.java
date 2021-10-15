@@ -56,6 +56,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -358,11 +359,13 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         List<HumitureRecord> humitureRecordList =  humitureRecordExposeService.find(tag.getId(), LocalDateTime.now().minusHours(24),LocalDateTime.now());
         List<DetailsTagVo.Temperature24hour> temperature24hour = new ArrayList<>();
         List<DetailsTagVo.Humidity24hour> humidity24hour = new ArrayList<>();
+        HashMap<LocalTime,DetailsTagVo.Temperature24hour> ht = new HashMap<LocalTime,DetailsTagVo.Temperature24hour>();
+        HashMap<LocalTime,DetailsTagVo.Humidity24hour> hh = new HashMap<LocalTime,DetailsTagVo.Humidity24hour>();
         humitureRecordList.forEach(humitureRecord -> {
             LocalTime time = LocalTime.of(humitureRecord.getDdt().getHour(),0);
             if (Objects.nonNull(humitureRecord.getH())) {
-                if (humidity24hour.contains(time)) {
-                    DetailsTagVo.Humidity24hour h = humidity24hour.get(humidity24hour.indexOf(time));
+                if (hh.containsKey(time)) {
+                    DetailsTagVo.Humidity24hour h = hh.get(time);
                     if (humitureRecord.getH().compareTo(h.getHumidity())==1) {
                         h.setHumidity(humitureRecord.getH());
                     }
@@ -371,12 +374,13 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                             .time(time)
                             .humidity(humitureRecord.getH())
                             .build();
-                    humidity24hour.add(h);
+                    hh.put(time,h);
                 }
             }
+
             if (Objects.nonNull(humitureRecord.getT())) {
-                if (temperature24hour.contains(time)) {
-                    DetailsTagVo.Temperature24hour t = temperature24hour.get(temperature24hour.indexOf(time));
+                if (ht.containsKey(time)) {
+                    DetailsTagVo.Temperature24hour t = ht.get(time);
                     if (humitureRecord.getT().compareTo(t.getTemperature())==1) {
                         t.setTemperature(humitureRecord.getT());
                     }
@@ -385,9 +389,15 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                             .time(time)
                             .temperature(humitureRecord.getT())
                             .build();
-                    temperature24hour.add(t);
+                    ht.put(time,t);
                 }
             }
+        });
+        ht.forEach((k,v)->{
+            temperature24hour.add(v);
+        });
+        hh.forEach((k,v)->{
+            humidity24hour.add(v);
         });
         vo.setTemperature24hour(temperature24hour);
         vo.setHumidity24hour(humidity24hour);
