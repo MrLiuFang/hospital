@@ -129,6 +129,48 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
+    public IPageResultData<List<Position>> regionVisitor(List<Type> types, Long regionId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.isNull(types) || types.size()<=0) {
+            types =new ArrayList<>();
+            types.add(Type.ASSET);
+            types.add(Type.STAFF);
+            types.add(Type.MIGRANT);
+            types.add(Type.PATIENT);
+        }
+
+        if (Objects.nonNull(types) && types.size()>0) {
+            List<Integer> typ = new ArrayList<>();
+            types.forEach(type -> {
+                typ.add(type.getKey());
+            });
+            criteria.and("typ").in(typ);
+        }
+        if (Objects.nonNull(regionId)) {
+            criteria.and("ri").is(regionId);
+        }
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
+        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
+            criteria.andOperator( Criteria.where("ddt").gte(startDateTime));
+        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
+            criteria.andOperator( Criteria.where("ddt").lte(endDateTime));
+        }
+        query.addCriteria(criteria);
+        query.with(lionPage);
+//        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        List<Position> items = mongoTemplate.find(query,Position.class);
+//        long count = mongoTemplate.count(query, DeviceData.class);
+//        PageableExecutionUtils.getPage(items, lionPage, () -> count);
+        IPageResultData<List<Position>> pageResultData =new PageResultData<>(items,lionPage,0L);
+        return pageResultData;
+    }
+
+    @Override
     public void positionExport(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, String code, String remarks, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         if (Objects.isNull(startDateTime)) {
@@ -216,7 +258,7 @@ public class PositionServiceImpl implements PositionService {
         }
         query.addCriteria(criteria);
         query.with(lionPage);
-        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+//        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
         List<Position> items = mongoTemplate.find(query,Position.class);
         List<ListPositionVo> returnList = new ArrayList<>();
         items.forEach(position -> {

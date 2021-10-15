@@ -191,7 +191,7 @@ db.system_alarm_report.createIndex( { "sli":1 }, { sparse: true } );
 db.system_alarm_report.createIndex( { "rdt":-1 }, { sparse: true } );
 
 db.user_tag_button_record.createIndex( { "pi":1 }, { sparse: true } );
-db.user_tag_button_record.createIndex( { "ti":-1 }, { sparse: true } );
+db.user_tag_button_record.createIndex( { "ti":1 }, { sparse: true } );
 db.user_tag_button_record.createIndex( { "ddt":-1 }, { sparse: true } );
 db.user_tag_button_record.createIndex( { "sdt":-1 }, { sparse: true } );
 

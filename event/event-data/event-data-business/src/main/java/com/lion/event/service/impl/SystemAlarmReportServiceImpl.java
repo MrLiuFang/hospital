@@ -69,7 +69,7 @@ public class SystemAlarmReportServiceImpl implements SystemAlarmReportService {
             criteria.and("sli").is(systemAlarmId);
         }
         query.addCriteria(criteria);
-        query.with(Sort.by(Sort.Direction.DESC,"rdt"));
+//        query.with(Sort.by(Sort.Direction.DESC,"rdt"));
         List<SystemAlarmReport> items = mongoTemplate.find(query,SystemAlarmReport.class);
         List<SystemAlarmReportDetailsVo> returnList = new ArrayList<>();
         items.forEach(systemAlarmReport -> {

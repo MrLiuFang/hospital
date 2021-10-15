@@ -262,7 +262,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         }
         query.addCriteria(criteria);
         query.with(lionPage);
-        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+//        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
         List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
 //        long count = mongoTemplate.count(query, SystemAlarm.class);
 //        PageableExecutionUtils.getPage(items, lionPage, () -> count);

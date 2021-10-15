@@ -81,7 +81,7 @@ public class HumitureRecordServiceImpl implements HumitureRecordService {
         }
         query.addCriteria(criteria);
         query.with(lionPage);
-        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+//        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
         List<HumitureRecord> items = mongoTemplate.find(query, HumitureRecord.class);
         List<ListHumitureRecordVo> returnList = new ArrayList<>();
         items.forEach(humitureRecord -> {

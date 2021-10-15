@@ -8,6 +8,8 @@ import com.lion.device.entity.enums.TagPurpose;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.vo.ListPositionVo;
 import com.lion.manage.entity.event.vo.EventRecordVo;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,6 +55,17 @@ public interface PositionService {
      * @return
      */
     public IPageResultData<List<Position>> list(Long pi, Long adi,Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+
+    /**
+     * 访客
+     * @param types
+     * @param regionId
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     * @return
+     */
+    public IPageResultData<List<Position>> regionVisitor(List<Type> types, Long regionId,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      * 导出

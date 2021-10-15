@@ -29,6 +29,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -320,6 +321,15 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                                    @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                    LionPage lionPage) {
         return positionService.list(temporaryPersonId,null,regionId , startDateTime, endDateTime, lionPage);
+    }
+
+    @GetMapping("/region/visitor")
+    @ApiOperation(value = "访客(不返回总行数)")
+    public IPageResultData<List<Position>> regionVisitor(@ApiParam("类型") @RequestParam(value = "types",required = false) List<Type> types, @ApiParam("区域id") Long regionId,
+                                                         @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                         @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                         LionPage lionPage) {
+        return positionService.regionVisitor(types, regionId, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/position/export")
