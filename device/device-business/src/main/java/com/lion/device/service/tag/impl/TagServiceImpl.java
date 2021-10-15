@@ -54,6 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -358,19 +359,34 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         List<DetailsTagVo.Temperature24hour> temperature24hour = new ArrayList<>();
         List<DetailsTagVo.Humidity24hour> humidity24hour = new ArrayList<>();
         humitureRecordList.forEach(humitureRecord -> {
+            LocalTime time = LocalTime.of(humitureRecord.getDdt().getHour(),0);
             if (Objects.nonNull(humitureRecord.getH())) {
-                DetailsTagVo.Humidity24hour h = DetailsTagVo.Humidity24hour.builder()
-                        .humidity(humitureRecord.getH())
-                        .dateTime(humitureRecord.getDdt())
-                        .build();
-                humidity24hour.add(h);
+                if (humidity24hour.contains(time)) {
+                    DetailsTagVo.Humidity24hour h = humidity24hour.get(humidity24hour.indexOf(time));
+                    if (humitureRecord.getH().compareTo(h.getHumidity())==1) {
+                        h.setHumidity(humitureRecord.getH());
+                    }
+                }else {
+                    DetailsTagVo.Humidity24hour h = DetailsTagVo.Humidity24hour.builder()
+                            .time(time)
+                            .humidity(humitureRecord.getH())
+                            .build();
+                    humidity24hour.add(h);
+                }
             }
             if (Objects.nonNull(humitureRecord.getT())) {
-                DetailsTagVo.Temperature24hour t = DetailsTagVo.Temperature24hour.builder()
-                        .temperature(humitureRecord.getT())
-                        .dateTime(humitureRecord.getDdt())
-                        .build();
-                temperature24hour.add(t);
+                if (temperature24hour.contains(time)) {
+                    DetailsTagVo.Temperature24hour t = temperature24hour.get(temperature24hour.indexOf(time));
+                    if (humitureRecord.getT().compareTo(t.getTemperature())==1) {
+                        t.setTemperature(humitureRecord.getT());
+                    }
+                }else {
+                    DetailsTagVo.Temperature24hour t = DetailsTagVo.Temperature24hour.builder()
+                            .time(time)
+                            .temperature(humitureRecord.getT())
+                            .build();
+                    temperature24hour.add(t);
+                }
             }
         });
         vo.setTemperature24hour(temperature24hour);

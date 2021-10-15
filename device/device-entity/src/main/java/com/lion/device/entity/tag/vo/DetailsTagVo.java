@@ -11,7 +11,9 @@ import lombok.Data;
 import javax.persistence.Column;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @description:
@@ -73,10 +75,21 @@ public class DetailsTagVo extends Tag {
     public static class Temperature24hour {
 
         @Schema(description = "时间")
-        private LocalDateTime dateTime;
+        private LocalTime time;
 
         @Schema(description = "温度")
         private BigDecimal temperature;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            return Objects.equals(time,o);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(time);
+        }
     }
 
     @Data
@@ -85,10 +98,23 @@ public class DetailsTagVo extends Tag {
     public static class Humidity24hour {
 
         @Schema(description = "时间")
-        private LocalDateTime dateTime;
+        private LocalTime time;
 
         @Schema(description = "湿度")
         private BigDecimal humidity;
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            return Objects.equals(time,o);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(time);
+        }
+
+
 
     }
 
