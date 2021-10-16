@@ -222,13 +222,17 @@ public class WardController extends BaseControllerImpl implements BaseController
         Region region =null;
         if (Objects.nonNull(wardRoomSickbedId)) {
             WardRoomSickbed wardRoomSickbed = wardRoomSickbedService.findById(wardRoomSickbedId);
-            region = regionService.findById(wardRoomSickbed.getWardRoomId());
-            return region;
+            if (Objects.nonNull(wardRoomSickbed)) {
+                region = regionService.findById(wardRoomSickbed.getRegionId());
+                return region;
+            }
         }
         if ( Objects.nonNull(wardRoomId)){
             WardRoom wardRoom = wardRoomService.findById(wardRoomId);
-            region = regionService.findById(wardRoom.getRegionId());
-            return region;
+            if (Objects.nonNull(wardRoom)) {
+                region = regionService.findById(wardRoom.getRegionId());
+                return region;
+            }
         }
         return region;
     }
