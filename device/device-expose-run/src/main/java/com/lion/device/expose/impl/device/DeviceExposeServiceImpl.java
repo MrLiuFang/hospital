@@ -130,6 +130,10 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     @Override
     @Transactional
     public void relationRegion(Long regionId, List<Long> ids) {
+        if (Objects.isNull(ids) ){
+            ids = new ArrayList<>();
+            ids.add(Long.MAX_VALUE);
+        }
         ids.forEach(deviceId ->{
             Device device = deviceDao.findFirstByIdAndRegionIdNotNull(deviceId);
             if (Objects.nonNull(device)) {

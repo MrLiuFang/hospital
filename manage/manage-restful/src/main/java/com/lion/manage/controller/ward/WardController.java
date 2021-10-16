@@ -13,6 +13,7 @@ import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.HavingMonitor;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.vo.DetailsRegionVo;
 import com.lion.manage.entity.ward.Ward;
@@ -188,18 +189,16 @@ public class WardController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/having/monitor")
     @ApiOperation(value = "获取病床/病房所在的区域有没有定位设备(邮件通知复用之前的维修通知接口)")
-    public IResultData havingMonitor(@ApiParam(value = "病床id")Long wardRoomSickbedId,@ApiParam(value = "病房id")Long wardRoomId) throws JsonProcessingException {
+    public IResultData<HavingMonitor> havingMonitor(@ApiParam(value = "病床id")Long wardRoomSickbedId, @ApiParam(value = "病房id")Long wardRoomId) throws JsonProcessingException {
         Region region = getRegion(wardRoomSickbedId,wardRoomId);
 //        [{"code":"STAR_AP"},{"code":"MONITOR"},{"code":"VIRTUAL_WALL","count":"2"},{"code":"LF_EXCITER"},{"code":"HAND_WASHING"},{"code":"RECYCLING_BOX"}]
         if (Objects.isNull(region)){
-//            return ResultData.instance().setData(false);
-            BusinessException.throwException(MessageI18nUtil.getMessage("2000120"));
+            return ResultData.instance().setData(HavingMonitor.NOT_BINDING);
         }
         String json = region.getDeviceQuantityDefinition();
         if (StringUtils.hasText(json)) {
-            List list = objectMapper.readValue(json,List.class);
-            list.forEach(o->{
-                LinkedHashMap linkedHashMap = (LinkedHashMap) o;
+            List<LinkedHashMap> list = objectMapper.readValue(json,List.class);
+            for (LinkedHashMap linkedHashMap :list ){
                 if (linkedHashMap.containsKey("count") && Objects.nonNull(linkedHashMap.get("count"))) {
                     int count = Integer.valueOf(String.valueOf(linkedHashMap.get("count")));
                     if (count >0){
@@ -208,24 +207,28 @@ public class WardController extends BaseControllerImpl implements BaseController
                             if (Objects.nonNull(classify)) {
                                 int regionDeviceCount = deviceExposeService.count(classify,region.getId());
                                 if (regionDeviceCount<count) {
-                                    BusinessException.throwException(MessageI18nUtil.getMessage("2000118",new Object[]{classify.getName()}));
+                                    return ResultData.instance().setData(HavingMonitor.NOT_DEFINITION);
                                 }
                             }
                         }
                     }
                 }
-            });
+            }
         }
         return ResultData.instance();
     }
 
     private Region getRegion(Long wardRoomSickbedId,Long wardRoomId){
-        WardRoomSickbed wardRoomSickbed = wardRoomSickbedService.findById(wardRoomSickbedId);
-        WardRoom wardRoom = wardRoomService.findById(wardRoomId);
         Region region =null;
-        region = regionService.findById(wardRoomSickbed.getWardRoomId());
-        if (Objects.isNull(region) && Objects.nonNull(wardRoom)){
+        if (Objects.nonNull(wardRoomSickbedId)) {
+            WardRoomSickbed wardRoomSickbed = wardRoomSickbedService.findById(wardRoomSickbedId);
+            region = regionService.findById(wardRoomSickbed.getWardRoomId());
+            return region;
+        }
+        if ( Objects.nonNull(wardRoomId)){
+            WardRoom wardRoom = wardRoomService.findById(wardRoomId);
             region = regionService.findById(wardRoom.getRegionId());
+            return region;
         }
         return region;
     }
