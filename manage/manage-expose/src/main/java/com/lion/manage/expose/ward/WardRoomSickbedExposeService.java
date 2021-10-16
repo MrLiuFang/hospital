@@ -14,13 +14,6 @@ import java.util.List;
 public interface WardRoomSickbedExposeService extends BaseService<WardRoomSickbed> {
 
     /**
-     * 修改病床所在区域
-     * @param ids
-     * @param regionId
-     */
-    public void updateRegionId(List<Long> ids, Long regionId);
-
-    /**
      * 根据区域查询病床
      * @param regionId
      * @return

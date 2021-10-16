@@ -14,11 +14,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -82,6 +80,11 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
     }
 
     @Override
+    public List<WardRoomSickbed> findByRegionId(Long regionId) {
+        return wardRoomSickbedDao.findByRegionId(regionId);
+    }
+
+    @Override
     public Page<ListWardRoomSickbedVo> list(String bedCode, Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage) {
         Page<WardRoomSickbed> page = wardRoomSickbedDao.list(bedCode, departmentId, wardId, wardRoomId, lionPage);
         List<WardRoomSickbed> list = page.getContent();
@@ -95,5 +98,13 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
             returnList.add(vo);
         });
         return new PageResultData(returnList,lionPage,page.getTotalElements());
+    }
+
+    @Override
+    public void updateRegionId(List<Long> ids, Long regionId) {
+        wardRoomSickbedDao.updateRegionIdIsNull(regionId);
+        if (Objects.nonNull(ids) && ids.size()>0) {
+            wardRoomSickbedDao.updateRegionId(regionId, ids);
+        }
     }
 }

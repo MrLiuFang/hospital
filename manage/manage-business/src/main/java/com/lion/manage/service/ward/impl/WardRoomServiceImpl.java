@@ -126,6 +126,11 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
     }
 
     @Override
+    public List<WardRoom> findByRegionId(Long regionId) {
+        return wardRoomDao.findByRegionId(regionId);
+    }
+
+    @Override
     public Page<ListWardRoomVo> list(Long departmentId, Long wardId, String code, LionPage lionPage) {
         Page<WardRoom> page = wardRoomDao.list(departmentId, wardId,code , lionPage);
         List<WardRoom> list = page.getContent();
@@ -145,4 +150,14 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
         });
         return new PageResultData<>(returnList,lionPage,page.getTotalElements());
     }
+
+    @Override
+    @Transactional
+    public void updateRegionId(List<Long> ids, Long regionId) {
+        wardRoomDao.updateRegionIdIsNull(regionId);
+        if (Objects.nonNull(ids) && ids.size()>0) {
+            wardRoomDao.updateRegionId(regionId, ids);
+        }
+    }
+
 }

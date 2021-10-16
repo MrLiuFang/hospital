@@ -13,13 +13,6 @@ import java.util.List;
 public interface WardRoomExposeService extends BaseService<WardRoom> {
 
     /**
-     * 修改病房所在区域
-     * @param ids
-     * @param regionId
-     */
-    public void updateRegionId(List<Long> ids, Long regionId);
-
-    /**
      * 根据区域查询病房
      * @param regionId
      * @return

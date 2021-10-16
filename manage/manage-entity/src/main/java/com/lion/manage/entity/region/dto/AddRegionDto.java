@@ -25,16 +25,16 @@ public class AddRegionDto extends Region {
 //    private List<ExposeObject> exposeObjects;
 
     @Schema(description = "病房ID")
-    public List<Long> wardRoomIds;
+    private List<Long> wardRoomIds;
 
     @Schema(description = "病床ID")
-    public List<Long> wardRoomSickbedIds;
+    private List<Long> wardRoomSickbedIds;
 
     @Schema(description = "警示铃id")
-    public List<Long> warningBellIds;
+    private List<Long> warningBellIds;
 
     @Schema(description = "定位设备id")
-    public List<Long> deviceIds;
+    private List<Long> deviceIds;
 
 
 

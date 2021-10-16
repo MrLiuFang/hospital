@@ -22,14 +22,6 @@ public class WardRoomSickbedExposeServiceImpl extends BaseServiceImpl<WardRoomSi
     private WardRoomSickbedDao wardRoomSickbedDao;
 
     @Override
-    public void updateRegionId(List<Long> ids, Long regionId) {
-        wardRoomSickbedDao.updateRegionIdIsNull(regionId);
-        if (Objects.nonNull(ids) && ids.size()>0) {
-            wardRoomSickbedDao.updateRegionId(regionId, ids);
-        }
-    }
-
-    @Override
     public List<WardRoomSickbed> find(Long regionId) {
         return wardRoomSickbedDao.findByRegionId(regionId);
     }

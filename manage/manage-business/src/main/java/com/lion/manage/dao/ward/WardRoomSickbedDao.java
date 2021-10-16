@@ -32,12 +32,12 @@ public interface WardRoomSickbedDao extends BaseDao<WardRoomSickbed> ,WardRoomSi
 
     @Modifying
     @Transactional
-    @Query( " update WardRoom set regionId =:regionId where id in :ids " )
+    @Query( " update WardRoomSickbed set regionId =:regionId where id in :ids " )
     public int updateRegionId(Long regionId,List<Long> ids);
 
     @Modifying
     @Transactional
-    @Query( " update WardRoom set regionId = null where regionId = :regionId " )
+    @Query( " update WardRoomSickbed set regionId = null where regionId = :regionId " )
     public int updateRegionIdIsNull(Long regionId);
 
     /**

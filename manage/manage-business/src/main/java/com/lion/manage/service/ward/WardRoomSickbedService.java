@@ -30,6 +30,13 @@ public interface WardRoomSickbedService extends BaseService<WardRoomSickbed> {
     public List<WardRoomSickbed> find(Long wardRoomId);
 
     /**
+     * 根据区域查询
+     * @param regionId
+     * @return
+     */
+    public List<WardRoomSickbed> findByRegionId(Long regionId);
+
+    /**
      * 列表
      *
      * @param bedCode
@@ -40,4 +47,11 @@ public interface WardRoomSickbedService extends BaseService<WardRoomSickbed> {
      * @return
      */
     public Page<ListWardRoomSickbedVo> list(String bedCode, Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage);
+
+    /**
+     * 修改病床所在区域
+     * @param ids
+     * @param regionId
+     */
+    public void updateRegionId(List<Long> ids, Long regionId);
 }

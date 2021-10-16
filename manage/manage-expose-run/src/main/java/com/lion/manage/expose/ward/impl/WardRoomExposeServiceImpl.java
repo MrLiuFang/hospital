@@ -24,15 +24,6 @@ public class WardRoomExposeServiceImpl extends BaseServiceImpl<WardRoom> impleme
     private WardRoomDao wardRoomDao;
 
     @Override
-    @Transactional
-    public void updateRegionId(List<Long> ids, Long regionId) {
-        wardRoomDao.updateRegionIdIsNull(regionId);
-        if (Objects.nonNull(ids) && ids.size()>0) {
-            wardRoomDao.updateRegionId(regionId, ids);
-        }
-    }
-
-    @Override
     public List<WardRoom> find(Long regionId) {
         return wardRoomDao.findByRegionId(regionId);
     }

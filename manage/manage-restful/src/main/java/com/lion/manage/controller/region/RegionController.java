@@ -38,6 +38,8 @@ import com.lion.manage.service.region.RegionTypeService;
 import com.lion.manage.service.region.RegionWarningBellService;
 import com.lion.manage.service.rule.WashTemplateItemService;
 import com.lion.manage.service.rule.WashTemplateService;
+import com.lion.manage.service.ward.WardRoomService;
+import com.lion.manage.service.ward.WardRoomSickbedService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -92,11 +94,11 @@ public class RegionController extends BaseControllerImpl implements BaseControll
     @Autowired
     private RegionTypeService regionTypeService;
 
-    @DubboReference
-    private WardRoomExposeService wardRoomExposeService;
+    @Autowired
+    private WardRoomService wardRoomService;
 
-    @DubboReference
-    private WardRoomSickbedExposeService wardRoomSickbedExposeService;
+    @Autowired
+    private WardRoomSickbedService wardRoomSickbedService;
 
     @Autowired
     private WashTemplateService washTemplateService;
@@ -170,8 +172,8 @@ public class RegionController extends BaseControllerImpl implements BaseControll
             DetailsRegionVo detailsRegionVo = new DetailsRegionVo();
             BeanUtils.copyProperties(region,detailsRegionVo);
             detailsRegionVo.setDevices(deviceExposeService.findByRegionId(region.getId()));
-            detailsRegionVo.setWardRooms(wardRoomExposeService.find(region.getId()));
-            detailsRegionVo.setWardRoomSickbeds(wardRoomSickbedExposeService.find(region.getId()));
+            detailsRegionVo.setWardRooms(wardRoomService.findByRegionId(region.getId()));
+            detailsRegionVo.setWardRoomSickbeds(wardRoomSickbedService.findByRegionId(region.getId()));
             detailsRegionVo.setRegionType(regionTypeService.findById(region.getRegionTypeId()));
             List<RegionCctv> list = regionCctvService.find(region.getId());
             List<Long> cctvIds = new ArrayList<>();

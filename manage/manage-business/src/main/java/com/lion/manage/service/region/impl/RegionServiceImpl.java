@@ -28,6 +28,8 @@ import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionCctvService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.region.RegionWarningBellService;
+import com.lion.manage.service.ward.WardRoomService;
+import com.lion.manage.service.ward.WardRoomSickbedService;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
@@ -91,11 +93,11 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @Autowired
     private RegionWarningBellService regionWarningBellService;
 
-    @DubboReference
-    private WardRoomExposeService wardRoomExposeService;
+    @Autowired
+    private WardRoomService wardRoomService;
 
-    @DubboReference
-    private WardRoomSickbedExposeService wardRoomSickbedExposeService;
+    @Autowired
+    private WardRoomSickbedService wardRoomSickbedService;
 
 //    @Autowired
 //    private RegionDeviceDao regionDeviceDao;
@@ -130,11 +132,11 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         region = save(region);
         regionCctvService.save(region.getId(),addRegionDto.getCctvIds());
         regionWarningBellService.add(addRegionDto.getWarningBellIds(),region.getId());
-        wardRoomExposeService.updateRegionId(addRegionDto.wardRoomIds,region.getId());
-        wardRoomSickbedExposeService.updateRegionId(addRegionDto.getWardRoomSickbedIds(),region.getId());
-        deviceExposeService.relationRegion(region.getId(),addRegionDto.deviceIds);
+        wardRoomService.updateRegionId(addRegionDto.getWardRoomIds(),region.getId());
+        wardRoomSickbedService.updateRegionId(addRegionDto.getWardRoomSickbedIds(),region.getId());
+        deviceExposeService.relationRegion(region.getId(),addRegionDto.getDeviceIds());
 //        regionExposeObjectService.save(region.getId(),addRegionDto.getExposeObjects());
-        persistenceRedis(region, addRegionDto.deviceIds,null, false);
+        persistenceRedis(region, addRegionDto.getDeviceIds(),null, false);
     }
 
     @Override
@@ -154,11 +156,11 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         update(region);
         regionCctvService.save(region.getId(),updateRegionDto.getCctvIds());
         regionWarningBellService.add(updateRegionDto.getWarningBellIds(),region.getId());
-        wardRoomExposeService.updateRegionId(updateRegionDto.wardRoomIds,region.getId());
-        wardRoomSickbedExposeService.updateRegionId(updateRegionDto.getWardRoomSickbedIds(),region.getId());
-        deviceExposeService.relationRegion(region.getId(),updateRegionDto.deviceIds);
+        wardRoomService.updateRegionId(updateRegionDto.getWardRoomIds(),region.getId());
+        wardRoomSickbedService.updateRegionId(updateRegionDto.getWardRoomSickbedIds(),region.getId());
+        deviceExposeService.relationRegion(region.getId(),updateRegionDto.getDeviceIds());
 //        regionExposeObjectService.save(region.getId(),updateRegionDto.getExposeObjects());
-        persistenceRedis(region, updateRegionDto.deviceIds,getDeviceId(region.getId()), false);
+        persistenceRedis(region, updateRegionDto.getDeviceIds(),getDeviceId(region.getId()), false);
     }
 
     @Override
