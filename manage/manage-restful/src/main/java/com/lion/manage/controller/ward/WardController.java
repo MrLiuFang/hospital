@@ -14,6 +14,7 @@ import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.entity.region.vo.DetailsRegionVo;
 import com.lion.manage.entity.ward.Ward;
 import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.entity.ward.WardRoomSickbed;
@@ -177,18 +178,22 @@ public class WardController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/region")
     @ApiOperation(value = "获取病床/病房所在的区域")
-    public IResultData<Region> region(@ApiParam(value = "病床id")Long wardRoomSickbedId,@ApiParam(value = "病房id")Long wardRoomId) {
+    public IResultData<DetailsRegionVo> region(@ApiParam(value = "病床id")Long wardRoomSickbedId, @ApiParam(value = "病房id")Long wardRoomId) {
         Region region = getRegion(wardRoomSickbedId,wardRoomId);
-        return ResultData.instance().setData(region);
+        if (Objects.nonNull(region)) {
+            return ResultData.instance().setData(regionService.details(region.getId()));
+        }
+        return ResultData.instance();
     }
 
     @GetMapping("/having/monitor")
     @ApiOperation(value = "获取病床/病房所在的区域有没有定位设备(邮件通知复用之前的维修通知接口)")
-    public IResultData<Boolean> havingMonitor(@ApiParam(value = "病床id")Long wardRoomSickbedId,@ApiParam(value = "病房id")Long wardRoomId) throws JsonProcessingException {
+    public IResultData havingMonitor(@ApiParam(value = "病床id")Long wardRoomSickbedId,@ApiParam(value = "病房id")Long wardRoomId) throws JsonProcessingException {
         Region region = getRegion(wardRoomSickbedId,wardRoomId);
 //        [{"code":"STAR_AP"},{"code":"MONITOR"},{"code":"VIRTUAL_WALL","count":"2"},{"code":"LF_EXCITER"},{"code":"HAND_WASHING"},{"code":"RECYCLING_BOX"}]
         if (Objects.isNull(region)){
-            return ResultData.instance().setData(false);
+//            return ResultData.instance().setData(false);
+            BusinessException.throwException(MessageI18nUtil.getMessage("2000120"));
         }
         String json = region.getDeviceQuantityDefinition();
         if (StringUtils.hasText(json)) {
@@ -211,7 +216,7 @@ public class WardController extends BaseControllerImpl implements BaseController
                 }
             });
         }
-        return ResultData.instance().setData(true);
+        return ResultData.instance();
     }
 
     private Region getRegion(Long wardRoomSickbedId,Long wardRoomId){

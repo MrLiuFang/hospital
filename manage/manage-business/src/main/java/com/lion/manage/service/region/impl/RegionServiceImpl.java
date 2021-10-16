@@ -4,9 +4,11 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.device.WarningBell;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
+import com.lion.device.expose.device.WarningBellExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.region.RegionCctvDao;
 import com.lion.manage.dao.region.RegionDao;
@@ -17,9 +19,11 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
+import com.lion.manage.entity.region.RegionWarningBell;
 import com.lion.manage.entity.region.dto.AddRegionDto;
 import com.lion.manage.entity.region.dto.UpdateRegionCoordinatesDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
+import com.lion.manage.entity.region.vo.DetailsRegionVo;
 import com.lion.manage.expose.ward.WardRoomExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.manage.service.build.BuildFloorService;
@@ -27,7 +31,9 @@ import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionCctvService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.manage.service.region.RegionTypeService;
 import com.lion.manage.service.region.RegionWarningBellService;
+import com.lion.manage.service.rule.WashTemplateService;
 import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
 import com.lion.utils.MessageI18nUtil;
@@ -104,6 +110,15 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
 
     @DubboReference
     private DeviceExposeService deviceExposeService;
+
+    @Autowired
+    private RegionTypeService regionTypeService;
+
+    @Autowired
+    private WashTemplateService washTemplateService;
+
+    @Autowired
+    private WarningBellExposeService  warningBellExposeService;
 
     @Override
     public List<Region> find(Long departmentId) {
@@ -196,6 +211,42 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
 //            regionExposeObjectDao.deleteByRegionId(deleteDto.getId());
             persistenceRedis(region,  null,getDeviceId(region.getId()), true);
         });
+    }
+
+    @Override
+    public DetailsRegionVo details(Long id) {
+        Region region = findById(id);
+        if (Objects.isNull(region)) {
+            return null;
+        }
+        DetailsRegionVo detailsRegionVo = new DetailsRegionVo();
+        BeanUtils.copyProperties(region,detailsRegionVo);
+        detailsRegionVo.setDevices(deviceExposeService.findByRegionId(region.getId()));
+        detailsRegionVo.setWardRooms(wardRoomService.findByRegionId(region.getId()));
+        detailsRegionVo.setWardRoomSickbeds(wardRoomSickbedService.findByRegionId(region.getId()));
+        detailsRegionVo.setRegionType(regionTypeService.findById(region.getRegionTypeId()));
+        List<RegionCctv> list = regionCctvService.find(region.getId());
+        List<Long> cctvIds = new ArrayList<>();
+        list.forEach(regionCctv -> {
+            cctvIds.add(regionCctv.getCctvId());
+        });
+        if (cctvIds.size()>0) {
+            detailsRegionVo.setCctvs(cctvExposeService.find(cctvIds));
+        }
+//            List<RegionExposeObject> regionExposeObjectList = regionExposeObjectService.find(region.getId());
+//            List<ExposeObject> exposeObjectList = new ArrayList<>();
+//            regionExposeObjectList.forEach(regionExposeObject -> {
+//                exposeObjectList.add(regionExposeObject.getExposeObject());
+//            });
+//            detailsRegionVo.setExposeObjects(exposeObjectList);
+        detailsRegionVo.setWashTemplateVo(washTemplateService.details(region.getWashTemplateId()));
+        List<RegionWarningBell> regionWarningBells = regionWarningBellService.find(region.getId());
+        List<WarningBell> warningBells = new ArrayList<>();
+        regionWarningBells.forEach(regionWarningBell -> {
+            warningBells.add(warningBellExposeService.findById(regionWarningBell.getWarningBellId()));
+        });
+        detailsRegionVo.setWarningBells(warningBells);
+        return detailsRegionVo;
     }
 
     private List<Long> getDeviceId(Long regionId) {

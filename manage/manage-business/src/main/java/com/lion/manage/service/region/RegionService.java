@@ -6,7 +6,9 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.dto.AddRegionDto;
 import com.lion.manage.entity.region.dto.UpdateRegionCoordinatesDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
+import com.lion.manage.entity.region.vo.DetailsRegionVo;
 
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -53,6 +55,14 @@ public interface RegionService extends BaseService<Region> {
      * @param deleteDtoList
      */
     public void delete(List<DeleteDto> deleteDtoList);
+
+
+    /**
+     * 详情
+     * @param id
+     * @return
+     */
+    DetailsRegionVo details( Long id);
 
 
 }

@@ -166,39 +166,7 @@ public class RegionController extends BaseControllerImpl implements BaseControll
     @GetMapping("/details")
     @ApiOperation(value = "区域详情")
     public IResultData<DetailsRegionVo> details(@NotNull(message = "{0000000}") Long id){
-        ResultData resultData = ResultData.instance();
-        Region region = this.regionService.findById(id);
-        if (Objects.nonNull(region)){
-            DetailsRegionVo detailsRegionVo = new DetailsRegionVo();
-            BeanUtils.copyProperties(region,detailsRegionVo);
-            detailsRegionVo.setDevices(deviceExposeService.findByRegionId(region.getId()));
-            detailsRegionVo.setWardRooms(wardRoomService.findByRegionId(region.getId()));
-            detailsRegionVo.setWardRoomSickbeds(wardRoomSickbedService.findByRegionId(region.getId()));
-            detailsRegionVo.setRegionType(regionTypeService.findById(region.getRegionTypeId()));
-            List<RegionCctv> list = regionCctvService.find(region.getId());
-            List<Long> cctvIds = new ArrayList<>();
-            list.forEach(regionCctv -> {
-                cctvIds.add(regionCctv.getCctvId());
-            });
-            if (cctvIds.size()>0) {
-                detailsRegionVo.setCctvs(cctvExposeService.find(cctvIds));
-            }
-//            List<RegionExposeObject> regionExposeObjectList = regionExposeObjectService.find(region.getId());
-//            List<ExposeObject> exposeObjectList = new ArrayList<>();
-//            regionExposeObjectList.forEach(regionExposeObject -> {
-//                exposeObjectList.add(regionExposeObject.getExposeObject());
-//            });
-//            detailsRegionVo.setExposeObjects(exposeObjectList);
-            detailsRegionVo.setWashTemplateVo(washTemplateService.details(region.getWashTemplateId()));
-            List<RegionWarningBell> regionWarningBells = regionWarningBellService.find(region.getId());
-            List<WarningBell> warningBells = new ArrayList<>();
-            regionWarningBells.forEach(regionWarningBell -> {
-                warningBells.add(warningBellExposeService.findById(regionWarningBell.getWarningBellId()));
-            });
-            detailsRegionVo.setWarningBells(warningBells);
-            resultData.setData(detailsRegionVo);
-        }
-        return resultData;
+        return ResultData.instance().setData(regionService.details(id));
     }
 
     @PutMapping("/update")
