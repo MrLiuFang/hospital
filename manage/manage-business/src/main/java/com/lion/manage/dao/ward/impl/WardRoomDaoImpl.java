@@ -4,9 +4,9 @@ import com.lion.core.LionPage;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.dao.ward.WardRoomDaoEx;
 import com.lion.manage.entity.ward.WardRoom;
-import com.lion.manage.entity.ward.WardRoomSickbed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class WardRoomDaoImpl implements WardRoomDaoEx {
     private BaseDao<WardRoom> baseDao;
 
     @Override
-    public Page<WardRoom> list(Long departmentId, Long wardId, LionPage lionPage) {
+    public Page<WardRoom> list(Long departmentId, Long wardId, String code, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> searchParameter = new HashMap<String, Object>();
         sb.append(" select wr from WardRoom wr join Ward w on wr.wardId = w.id where 1=1");
@@ -34,6 +34,10 @@ public class WardRoomDaoImpl implements WardRoomDaoEx {
         if (Objects.nonNull(wardId) ) {
             sb.append(" and w.id = :wardId ");
             searchParameter.put("wardId",wardId);
+        }
+        if (StringUtils.hasText(code)){
+            sb.append(" and wr.code like :code ");
+            searchParameter.put("code","%"+code+"%");
         }
         sb.append(" order by wr.createDateTime ");
         return (Page<WardRoom>) baseDao.findNavigator(lionPage, sb.toString(), searchParameter);

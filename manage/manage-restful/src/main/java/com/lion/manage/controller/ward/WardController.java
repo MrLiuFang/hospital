@@ -2,7 +2,6 @@ package com.lion.manage.controller.ward;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.lion.common.utils.RedisUtil;
 import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.common.dto.DeleteDto;
@@ -160,8 +159,8 @@ public class WardController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/room/list")
     @ApiOperation(value = "病房房间列表")
-    public IPageResultData<List<ListWardRoomVo>> roomList(@ApiParam(value = "科室")Long departmentId, @ApiParam(value = "病房")Long wardId, LionPage lionPage) {
-        return (IPageResultData<List<ListWardRoomVo>>) wardRoomService.list(departmentId, wardId,  lionPage);
+    public IPageResultData<List<ListWardRoomVo>> roomList(@ApiParam(value = "科室")Long departmentId, @ApiParam(value = "病房")Long wardId,@ApiParam(value = "病房编码")String code,  LionPage lionPage) {
+        return (IPageResultData<List<ListWardRoomVo>>) wardRoomService.list(departmentId, wardId,code , lionPage);
     }
 
     @GetMapping("/sickbed/list")

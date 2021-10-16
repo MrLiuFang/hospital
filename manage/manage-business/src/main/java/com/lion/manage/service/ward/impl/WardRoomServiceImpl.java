@@ -126,8 +126,8 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
     }
 
     @Override
-    public Page<ListWardRoomVo> list(Long departmentId, Long wardId, LionPage lionPage) {
-        Page<WardRoom> page = wardRoomDao.list(departmentId, wardId, lionPage);
+    public Page<ListWardRoomVo> list(Long departmentId, Long wardId, String code, LionPage lionPage) {
+        Page<WardRoom> page = wardRoomDao.list(departmentId, wardId,code , lionPage);
         List<WardRoom> list = page.getContent();
         List<ListWardRoomVo> returnList = new ArrayList<>();
         list.forEach(wardRoom -> {
