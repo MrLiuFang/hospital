@@ -187,6 +187,9 @@ public class WardController extends BaseControllerImpl implements BaseController
     public IResultData<Boolean> havingMonitor(@ApiParam(value = "病床id")Long wardRoomSickbedId,@ApiParam(value = "病房id")Long wardRoomId) throws JsonProcessingException {
         Region region = getRegion(wardRoomSickbedId,wardRoomId);
 //        [{"code":"STAR_AP"},{"code":"MONITOR"},{"code":"VIRTUAL_WALL","count":"2"},{"code":"LF_EXCITER"},{"code":"HAND_WASHING"},{"code":"RECYCLING_BOX"}]
+        if (Objects.isNull(region)){
+            return ResultData.instance().setData(false);
+        }
         String json = region.getDeviceQuantityDefinition();
         if (StringUtils.hasText(json)) {
             List list = objectMapper.readValue(json,List.class);
@@ -200,7 +203,7 @@ public class WardController extends BaseControllerImpl implements BaseController
                             if (Objects.nonNull(classify)) {
                                 int regionDeviceCount = deviceExposeService.count(classify,region.getId());
                                 if (regionDeviceCount<count) {
-                                    BusinessException.throwException(MessageI18nUtil.getMessage("{2000118}",new Object[]{classify.getName()}));
+                                    BusinessException.throwException(MessageI18nUtil.getMessage("2000118",new Object[]{classify.getName()}));
                                 }
                             }
                         }
@@ -216,7 +219,7 @@ public class WardController extends BaseControllerImpl implements BaseController
         WardRoom wardRoom = wardRoomService.findById(wardRoomId);
         Region region =null;
         region = regionService.findById(wardRoomSickbed.getWardRoomId());
-        if (Objects.isNull(region)){
+        if (Objects.isNull(region) && Objects.nonNull(wardRoom)){
             region = regionService.findById(wardRoom.getRegionId());
         }
         return region;
