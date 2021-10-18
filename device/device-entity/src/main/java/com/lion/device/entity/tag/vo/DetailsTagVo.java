@@ -76,6 +76,7 @@ public class DetailsTagVo extends Tag {
     public static class Temperature24hour {
 
         @Schema(description = "时间")
+        @JsonFormat(pattern = "HH:mm")
         private LocalTime time;
 
         @Schema(description = "温度")
