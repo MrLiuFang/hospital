@@ -3,6 +3,7 @@ package com.lion.event.service.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.dto.UpdatePositionLeaveTimeDto;
 import com.lion.common.enums.Type;
+import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.BasicDBObjectUtil;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -14,14 +15,23 @@ import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.PositionDao;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.vo.ListPositionVo;
+import com.lion.event.entity.vo.ListVisitorVo;
 import com.lion.event.service.CurrentPositionService;
 import com.lion.event.service.PositionService;
 import com.lion.event.utils.ExcelColumn;
 import com.lion.event.utils.ExportExcelUtil;
+import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.event.vo.EventRecordVo;
+import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.event.EventRecordExposeService;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.TemporaryPerson;
+import com.lion.person.expose.person.PatientExposeService;
+import com.lion.person.expose.person.TemporaryPersonExposeService;
+import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.MessageI18nUtil;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
@@ -38,6 +48,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.yaml.snakeyaml.events.Event;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -75,6 +86,20 @@ public class PositionServiceImpl implements PositionService {
     @DubboReference
     private EventRecordExposeService eventRecordExposeService;
 
+    @DubboReference
+    private AssetsExposeService assetsExposeService;
+
+    @DubboReference
+    private FileExposeService fileExposeService;
+
+    @DubboReference
+    private UserExposeService userExposeService;
+
+    @DubboReference
+    private PatientExposeService patientExposeService;
+
+    @DubboReference
+    private TemporaryPersonExposeService temporaryPersonExposeService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -129,7 +154,7 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public IPageResultData<List<Position>> regionVisitor(List<Type> types, Long regionId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<ListVisitorVo>> regionVisitor(List<Type> types, Long regionId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.isNull(types) || types.size()<=0) {
@@ -166,7 +191,43 @@ public class PositionServiceImpl implements PositionService {
         List<Position> items = mongoTemplate.find(query,Position.class);
 //        long count = mongoTemplate.count(query, DeviceData.class);
 //        PageableExecutionUtils.getPage(items, lionPage, () -> count);
-        IPageResultData<List<Position>> pageResultData =new PageResultData<>(items,lionPage,0L);
+        List<ListVisitorVo> returnList = new ArrayList<ListVisitorVo>();
+        items.forEach(position -> {
+            ListVisitorVo vo = new ListVisitorVo();
+            BeanUtils.copyProperties(position,vo);
+            Type type = Type.instance(position.getTyp());
+            Long img = null;
+            if (Objects.equals(type,Type.ASSET)) {
+                Assets assets = assetsExposeService.findById(position.getAdi());
+                if (Objects.nonNull(assets)){
+                    vo.setName(assets.getName());
+                }
+                img = assets.getImg();
+            }else if (Objects.equals(type,Type.STAFF)) {
+                User user = userExposeService.findById(position.getPi());
+                if (Objects.nonNull(user)) {
+                    vo.setName(user.getName());
+                }
+            }else if (Objects.equals(type,Type.PATIENT)) {
+                Patient patient = patientExposeService.findById(position.getPi());
+                if (Objects.nonNull(patient)) {
+                    vo.setName(patient.getName());
+                }
+            }else if (Objects.equals(type,Type.MIGRANT)) {
+                TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(position.getPi());
+                if (Objects.nonNull(temporaryPerson)) {
+                    vo.setName(temporaryPerson.getName());
+                }
+            }
+
+
+            if (Objects.nonNull(img)) {
+                vo.setImg(img);
+                vo.setImgUrl(fileExposeService.getUrl(img));
+            }
+            returnList.add(vo);
+        });
+        IPageResultData<List<ListVisitorVo>> pageResultData =new PageResultData<>(returnList,lionPage,0L);
         return pageResultData;
     }
 

@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import javax.persistence.Column;
+import javax.print.DocFlavor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -87,6 +88,7 @@ public class DetailsTagVo extends Tag {
     public static class Humidity24hour {
 
         @Schema(description = "时间")
+        @JsonFormat(pattern = "HH:mm")
         private LocalTime time;
 
         @Schema(description = "湿度")
@@ -103,5 +105,4 @@ public class DetailsTagVo extends Tag {
             return Objects.hash(time);
         }
     }
-
 }

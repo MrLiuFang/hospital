@@ -325,7 +325,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/region/visitor")
     @ApiOperation(value = "访客(不返回总行数)")
-    public IPageResultData<List<Position>> regionVisitor(@ApiParam("类型") @RequestParam(value = "types",required = false) List<Type> types, @ApiParam("区域id") Long regionId,
+    public IPageResultData<List<ListVisitorVo>> regionVisitor(@ApiParam("类型") @RequestParam(value = "types",required = false) List<Type> types, @ApiParam("区域id") Long regionId,
                                                          @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                          @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                          LionPage lionPage) {
