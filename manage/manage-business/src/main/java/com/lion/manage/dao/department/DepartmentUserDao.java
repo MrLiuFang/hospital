@@ -60,4 +60,11 @@ public interface DepartmentUserDao extends BaseDao<DepartmentUser> {
      */
     public Integer countByDepartmentIdAndUserIdIn(Long departmentId,List<Long> userIds);
 
+    /**
+     * 获取员工所在的科室
+     * @param userId
+     * @return
+     */
+    public DepartmentUser findFirstByUserId(Long userId);
+
 }

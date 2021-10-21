@@ -39,38 +39,7 @@ public class DepartmentExposeServiceImpl extends BaseServiceImpl<Department> imp
 
     @Override
     public List<Long> responsibleDepartment(Long departmentId) {
-        List<Long> departmentIds = new ArrayList<>();
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        Role role = roleExposeService.find(userId);
-        if (Objects.nonNull(role)) {
-            if (role.getCode().toLowerCase().indexOf("admin") < 0) {
-                List<Department> list = new ArrayList<>();
-                if (Objects.nonNull(departmentId)) {
-                    list = departmentResponsibleUserExposeService.findDepartment(userId, departmentId);
-                } else {
-                    list = departmentResponsibleUserExposeService.findDepartment(userId);
-                }
-                list.forEach(department -> {
-                    departmentIds.add(department.getId());
-                });
-                if (departmentIds.size()<=0) {
-                    departmentIds.add(Long.MAX_VALUE);
-                }
-            } else {
-                if (Objects.nonNull(departmentId)) {
-                    departmentIds.add(departmentId);
-                }else {
-                    List<Department> list = findAll();
-                    list.forEach(department -> {
-                        departmentIds.add(department.getId());
-                    });
-                }
-            }
-        }
-//        else {
-//            departmentIds.add(Long.MAX_VALUE);
-//        }
-        return departmentIds;
+        return departmentService.responsibleDepartment(departmentId);
     }
 
 //    @Override

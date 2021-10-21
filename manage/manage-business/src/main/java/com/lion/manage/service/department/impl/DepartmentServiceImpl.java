@@ -12,6 +12,7 @@ import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.DepartmentResponsibleUser;
+import com.lion.manage.entity.department.DepartmentUser;
 import com.lion.manage.entity.department.dto.AddDepartmentDto;
 import com.lion.manage.entity.department.dto.UpdateDepartmentDto;
 import com.lion.manage.entity.department.vo.DetailsDepartmentVo;
@@ -22,7 +23,11 @@ import com.lion.manage.service.department.DepartmentResponsibleUserService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardService;
+import com.lion.upms.entity.role.Role;
+import com.lion.upms.expose.role.RoleExposeService;
+import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -64,6 +69,10 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private RoleExposeService roleExposeService;
+
 
     @Override
     @Transactional
@@ -155,6 +164,55 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
                 delete(tmp);
             }
         });
+    }
+
+    @Override
+    public List<Department> ownerDepartment() {
+        List<Long> listIds = responsibleDepartment(null);
+        DepartmentUser departmentUser = departmentUserDao.findFirstByUserId(CurrentUserUtil.getCurrentUserId());
+        if (Objects.nonNull(departmentUser)) {
+            Department department = findById(departmentUser.getDepartmentId());
+            if (Objects.nonNull(department)) {
+                listIds.add(department.getId());
+            }
+        }
+        return departmentDao.findByIdIn(listIds);
+    }
+
+    @Override
+    public List<Long> responsibleDepartment(Long departmentId) {
+        List<Long> departmentIds = new ArrayList<>();
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        Role role = roleExposeService.find(userId);
+        if (Objects.nonNull(role)) {
+            if (role.getCode().toLowerCase().indexOf("admin") < 0) {
+                List<Department> list = new ArrayList<>();
+                if (Objects.nonNull(departmentId)) {
+                    list = departmentResponsibleUserService.findDepartment(userId, departmentId);
+                } else {
+                    list = departmentDao.findResponsibleDepartmentByUserId(userId);
+                }
+                list.forEach(department -> {
+                    departmentIds.add(department.getId());
+                });
+                if (departmentIds.size()<=0) {
+                    departmentIds.add(Long.MAX_VALUE);
+                }
+            } else {
+                if (Objects.nonNull(departmentId)) {
+                    departmentIds.add(departmentId);
+                }else {
+                    List<Department> list = findAll();
+                    list.forEach(department -> {
+                        departmentIds.add(department.getId());
+                    });
+                }
+            }
+        }
+//        else {
+//            departmentIds.add(Long.MAX_VALUE);
+//        }
+        return departmentIds;
     }
 
 

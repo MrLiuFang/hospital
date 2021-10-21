@@ -58,6 +58,19 @@ public interface DepartmentService extends BaseService<Department> {
     void delete( List<DeleteDto> deleteDtoList);
 
 
+    /**
+     *  获取有权限的部门
+     *
+     * @return
+     */
+    public List<Department> ownerDepartment();
+
+    /**
+     * 获取负责的部门
+     * @param departmentId
+     * @return
+     */
+    public List<Long> responsibleDepartment(Long departmentId);
 
 
 }

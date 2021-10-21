@@ -195,6 +195,12 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
         return resultData;
     }
 
+    @GetMapping("/owner/department")
+    @ApiOperation(value = "获取有权限的部门")
+    public IResultData<List<Department>> ownerDepartment(){
+        return ResultData.instance().setData(departmentService.ownerDepartment());
+    }
+
     private void persistenceRedis(DepartmentAlarm departmentAlarm){
         redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT_ALARM+departmentAlarm.getDepartmentId(),departmentAlarm,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }

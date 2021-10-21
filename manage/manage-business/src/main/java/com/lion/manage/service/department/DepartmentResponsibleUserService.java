@@ -1,10 +1,12 @@
 package com.lion.manage.service.department;
 
 import com.lion.core.service.BaseService;
+import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.DepartmentResponsibleUser;
 import com.lion.manage.entity.department.vo.ResponsibleUserVo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author Mr.Liu
@@ -40,4 +42,13 @@ public interface DepartmentResponsibleUserService extends BaseService<Department
      * @return
      */
     public List<ResponsibleUserVo> responsibleUser(Long departmentId);
+
+    /**
+     *
+     * @param userId
+     * @param departmentId
+     * @return
+     */
+    public List<Department> findDepartment(Long userId, Long departmentId);
+
 }

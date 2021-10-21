@@ -60,6 +60,12 @@ public interface DepartmentDao extends BaseDao<Department> {
     public List<Department> findResponsibleDepartmentByUserId(@Param("userId") Long userId,@Param("departmentId")  Long departmentId);
 
     /**
+     * 根据id查询科室
+     * @param ids
+     * @return
+     */
+    public List<Department> findByIdIn(List<Long> ids);
+    /**
 //     * 根据设备组查找科室
 //     * @param deviceGroupId
 //     * @return

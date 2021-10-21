@@ -2,7 +2,9 @@ package com.lion.manage.service.department.impl;
 
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.manage.dao.department.DepartmentDao;
 import com.lion.manage.dao.department.DepartmentResponsibleUserDao;
+import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.department.DepartmentResponsibleUser;
 import com.lion.manage.entity.department.vo.ResponsibleUserVo;
 import com.lion.manage.service.department.DepartmentResponsibleUserService;
@@ -35,6 +37,8 @@ public class DepartmentResponsibleUserServiceImpl extends BaseServiceImpl<Depart
     @DubboReference
     private FileExposeService fileExposeService;
 
+    @Autowired
+    private DepartmentDao departmentDao;
 
     @Override
     public void save(List<Long> responsible, Long departmentId) {
@@ -82,5 +86,10 @@ public class DepartmentResponsibleUserServiceImpl extends BaseServiceImpl<Depart
             }
         });
         return returnList;
+    }
+
+    @Override
+    public List<Department> findDepartment(Long userId, Long departmentId) {
+        return departmentDao.findResponsibleDepartmentByUserId(userId,departmentId);
     }
 }

@@ -29,7 +29,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.repository.query.Param;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -219,38 +218,38 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/department/staff/statistics/details")
     @ApiOperation(value = "地图监控科室员工统计(左边列表)")
-    public IResultData<DepartmentStaffStatisticsDetailsVo> departmentStaffStatisticsDetails(@ApiParam(value = "是否所有员工-false=当前,true=所有") Boolean isAll,@ApiParam(value = "姓名") String name,@ApiParam(value = "区域id") Long regionId) {
-        return ResultData.instance().setData(mapStatisticsService.departmentStaffStatisticsDetails(isAll, name, regionId));
+    public IResultData<DepartmentStaffStatisticsDetailsVo> departmentStaffStatisticsDetails(@ApiParam(value = "是否所有员工-false=当前,true=所有") Boolean isAll,@ApiParam(value = "姓名") String name,@ApiParam(value = "区域id") Long regionId, @ApiParam("科室ID") Long departmentId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentStaffStatisticsDetails(isAll, name, regionId, departmentId));
     }
 
     @GetMapping("/department/assets/statistics/details")
     @ApiOperation(value = "地图监控科室资产统计(左边列表)")
-    public IResultData<DepartmentAssetsStatisticsDetailsVo> departmentAssetsStatisticsDetails(@ApiParam(value = "名称/资产编码") String keyword,@ApiParam(value = "区域id") Long regionId) {
-        return ResultData.instance().setData(mapStatisticsService.departmentAssetsStatisticsDetails(keyword, regionId));
+    public IResultData<DepartmentAssetsStatisticsDetailsVo> departmentAssetsStatisticsDetails(@ApiParam(value = "名称/资产编码") String keyword,@ApiParam(value = "区域id") Long regionId, @ApiParam("科室ID") Long departmentId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentAssetsStatisticsDetails(keyword, regionId, departmentId));
     }
 
     @GetMapping("/department/tag/statistics/details")
     @ApiOperation(value = "地图监控科室温标签统计(左边列表)")
-    public IResultData<DepartmentTagStatisticsDetailsVo> departmentTagStatisticsDetails(@ApiParam(value = "名称/标签编码") String keyword,@ApiParam(value = "区域id") Long regionId) {
-        return ResultData.instance().setData(mapStatisticsService.departmentTagStatisticsDetails(keyword, regionId));
+    public IResultData<DepartmentTagStatisticsDetailsVo> departmentTagStatisticsDetails(@ApiParam(value = "名称/标签编码") String keyword,@ApiParam(value = "区域id") Long regionId, @ApiParam("科室ID") Long departmentId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentTagStatisticsDetails(keyword, regionId, departmentId));
     }
 
     @GetMapping("/department/patient/statistics/details")
     @ApiOperation(value = "地图监控患者统计(左边列表)")
-    public IResultData<DepartmentPatientStatisticsDetailsVo> departmentPatientStatisticsDetails(@ApiParam(value = "姓名") String name,@ApiParam(value = "区域id") Long regionId) {
-        return ResultData.instance().setData(mapStatisticsService.departmentPatientStatisticsDetails(name, regionId));
+    public IResultData<DepartmentPatientStatisticsDetailsVo> departmentPatientStatisticsDetails(@ApiParam(value = "姓名") String name,@ApiParam(value = "区域id") Long regionId, @ApiParam("科室ID") Long departmentId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentPatientStatisticsDetails(name, regionId, departmentId));
     }
 
     @GetMapping("/department/temporary/person/statistics/details")
     @ApiOperation(value = "地图监控流动人员统计(左边列表)")
-    public IResultData<DepartmentTemporaryPersonStatisticsDetailsVo> departmentTemporaryPersonStatisticsDetails(@ApiParam(value = "姓名") String name,@ApiParam(value = "区域id") Long regionId) {
-        return ResultData.instance().setData(mapStatisticsService.departmentTemporaryPersonStatisticsDetails(name, regionId));
+    public IResultData<DepartmentTemporaryPersonStatisticsDetailsVo> departmentTemporaryPersonStatisticsDetails(@ApiParam(value = "姓名") String name,@ApiParam(value = "区域id") Long regionId, @ApiParam("科室ID") Long departmentId) {
+        return ResultData.instance().setData(mapStatisticsService.departmentTemporaryPersonStatisticsDetails(name, regionId, departmentId));
     }
 
     @GetMapping("/department/device/statistics/details")
     @ApiOperation(value = "地图监控监控器列表(左边列表)")
-    public IResultData<DepartmentDeviceStatisticsDetailsVo> departmentDeviceGroupStatisticsDetails(@ApiParam(value = "设备名称/编号") String keyword, @ApiParam(value = "区域id") Long regionId){
-        return ResultData.instance().setData(mapStatisticsService.departmentDeviceStatisticsDetails(keyword, regionId));
+    public IResultData<DepartmentDeviceStatisticsDetailsVo> departmentDeviceGroupStatisticsDetails(@ApiParam(value = "设备名称/编号") String keyword, @ApiParam(value = "区域id") Long regionId, @ApiParam("科室ID") Long departmentId){
+        return ResultData.instance().setData(mapStatisticsService.departmentDeviceStatisticsDetails(keyword, regionId, departmentId));
     }
 
     @GetMapping("/patient/details")

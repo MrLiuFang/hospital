@@ -95,15 +95,5 @@ public class DetailsTagVo extends Tag {
         @Schema(description = "湿度")
         private BigDecimal humidity;
 
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            return Objects.equals(time,o);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(time);
-        }
     }
 }

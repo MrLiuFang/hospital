@@ -46,48 +46,54 @@ public interface MapStatisticsService {
      * @param isAll
      * @param name
      * @param regionId
+     * @param departmentId
      */
-    public DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetails( Boolean isAll,String name,Long regionId);
+    public DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetails( Boolean isAll,String name,Long regionId, Long departmentId);
 
     /**
      * 科室资产统计
      * @return
      * @param keyword
      * @param regionId
+     * @param departmentId
      */
-    public DepartmentAssetsStatisticsDetailsVo departmentAssetsStatisticsDetails(String keyword,Long regionId);
+    public DepartmentAssetsStatisticsDetailsVo departmentAssetsStatisticsDetails(String keyword,Long regionId, Long departmentId);
 
     /**
      * 科室标签统计
      * @param keyword
      * @param regionId
+     * @param departmentId
      * @return
      */
-    public DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetails(String keyword,Long regionId);
+    public DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetails(String keyword,Long regionId, Long departmentId);
 
     /**
      *
      * @param name
      * @param regionId
+     * @param departmentId
      * @return
      */
-    public DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetails(String name,Long regionId);
+    public DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetails(String name,Long regionId, Long departmentId);
 
     /**
      *
      * @param name
      * @param regionId
+     * @param departmentId
      * @return
      */
-    public DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetails(String name,Long regionId);
+    public DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetails(String name,Long regionId, Long departmentId);
 
     /**
      *
      * @param keyword
      * @param regionId
+     * @param departmentId
      * @return
      */
-    public DepartmentDeviceStatisticsDetailsVo departmentDeviceStatisticsDetails(String keyword, Long regionId);
+    public DepartmentDeviceStatisticsDetailsVo departmentDeviceStatisticsDetails(String keyword, Long regionId, Long departmentId);
 
     /**
      * 员工详情

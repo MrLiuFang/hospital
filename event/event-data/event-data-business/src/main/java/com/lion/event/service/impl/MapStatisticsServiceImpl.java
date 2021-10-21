@@ -313,14 +313,14 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetails(Boolean isAll, String name, Long regionId) {
-        List<Long> list = departmentExposeService.responsibleDepartment(null);
+    public DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetails(Boolean isAll, String name, Long regionId, Long departmentId) {
+        List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
         DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetailsVo = new DepartmentStaffStatisticsDetailsVo();
         List<DepartmentStaffStatisticsDetailsVo.DepartmentVo> departmentVos = new ArrayList<>();
         departmentStaffStatisticsDetailsVo.setDepartmentVos(departmentVos);
         List<Region> regionList = new ArrayList<>();
-        list.forEach(departmentId -> {
-            regionList.addAll(regionExposeService.findByDepartmentId(departmentId));
+        list.forEach(id -> {
+            regionList.addAll(regionExposeService.findByDepartmentId(id));
         });
         List<Long> listIds = new ArrayList<>();
         if (Objects.nonNull(regionId)) {
@@ -332,8 +332,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         }
 
         List<Long> finalListIds = listIds;
-        list.forEach(departmentId -> {
-            Department department = departmentExposeService.findById(departmentId);
+        list.forEach(id -> {
+            Department department = departmentExposeService.findById(id);
             DepartmentStaffStatisticsDetailsVo.DepartmentVo vo = new DepartmentStaffStatisticsDetailsVo.DepartmentVo();
             vo.setDepartmentName(department.getName());
             vo.setDepartmentId(department.getId());
@@ -342,8 +342,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             departmentStaffStatisticsDetailsVo.setAbnormalStaffCount(departmentStaffStatisticsDetailsVo.getAbnormalStaffCount() + departmentUserExposeService.count(department.getId(), com.lion.upms.entity.enums.State.ALARM, finalListIds));
             List<Long> userIds = departmentUserExposeService.findAllUser(department.getId(),name, (Objects.equals(false,isAll) || Objects.nonNull(regionId)) ?finalListIds:null);
             List<DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo> listStaff = new ArrayList<>();
-            userIds.forEach(id->{
-                User user = userExposeService.findById(id);
+            userIds.forEach(userId->{
+                User user = userExposeService.findById(userId);
                 if (Objects.nonNull(user)) {
                     DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo staff = new DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo();
                     staff.setUserId(user.getId());
@@ -379,8 +379,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public DepartmentAssetsStatisticsDetailsVo departmentAssetsStatisticsDetails(String keyword, Long regionId) {
-        List<Long> list = departmentExposeService.responsibleDepartment(null);
+    public DepartmentAssetsStatisticsDetailsVo departmentAssetsStatisticsDetails(String keyword, Long regionId, Long departmentId) {
+        List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
         DepartmentAssetsStatisticsDetailsVo departmentAssetsStatisticsDetailsVo =new DepartmentAssetsStatisticsDetailsVo();
         List<DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo> assetsDepartmentVos = new ArrayList<>();
         departmentAssetsStatisticsDetailsVo.setAssetsDepartmentVos(assetsDepartmentVos);
@@ -389,8 +389,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             listIds = this.find(Type.ASSET, regionId);
         }
         List<Long> finalListIds = listIds;
-        list.forEach(departmentId -> {
-            Department department = departmentExposeService.findById(departmentId);
+        list.forEach(id -> {
+            Department department = departmentExposeService.findById(id);
             if (Objects.nonNull(department)) {
                 DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo vo = new DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo();
                 vo.setDepartmentName(department.getName());
@@ -426,13 +426,13 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetails(String keyword, Long regionId) {
-        List<Long> list = departmentExposeService.responsibleDepartment(null);
+    public DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetails(String keyword, Long regionId, Long departmentId) {
+        List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
         DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetailsVo = new DepartmentTagStatisticsDetailsVo();
         List<DepartmentTagStatisticsDetailsVo.TagDepartmentVo> tagDepartmentVos = new ArrayList<>();
         departmentTagStatisticsDetailsVo.setTagDepartmentVos(tagDepartmentVos);
-        list.forEach(departmentId -> {
-            Department department = departmentExposeService.findById(departmentId);
+        list.forEach(id -> {
+            Department department = departmentExposeService.findById(id);
             if (Objects.nonNull(department)) {
                 DepartmentTagStatisticsDetailsVo.TagDepartmentVo tagDepartmentVo = new DepartmentTagStatisticsDetailsVo.TagDepartmentVo();
                 tagDepartmentVo.setDepartmentName(department.getName());
@@ -467,8 +467,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetails(String name, Long regionId) {
-        List<Long> list = departmentExposeService.responsibleDepartment(null);
+    public DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetails(String name, Long regionId, Long departmentId) {
+        List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
         DepartmentPatientStatisticsDetailsVo departmentPatientStatisticsDetailsVo = new DepartmentPatientStatisticsDetailsVo();
         List<DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo> patientDepartmentVos = new ArrayList<>();
         departmentPatientStatisticsDetailsVo.setPatientDepartmentVos(patientDepartmentVos);
@@ -477,8 +477,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             listIds = this.find(Type.PATIENT, regionId);
         }
         List<Long> finalListIds = listIds;
-        list.forEach(departmentId -> {
-            Department department = departmentExposeService.findById(departmentId);
+        list.forEach(id -> {
+            Department department = departmentExposeService.findById(id);
             if (Objects.nonNull(department)) {
                 DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo patientDepartmentVo = new DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo();
                 patientDepartmentVo.setDepartmentName(department.getName());
@@ -515,8 +515,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetails(String name, Long regionId) {
-        List<Long> list = departmentExposeService.responsibleDepartment(null);
+    public DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetails(String name, Long regionId, Long departmentId) {
+        List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
         DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetailsVo = new DepartmentTemporaryPersonStatisticsDetailsVo();
         List<DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo> temporaryPersonDepartmentVos = new ArrayList<>();
         departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonDepartmentVos(temporaryPersonDepartmentVos);
@@ -525,7 +525,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             listIds = this.find(Type.MIGRANT, regionId);
         }
         List<Long> finalListIds = listIds;
-        list.forEach(departmentId -> {
+        list.forEach(id -> {
             Department department = departmentExposeService.findById(departmentId);
             if (Objects.nonNull(department)) {
                 DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo temporaryPersonDepartmentVo = new DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo();
@@ -558,8 +558,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public DepartmentDeviceStatisticsDetailsVo departmentDeviceStatisticsDetails(String keyword, Long regionId) {
-        List<Long> list = departmentExposeService.responsibleDepartment(null);
+    public DepartmentDeviceStatisticsDetailsVo departmentDeviceStatisticsDetails(String keyword, Long regionId, Long departmentId) {
+        List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
         DepartmentDeviceStatisticsDetailsVo departmentDeviceStatisticsDetailsVo = new DepartmentDeviceStatisticsDetailsVo();
         List<DepartmentDeviceStatisticsDetailsVo.DepartmentDeviceDetailsVo> departmentDeviceDetailsVos = new ArrayList<DepartmentDeviceStatisticsDetailsVo.DepartmentDeviceDetailsVo>();
 //        List<DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo> deviceGroupDetailsVos = new ArrayList<>();
