@@ -196,7 +196,7 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
     }
 
     @GetMapping("/owner/department")
-    @ApiOperation(value = "获取有权限的部门")
+    @ApiOperation(value = "获取有权限的科室")
     public IResultData<List<Department>> ownerDepartment(){
         return ResultData.instance().setData(departmentService.ownerDepartment());
     }
