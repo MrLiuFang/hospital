@@ -19,6 +19,7 @@ import com.lion.event.entity.DeviceData;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.WashRecord;
 import com.lion.event.entity.dto.AlarmReportDto;
+import com.lion.event.entity.dto.EventRecordAddDto;
 import com.lion.event.entity.dto.OldAlarmToNewAlarm;
 import com.lion.event.entity.dto.UnalarmDto;
 import com.lion.event.entity.vo.*;
@@ -333,10 +334,17 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/position/export")
     @ApiOperation(value = "轨迹导出")
-    public void positionExport(@ApiParam("人员(员工,病人,流动人员)id") Long personId, @ApiParam("区域id") Long regionId, @ApiParam("事件编号") String code, @ApiParam("备注") String remarks,
+    public void positionExport(@ApiParam("人员(员工,病人,流动人员)id") Long personId, @ApiParam("区域id") Long regionId,
                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException {
-        positionService.positionExport(personId,regionId,startDateTime,endDateTime,code,remarks,response,request );
+        positionService.positionExport(personId,regionId,startDateTime,endDateTime, response,request );
+    }
+
+    @GetMapping("/event/record/add")
+    @ApiOperation(value = "新增事件记录")
+    public IResultData eventRecordAdd(@RequestBody EventRecordAddDto eventRecordAddDto, HttpServletRequest request) throws JsonProcessingException {
+        positionService.eventRecordAdd(eventRecordAddDto,request);
+        return ResultData.instance();
     }
 
     @GetMapping("/event/record")

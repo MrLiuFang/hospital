@@ -97,7 +97,7 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
         }
         query.addCriteria(criteria);
         query.with(lionPage);
-//        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
         List<RecyclingBoxRecord> items = mongoTemplate.find(query, RecyclingBoxRecord.class);
         List<ListRecyclingBoxRecordVo> returnList = new ArrayList<>();
         items.forEach(recyclingBoxRecord -> {

@@ -79,7 +79,7 @@ public class UserTagButtonRecordServiceImpl implements UserTagButtonRecordServic
         }
         query.addCriteria(criteria);
         query.with(lionPage);
-//        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
         List<UserTagButtonRecord> items = mongoTemplate.find(query, UserTagButtonRecord.class);
         List<ListUserTagButtonRecordVo> returnList = new ArrayList<>();
         items.forEach(userTagButtonRecord -> {

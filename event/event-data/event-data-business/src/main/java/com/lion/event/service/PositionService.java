@@ -1,16 +1,16 @@
 package com.lion.event.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.lion.common.dto.UpdatePositionLeaveTimeDto;
 import com.lion.common.enums.Type;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.event.entity.Position;
+import com.lion.event.entity.dto.EventRecordAddDto;
 import com.lion.event.entity.vo.ListPositionVo;
 import com.lion.event.entity.vo.ListVisitorVo;
 import com.lion.manage.entity.event.vo.EventRecordVo;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -74,12 +74,17 @@ public interface PositionService {
      * @param ri
      * @param startDateTime
      * @param endDateTime
-     * @param code
-     * @param remarks
      * @param response
      * @param request
      */
-    public void positionExport(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, String code, String remarks, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException;
+    public void positionExport(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException;
+
+    /**
+     * 新增事件
+     * @param eventRecordAddDto
+     * @param request
+     */
+    public void eventRecordAdd(EventRecordAddDto eventRecordAddDto, HttpServletRequest request) throws JsonProcessingException;
 
     /**
      * 病人/流动人员所到区域

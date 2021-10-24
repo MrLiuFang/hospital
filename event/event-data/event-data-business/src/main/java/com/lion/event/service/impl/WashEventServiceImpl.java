@@ -337,7 +337,7 @@ public class WashEventServiceImpl implements WashEventService {
         }
         query.addCriteria(criteria);
         query.with(lionPage);
-//        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
         List<WashEvent> items = mongoTemplate.find(query,WashEvent.class);
 //        long count = mongoTemplate.count(query, WashEvent.class);
 //        PageableExecutionUtils.getPage(items, lionPage, () -> count);
@@ -559,7 +559,7 @@ public class WashEventServiceImpl implements WashEventService {
         criteria.and("ia").is(true);
         query.addCriteria(criteria);
         query.with(lionPage);
-//        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
         List<WashEvent> items = mongoTemplate.find(query,WashEvent.class);
         List<ListViolationWashEventVo> returnList = new ArrayList<ListViolationWashEventVo>();
         items.forEach(washEvent -> {

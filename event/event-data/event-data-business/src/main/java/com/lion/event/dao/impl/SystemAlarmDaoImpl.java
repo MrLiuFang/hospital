@@ -255,7 +255,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         query.addCriteria(criteria);
         long count = mongoTemplate.count(query, SystemAlarm.class);
         query.with(lionPage);
-//        query.with(Sort.by(Sort.Direction.DESC,"sdt"));
+        query.with(Sort.by(Sort.Direction.DESC,"sdt"));
         List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
         List<SystemAlarmVo> list = new ArrayList<>();
         if (Objects.nonNull(items) && items.size()>0){
@@ -403,7 +403,6 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         Criteria criteria = new Criteria();
         criteria.and("_id").is(id);
         query.addCriteria(criteria);
-//        query.with(Sort.by(Sort.Order.desc("sdt")));
         SystemAlarm systemAlarm = mongoTemplate.findOne(query, SystemAlarm.class);
         return systemAlarm;
     }
