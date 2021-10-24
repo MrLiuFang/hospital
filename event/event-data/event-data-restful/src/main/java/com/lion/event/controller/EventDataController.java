@@ -340,7 +340,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         positionService.positionExport(personId,regionId,startDateTime,endDateTime, response,request );
     }
 
-    @GetMapping("/event/record/add")
+    @PostMapping("/event/record/add")
     @ApiOperation(value = "新增事件记录")
     public IResultData eventRecordAdd(@RequestBody EventRecordAddDto eventRecordAddDto, HttpServletRequest request) throws JsonProcessingException {
         positionService.eventRecordAdd(eventRecordAddDto,request);
