@@ -204,6 +204,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
             vo.setClassify(device.getDeviceClassify());
             vo.setCode(device.getCode());
             vo.setName(device.getName());
+            vo.setDeviceId(device.getId());
 //            DeviceGroupDevice deviceGroupDevice = deviceGroupDeviceExposeService.findByDeviceId(device.getId());
 //            if (Objects.nonNull(deviceGroupDevice)) {
 //                DeviceGroup deviceGroup = deviceGroupExposeService.findById(deviceGroupDevice.getDeviceGroupId());

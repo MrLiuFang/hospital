@@ -1,6 +1,7 @@
 package com.lion.manage.entity.assets.vo;
 
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.assets.AssetsType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.Data;
@@ -22,4 +23,7 @@ public class ListAssetsVo extends Assets {
 
     @Schema(description = "标签码")
     private String tagCode;
+
+    @Schema(description = "资产类型")
+    private AssetsType assetsType;
 }

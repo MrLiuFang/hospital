@@ -15,6 +15,9 @@ import lombok.Data;
 @Schema
 public class ListDeviceMonitorVo {
 
+    @Schema(description = "设备id")
+    private Long deviceId;
+
     @Schema(description = "设备名称")
     private String name;
 

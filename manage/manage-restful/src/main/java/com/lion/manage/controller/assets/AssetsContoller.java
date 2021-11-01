@@ -187,6 +187,7 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
                     }
                 }
             }
+            listAssetsVo.setAssetsType(assetsTypeService.findById(assets.getAssetsTypeId()));
             listAssetsVos.add(listAssetsVo);
         });
         return new PageResultData(listAssetsVos, page.getPageable(), page.getTotalElements());
