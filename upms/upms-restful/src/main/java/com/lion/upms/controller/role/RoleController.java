@@ -21,6 +21,7 @@ import com.lion.utils.MessageI18nUtil;
 import io.swagger.annotations.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -97,7 +98,7 @@ public class RoleController extends BaseControllerImpl implements BaseController
 //        roleService.assertCodeExist(role.getCode(),role.getId());
         Role old = roleService.findById(role.getId());
         if (Objects.equals(old.getIsDefault(),true)) {
-            if (!Objects.equals(old.getName(),role.getName())){
+            if (StringUtils.hasText(role.getName()) && !Objects.equals(old.getName(),role.getName())){
                 BusinessException.throwException(MessageI18nUtil.getMessage("0000025"));
             }
         }
