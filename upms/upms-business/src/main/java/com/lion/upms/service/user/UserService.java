@@ -11,6 +11,7 @@ import com.lion.upms.entity.user.dto.UpdateUserDto;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -52,6 +53,16 @@ public interface UserService extends BaseService<User> {
      * @return
      */
     public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, LionPage lionPage);
+
+    /**
+     * 导出
+     * @param departmentId
+     * @param userTypeIds
+     * @param number
+     * @param name
+     * @param roleId
+     */
+    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId) throws IOException, IllegalAccessException;
 
     /**
      * 用户详情

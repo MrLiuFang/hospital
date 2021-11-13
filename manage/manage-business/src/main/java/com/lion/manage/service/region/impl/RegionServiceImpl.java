@@ -1,7 +1,13 @@
 package com.lion.manage.service.region.impl;
 
 import com.lion.common.constants.RedisConstants;
+import com.lion.constant.SearchConstant;
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
+import com.lion.core.ResultData;
 import com.lion.core.common.dto.DeleteDto;
+import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.WarningBell;
@@ -21,9 +27,11 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.entity.region.RegionWarningBell;
 import com.lion.manage.entity.region.dto.AddRegionDto;
+import com.lion.manage.entity.region.dto.BatchUpdateWashTemplateDto;
 import com.lion.manage.entity.region.dto.UpdateRegionCoordinatesDto;
 import com.lion.manage.entity.region.dto.UpdateRegionDto;
 import com.lion.manage.entity.region.vo.DetailsRegionVo;
+import com.lion.manage.entity.region.vo.ListRegionVo;
 import com.lion.manage.expose.ward.WardRoomExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.manage.service.build.BuildFloorService;
@@ -40,9 +48,13 @@ import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +129,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @Autowired
     private WashTemplateService washTemplateService;
 
-    @Autowired
+    @DubboReference
     private WarningBellExposeService  warningBellExposeService;
 
     @Override
@@ -176,6 +188,19 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         deviceExposeService.relationRegion(region.getId(),updateRegionDto.getDeviceIds());
 //        regionExposeObjectService.save(region.getId(),updateRegionDto.getExposeObjects());
         persistenceRedis(region, updateRegionDto.getDeviceIds(),getDeviceId(region.getId()), false);
+    }
+
+    @Override
+    public void batchUpdateWashTemplate(BatchUpdateWashTemplateDto batchUpdateWashTemplateDto) {
+        if (Objects.nonNull( batchUpdateWashTemplateDto.getRegionIds()) && batchUpdateWashTemplateDto.getRegionIds().size()>0) {
+            batchUpdateWashTemplateDto.getRegionIds().forEach(id ->{
+                Region region = findById(id);
+                if (Objects.nonNull(region)) {
+                    region.setWashTemplateId(batchUpdateWashTemplateDto.getWashTemplateId());
+                    update(region);
+                }
+            });
+        }
     }
 
     @Override
@@ -247,6 +272,59 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         });
         detailsRegionVo.setWarningBells(warningBells);
         return detailsRegionVo;
+    }
+
+    @Override
+    public IPageResultData<List<ListRegionVo>> list(String name, String code, List<Long> departmentIds, Long washTemplateId, Long regionTypeId, Long buildId, Long buildFloorId, LionPage lionPage) {
+        ResultData resultData = ResultData.instance();
+        JpqlParameter jpqlParameter = new JpqlParameter();
+        if (StringUtils.hasText(name)){
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
+        }
+        if (StringUtils.hasText(code)){
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
+        }
+        if (Objects.nonNull(departmentIds) && departmentIds.size()>0){
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
+        }
+        if (Objects.nonNull(buildId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_buildId",buildId);
+        }
+        if (Objects.nonNull(buildFloorId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_buildFloorId",buildFloorId);
+        }
+        if (Objects.nonNull(washTemplateId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_washTemplateId",washTemplateId);
+        }
+        if (Objects.nonNull(regionTypeId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_regionTypeId",regionTypeId);
+        }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
+        lionPage.setJpqlParameter(jpqlParameter);
+        Page<Region> page = findNavigator(lionPage);
+        List<Region> list = page.getContent();
+        List<ListRegionVo> returnList = new ArrayList<>();
+        list.forEach(region -> {
+            ListRegionVo vo = new ListRegionVo();
+            BeanUtils.copyProperties(region,vo);
+            Build build = buildService.findById(region.getBuildId());
+            if (Objects.nonNull(build)){
+                vo.setBuildName(build.getName());
+            }
+            BuildFloor buildFloor = buildFloorService.findById(region.getBuildFloorId());
+            if (Objects.nonNull(buildFloor)){
+                vo.setBuildFloorName(buildFloor.getName());
+            }
+            Department department = departmentService.findById(region.getDepartmentId());
+            if (Objects.nonNull(department)){
+                vo.setDepartmentName(department.getName());
+            }
+            if (Objects.nonNull(region.getWashTemplateId())) {
+                vo.setWashTemplateVo(washTemplateService.details(region.getWashTemplateId()));
+            }
+            returnList.add(vo);
+        });
+        return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
     }
 
     private List<Long> getDeviceId(Long regionId) {

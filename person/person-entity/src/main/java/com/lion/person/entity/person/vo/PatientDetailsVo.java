@@ -2,6 +2,7 @@ package com.lion.person.entity.person.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.PatientReport;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.Data;
@@ -64,6 +65,9 @@ public class PatientDetailsVo extends Patient {
 
     @Schema(description = "警报ID")
     private String alarmId;
+
+    @Schema(description = "最后一次汇报")
+    private PatientReport patientReport;
 
     @Data
     @Schema

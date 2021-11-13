@@ -4,6 +4,7 @@ import com.lion.core.LionPage;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,7 +16,9 @@ public interface WorkDaoEx {
 
     /**
      *
-     * @param departmentId
+     *
+     * @param departmentIds
+     * @param userIds
      * @param name
      * @param userTypeId
      * @param startDateTime
@@ -23,5 +26,5 @@ public interface WorkDaoEx {
      * @param lionPage
      * @return
      */
-    public Page<Map<String,Object>> List(Long departmentId, String name, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public Page<Map<String,Object>> List(List<Long> departmentIds, List<Long> userIds, String name, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

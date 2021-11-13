@@ -26,4 +26,7 @@ public class ListUserVo extends User {
 
     @Schema(description = "用户类型")
     private UserType userType;
+
+    @Schema(description = "是否创建账号")
+    private Boolean isCreateAccount;
 }

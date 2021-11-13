@@ -31,6 +31,7 @@ import com.lion.manage.expose.ward.WardExposeService;
 import com.lion.manage.expose.ward.WardRoomExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.dao.person.PatientDao;
+import com.lion.person.dao.person.PatientReportDao;
 import com.lion.person.dao.person.PatientTransferDao;
 import com.lion.person.dao.person.TempLeaveDao;
 import com.lion.person.entity.enums.LogType;
@@ -139,6 +140,10 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
 
     @DubboReference
     private SystemAlarmExposeService systemAlarmExposeService;
+
+    @Autowired
+    private PatientReportDao patientReportDao;
+
 
     @Override
     @Transactional
@@ -432,6 +437,8 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             vo.setAlarmDataTime(systemAlarm.getDt());
             vo.setAlarmId(systemAlarm.get_id());
         }
+
+        vo.setPatientReport(patientReportDao.findFirstByPatientIdOrderByCreateDateTimeDesc(patient.getId()));
 
         if (Objects.nonNull(patient.getBindPatientId())){
             vo.setBindPatient(details(patient.getBindPatientId()));

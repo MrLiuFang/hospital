@@ -54,9 +54,9 @@ public class WashEventDaoImpl implements WashEventDaoEx {
     public List<Document> eventCount(LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isDepartmentGroup, Long userTypeId, Long userId, LionPage lionPage) {
         List<Bson> pipeline = new ArrayList<Bson>();
         BasicDBObject group = new BasicDBObject();
-        if (Objects.nonNull(isDepartmentGroup) && Objects.equals(true,isDepartmentGroup)) {
+        if (Objects.nonNull(isDepartmentGroup) && Objects.equals(isDepartmentGroup,true)) {
             group = BasicDBObjectUtil.put(group,"$group","_id","$pdn"); //部门分组
-        }else if (Objects.nonNull(isDepartmentGroup)){
+        }else if (Objects.nonNull(isDepartmentGroup) && Objects.equals(isDepartmentGroup,false)){
             group = BasicDBObjectUtil.put(group,"$group","_id","$a"); //全院
         }else if (Objects.isNull(isDepartmentGroup)){
             group = BasicDBObjectUtil.put(group,"$group","_id","$pi"); //员工分组

@@ -1,15 +1,18 @@
 package com.lion.manage.expose.region.impl;
 
+import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.entity.region.vo.ListRegionVo;
 import com.lion.manage.expose.region.RegionExposeService;
+import com.lion.manage.service.department.DepartmentService;
+import com.lion.manage.service.region.RegionService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +26,12 @@ public class RegionExposeServiceImpl extends BaseServiceImpl<Region> implements 
 
     @Autowired
     private RegionDao regionDao;
+
+    @Autowired
+    private RegionService regionService;
+
+    @Autowired
+    private DepartmentService departmentService;
 
 //    @Override
 //    public Region find(Long deviceGroupId) {
@@ -50,5 +59,12 @@ public class RegionExposeServiceImpl extends BaseServiceImpl<Region> implements 
         Page<Region> page = findNavigator(lionPage);
         PageResultData pageResultData = new PageResultData(page.getContent(),new LionPage(page.getNumber(),page.getSize()),page.getTotalElements());
         return pageResultData;
+    }
+
+    @Override
+    public List<ListRegionVo> find(String keyword, Long departmentId) {
+        List<Long> list = departmentService.responsibleDepartment(departmentId);
+        IPageResultData<List<ListRegionVo>>  pageResultData = regionService.list(keyword,keyword,list,null,null,null,null,new LionPage(0,Integer.MAX_VALUE));
+        return pageResultData.getData();
     }
 }

@@ -121,46 +121,7 @@ public class RegionController extends BaseControllerImpl implements BaseControll
     @GetMapping("/list")
     @ApiOperation(value = "区域列表")
     public IPageResultData<List<ListRegionVo>> list(@ApiParam(value = "区域名称") String name,@ApiParam(value = "洗手规则模板id")Long washTemplateId,@ApiParam(value = "区域类型id")Long regionTypeId,@ApiParam(value = "建筑id")Long buildId, @ApiParam(value = "建筑楼层id")Long buildFloorId, LionPage lionPage){
-        ResultData resultData = ResultData.instance();
-        JpqlParameter jpqlParameter = new JpqlParameter();
-        if (StringUtils.hasText(name)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
-        }
-        if (Objects.nonNull(buildId)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_buildId",buildId);
-        }
-        if (Objects.nonNull(buildFloorId)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_buildFloorId",buildFloorId);
-        }
-        if (Objects.nonNull(washTemplateId)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_washTemplateId",washTemplateId);
-        }
-        if (Objects.nonNull(regionTypeId)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_regionTypeId",regionTypeId);
-        }
-        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
-        lionPage.setJpqlParameter(jpqlParameter);
-        PageResultData page = (PageResultData) regionService.findNavigator(lionPage);
-        List<Region> list = page.getContent();
-        List<ListRegionVo> returnList = new ArrayList<>();
-        list.forEach(region -> {
-            ListRegionVo vo = new ListRegionVo();
-            BeanUtils.copyProperties(region,vo);
-            Build build = buildService.findById(region.getBuildId());
-            if (Objects.nonNull(build)){
-                vo.setBuildName(build.getName());
-            }
-            BuildFloor buildFloor = buildFloorService.findById(region.getBuildFloorId());
-            if (Objects.nonNull(buildFloor)){
-                vo.setBuildFloorName(buildFloor.getName());
-            }
-            Department department = departmentService.findById(region.getDepartmentId());
-            if (Objects.nonNull(department)){
-                vo.setDepartmentName(department.getName());
-            }
-            returnList.add(vo);
-        });
-        return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
+        return regionService.list(name,null,null,washTemplateId,regionTypeId,buildId,buildFloorId,lionPage);
     }
 
     @GetMapping("/details")
@@ -173,6 +134,13 @@ public class RegionController extends BaseControllerImpl implements BaseControll
     @ApiOperation(value = "修改区域")
     public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateRegionDto updateRegionDto){
         regionService.update(updateRegionDto);
+        return ResultData.instance();
+    }
+
+    @PutMapping("/update/batch")
+    @ApiOperation(value = "批量修改区域关联洗手模板")
+    public IResultData batchUpdateWashTemplate(@RequestBody BatchUpdateWashTemplateDto batchUpdateWashTemplateDto) {
+        regionService.batchUpdateWashTemplate(batchUpdateWashTemplateDto);
         return ResultData.instance();
     }
 

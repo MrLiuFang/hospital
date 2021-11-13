@@ -40,6 +40,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
@@ -223,6 +224,18 @@ public class UserController extends BaseControllerImpl implements BaseController
         DetailsUserTypeVo vo = new DetailsUserTypeVo();
         BeanUtils.copyProperties(userType,vo);
         return ResultData.instance().setData(vo);
+    }
+
+    @GetMapping("/export")
+    @ApiOperation(value = "导出")
+    public void export(@ApiParam(value = "是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户类型") Long userTypeId,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId) throws IOException, IllegalAccessException {
+        if (Objects.equals(isMyDepartment,true)) {
+            Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
+            if (Objects.nonNull(department)) {
+                departmentId = department.getId();
+            }
+        }
+        userService.export(departmentId,userTypeId,number,name,roleId);
     }
 
 

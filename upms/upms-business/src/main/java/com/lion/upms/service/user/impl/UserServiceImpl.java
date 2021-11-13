@@ -14,6 +14,7 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagLogExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
+import com.lion.event.entity.Position;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.event.expose.service.SystemAlarmExposeService;
@@ -37,6 +38,8 @@ import com.lion.upms.service.role.RoleService;
 import com.lion.upms.service.role.RoleUserService;
 import com.lion.upms.service.user.UserService;
 import com.lion.upms.service.user.UserTypeService;
+import com.lion.upms.utils.ExcelColumn;
+import com.lion.upms.utils.ExportExcelUtil;
 import com.lion.utils.MapToBeanUtil;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -51,6 +54,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -109,6 +115,10 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     @Autowired
     private UserTypeService userTypeService;
+
+    @Autowired
+    private HttpServletResponse response;
+
 
     @Override
     public User findUser(String username) {
@@ -193,6 +203,24 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
+    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId,new LionPage(0,Integer.MAX_VALUE));
+        List<ListUserVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000026"), "name"));
+        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000027"), "userType.userTypeName"));
+        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000028"), "number"));
+        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000029"), "username"));
+        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000029"), "username"));
+        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000030"), "isCreateAccount"));
+        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000031"), "roleName"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("user.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
+    }
+
+    @Override
     public DetailsUserVo details(Long id) {
         User user = findById(id);
         if (Objects.isNull(user)){
@@ -241,6 +269,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             detailsUserVo.setAlarmId(systemAlarm.get_id());
         }
         detailsUserVo.setUserType(userTypeService.findById(user.getUserTypeId()));
+        detailsUserVo.setIsCreateAccount(StringUtils.hasText(user.getUsername()));
         return detailsUserVo;
     }
 
@@ -310,6 +339,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             }
             userVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
             userVo.setUserType(userTypeService.findById(user.getUserTypeId()));
+            userVo.setIsCreateAccount(StringUtils.hasText(user.getUsername()));
             returnList.add(userVo);
         });
         return returnList;

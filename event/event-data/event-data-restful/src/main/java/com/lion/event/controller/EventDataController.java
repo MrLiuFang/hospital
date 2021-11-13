@@ -25,9 +25,10 @@ import com.lion.event.entity.dto.UnalarmDto;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
 import com.lion.manage.entity.event.vo.EventRecordVo;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import com.lion.manage.entity.region.vo.ListRegionVo;
+import com.lion.manage.expose.region.RegionExposeService;
+import io.swagger.annotations.*;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -92,6 +93,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @Autowired
     private SystemAlarmReportService systemAlarmReportService;
+
+    @DubboReference
+    private RegionExposeService regionExposeService;
 
 
     @GetMapping("/user/current/region")
@@ -163,19 +167,27 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/user/wash/conformance/ratio")
     @ApiOperation(value = "手卫生监控（员工合规率）")
-    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") Long departmentId,@ApiParam(value = "用户类型")  Long userTypeId,
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "departmentIds", value = "部门id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
+            @ApiImplicitParam(name = "userIds", value = "用户id", allowMultiple = true, dataTypeClass = List.class, paramType = "query")
+    })
+    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") @RequestParam(value="departmentIds",required = false)  List<Long> departmentIds,@ApiParam(value = "用户id") @RequestParam(value="userIds",required = false)  List<Long> userIds,@ApiParam(value = "用户类型")  Long userTypeId,
                                                           @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                           @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                           LionPage lionPage) {
-        return eventService.userWashConformanceRatio(userName,departmentId,userTypeId,startDateTime,endDateTime,lionPage);
+        return eventService.userWashConformanceRatio(userName,departmentIds,userIds , userTypeId, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/user/wash/conformance/ratio/export")
     @ApiOperation(value = "手卫生监控（员工合规率）导出")
-    public void userWashConformanceRatioExport(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") Long departmentId,@ApiParam(value = "用户类型")  Long userTypeId,
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "departmentIds", value = "部门id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
+            @ApiImplicitParam(name = "userIds", value = "用户id", allowMultiple = true, dataTypeClass = List.class, paramType = "query")
+    })
+    public void userWashConformanceRatioExport(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") @RequestParam(value="departmentIds",required = false)  List<Long> departmentIds,@ApiParam(value = "员工id") @RequestParam(value="userIds",required = false)  List<Long> userIds,@ApiParam(value = "用户类型")  Long userTypeId,
                                                                                  @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                  @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) throws DocumentException, IOException {
-        eventService.userWashConformanceRatioExport(userName,departmentId,userTypeId,startDateTime,endDateTime);
+        eventService.userWashConformanceRatioExport(userName,departmentIds,userIds, userTypeId, startDateTime, endDateTime);
     }
 
     @PutMapping("/unalarm")
@@ -251,6 +263,12 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @ApiOperation(value = "地图监控监控器列表(左边列表)")
     public IResultData<DepartmentDeviceStatisticsDetailsVo> departmentDeviceGroupStatisticsDetails(@ApiParam(value = "设备名称/编号") String keyword, @ApiParam(value = "区域id") Long regionId, @ApiParam("科室ID") Long departmentId){
         return ResultData.instance().setData(mapStatisticsService.departmentDeviceStatisticsDetails(keyword, regionId, departmentId));
+    }
+
+    @GetMapping("/department/region/info")
+    @ApiOperation(value = "手卫生(左边列表)")
+    public IResultData<List<ListRegionVo>> regionInfo(@ApiParam(value = "区域名称/编码") String keyword,@ApiParam("科室ID") Long departmentId) {
+        return ResultData.instance().setData(regionExposeService.find(keyword,departmentId));
     }
 
     @GetMapping("/patient/details")

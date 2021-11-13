@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -34,8 +35,8 @@ public class WorkExposeServiceImpl extends BaseServiceImpl<Work> implements Work
     private UserExposeService userExposeService;
 
     @Override
-    public PageResultData<Map<String, Object>> find(Long departmentId, String name, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        Page<Map<String, Object>> page = workDao.List(departmentId, name, userTypeId, startDateTime, endDateTime, lionPage);
+    public PageResultData<Map<String, Object>> find(List<Long> departmentIds, List<Long> userIds, String name, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        Page<Map<String, Object>> page = workDao.List(departmentIds, userIds, name, userTypeId, startDateTime, endDateTime, lionPage);
         return new PageResultData(page.getContent(),lionPage,page.getTotalElements());
     }
 }
