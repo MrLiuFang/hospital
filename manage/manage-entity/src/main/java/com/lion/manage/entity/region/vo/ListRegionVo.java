@@ -2,6 +2,7 @@ package com.lion.manage.entity.region.vo;
 
 import com.lion.core.persistence.Validator;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.entity.region.RegionType;
 import com.lion.manage.entity.rule.vo.DetailsWashTemplateVo;
 import com.lion.manage.entity.rule.vo.ListWashTemplateVo;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,5 +32,8 @@ public class ListRegionVo extends Region {
 
     @Schema(description = "洗手规则")
     private DetailsWashTemplateVo washTemplateVo;
+
+    @Schema(description = "区域类型")
+    private RegionType regionType;
 
 }

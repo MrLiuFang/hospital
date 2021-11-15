@@ -322,6 +322,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
             if (Objects.nonNull(region.getWashTemplateId())) {
                 vo.setWashTemplateVo(washTemplateService.details(region.getWashTemplateId()));
             }
+            vo.setRegionType(regionTypeService.findById(region.getRegionTypeId()));
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());

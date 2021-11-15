@@ -24,8 +24,10 @@ import com.lion.event.entity.dto.OldAlarmToNewAlarm;
 import com.lion.event.entity.dto.UnalarmDto;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
+import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.event.vo.EventRecordVo;
 import com.lion.manage.entity.region.vo.ListRegionVo;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import io.swagger.annotations.*;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -40,7 +42,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author Mr.Liu
@@ -96,6 +100,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @DubboReference
     private RegionExposeService regionExposeService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
 
 
     @GetMapping("/user/current/region")
@@ -267,8 +274,20 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/department/region/info")
     @ApiOperation(value = "手卫生(左边列表)")
-    public IResultData<List<ListRegionVo>> regionInfo(@ApiParam(value = "区域名称/编码") String keyword,@ApiParam("科室ID") Long departmentId) {
-        return ResultData.instance().setData(regionExposeService.find(keyword,departmentId));
+    public IResultData<List<DepartmentRegionInfoVo>> regionInfo(@ApiParam(value = "区域名称/编码") String keyword,@ApiParam("科室ID") Long departmentId) {
+        List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
+        List<DepartmentRegionInfoVo> returnList = new ArrayList<>();
+        list.forEach(id->{
+            Department department = departmentExposeService.findById(id);
+            if (Objects.nonNull(department)) {
+                DepartmentRegionInfoVo vo = new DepartmentRegionInfoVo();
+                vo.setDepartmentId(department.getId());
+                vo.setDepartmentName(department.getName());
+                vo.setListRegionVos(regionExposeService.find(keyword,id));
+                returnList.add(vo);
+            }
+        });
+        return ResultData.instance().setData(returnList);
     }
 
     @GetMapping("/patient/details")
