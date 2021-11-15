@@ -4,6 +4,8 @@ import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.region.Region;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -77,4 +79,15 @@ public interface RegionDao extends BaseDao<Region> {
      * @return
      */
     public int countByRegionTypeId(Long regionTypeId);
+
+    /**
+     * 删除区域关联的洗手规则模板
+     * @param id
+     * @return
+     */
+    @Transactional
+    @Modifying
+    @Query( " update Region  set washTemplateId = null , version = version+1 where id = :id " )
+    public int updateWashTemplateId(@Param(value="id") Long id);
+
 }

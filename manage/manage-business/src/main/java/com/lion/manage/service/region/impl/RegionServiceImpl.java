@@ -196,8 +196,12 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
             batchUpdateWashTemplateDto.getRegionIds().forEach(id ->{
                 Region region = findById(id);
                 if (Objects.nonNull(region)) {
-                    region.setWashTemplateId(batchUpdateWashTemplateDto.getWashTemplateId());
-                    update(region);
+                    if (Objects.nonNull(batchUpdateWashTemplateDto.getWashTemplateId())) {
+                        region.setWashTemplateId(batchUpdateWashTemplateDto.getWashTemplateId());
+                        update(region);
+                    }else {
+                        regionDao.updateWashTemplateId(region.getId());
+                    }
                 }
             });
         }
