@@ -26,7 +26,6 @@ import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.event.vo.EventRecordVo;
-import com.lion.manage.entity.region.vo.ListRegionVo;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import io.swagger.annotations.*;
