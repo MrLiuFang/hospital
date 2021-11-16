@@ -16,6 +16,9 @@ import java.util.List;
 @Schema
 public class DetailsWashTemplateVo extends WashTemplate {
 
+    @Schema(description = "创建人姓名")
+    private String createUserName;
+
     @Schema(description = "规则项")
     List<ListWashTemplateItemVo> listWashTemplateItemVos;
 }

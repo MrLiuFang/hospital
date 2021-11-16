@@ -156,6 +156,10 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
             listWashTemplateItemVo.setWashDeviceTypes(deviceTypes);
             listWashTemplateItemVos.add(listWashTemplateItemVo);
         });
+        User user = userExposeService.findById(washTemplate.getCreateUserId());
+        if (Objects.nonNull(user)) {
+            detailsWashTemplateVo.setCreateUserName(user.getName());
+        }
         detailsWashTemplateVo.setListWashTemplateItemVos(listWashTemplateItemVos);
         return detailsWashTemplateVo;
     }

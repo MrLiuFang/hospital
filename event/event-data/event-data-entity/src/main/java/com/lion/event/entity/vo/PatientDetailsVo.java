@@ -34,11 +34,11 @@ public class PatientDetailsVo extends Patient {
     @Schema(description = "患者头像")
     private String headPortraitUrl;
 
-    @Schema(description = "负责护士")
-    private List<PatientDetailsVo.NurseVo> nurseVos;
-
-    @Schema(description = "负责医生")
-    private List<PatientDetailsVo.DoctorVo> doctorVos;
+//    @Schema(description = "负责护士")
+//    private List<PatientDetailsVo.NurseVo> nurseVos;
+//
+//    @Schema(description = "负责医生")
+//    private List<PatientDetailsVo.DoctorVo> doctorVos;
 
 //    @Schema(description = "限制区域")
 //    private List<RestrictedAreaVo> restrictedAreaVos;
@@ -80,30 +80,30 @@ public class PatientDetailsVo extends Patient {
 
     @Schema(description = "汇报员工头像url")
     private String reportUserHeadPortraitUrl;
-
-    @Data
-    @Schema
-    public static class DoctorVo {
-        @Schema(description = "负责医生姓名")
-        private String doctorName;
-
-        @Schema(description = "负责医生头像（文件id）")
-        private Long doctorHeadPortrait;
-
-        @Schema(description = "负责医生头像")
-        private String doctorHeadPortraitUrl;
-    }
-
-    @Data
-    @Schema
-    public static class NurseVo {
-        @Schema(description = "负责护士姓名")
-        private String nurseName;
-
-        @Schema(description = "负责护士头像（文件id）")
-        private Long nurseHeadPortrait;
-
-        @Schema(description = "负责护士头像")
-        private String nurseHeadPortraitUrl;
-    }
+//
+//    @Data
+//    @Schema
+//    public static class DoctorVo {
+//        @Schema(description = "负责医生姓名")
+//        private String doctorName;
+//
+//        @Schema(description = "负责医生头像（文件id）")
+//        private Long doctorHeadPortrait;
+//
+//        @Schema(description = "负责医生头像")
+//        private String doctorHeadPortraitUrl;
+//    }
+//
+//    @Data
+//    @Schema
+//    public static class NurseVo {
+//        @Schema(description = "负责护士姓名")
+//        private String nurseName;
+//
+//        @Schema(description = "负责护士头像（文件id）")
+//        private Long nurseHeadPortrait;
+//
+//        @Schema(description = "负责护士头像")
+//        private String nurseHeadPortraitUrl;
+//    }
 }

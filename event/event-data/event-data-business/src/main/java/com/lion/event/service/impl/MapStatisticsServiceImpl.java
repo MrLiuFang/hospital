@@ -53,8 +53,12 @@ import com.lion.manage.expose.region.RegionCctvExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.entity.enums.State;
-import com.lion.person.entity.person.*;
-import com.lion.person.expose.person.*;
+import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.PatientReport;
+import com.lion.person.entity.person.TemporaryPerson;
+import com.lion.person.expose.person.PatientExposeService;
+import com.lion.person.expose.person.PatientReportExposeService;
+import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.upms.expose.user.UserTypeExposeService;
@@ -157,11 +161,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @DubboReference
     private WardRoomSickbedExposeService wardRoomSickbedExposeService;
 
-    @DubboReference
-    private PatientDoctorExposeService patientDoctorExposeService;
-
-    @DubboReference
-    private PatientNurseExposeService patientNurseExposeService;
+//    @DubboReference
+//    private PatientDoctorExposeService patientDoctorExposeService;
+//
+//    @DubboReference
+//    private PatientNurseExposeService patientNurseExposeService;
 
     @DubboReference
     private DeviceGroupExposeService deviceGroupExposeService;
@@ -743,32 +747,32 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         }
         CurrentRegionDto currentRegion = (CurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.PATIENT_CURRENT_REGION+patientId);
         vo.setCurrentRegionVo(convertVo(currentRegion));
-        List<PatientNurse> patientNurses = patientNurseExposeService.find(patient.getId());
-        List<PatientDetailsVo.NurseVo> nurseVos = new ArrayList<>();
-        patientNurses.forEach(patientNurse -> {
-            User nurse = userExposeService.findById(patientNurse.getNurseId());
-            PatientDetailsVo.NurseVo nurseVo = new PatientDetailsVo.NurseVo();
-            if (Objects.nonNull(nurse)){
-                nurseVo.setNurseName(nurse.getName());
-                nurseVo.setNurseHeadPortrait(nurse.getHeadPortrait());
-                nurseVo.setNurseHeadPortraitUrl(fileExposeService.getUrl(nurse.getHeadPortrait()));
-                nurseVos.add(nurseVo);
-            }
-        });
-        vo.setNurseVos(nurseVos);
-        List<PatientDoctor> patientDoctors = patientDoctorExposeService.find(patient.getId());
-        List<PatientDetailsVo.DoctorVo> doctorVos = new ArrayList<>();
-        patientDoctors.forEach(patientDoctor -> {
-            User doctor = userExposeService.findById(patientDoctor.getDoctorId());
-            PatientDetailsVo.DoctorVo doctorVo = new PatientDetailsVo.DoctorVo();
-            if (Objects.nonNull(doctor)){
-                doctorVo.setDoctorName(doctor.getName());
-                doctorVo.setDoctorHeadPortrait(doctor.getHeadPortrait());
-                doctorVo.setDoctorHeadPortraitUrl(fileExposeService.getUrl(doctor.getHeadPortrait()));
-                doctorVos.add(doctorVo);
-            }
-        });
-        vo.setDoctorVos(doctorVos);
+//        List<PatientNurse> patientNurses = patientNurseExposeService.find(patient.getId());
+//        List<PatientDetailsVo.NurseVo> nurseVos = new ArrayList<>();
+//        patientNurses.forEach(patientNurse -> {
+//            User nurse = userExposeService.findById(patientNurse.getNurseId());
+//            PatientDetailsVo.NurseVo nurseVo = new PatientDetailsVo.NurseVo();
+//            if (Objects.nonNull(nurse)){
+//                nurseVo.setNurseName(nurse.getName());
+//                nurseVo.setNurseHeadPortrait(nurse.getHeadPortrait());
+//                nurseVo.setNurseHeadPortraitUrl(fileExposeService.getUrl(nurse.getHeadPortrait()));
+//                nurseVos.add(nurseVo);
+//            }
+//        });
+//        vo.setNurseVos(nurseVos);
+//        List<PatientDoctor> patientDoctors = patientDoctorExposeService.find(patient.getId());
+//        List<PatientDetailsVo.DoctorVo> doctorVos = new ArrayList<>();
+//        patientDoctors.forEach(patientDoctor -> {
+//            User doctor = userExposeService.findById(patientDoctor.getDoctorId());
+//            PatientDetailsVo.DoctorVo doctorVo = new PatientDetailsVo.DoctorVo();
+//            if (Objects.nonNull(doctor)){
+//                doctorVo.setDoctorName(doctor.getName());
+//                doctorVo.setDoctorHeadPortrait(doctor.getHeadPortrait());
+//                doctorVo.setDoctorHeadPortraitUrl(fileExposeService.getUrl(doctor.getHeadPortrait()));
+//                doctorVos.add(doctorVo);
+//            }
+//        });
+//        vo.setDoctorVos(doctorVos);
         return vo;
     }
 

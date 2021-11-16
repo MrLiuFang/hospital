@@ -11,6 +11,7 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.WarningBell;
+import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
@@ -327,6 +328,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
                 vo.setWashTemplateVo(washTemplateService.details(region.getWashTemplateId()));
             }
             vo.setRegionType(regionTypeService.findById(region.getRegionTypeId()));
+            vo.setDevices(deviceExposeService.findByRegionIdAndDeviceClassify(region.getId(), DeviceClassify.HAND_WASHING));
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());

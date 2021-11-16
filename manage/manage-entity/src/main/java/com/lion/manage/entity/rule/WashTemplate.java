@@ -28,6 +28,10 @@ import javax.validation.constraints.NotBlank;
 @DynamicInsert
 @Data
 @Schema(description = "洗手规则模板")
+@JsonIgnoreProperties(
+        ignoreUnknown = true,
+        value = {"updateDateTime", "createUserId", "updateUserId"}
+)
 public class WashTemplate extends BaseEntity {
 
     private static final long serialVersionUID = 6103915473684030413L;

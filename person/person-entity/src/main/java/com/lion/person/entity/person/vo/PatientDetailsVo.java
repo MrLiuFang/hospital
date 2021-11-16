@@ -41,11 +41,11 @@ public class PatientDetailsVo extends Patient {
     @Schema(description = "患者头像")
     private String headPortraitUrl;
 
-    @Schema(description = "负责护士")
-    private List<NurseVo> nurseVos;
-
-    @Schema(description = "负责医生")
-    private List<DoctorVo> doctorVos;
+//    @Schema(description = "负责护士")
+//    private List<NurseVo> nurseVos;
+//
+//    @Schema(description = "负责医生")
+//    private List<DoctorVo> doctorVos;
 
 //    @Schema(description = "限制区域")
 //    private List<RestrictedAreaVo> restrictedAreaVoList;
@@ -69,39 +69,39 @@ public class PatientDetailsVo extends Patient {
     @Schema(description = "最后一次汇报")
     private PatientReport patientReport;
 
-    @Data
-    @Schema
-    public static class DoctorVo {
-
-        @Schema(description = "负责医生id")
-        private Long doctorId;
-
-        @Schema(description = "负责医生姓名")
-        private String doctorName;
-
-        @Schema(description = "负责医生头像（文件id）")
-        private Long doctorHeadPortrait;
-
-        @Schema(description = "负责医生头像")
-        private String doctorHeadPortraitUrl;
-    }
-
-    @Data
-    @Schema
-    public static class NurseVo {
-
-        @Schema(description = "负责护士id")
-        private Long nurseId;
-
-        @Schema(description = "负责护士姓名")
-        private String nurseName;
-
-        @Schema(description = "负责护士头像（文件id）")
-        private Long nurseHeadPortrait;
-
-        @Schema(description = "负责护士头像")
-        private String nurseHeadPortraitUrl;
-    }
+//    @Data
+//    @Schema
+//    public static class DoctorVo {
+//
+//        @Schema(description = "负责医生id")
+//        private Long doctorId;
+//
+//        @Schema(description = "负责医生姓名")
+//        private String doctorName;
+//
+//        @Schema(description = "负责医生头像（文件id）")
+//        private Long doctorHeadPortrait;
+//
+//        @Schema(description = "负责医生头像")
+//        private String doctorHeadPortraitUrl;
+//    }
+//
+//    @Data
+//    @Schema
+//    public static class NurseVo {
+//
+//        @Schema(description = "负责护士id")
+//        private Long nurseId;
+//
+//        @Schema(description = "负责护士姓名")
+//        private String nurseName;
+//
+//        @Schema(description = "负责护士头像（文件id）")
+//        private Long nurseHeadPortrait;
+//
+//        @Schema(description = "负责护士头像")
+//        private String nurseHeadPortraitUrl;
+//    }
 
 //    @Data
 //    @Schema

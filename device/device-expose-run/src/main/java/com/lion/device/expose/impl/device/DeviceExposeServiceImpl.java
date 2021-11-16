@@ -116,6 +116,10 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
         return deviceDao.findByRegionId(regionId);
     }
 
+    public List<Device> findByRegionIdAndDeviceClassify(Long regionId,DeviceClassify deviceClassify) {
+        return deviceDao.findByRegionIdAndDeviceClassify(regionId,deviceClassify);
+    }
+
     @Override
     public List<Device> findByDepartmentId(Long departmentId) {
         List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);

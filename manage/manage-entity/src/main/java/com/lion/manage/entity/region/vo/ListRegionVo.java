@@ -1,6 +1,7 @@
 package com.lion.manage.entity.region.vo;
 
 import com.lion.core.persistence.Validator;
+import com.lion.device.entity.device.Device;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionType;
 import com.lion.manage.entity.rule.vo.DetailsWashTemplateVo;
@@ -11,6 +12,7 @@ import lombok.Data;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * @Author Mr.Liu
@@ -35,5 +37,8 @@ public class ListRegionVo extends Region {
 
     @Schema(description = "区域类型")
     private RegionType regionType;
+
+    @Schema(description = "区域里的洗手设备")
+    private List<Device> devices;
 
 }
