@@ -474,9 +474,10 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         }
         patient.setWardId(ward.getId());
         patient.setRoomId(wardRoom.getId());
-        if (!Objects.equals(ward.getDepartmentId(),patient.getDepartmentId())) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("1000038"));
-        }
+        patient.setDepartmentId(ward.getDepartmentId());
+//        if (!Objects.equals(ward.getDepartmentId(),patient.getDepartmentId())) {
+//            BusinessException.throwException(MessageI18nUtil.getMessage("1000038"));
+//        }
         return patient;
     }
 
