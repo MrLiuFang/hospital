@@ -25,18 +25,18 @@ import java.util.List;
 )
 public class UpdatePatientDto extends Patient {
 
-    @Schema(description = "限制行动区域")
-    private List<Long> regionId;
-
-    @Schema(description = "负责医生（全量-先删后增）")
-    @Column(name = "doctor_id")
-    @NotNull(message = "{1000006}", groups = {Validator.Insert.class, Validator.Update.class})
-    @Size(min = 1,message = "{1000006}", groups = {Validator.Insert.class, Validator.Update.class})
-    private List<Long> doctorIds;
-
-    @Schema(description = "负责护士（全量-先删后增）")
-    @Column(name = "doctor_id")
-    @NotNull(message = "{1000008}", groups = {Validator.Insert.class, Validator.Update.class})
-    @Size(min = 1,message = "{1000008}", groups = {Validator.Insert.class, Validator.Update.class})
-    private List<Long> nurseIds;
+//    @Schema(description = "限制行动区域")
+//    private List<Long> regionId;
+//
+//    @Schema(description = "负责医生（全量-先删后增）")
+//    @Column(name = "doctor_id")
+//    @NotNull(message = "{1000006}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @Size(min = 1,message = "{1000006}", groups = {Validator.Insert.class, Validator.Update.class})
+//    private List<Long> doctorIds;
+//
+//    @Schema(description = "负责护士（全量-先删后增）")
+//    @Column(name = "doctor_id")
+//    @NotNull(message = "{1000008}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @Size(min = 1,message = "{1000008}", groups = {Validator.Insert.class, Validator.Update.class})
+//    private List<Long> nurseIds;
 }

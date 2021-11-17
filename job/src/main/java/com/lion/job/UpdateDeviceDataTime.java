@@ -100,7 +100,7 @@ public class UpdateDeviceDataTime {
                             dateTime = device.getLastDataTime();
                         }
                     }
-                    if (Objects.nonNull(dateTime)) {
+                    if (Objects.nonNull(dateTime) && Objects.nonNull(device)) {
                         java.time.Duration duration = java.time.Duration.between(dateTime, LocalDateTime.now());
                         if (duration.toMinutes() > (60 * 24)) {
                             if (!Objects.equals(device.getDeviceState(), State.ALARM)) {
