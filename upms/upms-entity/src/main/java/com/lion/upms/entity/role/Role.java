@@ -56,7 +56,7 @@ public class Role extends BaseEntity implements Serializable {
     private String remarks;
 
     @Schema(description = "权限")
-    @Column(name = "resources",length = 2000)
+    @Column(name = "resources",length = 5000)
     private String resources;
 
     @Schema(description = "是否默认角色（0：否，1：是）默认角色不能删除")

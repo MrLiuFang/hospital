@@ -67,7 +67,7 @@ public class PatientDetailsVo extends Patient {
     private String alarmId;
 
     @Schema(description = "最后一次汇报")
-    private PatientReport patientReport;
+    private DetailsPatientReportVo patientReport;
 
 //    @Data
 //    @Schema

@@ -35,11 +35,13 @@ import com.lion.person.dao.person.TempLeaveDao;
 import com.lion.person.entity.enums.LogType;
 import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.entity.person.PatientReport;
 import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.TempLeave;
 import com.lion.person.entity.person.dto.AddPatientDto;
 import com.lion.person.entity.person.dto.PatientLeaveDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
+import com.lion.person.entity.person.vo.DetailsPatientReportVo;
 import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.service.person.PatientLogService;
@@ -434,8 +436,19 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             vo.setAlarmDataTime(systemAlarm.getDt());
             vo.setAlarmId(systemAlarm.get_id());
         }
+        PatientReport patientReport = patientReportDao.findFirstByPatientIdOrderByCreateDateTimeDesc(patient.getId());
+        if (Objects.nonNull(patientReport)) {
+            DetailsPatientReportVo detailsPatientReportVo = new DetailsPatientReportVo();
+            BeanUtils.copyProperties(patientReport,detailsPatientReportVo);
+            User user = userExposeService.findById(patientReport.getReportUserId());
+            if (Objects.nonNull(user)) {
+                detailsPatientReportVo.setReportUserName(user.getName());
+                detailsPatientReportVo.setReportUserHeadPortrait(user.getHeadPortrait());
+                detailsPatientReportVo.setReportUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+            }
+            vo.setPatientReport(detailsPatientReportVo);
+        }
 
-        vo.setPatientReport(patientReportDao.findFirstByPatientIdOrderByCreateDateTimeDesc(patient.getId()));
 
         if (Objects.nonNull(patient.getBindPatientId())){
             vo.setBindPatient(details(patient.getBindPatientId()));
@@ -490,6 +503,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     private void assertMedicalRecordNoExist(String medicalRecordNo, Long id) {
+        if (!StringUtils.hasText(medicalRecordNo)) {
+            return;
+        }
         Patient patient = patientDao.findFirstByMedicalRecordNo(medicalRecordNo);
         if ((Objects.isNull(id) && Objects.nonNull(patient)) || (Objects.nonNull(id) && Objects.nonNull(patient) && !Objects.equals(patient.getId(),id)) ){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000040"));
