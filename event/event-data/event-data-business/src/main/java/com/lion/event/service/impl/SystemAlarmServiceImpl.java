@@ -1,5 +1,6 @@
 package com.lion.event.service.impl;
 
+import cn.hutool.core.util.NumberUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
@@ -419,7 +420,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
             if (Objects.nonNull(document.get("_id"))) {
                 SevenDaysStatisticsVo vo = SevenDaysStatisticsVo.builder()
                         .date(LocalDate.parse(document.getString("_id")))
-                        .count(document.getInteger("count"))
+                        .count(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0)
                         .build();
                 returnList.add(vo);
             }
@@ -433,37 +434,37 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         TodayDaysStatisticsVo vo = TodayDaysStatisticsVo.builder().build();
         if (Objects.nonNull(document)) {
             if (Objects.nonNull(document.get("count"))) {
-                vo.setTotal(document.getInteger("count"));
+                vo.setTotal(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);
             }
         }
         document = alarmDao.todayDaysStatistics(Type.STAFF);
         if (Objects.nonNull(document)) {
             if (Objects.nonNull(document.get("count"))) {
-                vo.setStaffCount(document.getInteger("count"));
+                vo.setStaffCount(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);
             }
         }
         document = alarmDao.todayDaysStatistics(Type.PATIENT);
         if (Objects.nonNull(document)) {
             if (Objects.nonNull(document.get("count"))) {
-                vo.setPatientCount(document.getInteger("count"));
+                vo.setPatientCount(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);
             }
         }
         document = alarmDao.todayDaysStatistics(Type.MIGRANT);
         if (Objects.nonNull(document)) {
             if (Objects.nonNull(document.get("count"))) {
-                vo.setTemporaryPersonCount(document.getInteger("count"));
+                vo.setTemporaryPersonCount(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);
             }
         }
         document = alarmDao.todayDaysStatistics(Type.HUMIDITY);
         if (Objects.nonNull(document)) {
             if (Objects.nonNull(document.get("count"))) {
-                vo.setHumidCount(document.getInteger("count"));
+                vo.setHumidCount(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);
             }
         }
         document = alarmDao.todayDaysStatistics(Type.TEMPERATURE);
         if (Objects.nonNull(document)) {
             if (Objects.nonNull(document.get("count"))) {
-                vo.setHumidCount(vo.getHumidCount()+document.getInteger("count"));
+                vo.setHumidCount(vo.getHumidCount()+(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0));
             }
         }
         return vo;

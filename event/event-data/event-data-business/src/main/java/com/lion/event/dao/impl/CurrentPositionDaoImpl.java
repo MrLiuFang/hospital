@@ -1,5 +1,6 @@
 package com.lion.event.dao.impl;
 
+import cn.hutool.core.util.NumberUtil;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.BasicDBObjectUtil;
 import com.lion.event.dao.CurrentPositionDaoEx;
@@ -45,7 +46,7 @@ public class CurrentPositionDaoImpl implements CurrentPositionDaoEx {
                 List<Document> _id = document.getList("_id",Document.class);
                 Long regionId = null;
                 Type type = null;
-                Integer count =document.getInteger("count");
+                Integer count =NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0;
                 for (Document d :_id){
                     if (d.containsKey("type")) {
                         type = Type.instance(d.getInteger("type"));

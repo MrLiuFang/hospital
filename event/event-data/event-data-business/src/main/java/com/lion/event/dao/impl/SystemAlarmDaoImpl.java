@@ -1,5 +1,6 @@
 package com.lion.event.dao.impl;
 
+import cn.hutool.core.util.NumberUtil;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.enums.SystemAlarmState;
 import com.lion.common.enums.Type;
@@ -41,6 +42,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.NumberUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
@@ -142,7 +144,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         aggregateIterable.forEach(document -> {
             if (document.containsKey("_id")) {
                 Long regionId = document.getLong("_id");
-                Integer count =document.getInteger("count");
+                Integer count =NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0;
                 if (Objects.nonNull(regionId)  && Objects.nonNull(count) && count>0) {
                     if (map.containsKey(regionId)){
                         RegionStatisticsDetails regionStatisticsDetails = map.get(regionId);
@@ -172,9 +174,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("system_alarm").aggregate(pipeline);
         Map<String, Integer> map = new HashMap<>();
         aggregateIterable.forEach(document -> {
-            map.put("allAlarmCount",document.getInteger("allAlarmCount"));
-            map.put("unalarmCount",document.getInteger("unalarmCount"));
-            map.put("alarmCount",document.getInteger("alarmCount"));
+            map.put("allAlarmCount",NumberUtil.isInteger(String.valueOf(document.get("allAlarmCount")))?document.getInteger("allAlarmCount"):0);
+            map.put("unalarmCount",NumberUtil.isInteger(String.valueOf(document.get("unalarmCount")))?document.getInteger("unalarmCount"):0);
+            map.put("alarmCount",NumberUtil.isInteger(String.valueOf(document.get("unalarmCount")))?document.getInteger("alarmCount"):0);
         });
         return map;
     }

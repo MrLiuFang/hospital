@@ -1,5 +1,6 @@
 package com.lion.event.service.impl;
 
+import cn.hutool.core.util.NumberUtil;
 import com.lion.common.utils.BasicDBObjectUtil;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
@@ -142,7 +143,7 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
             if (Objects.nonNull(device)) {
                 vo.setCode(device.getCode());
                 vo.setName(device.getName());
-                vo.setCount(document.getInteger("count"));
+                vo.setCount(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);
                 vo.setRecyclingBoxId(device.getId());
                 vo.setPreviousDisinfectDate(device.getPreviousDisinfectDate());
                 returnList.add(vo);
