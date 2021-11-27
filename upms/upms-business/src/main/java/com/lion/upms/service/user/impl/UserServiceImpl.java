@@ -1,5 +1,6 @@
 package com.lion.upms.service.user.impl;
 
+import cn.hutool.core.util.NumberUtil;
 import cn.hutool.crypto.SecureUtil;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
@@ -25,6 +26,7 @@ import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.upms.dao.role.RoleDao;
 import com.lion.upms.dao.user.UserDao;
+import com.lion.upms.entity.enums.Gender;
 import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.role.RoleUser;
 import com.lion.upms.entity.role.vo.DetailsRoleUserVo;
@@ -40,9 +42,16 @@ import com.lion.upms.service.user.UserService;
 import com.lion.upms.service.user.UserTypeService;
 import com.lion.upms.utils.ExcelColumn;
 import com.lion.upms.utils.ExportExcelUtil;
+import com.lion.upms.utils.ImportExcelUtil;
 import com.lion.utils.MapToBeanUtil;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -51,12 +60,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -221,6 +235,71 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void importUser(StandardMultipartHttpServletRequest multipartHttpServletRequest) throws IOException {
+        Map<String, MultipartFile> files = multipartHttpServletRequest.getFileMap();
+        for (String fileName : files.keySet()) {
+            MultipartFile file = files.get(fileName);
+            importUser(file.getInputStream(), fileName);
+        }
+    }
+
+    private void importUser(InputStream inputStream, String fileName) throws IOException {
+        if (Objects.isNull(inputStream)) {
+            return;
+        }
+        Optional<Workbook> optional = ImportExcelUtil.getWorkbook(inputStream,fileName);
+        if (!optional.isPresent()) {
+            return;
+        }
+        Workbook wookbook = optional.get();
+        Sheet sheet = wookbook.getSheetAt(0);
+        int totalRowNum = sheet.getLastRowNum();
+        List<String> listRowKey = new ArrayList<String>();
+        listRowKey.add("username");
+        listRowKey.add("password");
+        listRowKey.add("name");
+        listRowKey.add("email");
+        listRowKey.add("gender");
+        listRowKey.add("birthday");
+        listRowKey.add("number");
+        listRowKey.add("tagCode");
+        listRowKey.add("phoneNumber");
+        listRowKey.add("address");
+        ImportExcelUtil.check(sheet.getRow(0),listRowKey);
+        for (int i = 1; i <= totalRowNum; i++) {
+            AddUserDto addUserDto = new AddUserDto();
+            Row row = sheet.getRow(i);
+            String username = ImportExcelUtil.getCellValue(row.getCell(0)).toString();
+            String password = ImportExcelUtil.getCellValue(row.getCell(1)).toString();
+            String name = ImportExcelUtil.getCellValue(row.getCell(2)).toString();
+            String email = ImportExcelUtil.getCellValue(row.getCell(3)).toString();
+            String gender = ImportExcelUtil.getCellValue(row.getCell(4)).toString();
+            String birthday = ImportExcelUtil.getCellValue(row.getCell(5)).toString();
+            String number = ImportExcelUtil.getCellValue(row.getCell(6)).toString();
+            String tagCode = ImportExcelUtil.getCellValue(row.getCell(7)).toString();
+            String phoneNumber = ImportExcelUtil.getCellValue(row.getCell(8)).toString();
+            String address = ImportExcelUtil.getCellValue(row.getCell(9)).toString();
+
+            addUserDto.setUsername(username);
+            addUserDto.setPassword(passwordEncoder.encode(SecureUtil.md5(password)));
+            addUserDto.setName(name);
+            addUserDto.setEmail(email);
+            addUserDto.setGender(Gender.valueOf(gender));
+            addUserDto.setBirthday(LocalDate.parse(birthday));
+            addUserDto.setNumber(NumberUtil.isInteger(number)?Integer.valueOf(number):null);
+            addUserDto.setTagCode(tagCode);
+            addUserDto.setPhoneNumber(phoneNumber);
+            addUserDto.setAddress(address);
+
+            add(addUserDto);
+        }
+    }
+
+
+
+
+    @Override
     public DetailsUserVo details(Long id) {
         User user = findById(id);
         if (Objects.isNull(user)){
@@ -348,7 +427,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     private void assertEmailExist(String email, Long id) {
         User user = userDao.findFirstByEmail(email);
         if ((Objects.isNull(id) && Objects.nonNull(user)) || (Objects.nonNull(id) && Objects.nonNull(user) && !Objects.equals(user.getId(),id)) ){
-            BusinessException.throwException(MessageI18nUtil.getMessage("0000017"));
+            BusinessException.throwException(MessageI18nUtil.getMessage("0000017",new Object[]{email}));
         }
     }
 
@@ -356,7 +435,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         if (StringUtils.hasText(tagCode)) {
             Tag tag = tagExposeService.find(tagCode);
             if (Objects.isNull(tag)) {
-                BusinessException.throwException(MessageI18nUtil.getMessage("0000018"));
+                BusinessException.throwException(MessageI18nUtil.getMessage("0000018",new Object[]{tagCode}));
             }
         }
     }
@@ -364,7 +443,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     private void assertNumberExist(Integer number, Long id) {
         User user = userDao.findFirstByNumber(number);
         if ((Objects.isNull(id) && Objects.nonNull(user)) ||(Objects.nonNull(id) && Objects.nonNull(user) && !Objects.equals(user.getId(),id))  ){
-            BusinessException.throwException(MessageI18nUtil.getMessage("0000019"));
+            BusinessException.throwException(MessageI18nUtil.getMessage("0000019",new Object[]{String.valueOf(number)}));
         }
     }
 

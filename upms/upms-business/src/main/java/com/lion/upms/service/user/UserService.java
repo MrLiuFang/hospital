@@ -10,6 +10,7 @@ import com.lion.upms.entity.user.dto.AddUserDto;
 import com.lion.upms.entity.user.dto.UpdateUserDto;
 import com.lion.upms.entity.user.vo.DetailsUserVo;
 import com.lion.upms.entity.user.vo.ListUserVo;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import java.io.IOException;
 import java.util.List;
@@ -63,6 +64,11 @@ public interface UserService extends BaseService<User> {
      * @param roleId
      */
     public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId) throws IOException, IllegalAccessException;
+
+    /**
+     * 导入
+     */
+    public void importUser(StandardMultipartHttpServletRequest multipartHttpServletRequest) throws IOException;
 
     /**
      * 用户详情

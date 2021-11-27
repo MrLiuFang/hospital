@@ -1,12 +1,17 @@
 package com.lion.manage.service.assets;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.dto.AddAssetsDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsVo;
+import com.lion.manage.entity.assets.vo.ListAssetsVo;
+import com.lion.manage.entity.enums.AssetsUseState;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -69,4 +74,29 @@ public interface AssetsService extends BaseService<Assets> {
      */
     public List<Assets> findByKeyword(String keyword);
 
+    /**
+     * 列表
+     * @param name
+     * @param code
+     * @param departmentId
+     * @param isMyDepartment
+     * @param assetsTypeId
+     * @param useState
+     * @param lionPage
+     * @return
+     */
+    public IPageResultData<List<ListAssetsVo>> list(String name, String code, Long departmentId, Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState, LionPage lionPage);
+
+    /**
+     * 导出
+     * @param name
+     * @param code
+     * @param departmentId
+     * @param isMyDepartment
+     * @param assetsTypeId
+     * @param useState
+     * @throws IOException
+     * @throws IllegalAccessException
+     */
+    public void export(String name,  String code,Long departmentId,Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState) throws IOException, IllegalAccessException;
 }

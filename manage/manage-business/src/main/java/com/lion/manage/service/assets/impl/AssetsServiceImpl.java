@@ -2,7 +2,12 @@ package com.lion.manage.service.assets.impl;
 
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
+import com.lion.constant.SearchConstant;
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
+import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagAssets;
@@ -20,27 +25,42 @@ import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.dto.AddAssetsDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsVo;
+import com.lion.manage.entity.assets.vo.ListAssetsVo;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsFaultState;
+import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
+import com.lion.manage.service.assets.AssetsTypeService;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.manage.utils.ExcelColumn;
+import com.lion.manage.utils.ExportExcelUtil;
+import com.lion.upms.entity.user.vo.ListUserVo;
+import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -95,8 +115,17 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     @Autowired
     private AssetsFaultService assetsFaultService;
 
+    @DubboReference
+    private DepartmentUserExposeService departmentUserExposeService;
+
+    @Autowired
+    private AssetsTypeService assetsTypeService;
+
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private HttpServletResponse response;
 
     @Override
     @Transactional
@@ -246,6 +275,87 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     @Override
     public List<Assets> findByKeyword(String keyword) {
         return assetsDao.findByCodeLikeOrNameLike(keyword,keyword);
+    }
+
+    @Override
+    public IPageResultData<List<ListAssetsVo>> list(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, LionPage lionPage) {
+        JpqlParameter jpqlParameter = new JpqlParameter();
+        if (StringUtils.hasText(name)){
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
+        }
+        if (StringUtils.hasText(code)){
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
+        }
+        if (Objects.nonNull(assetsTypeId)) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsTypeId",assetsTypeId);
+        }
+        if (Objects.nonNull(useState)) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_useState",useState);
+        }
+        if (Objects.equals(isMyDepartment,true)) {
+            Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
+            if (Objects.nonNull(department)){
+                departmentId = department.getId();
+            }
+        }
+        if (Objects.nonNull(departmentId)) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
+        }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
+        lionPage.setJpqlParameter(jpqlParameter);
+        Page<Assets> page = findNavigator(lionPage);
+        List<Assets> list = page.getContent();
+        List<ListAssetsVo> listAssetsVos = new ArrayList<ListAssetsVo>();
+        list.forEach(assets -> {
+            ListAssetsVo listAssetsVo = new ListAssetsVo();
+            BeanUtils.copyProperties(assets,listAssetsVo);
+            if (Objects.nonNull(assets.getBuildId())){
+                Build build = buildService.findById(assets.getBuildId());
+                if (Objects.nonNull(build)){
+                    listAssetsVo.setPosition(build.getName());
+                }
+            }
+            if (Objects.nonNull(assets.getBuildFloorId())){
+                BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
+                if (Objects.nonNull(buildFloor)){
+                    listAssetsVo.setPosition(listAssetsVo.getPosition()+buildFloor.getName());
+                }
+            }
+            if (Objects.nonNull(assets.getDepartmentId())){
+                Department department = departmentService.findById(assets.getDepartmentId());
+                if (Objects.nonNull(department)){
+                    listAssetsVo.setDepartmentName(department.getName());
+                    TagAssets tagAssets = tagAssetsExposeService.find(assets.getId());
+                    if (Objects.nonNull(tagAssets)) {
+                        Tag tag = tagExposeService.findById(tagAssets.getTagId());
+                        if (Objects.nonNull(tag)) {
+                            listAssetsVo.setTagCode(tag.getTagCode());
+                        }
+                    }
+                }
+            }
+            listAssetsVo.setAssetsType(assetsTypeService.findById(assets.getAssetsTypeId()));
+            listAssetsVos.add(listAssetsVo);
+        });
+        return new PageResultData(listAssetsVos, page.getPageable(), page.getTotalElements());
+    }
+
+    @Override
+    public void export(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListAssetsVo>> pageResultData = list(name,code,departmentId,isMyDepartment,assetsTypeId,useState,new LionPage(0,Integer.MAX_VALUE));
+        List<ListAssetsVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build("name", "name"));
+        excelColumn.add(ExcelColumn.build("type", "assetsType.assetsTypeName"));
+        excelColumn.add(ExcelColumn.build("code", "code"));
+        excelColumn.add(ExcelColumn.build("departmentName", "departmentName"));
+        excelColumn.add(ExcelColumn.build("position", "position"));
+        excelColumn.add(ExcelColumn.build("useRegistration", "useRegistration"));
+        excelColumn.add(ExcelColumn.build("useState", "useState"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("assets.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
     }
 
     private void assertDepartmentExist(Long id) {

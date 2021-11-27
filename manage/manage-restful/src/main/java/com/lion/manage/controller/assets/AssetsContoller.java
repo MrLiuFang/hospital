@@ -51,6 +51,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -131,66 +132,15 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @ApiOperation(value = "资产列表")
     public IPageResultData<List<ListAssetsVo>> list(@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code,@ApiParam(value = "科室id")Long departmentId,Boolean isMyDepartment,
                                                   @ApiParam(value = "资产分类") Long assetsTypeId, @ApiParam(value = "使用状态") AssetsUseState useState, LionPage lionPage){
-        ResultData resultData = ResultData.instance();
-        JpqlParameter jpqlParameter = new JpqlParameter();
-        if (StringUtils.hasText(name)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
-        }
-        if (StringUtils.hasText(code)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
-        }
-        if (Objects.nonNull(assetsTypeId)) {
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsTypeId",assetsTypeId);
-        }
-        if (Objects.nonNull(useState)) {
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_useState",useState);
-        }
-        if (Objects.equals(isMyDepartment,true)) {
-            Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
-            if (Objects.nonNull(department)){
-                departmentId = department.getId();
-            }
-        }
-        if (Objects.nonNull(departmentId)) {
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
-        }
-        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
-        lionPage.setJpqlParameter(jpqlParameter);
-        Page<Assets> page = assetsService.findNavigator(lionPage);
-        List<Assets> list = page.getContent();
-        List<ListAssetsVo> listAssetsVos = new ArrayList<ListAssetsVo>();
-        list.forEach(assets -> {
-            ListAssetsVo listAssetsVo = new ListAssetsVo();
-            BeanUtils.copyProperties(assets,listAssetsVo);
-            if (Objects.nonNull(assets.getBuildId())){
-                Build build = buildService.findById(assets.getBuildId());
-                if (Objects.nonNull(build)){
-                    listAssetsVo.setPosition(build.getName());
-                }
-            }
-            if (Objects.nonNull(assets.getBuildFloorId())){
-                BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)){
-                    listAssetsVo.setPosition(listAssetsVo.getPosition()+buildFloor.getName());
-                }
-            }
-            if (Objects.nonNull(assets.getDepartmentId())){
-                Department department = departmentService.findById(assets.getDepartmentId());
-                if (Objects.nonNull(department)){
-                    listAssetsVo.setDepartmentName(department.getName());
-                    TagAssets tagAssets = tagAssetsExposeService.find(assets.getId());
-                    if (Objects.nonNull(tagAssets)) {
-                        Tag tag = tagExposeService.findById(tagAssets.getTagId());
-                        if (Objects.nonNull(tag)) {
-                            listAssetsVo.setTagCode(tag.getTagCode());
-                        }
-                    }
-                }
-            }
-            listAssetsVo.setAssetsType(assetsTypeService.findById(assets.getAssetsTypeId()));
-            listAssetsVos.add(listAssetsVo);
-        });
-        return new PageResultData(listAssetsVos, page.getPageable(), page.getTotalElements());
+        return assetsService.list(name, code, departmentId, isMyDepartment, assetsTypeId, useState, lionPage);
+    }
+
+    @GetMapping("/export")
+    @ApiOperation(value = "导出")
+    public void export(@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code,@ApiParam(value = "科室id")Long departmentId,Boolean isMyDepartment,
+                       @ApiParam(value = "资产分类") Long assetsTypeId, @ApiParam(value = "使用状态") AssetsUseState useState) throws IOException, IllegalAccessException {
+
+        assetsService.export(name, code, departmentId, isMyDepartment, assetsTypeId, useState);
     }
 
     @GetMapping("/details")

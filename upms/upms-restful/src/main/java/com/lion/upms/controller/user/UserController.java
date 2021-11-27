@@ -38,6 +38,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -236,6 +237,13 @@ public class UserController extends BaseControllerImpl implements BaseController
             }
         }
         userService.export(departmentId,userTypeId,number,name,roleId);
+    }
+
+    @PostMapping("/import")
+    @ApiOperation(value = "导入")
+    public IResultData importUser(StandardMultipartHttpServletRequest multipartHttpServletRequest) throws IOException {
+        userService.importUser(multipartHttpServletRequest);
+        return ResultData.instance();
     }
 
 
