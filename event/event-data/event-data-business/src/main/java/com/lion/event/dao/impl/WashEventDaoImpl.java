@@ -1,7 +1,10 @@
 package com.lion.event.dao.impl;
 
+import cn.hutool.core.util.NumberUtil;
 import com.lion.common.utils.BasicDBObjectUtil;
+import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.event.dao.WashEventDaoEx;
 import com.lion.event.entity.WashEvent;
 import com.mongodb.BasicDBObject;
@@ -15,6 +18,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -191,5 +195,84 @@ public class WashEventDaoImpl implements WashEventDaoEx {
         query.with(lionPage);
         List<WashEvent> items = mongoTemplate.find(query, WashEvent.class);
         return items;
+    }
+
+    @Override
+    public IPageResultData<List<WashEvent>> userWashConformanceRatioScreen(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
+            criteria.and("pdi").in(departmentIds);
+        }
+        if (Objects.nonNull(userIds) && userIds.size()>0) {
+            criteria.and("pi").in(userIds);
+        }
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
+        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
+            criteria.and("ddt").gte(startDateTime);
+        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
+            criteria.and("ddt").lte(endDateTime);
+        }
+        query.addCriteria(criteria);
+        query.with(lionPage);
+        List<WashEvent> items = mongoTemplate.find(query, WashEvent.class);
+        return new PageResultData(items,lionPage,0L);
+    }
+
+    @Override
+    public Integer userWashConformanceRatioScreenPercentage(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<Bson> pipeline = new ArrayList<Bson>();
+        BasicDBObject group = new BasicDBObject();
+        group = BasicDBObjectUtil.put(group,"$group","_id","$a"); //全院
+        group = BasicDBObjectUtil.put(group,"$group","allCount",new BasicDBObject("$sum",1));//全部
+        LocalDateTime wt = LocalDateTime.parse("9997-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        group = BasicDBObjectUtil.put(group,"$group","allNoAlarm",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",false})})).append("then",1).append("else",0))));//合规
+
+        BasicDBObject match = new BasicDBObject();
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime)) {
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime).append("$lte",endDateTime));
+        }else if (Objects.nonNull(startDateTime) && Objects.isNull(endDateTime)) {
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime));
+        }else if (Objects.isNull(startDateTime) && Objects.nonNull(endDateTime)) {
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$lte",endDateTime));
+        }
+        if (Objects.nonNull(userTypeId)){
+            match = BasicDBObjectUtil.put(match,"$match","py",new BasicDBObject("$eq", userTypeId) );
+        }
+        if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
+            match = BasicDBObjectUtil.put(match,"$match","pdi",new BasicDBObject("$in",departmentIds) );
+        }
+        if (Objects.nonNull(userIds) && userIds.size()>0) {
+            match = BasicDBObjectUtil.put(match,"$match","pi",new BasicDBObject("$in",departmentIds) );
+        }
+
+        BasicDBObject project = new BasicDBObject();
+        project = BasicDBObjectUtil.put(project,"$project","_id",1);
+        project = BasicDBObjectUtil.put(project,"$project","allNoAlarmRatio",new BasicDBObject("$divide",new String[]{"$allNoAlarm","$allCount"}));
+
+        pipeline.add(match);
+        pipeline.add(group);
+        pipeline.add(project);
+
+
+        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("wash_event").aggregate(pipeline);
+        List<Document> list = new ArrayList<>();
+        AtomicReference<Integer> allNoAlarmRatio = new AtomicReference<>(100);
+        aggregateIterable.forEach(document -> {
+            if (document.containsKey("allNoAlarmRatio")) {
+                if (NumberUtil.isDouble(String.valueOf(document.get("allNoAlarmRatio")))) {
+                    Double d = document.getDouble("allNoAlarmRatio");
+                    allNoAlarmRatio.set(new BigDecimal(d).multiply(new BigDecimal(100)).intValue());
+                }
+            }
+        });
+        return allNoAlarmRatio.get();
     }
 }

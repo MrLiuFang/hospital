@@ -243,6 +243,39 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
+    public IPageResultData<List<ListWashEventVo1>> userWashConformanceRatioScreen(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        IPageResultData<List<WashEvent>> pageResultData =  this.washEventDao.userWashConformanceRatioScreen(userName, departmentIds, userIds, userTypeId, startDateTime, endDateTime, lionPage);
+        List<WashEvent> list = pageResultData.getData();
+        List<ListWashEventVo1> returnList = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime date = LocalDateTime.parse("9999-01-01 00:00:00",formatter);
+        list.forEach(washEvent -> {
+            ListWashEventVo1 vo = new ListWashEventVo1();
+            BeanUtils.copyProperties(washEvent,vo);
+            if (Objects.equals(washEvent.getIa(),false)) {
+//                if (Objects.equals(WashEventType.REGION.getKey(),washEvent.getWet())) {
+//                    if (date.isAfter(washEvent.getWt()) || Objects.isNull(washEvent.getWt())) {
+                        vo.setState("错过洗手");
+//                    }
+//                }else if (Objects.equals(WashEventType.LOOP.getKey(),washEvent.getWet())) {
+//                    if (date.isEqual(washEvent.getWt())) {
+//                        vo.setState("错过洗手");
+//                    }
+//                }
+            }else {
+                vo.setState("正确洗手");
+            }
+            returnList.add(vo);
+        });
+        return new PageResultData<>(returnList,lionPage,0L);
+    }
+
+    @Override
+    public Integer userWashConformanceRatioScreenPercentage(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        return washEventDao.userWashConformanceRatioScreenPercentage(userName, departmentIds, userIds, userTypeId, startDateTime, endDateTime);
+    }
+
+    @Override
     public void userWashConformanceRatioExport(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws DocumentException, IOException {
         IPageResultData<List<ListUserWashMonitorVo>> page = userWashConformanceRatio(userName, departmentIds,userIds , userTypeId, startDateTime, endDateTime, new LionPage(0,Integer.MAX_VALUE));
         List<ListUserWashMonitorVo> list = page.getData();

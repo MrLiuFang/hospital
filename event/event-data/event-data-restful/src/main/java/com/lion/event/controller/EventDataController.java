@@ -184,6 +184,32 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return eventService.userWashConformanceRatio(userName,departmentIds,userIds , userTypeId, startDateTime, endDateTime, lionPage);
     }
 
+    @GetMapping("/user/wash/conformance/ratio/screen")
+    @ApiOperation(value = "手卫生监控（员工合规率-筛选后）不返回总行数")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "departmentIds", value = "部门id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
+            @ApiImplicitParam(name = "userIds", value = "用户id", allowMultiple = true, dataTypeClass = List.class, paramType = "query")
+    })
+    public IPageResultData<List<ListWashEventVo1>> userWashConformanceRatioScreen(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") @RequestParam(value="departmentIds",required = false)  List<Long> departmentIds,@ApiParam(value = "用户id") @RequestParam(value="userIds",required = false)  List<Long> userIds,@ApiParam(value = "用户类型")  Long userTypeId,
+                                                                                 @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                                                 LionPage lionPage) {
+        return eventService.userWashConformanceRatioScreen(userName,departmentIds,userIds , userTypeId, startDateTime, endDateTime, lionPage);
+    }
+
+    @GetMapping("/user/wash/conformance/ratio/screen/percentage")
+    @ApiOperation(value = "手卫生监控（员工合规率-筛选后）百分比")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "departmentIds", value = "部门id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
+            @ApiImplicitParam(name = "userIds", value = "用户id", allowMultiple = true, dataTypeClass = List.class, paramType = "query")
+    })
+    public IResultData userWashConformanceRatioScreenPercentage(@ApiParam(value = "用户姓名") String userName, @ApiParam(value = "部门id") @RequestParam(value="departmentIds",required = false)  List<Long> departmentIds, @ApiParam(value = "用户id") @RequestParam(value="userIds",required = false)  List<Long> userIds, @ApiParam(value = "用户类型")  Long userTypeId,
+                                                                                        @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                                        @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) {
+
+        return ResultData.instance().setData(eventService.userWashConformanceRatioScreenPercentage(userName,departmentIds,userIds , userTypeId, startDateTime, endDateTime));
+    }
+
     @GetMapping("/user/wash/conformance/ratio/export")
     @ApiOperation(value = "手卫生监控（员工合规率）导出")
     @ApiImplicitParams({

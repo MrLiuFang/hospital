@@ -75,6 +75,31 @@ public interface WashEventService {
     IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName,List<Long> departmentIds, List<Long> userIds,  Long userTypeId,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 
     /**
+     *  员工合规率-率选后
+     * @param userName
+     * @param departmentIds
+     * @param userIds
+     * @param userTypeId
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     * @return
+     */
+    IPageResultData<List<ListWashEventVo1>> userWashConformanceRatioScreen(String userName,List<Long> departmentIds, List<Long> userIds,  Long userTypeId,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+
+    /**
+     * 员工合规率-率选后-百分比
+     * @param userName
+     * @param departmentIds
+     * @param userIds
+     * @param userTypeId
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    Integer userWashConformanceRatioScreenPercentage(String userName,List<Long> departmentIds, List<Long> userIds,  Long userTypeId,LocalDateTime startDateTime,LocalDateTime endDateTime);
+
+    /**
      * 员工合规率导出
      * @param userName
      * @param departmentIds
