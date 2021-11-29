@@ -11,6 +11,7 @@ import com.lion.event.entity.dto.EventRecordAddDto;
 import com.lion.event.entity.vo.ListPositionVo;
 import com.lion.event.entity.vo.ListVisitorVo;
 import com.lion.manage.entity.event.vo.EventRecordVo;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -108,7 +109,19 @@ public interface PositionService {
      * @param lionPage
      * @return
      */
-     public IPageResultData<List<ListPositionVo>> tagPosition(TagPurpose tagPurpose, Long regionId,Long departmentId,String deviceName,String tagCode,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<ListPositionVo>> tagPosition(TagPurpose tagPurpose, Long regionId,Long departmentId,String deviceName,String tagCode,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+
+    /**
+     * 标签位置导出
+     * @param tagPurpose
+     * @param regionId
+     * @param departmentId
+     * @param deviceName
+     * @param tagCode
+     * @param startDateTime
+     * @param endDateTime
+     */
+    public void tagPositionExport(TagPurpose tagPurpose, Long regionId, Long departmentId,String deviceName, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException;
 
     /**
      * 更新患者离开区域时间

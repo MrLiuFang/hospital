@@ -105,6 +105,9 @@ public class PositionServiceImpl implements PositionService {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private HttpServletResponse response;
+
     @Override
     public void save(Position position) {
         positionDao.save(position);
@@ -348,6 +351,25 @@ public class PositionServiceImpl implements PositionService {
             returnList.add(vo);
         });
         return new PageResultData(returnList,lionPage,0L);
+    }
+
+    @Override
+    public void tagPositionExport(TagPurpose tagPurpose, Long regionId, Long departmentId, String deviceName, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListPositionVo>> pageResultData = tagPosition(tagPurpose,regionId,departmentId,deviceName,tagCode,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+        List<ListPositionVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build("datetime", "ddt"));
+        excelColumn.add(ExcelColumn.build("tag purpose", "tagPurpose"));
+        excelColumn.add(ExcelColumn.build("tag code", "tagCode"));
+        excelColumn.add(ExcelColumn.build("device name", "deviceName"));
+        excelColumn.add(ExcelColumn.build("department name", "departmentName"));
+        excelColumn.add(ExcelColumn.build("region", "rn"));
+        excelColumn.add(ExcelColumn.build("entry time", "ddt"));
+        excelColumn.add(ExcelColumn.build("departure time", "ldt"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("tagPosition.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
     }
 
     @Override
