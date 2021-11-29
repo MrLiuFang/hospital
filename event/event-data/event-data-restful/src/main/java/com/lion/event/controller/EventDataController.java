@@ -203,7 +203,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
             @ApiImplicitParam(name = "departmentIds", value = "部门id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
             @ApiImplicitParam(name = "userIds", value = "用户id", allowMultiple = true, dataTypeClass = List.class, paramType = "query")
     })
-    public IResultData userWashConformanceRatioScreenPercentage(@ApiParam(value = "用户姓名") String userName, @ApiParam(value = "部门id") @RequestParam(value="departmentIds",required = false)  List<Long> departmentIds, @ApiParam(value = "用户id") @RequestParam(value="userIds",required = false)  List<Long> userIds, @ApiParam(value = "用户类型")  Long userTypeId,
+    public IResultData<Integer> userWashConformanceRatioScreenPercentage(@ApiParam(value = "用户姓名") String userName, @ApiParam(value = "部门id") @RequestParam(value="departmentIds",required = false)  List<Long> departmentIds, @ApiParam(value = "用户id") @RequestParam(value="userIds",required = false)  List<Long> userIds, @ApiParam(value = "用户类型")  Long userTypeId,
                                                                                         @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                         @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) {
 
