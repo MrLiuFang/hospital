@@ -1,5 +1,6 @@
 package com.lion.event.controller;
 
+import cn.hutool.core.util.NumberUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itextpdf.text.DocumentException;
 import com.lion.common.enums.Type;
@@ -33,6 +34,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,8 +44,10 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @Author Mr.Liu
@@ -186,30 +190,84 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/user/wash/conformance/ratio/screen")
     @ApiOperation(value = "手卫生监控（员工合规率-筛选后）不返回总行数")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "departmentIds", value = "部门id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
-            @ApiImplicitParam(name = "userIds", value = "用户id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
-            @ApiImplicitParam(name = "userTypeId", value = "用户类型id", allowMultiple = true, dataTypeClass = List.class, paramType = "query")
-    })
-    public IPageResultData<List<ListWashEventVo1>> userWashConformanceRatioScreen(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id") @RequestParam(value="departmentIds",required = false)  List<Long> departmentIds,@ApiParam(value = "用户id") @RequestParam(value="userIds",required = false)  List<Long> userIds, @RequestParam(value="userTypeId",required = false) @ApiParam(value = "用户类型")  List<Long> userTypeId,
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "departmentIds", value = "部门id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
+//            @ApiImplicitParam(name = "userIds", value = "用户id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
+//            @ApiImplicitParam(name = "userTypeId", value = "用户类型id", allowMultiple = true, dataTypeClass = List.class, paramType = "query")
+//    })
+    public IPageResultData<List<ListWashEventVo1>> userWashConformanceRatioScreen(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id")  String departmentIds,@ApiParam(value = "用户id")  String userIds, @ApiParam(value = "用户类型")  String userTypeId,
                                                                                  @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                  @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                                  LionPage lionPage) {
-        return eventService.userWashConformanceRatioScreen(userName,departmentIds,userIds , userTypeId, startDateTime, endDateTime, lionPage);
+        List<Long> listDepartmentIds = new ArrayList<Long>();
+        if (StringUtils.hasText(departmentIds)){
+            String[] str = departmentIds.split(",");
+            for (int i =0; i<str.length;i++) {
+                if (NumberUtil.isLong(str[i])) {
+                    listDepartmentIds.add(Long.valueOf(str[i]));
+                }
+            }
+        }
+        List<Long> listUserIds = new ArrayList<Long>();
+        if (StringUtils.hasText(userIds)){
+            String[] str = userIds.split(",");
+            for (int i =0; i<str.length;i++) {
+                if (NumberUtil.isLong(str[i])) {
+                    listUserIds.add(Long.valueOf(str[i]));
+                }
+            }
+        }
+        List<Long> listUserTypeId = new ArrayList<Long>();
+        if (StringUtils.hasText(userTypeId)){
+            String[] str = userTypeId.split(",");
+            for (int i =0; i<str.length;i++) {
+                if (NumberUtil.isLong(str[i])) {
+                    listUserTypeId.add(Long.valueOf(str[i]));
+                }
+            }
+        }
+        return eventService.userWashConformanceRatioScreen(userName,listDepartmentIds ,listUserIds , listUserTypeId, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/user/wash/conformance/ratio/screen/percentage")
     @ApiOperation(value = "手卫生监控（员工合规率-筛选后）百分比")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "departmentIds", value = "部门id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
-            @ApiImplicitParam(name = "userIds", value = "用户id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
-            @ApiImplicitParam(name = "userTypeId", value = "用户类型id", allowMultiple = true, dataTypeClass = List.class, paramType = "query")
-    })
-    public IResultData<Integer> userWashConformanceRatioScreenPercentage(@ApiParam(value = "用户姓名") String userName, @ApiParam(value = "部门id") @RequestParam(value="departmentIds",required = false)  List<Long> departmentIds, @ApiParam(value = "用户id") @RequestParam(value="userIds",required = false)  List<Long> userIds, @RequestParam(value="userTypeId",required = false) @ApiParam(value = "用户类型")  List<Long> userTypeId,
+//    @ApiImplicitParams({
+//            @ApiImplicitParam(name = "departmentIds", value = "部门id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
+//            @ApiImplicitParam(name = "userIds", value = "用户id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
+//            @ApiImplicitParam(name = "userTypeId", value = "用户类型id", allowMultiple = true, dataTypeClass = List.class, paramType = "query")
+//    })
+    public IResultData<Integer> userWashConformanceRatioScreenPercentage(@ApiParam(value = "用户姓名") String userName, String departmentIds,@ApiParam(value = "用户id")  String userIds, @ApiParam(value = "用户类型")  String userTypeId,
                                                                                         @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                         @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) {
 
-        return ResultData.instance().setData(eventService.userWashConformanceRatioScreenPercentage(userName,departmentIds,userIds , userTypeId, startDateTime, endDateTime));
+        List<Long> listDepartmentIds = new ArrayList<Long>();
+        if (StringUtils.hasText(departmentIds)){
+            String[] str = departmentIds.split(",");
+            for (int i =0; i<str.length;i++) {
+                if (NumberUtil.isLong(str[i])) {
+                    listDepartmentIds.add(Long.valueOf(str[i]));
+                }
+            }
+        }
+        List<Long> listUserIds = new ArrayList<Long>();
+        if (StringUtils.hasText(userIds)){
+            String[] str = userIds.split(",");
+            for (int i =0; i<str.length;i++) {
+                if (NumberUtil.isLong(str[i])) {
+                    listUserIds.add(Long.valueOf(str[i]));
+                }
+            }
+        }
+        List<Long> listUserTypeId = new ArrayList<Long>();
+        if (StringUtils.hasText(userTypeId)){
+            String[] str = userTypeId.split(",");
+            for (int i =0; i<str.length;i++) {
+                if (NumberUtil.isLong(str[i])) {
+                    listUserTypeId.add(Long.valueOf(str[i]));
+                }
+            }
+        }
+        return ResultData.instance().setData(eventService.userWashConformanceRatioScreenPercentage(userName,listDepartmentIds ,listUserIds , listUserTypeId, startDateTime, endDateTime));
     }
 
     @GetMapping("/user/wash/conformance/ratio/export")
