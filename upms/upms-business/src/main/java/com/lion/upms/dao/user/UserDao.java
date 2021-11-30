@@ -109,5 +109,11 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
      */
     public int countByUserTypeId(Long userTypeId);
 
+    /**
+     * 根据用户类型查寻
+     * @param userTypeIds
+     * @return
+     */
+    public List<User> findByUserTypeIdIn(Collection<Long> userTypeIds);
 
 }

@@ -198,7 +198,7 @@ public class WashEventDaoImpl implements WashEventDaoEx {
     }
 
     @Override
-    public IPageResultData<List<WashEvent>> userWashConformanceRatioScreen(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<WashEvent>> userWashConformanceRatioScreen(String userName, List<Long> departmentIds, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
@@ -224,7 +224,7 @@ public class WashEventDaoImpl implements WashEventDaoEx {
     }
 
     @Override
-    public Integer userWashConformanceRatioScreenPercentage(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public Integer userWashConformanceRatioScreenPercentage(String userName, List<Long> departmentIds, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<Bson> pipeline = new ArrayList<Bson>();
         BasicDBObject group = new BasicDBObject();
         group = BasicDBObjectUtil.put(group,"$group","_id","$a"); //全院
@@ -242,9 +242,6 @@ public class WashEventDaoImpl implements WashEventDaoEx {
             match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime));
         }else if (Objects.isNull(startDateTime) && Objects.nonNull(endDateTime)) {
             match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$lte",endDateTime));
-        }
-        if (Objects.nonNull(userTypeId)){
-            match = BasicDBObjectUtil.put(match,"$match","py",new BasicDBObject("$eq", userTypeId) );
         }
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
             match = BasicDBObjectUtil.put(match,"$match","pdi",new BasicDBObject("$in",departmentIds) );

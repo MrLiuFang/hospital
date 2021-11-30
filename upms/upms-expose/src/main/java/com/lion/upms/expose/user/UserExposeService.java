@@ -40,6 +40,13 @@ public interface UserExposeService extends BaseService<User> {
     public int countInUserTypeId(Collection<Long> userTypeIds);
 
     /**
+     * 根据用户类型查寻用户
+     * @param userTypeIds
+     * @return
+     */
+    public List<User> find(Collection<Long> userTypeIds);
+
+    /**
      * 根据员工编号查询
      * @param number
      * @return

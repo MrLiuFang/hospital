@@ -243,8 +243,17 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
-    public IPageResultData<List<ListWashEventVo1>> userWashConformanceRatioScreen(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        IPageResultData<List<WashEvent>> pageResultData =  this.washEventDao.userWashConformanceRatioScreen(userName, departmentIds, userIds, userTypeId, startDateTime, endDateTime, lionPage);
+    public IPageResultData<List<ListWashEventVo1>> userWashConformanceRatioScreen(String userName, List<Long> departmentIds, List<Long> userIds, List<Long> userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        if (Objects.nonNull(userTypeId) && userTypeId.size()>0) {
+            List<User> list = userExposeService.find(userTypeId);
+            if (Objects.isNull(userIds)) {
+                userIds = new ArrayList<Long>();
+            }
+            for (int i =0;i<list.size();i++) {
+                userIds.add(list.get(i).getId());
+            }
+        }
+        IPageResultData<List<WashEvent>> pageResultData =  this.washEventDao.userWashConformanceRatioScreen(userName, departmentIds, userIds, startDateTime, endDateTime, lionPage);
         List<WashEvent> list = pageResultData.getData();
         List<ListWashEventVo1> returnList = new ArrayList<>();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -271,8 +280,17 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
-    public Integer userWashConformanceRatioScreenPercentage(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return washEventDao.userWashConformanceRatioScreenPercentage(userName, departmentIds, userIds, userTypeId, startDateTime, endDateTime);
+    public Integer userWashConformanceRatioScreenPercentage(String userName, List<Long> departmentIds, List<Long> userIds, List<Long> userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        if (Objects.nonNull(userTypeId) && userTypeId.size()>0) {
+            List<User> list = userExposeService.find(userTypeId);
+            if (Objects.isNull(userIds)) {
+                userIds = new ArrayList<Long>();
+            }
+            for (int i =0;i<list.size();i++) {
+                userIds.add(list.get(i).getId());
+            }
+        }
+        return washEventDao.userWashConformanceRatioScreenPercentage(userName, departmentIds, userIds, startDateTime, endDateTime);
     }
 
     @Override

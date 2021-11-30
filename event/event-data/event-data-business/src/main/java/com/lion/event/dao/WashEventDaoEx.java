@@ -4,7 +4,6 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.WashEvent;
 import org.bson.Document;
-import org.hibernate.dialect.Ingres9Dialect;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -59,23 +58,21 @@ public interface WashEventDaoEx {
      * @param userName
      * @param departmentIds
      * @param userIds
-     * @param userTypeId
      * @param startDateTime
      * @param endDateTime
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<WashEvent>> userWashConformanceRatioScreen(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<WashEvent>> userWashConformanceRatioScreen(String userName, List<Long> departmentIds, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      * 员工合规率-筛选后-百分比
      * @param userName
      * @param departmentIds
      * @param userIds
-     * @param userTypeId
      * @param startDateTime
      * @param endDateTime
      * @return
      */
-    public Integer userWashConformanceRatioScreenPercentage(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    public Integer userWashConformanceRatioScreenPercentage(String userName, List<Long> departmentIds, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
 }
