@@ -28,5 +28,5 @@ public interface WorkExposeService extends BaseService<Work> {
      * @param lionPage
      * @return
      */
-    public PageResultData<Map<String,Object>> find(List<Long> departmentIds, List<Long> userIds, String name, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public PageResultData<Map<String,Object>> find(List<Long> departmentIds, List<Long> userIds, String name, List<Long> userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

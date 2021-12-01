@@ -35,7 +35,7 @@ public class WorkExposeServiceImpl extends BaseServiceImpl<Work> implements Work
     private UserExposeService userExposeService;
 
     @Override
-    public PageResultData<Map<String, Object>> find(List<Long> departmentIds, List<Long> userIds, String name, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public PageResultData<Map<String, Object>> find(List<Long> departmentIds, List<Long> userIds, String name, List<Long> userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Page<Map<String, Object>> page = workDao.List(departmentIds, userIds, name, userTypeId, startDateTime, endDateTime, lionPage);
         return new PageResultData(page.getContent(),lionPage,page.getTotalElements());
     }

@@ -207,7 +207,7 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
-    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName, List<Long> departmentIds, List<Long> userIds, List<Long> userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         PageResultData<Map<String,Object>> page = workExposeService.find(departmentIds,userIds , userName, userTypeId, startDateTime, endDateTime, lionPage);
         Long totalElements = (Long) page.getTotalElements();
         List<Map<String,Object>> list = page.getContent();
@@ -294,7 +294,7 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
-    public void userWashConformanceRatioExport(String userName, List<Long> departmentIds, List<Long> userIds, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws DocumentException, IOException {
+    public void userWashConformanceRatioExport(String userName, List<Long> departmentIds, List<Long> userIds, List<Long> userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws DocumentException, IOException {
         IPageResultData<List<ListUserWashMonitorVo>> page = userWashConformanceRatio(userName, departmentIds,userIds , userTypeId, startDateTime, endDateTime, new LionPage(0,Integer.MAX_VALUE));
         List<ListUserWashMonitorVo> list = page.getData();
         BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);

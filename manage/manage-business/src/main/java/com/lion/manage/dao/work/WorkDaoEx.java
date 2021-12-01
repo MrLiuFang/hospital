@@ -26,5 +26,5 @@ public interface WorkDaoEx {
      * @param lionPage
      * @return
      */
-    public Page<Map<String,Object>> List(List<Long> departmentIds, List<Long> userIds, String name, Long userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public Page<Map<String,Object>> List(List<Long> departmentIds, List<Long> userIds, String name, List<Long> userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 }

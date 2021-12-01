@@ -72,7 +72,7 @@ public interface WashEventService {
      * @param lionPage
      * @return
      */
-    IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName,List<Long> departmentIds, List<Long> userIds,  Long userTypeId,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+    IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName,List<Long> departmentIds, List<Long> userIds,  List<Long> userTypeId,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 
     /**
      *  员工合规率-率选后
@@ -108,7 +108,7 @@ public interface WashEventService {
      * @param startDateTime
      * @param endDateTime
      */
-    void userWashConformanceRatioExport(String userName, List<Long> departmentIds, List<Long> userIds,  Long userTypeId,LocalDateTime startDateTime,LocalDateTime endDateTime) throws DocumentException, IOException;
+    void userWashConformanceRatioExport(String userName, List<Long> departmentIds, List<Long> userIds,  List<Long> userTypeId,LocalDateTime startDateTime,LocalDateTime endDateTime) throws DocumentException, IOException;
 
     /**
      * 手卫生行为包报表
