@@ -7,6 +7,8 @@ import com.lion.event.entity.RecyclingBoxRecord;
 import com.lion.event.entity.vo.ListRecyclingBoxCurrentVo;
 import com.lion.event.entity.vo.ListRecyclingBoxRecordVo;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -41,6 +43,16 @@ public interface RecyclingBoxRecordService {
      * @return
      */
     public IPageResultData<List<ListRecyclingBoxCurrentVo>> recyclingBoxCurrentList(LocalDateTime startPreviousDisinfectDate,LocalDateTime endPreviousDisinfectDate, String name,String code, LionPage lionPage);
+
+    /**
+     * 回收箱导出
+     * @param startPreviousDisinfectDate
+     * @param endPreviousDisinfectDate
+     * @param name
+     * @param code
+     */
+    public void recyclingBoxCurrentListExport(LocalDateTime startPreviousDisinfectDate,LocalDateTime endPreviousDisinfectDate, String name,String code) throws IOException, IllegalAccessException;
+
 
     /**
      * 一键消毒

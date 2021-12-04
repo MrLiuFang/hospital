@@ -16,6 +16,8 @@ import com.lion.event.entity.RecyclingBoxRecord;
 import com.lion.event.entity.vo.ListRecyclingBoxCurrentVo;
 import com.lion.event.entity.vo.ListRecyclingBoxRecordVo;
 import com.lion.event.service.RecyclingBoxRecordService;
+import com.lion.event.utils.ExcelColumn;
+import com.lion.event.utils.ExportExcelUtil;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
@@ -32,6 +34,10 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -59,6 +65,9 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
 
     @DubboReference
     private DeviceExposeService deviceExposeService;
+
+    @Autowired
+    private HttpServletResponse response;
 
     @Override
     public void save(RecyclingBoxRecord recyclingBoxRecord) {
@@ -150,6 +159,21 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
             }
         });
         return new PageResultData(returnList,lionPage,returnList.size());
+    }
+
+    @Override
+    public void recyclingBoxCurrentListExport(LocalDateTime startPreviousDisinfectDate, LocalDateTime endPreviousDisinfectDate, String name, String code) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListRecyclingBoxCurrentVo>> pageResultData = recyclingBoxCurrentList(startPreviousDisinfectDate,endPreviousDisinfectDate,name,code,new LionPage(0,Integer.MAX_VALUE));
+        List<ListRecyclingBoxCurrentVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build("name", "name"));
+        excelColumn.add(ExcelColumn.build("code", "code"));
+        excelColumn.add(ExcelColumn.build("count", "count"));
+        excelColumn.add(ExcelColumn.build("previous disinfect date", "previousDisinfectDate"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("recyclingBox.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
     }
 
     @Override

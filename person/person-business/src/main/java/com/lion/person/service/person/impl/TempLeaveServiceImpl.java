@@ -18,6 +18,8 @@ import com.lion.person.entity.person.vo.ListTempLeaveVo;
 import com.lion.person.service.person.PatientLogService;
 import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.TempLeaveService;
+import com.lion.person.utils.ExcelColumn;
+import com.lion.person.utils.ExportExcelUtil;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.CurrentUserUtil;
@@ -29,6 +31,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
@@ -61,6 +66,9 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
 
     @DubboReference
     private DepartmentExposeService departmentExposeService;
+
+    @Autowired
+    private HttpServletResponse response;
 
     @Override
     @Transactional
@@ -141,5 +149,24 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
+    }
+
+    @Override
+    public void export(String tagCode, Long departmentId, Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListTempLeaveVo>> pageResultData = list(tagCode,departmentId,patientId,userId,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+        List<ListTempLeaveVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build("patient name", "patientName"));
+        excelColumn.add(ExcelColumn.build("gender", "gender"));
+        excelColumn.add(ExcelColumn.build("age", "age"));
+        excelColumn.add(ExcelColumn.build("medical record no", "medicalRecordNo"));
+        excelColumn.add(ExcelColumn.build("department name", "departmentName"));
+        excelColumn.add(ExcelColumn.build("disease", "disease"));
+        excelColumn.add(ExcelColumn.build("leave datetime", "startDateTime"));
+        excelColumn.add(ExcelColumn.build("registrant", "userName"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("tempLeave.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
     }
 }

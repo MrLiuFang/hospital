@@ -397,6 +397,20 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
+    public void eventRecordListExport(String code, String name, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
+        IPageResultData<List<EventRecordVo>> pageResultData = eventRecordList(code, name, startDateTime, endDateTime, new LionPage(0,Integer.MAX_VALUE));
+        List<EventRecordVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build("code", "code"));
+        excelColumn.add(ExcelColumn.build("name", "createUserName"));
+        excelColumn.add(ExcelColumn.build("datetime", "createDateTime"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("eventRecord.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
+    }
+
+    @Override
     public EventRecordVo eventRecordDetails(Long id) {
         return eventRecordExposeService.details(id);
     }

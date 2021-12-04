@@ -532,6 +532,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return positionService.eventRecordList(code, name, startDateTime, endDateTime, lionPage);
     }
 
+    @GetMapping("/event/record/export")
+    @ApiOperation(value = "事件记录列表导出")
+    public void eventRecordList(@ApiParam("时间编号")String code, @ApiParam("创建人姓名")String name,
+                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) throws IOException, IllegalAccessException {
+        positionService.eventRecordListExport(code, name, startDateTime, endDateTime);
+    }
+
     @GetMapping("/event/record/details")
     @ApiOperation(value = "事件记录详情")
     public IResultData<EventRecordVo> eventRecordDetails(@ApiParam("id") @NotNull(message = "{0000000}") Long id) {
@@ -674,6 +682,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                                                     @ApiParam(value = "上次结束消毒时间(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime endPreviousDisinfectDate,
                                                                                     @ApiParam(value = "回收箱名称") String name,@ApiParam(value = "回收箱编号")String code,LionPage lionPage) {
         return recyclingBoxRecordService.recyclingBoxCurrentList(startPreviousDisinfectDate, endPreviousDisinfectDate, name, code, lionPage);
+    }
+
+    @GetMapping("/recyclingBox/current/list/export")
+    @ApiOperation(value = "回收箱当前导出")
+    public void recyclingBoxCurrentList(@ApiParam(value = "上次开始消毒时间(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime startPreviousDisinfectDate,
+                                                                                    @ApiParam(value = "上次结束消毒时间(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime endPreviousDisinfectDate,
+                                                                                    @ApiParam(value = "回收箱名称") String name,@ApiParam(value = "回收箱编号")String code) throws IOException, IllegalAccessException {
+        recyclingBoxRecordService.recyclingBoxCurrentListExport(startPreviousDisinfectDate, endPreviousDisinfectDate, name, code);
     }
 
     @PutMapping("/recyclingBox/disinfect")

@@ -11,6 +11,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -46,4 +47,16 @@ public interface TempLeaveService extends BaseService<TempLeave> {
      * @return
      */
     public IPageResultData<List<ListTempLeaveVo>> list( String tagCode,  Long departmentId, Long patientId,Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+
+    /**
+     * 导出
+     * @param tagCode
+     * @param departmentId
+     * @param patientId
+     * @param userId
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public void export( String tagCode,  Long departmentId, Long patientId,Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException;
 }

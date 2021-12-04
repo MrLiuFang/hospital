@@ -11,7 +11,6 @@ import com.lion.event.entity.dto.EventRecordAddDto;
 import com.lion.event.entity.vo.ListPositionVo;
 import com.lion.event.entity.vo.ListVisitorVo;
 import com.lion.manage.entity.event.vo.EventRecordVo;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -129,9 +128,31 @@ public interface PositionService {
      */
     public void updatePositionLeaveTime(UpdatePositionLeaveTimeDto dto);
 
-
+    /**
+     * 事件记录
+     * @param code
+     * @param name
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     * @return
+     */
     public IPageResultData<List<EventRecordVo>> eventRecordList(String code, String name,LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
 
+    /**
+     * 事件记录导出
+     * @param code
+     * @param name
+     * @param startDateTime
+     * @param endDateTime
+     */
+    public void eventRecordListExport(String code, String name,LocalDateTime startDateTime,LocalDateTime endDateTime) throws IOException, IllegalAccessException;
+
+    /**
+     * 事件记录详情
+     * @param id
+     * @return
+     */
     public EventRecordVo eventRecordDetails( Long id);
 
     /**
