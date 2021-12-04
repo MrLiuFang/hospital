@@ -4,18 +4,16 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
-import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagRuleEffect;
-import com.lion.device.entity.enums.TagType;
 import com.lion.event.dao.UserTagButtonRecordDao;
-import com.lion.event.entity.HumitureRecord;
-import com.lion.event.entity.RecyclingBoxRecord;
 import com.lion.event.entity.UserTagButtonRecord;
-import com.lion.event.entity.vo.ListRecyclingBoxRecordVo;
 import com.lion.event.entity.vo.ListUserTagButtonRecordVo;
 import com.lion.event.service.UserTagButtonRecordService;
+import com.lion.event.utils.ExcelColumn;
+import com.lion.event.utils.ExportExcelUtil;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +25,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,6 +52,9 @@ public class UserTagButtonRecordServiceImpl implements UserTagButtonRecordServic
 
     @DubboReference
     private FileExposeService fileExposeService;
+
+    @Autowired
+    private HttpServletResponse response;
 
     @Override
     public void add(UserTagButtonRecord userTagButtonRecord) {
@@ -93,6 +97,20 @@ public class UserTagButtonRecordServiceImpl implements UserTagButtonRecordServic
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,lionPage,0L);
+    }
+
+    @Override
+    public void export(TagRuleEffect tagRuleEffect, String name, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListUserTagButtonRecordVo>> pageResultData = list(tagRuleEffect,name,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+        List<ListUserTagButtonRecordVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build("date time", "ddt"));
+        excelColumn.add(ExcelColumn.build("name", "n"));
+        excelColumn.add(ExcelColumn.build("event", "bn"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("tagButton.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
     }
 
     @Override

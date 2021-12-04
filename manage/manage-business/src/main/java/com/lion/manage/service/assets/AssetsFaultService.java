@@ -1,12 +1,19 @@
 package com.lion.manage.service.assets;
 
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.dto.AddAssetsFaultDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsFaultDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsFaultVo;
+import com.lion.manage.entity.assets.vo.ListAssetsFaultVo;
+import com.lion.manage.entity.enums.AssetsFaultState;
 
-import javax.validation.constraints.NotNull;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @author Mr.Liu
@@ -26,6 +33,34 @@ public interface AssetsFaultService extends BaseService<AssetsFault> {
      * @param updateAssetsFaultDto
      */
     public void update(UpdateAssetsFaultDto updateAssetsFaultDto);
+
+    /**
+     * 列表
+     * @param departmentId
+     * @param state
+     * @param assetsId
+     * @param code
+     * @param assetsCode
+     * @param keyword
+     * @param startDateTime
+     * @param endDateTime
+     * @param lionPage
+     * @return
+     */
+    public IPageResultData<List<ListAssetsFaultVo>> list(Long departmentId, AssetsFaultState state,  Long assetsId, String code, String assetsCode,String keyword,LocalDateTime startDateTime,LocalDateTime endDateTime,LionPage lionPage);
+
+    /**
+     * 导出
+     * @param departmentId
+     * @param state
+     * @param assetsId
+     * @param code
+     * @param assetsCode
+     * @param keyword
+     * @param startDateTime
+     * @param endDateTime
+     */
+    public void export(Long departmentId, AssetsFaultState state,  Long assetsId, String code, String assetsCode,String keyword,LocalDateTime startDateTime,LocalDateTime endDateTime) throws IOException, IllegalAccessException;
 
     /**
      * 详情

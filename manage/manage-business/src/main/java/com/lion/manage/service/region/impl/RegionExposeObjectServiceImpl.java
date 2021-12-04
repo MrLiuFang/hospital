@@ -26,15 +26,15 @@ package com.lion.manage.service.region.impl;
 //
 //    @Override
 //    @Transactional
-//    public void save(Long regionId, List<ExposeObject> list) {
+//    public void save(Long regionId, List<ExposeObject> export) {
 //        if (Objects.nonNull(regionId)){
 //            regionExposeObjectDao.deleteByRegionId(regionId);
 //        }else {
 //            return;
 //        }
 //        List<RegionExposeObject> regionExposeObjects = new ArrayList<>();
-//        if (Objects.nonNull(list) && list.size()>0) {
-//            list.forEach(exposeObject -> {
+//        if (Objects.nonNull(export) && export.size()>0) {
+//            export.forEach(exposeObject -> {
 //                RegionExposeObject regionExposeObject = new RegionExposeObject();
 //                regionExposeObject.setRegionId(regionId);
 //                regionExposeObject.setExposeObject(exposeObject);

@@ -11,6 +11,9 @@ import com.lion.event.dao.HumitureRecordDao;
 import com.lion.event.entity.HumitureRecord;
 import com.lion.event.entity.vo.ListHumitureRecordVo;
 import com.lion.event.service.HumitureRecordService;
+import com.lion.event.utils.ExcelColumn;
+import com.lion.event.utils.ExportExcelUtil;
+import com.lion.manage.entity.alarm.vo.ListAlarmModeRecordVo;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +25,9 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -41,6 +47,9 @@ public class HumitureRecordServiceImpl implements HumitureRecordService {
 
     @DubboReference
     private TagExposeService tagExposeService;
+
+    @Autowired
+    private HttpServletResponse response;
 
     @Override
     public void save(HumitureRecord humitureRecord) {
@@ -97,6 +106,25 @@ public class HumitureRecordServiceImpl implements HumitureRecordService {
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,lionPage,0L);
+    }
+
+    @Override
+    public void temperatureHumidityListExport(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListHumitureRecordVo>> pageResultData = temperatureHumidityList(regionId,departmentId,deviceCode,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+        List<ListHumitureRecordVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build("device name", "deviceName"));
+        excelColumn.add(ExcelColumn.build("device code", "deviceCode"));
+        excelColumn.add(ExcelColumn.build("tag code", "tagCode"));
+        excelColumn.add(ExcelColumn.build("department name", "dn"));
+        excelColumn.add(ExcelColumn.build("region name", "rn"));
+        excelColumn.add(ExcelColumn.build("date time", "ddt"));
+        excelColumn.add(ExcelColumn.build("temperature", "t"));
+        excelColumn.add(ExcelColumn.build("humidity", "h"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("temperatureHumidity.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
     }
 
     @Override

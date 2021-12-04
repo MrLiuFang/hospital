@@ -5,6 +5,7 @@ import com.lion.core.LionPage;
 import com.lion.event.entity.HumitureRecord;
 import com.lion.event.entity.vo.ListHumitureRecordVo;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -28,6 +29,16 @@ public interface HumitureRecordService {
      * @return
      */
     public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+
+    /**
+     * 温湿标签列表导出
+     * @param regionId
+     * @param departmentId
+     * @param deviceCode
+     * @param startDateTime
+     * @param endDateTime
+     */
+    public void temperatureHumidityListExport(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException;
 
     /**
      * 查询最后的记录

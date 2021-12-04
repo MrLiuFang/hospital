@@ -2,11 +2,9 @@ package com.lion.manage.controller.alarm;
 
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
-import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
-import com.lion.core.persistence.JpqlParameter;
 import com.lion.event.entity.dto.SetAlarmModeDto;
 import com.lion.manage.entity.alarm.AlarmModeRecord;
 import com.lion.manage.entity.alarm.vo.ListAlarmModeRecordVo;
@@ -21,18 +19,15 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -92,44 +87,15 @@ public class AlarmModeController extends BaseControllerImpl implements BaseContr
     public IPageResultData<List<ListAlarmModeRecordVo>> alarmModeList(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                       @ApiParam(value = "模式")AlarmMode alarmMode, @ApiParam(value = "操作员姓名")String name, LionPage lionPage) {
 
-        List<Long> userIds = null;
-        if (StringUtils.hasText(name)) {
-            List<User> users = userExposeService.findByName(name);
-            userIds.add(Long.MAX_VALUE);
-            users.forEach(user->{
-                userIds.add(user.getId());
-            });
-        }
+        return alarmModeRecordService.list(startDateTime, endDateTime, alarmMode, name, lionPage);
+    }
 
-        JpqlParameter jpqlParameter = new JpqlParameter();
-        if (Objects.nonNull(startDateTime)){
-            jpqlParameter.setSearchParameter(SearchConstant.GREATER_THAN_OR_EQUAL_TO+"_createDateTime",startDateTime);
-        }
-        if (Objects.nonNull(endDateTime)){
-            jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_createDateTime",endDateTime);
-        }
-        if (Objects.nonNull(alarmMode)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_alarmMode",alarmMode);
-        }
-        if (Objects.nonNull(userIds) && userIds.size()>0) {
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_userId",userIds);
-        }
-        lionPage.setJpqlParameter(jpqlParameter);
-        Page<AlarmModeRecord> page = alarmModeRecordService.findNavigator(lionPage);
-        List<AlarmModeRecord> list = page.getContent();
-        List<ListAlarmModeRecordVo> returnList = new ArrayList<>();
-        list.forEach(alarmModeRecord -> {
-            ListAlarmModeRecordVo vo = new ListAlarmModeRecordVo();
-            BeanUtils.copyProperties(alarmModeRecord,vo);
-            User user = userExposeService.findById(alarmModeRecord.getUserId());
-            if (Objects.nonNull(user)) {
-                vo.setName(user.getName());
-                vo.setHeadPortrait(user.getHeadPortrait());
-                vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
-            }
-            returnList.add(vo);
-        });
-        return new PageResultData<>(returnList,lionPage,page.getTotalElements());
+    @GetMapping("/mode/list/export")
+    @ApiOperation(value = "获取切换记录列表导出")
+    public void alarmModeListExport(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                                      @ApiParam(value = "模式")AlarmMode alarmMode, @ApiParam(value = "操作员姓名")String name) throws IOException, IllegalAccessException {
+
+        alarmModeRecordService.export(startDateTime, endDateTime, alarmMode, name);
     }
 
 }

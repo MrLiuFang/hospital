@@ -40,8 +40,8 @@ package com.lion.manage.service.rule.impl;
 //        }
 //        userId.forEach(id->{
 //            if (Objects.equals(wash.getType(),WashRuleType.LOOP) && Objects.equals(false,wash.getIsAllUser())) {
-//                List<WashUser> list = washUserDao.find(id, WashRuleType.LOOP, wash.getId());
-//                if (Objects.nonNull(list) && list.size() > 0) {
+//                List<WashUser> export = washUserDao.find(id, WashRuleType.LOOP, wash.getId());
+//                if (Objects.nonNull(export) && export.size() > 0) {
 //                    User user = userExposeService.findById(id);
 //                    BusinessException.throwException(user.getName() + MessageI18nUtil.getMessage("2000094"));
 //                }
@@ -62,7 +62,7 @@ package com.lion.manage.service.rule.impl;
 //
 //    @Override
 //    public List<WashUser> find(Long washId) {
-//        List<WashUser> list = washUserDao.findByWashId(washId);
-//        return list;
+//        List<WashUser> export = washUserDao.findByWashId(washId);
+//        return export;
 //    }
 //}

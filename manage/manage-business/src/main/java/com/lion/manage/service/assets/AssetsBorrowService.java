@@ -9,6 +9,7 @@ import com.lion.manage.entity.assets.dto.ReturnAssetsBorrowDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsBorrowVo;
 import com.lion.manage.entity.assets.vo.ListAssetsBorrowVo;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,7 +40,20 @@ public interface AssetsBorrowService extends BaseService<AssetsBorrow> {
      * @param lionPage
      * @return
      */
-    IPageResultData<List<ListAssetsBorrowVo>> list(String name, Long borrowUserId, Long assetsTypeId, Long departmentId,  Long assetsId,  LocalDateTime startDateTime,  LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage);
+    IPageResultData<List<ListAssetsBorrowVo>> list(String name, Long borrowUserId, Long assetsTypeId, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage);
+
+    /**
+     * 导出
+     * @param name
+     * @param borrowUserId
+     * @param assetsTypeId
+     * @param departmentId
+     * @param assetsId
+     * @param startDateTime
+     * @param endDateTime
+     * @param isReturn
+     */
+    void export(String name, Long borrowUserId, Long assetsTypeId, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn) throws IOException, IllegalAccessException;
 
     /**
      * 修改资产借用(归还)

@@ -16,9 +16,9 @@ package com.lion.manage.service.region;
 //    /**
 //     * 保存区域公开对象
 //     * @param regionId
-//     * @param list
+//     * @param export
 //     */
-//    public void save(Long regionId, List<ExposeObject> list);
+//    public void save(Long regionId, List<ExposeObject> export);
 //
 //    public List<RegionExposeObject> find(Long regionId);
 //}

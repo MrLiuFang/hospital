@@ -36,6 +36,8 @@ import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
 import com.lion.manage.service.ward.WardService;
+import com.lion.manage.utils.ExcelColumn;
+import com.lion.manage.utils.ExportExcelUtil;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.upms.expose.user.UserExposeService;
@@ -47,6 +49,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -107,6 +112,9 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
 
     @DubboReference
     private DepartmentExposeService departmentExposeService;
+
+    @Autowired
+    private HttpServletResponse response;
 
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
@@ -219,6 +227,21 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
+    }
+
+    @Override
+    public void export(String name, Long borrowUserId, Long assetsTypeId, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListAssetsBorrowVo>> pageResultData = list(name,borrowUserId,assetsTypeId,departmentId,assetsId,startDateTime,endDateTime,isReturn,new LionPage(0,Integer.MAX_VALUE));
+        List<ListAssetsBorrowVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build("assets name", "name"));
+        excelColumn.add(ExcelColumn.build("borrow user name", "borrowUserName"));
+        excelColumn.add(ExcelColumn.build("department name", "borrowDepartmentName"));
+        excelColumn.add(ExcelColumn.build("use datetime", "startDateTime"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("assetsBorrow.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
     }
 
     @Override

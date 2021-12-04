@@ -21,4 +21,7 @@ public class ListWashEventVo1 extends WashEvent {
     @Schema(description = "状态")
     private String state;
 
+    @Schema(description = "姓名")
+    private String name;
+
 }

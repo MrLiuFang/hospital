@@ -8,8 +8,6 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
-import com.lion.device.entity.tag.Tag;
-import com.lion.device.entity.tag.TagAssets;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.manage.entity.assets.Assets;
@@ -32,11 +30,8 @@ import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.upms.entity.user.User;
-import com.lion.upms.entity.user.UserType;
-import com.lion.upms.entity.user.vo.DetailsUserTypeVo;
 import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.upms.expose.user.UserExposeService;
-import com.lion.utils.CurrentUserUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -173,12 +168,18 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
         return ResultData.instance();
     }
 
-
     @GetMapping("/borrw/list")
     @ApiOperation(value = "资产借用列表")
     public IPageResultData<List<ListAssetsBorrowVo>> listBorrw(@ApiParam(value = "资产名称")String name,@ApiParam(value = "登记人/借用人")Long borrowUserId,@ApiParam(value = "资产类型")Long assetsTypeId,@ApiParam(value = "科室id") Long departmentId, @ApiParam(value = "资产id") Long assetsId, @ApiParam(value = "借用开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "借用结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                @ApiParam(value = "是否已归还(null值 查所有)") Boolean isReturn, LionPage lionPage){
         return assetsBorrowService.list(name, borrowUserId, assetsTypeId, departmentId, assetsId, startDateTime, endDateTime, isReturn, lionPage);
+    }
+
+    @GetMapping("/borrw/list/export")
+    @ApiOperation(value = "资产借用列表导出")
+    public void listBorrwExport(@ApiParam(value = "资产名称")String name,@ApiParam(value = "登记人/借用人")Long borrowUserId,@ApiParam(value = "资产类型")Long assetsTypeId,@ApiParam(value = "科室id") Long departmentId, @ApiParam(value = "资产id") Long assetsId, @ApiParam(value = "借用开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "借用结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                               @ApiParam(value = "是否已归还(null值 查所有)") Boolean isReturn) throws IOException, IllegalAccessException {
+        assetsBorrowService.export( name, borrowUserId, assetsTypeId, departmentId, assetsId, startDateTime, endDateTime, isReturn);
     }
 
 //    @GetMapping("/borrw/details")
@@ -237,90 +238,18 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
                                                               @ApiParam("关键字") String keyword,
                                                               @ApiParam(value = "开始申报时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                               @ApiParam(value = "结束申报时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,LionPage lionPage){
-        ResultData resultData = ResultData.instance();
-        JpqlParameter jpqlParameter = new JpqlParameter();
-        List<Long> departmentIds = departmentExposeService.responsibleDepartment(departmentId);
-        List<Long> ids = new ArrayList<>();
-        if (departmentIds.size()>0) {
-            List<Assets> list = assetsService.findByDepartmentId(departmentIds);
-            ids.add(Long.MAX_VALUE);
-            list.forEach(assets -> {
-                ids.add(assets.getId());
-            });
-        }
-        if (StringUtils.hasText(keyword)) {
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",keyword);
-            List<Assets> list = assetsService.findByKeyword(keyword);
-            list.forEach(assets -> {
-                ids.add(assets.getId());
-            });
-            if (ids.size()<=0){
-                ids.add(Long.MAX_VALUE);
-            }
-        }
-        if (Objects.nonNull(assetsId)) {
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsId",assetsId);
-        }
-        if (Objects.nonNull(state)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_state",state);
-        }
-        if (StringUtils.hasText(code)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_code",code);
-        }
-        if (StringUtils.hasText(assetsCode)) {
-            List<Assets> list = assetsService.find(assetsCode);
-            list.forEach(assets -> {
-                ids.add(assets.getId());
-            });
-            if (ids.size()<=0){
-                ids.add(Long.MAX_VALUE);
-            }
-        }
-        if (ids.size()>0){
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids.stream().distinct().collect(Collectors.toList()));
-        }
-        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
-        lionPage.setJpqlParameter(jpqlParameter);
-        Page<AssetsFault> page = assetsFaultService.findNavigator(lionPage);
-        List<AssetsFault> list = page.getContent();
-        List<ListAssetsFaultVo> listAssetsFaultVos = new ArrayList<ListAssetsFaultVo>();
-        list.forEach(assetsFault -> {
-            ListAssetsFaultVo vo = new ListAssetsFaultVo();
-            BeanUtils.copyProperties(assetsFault,vo);
-            if (Objects.nonNull(assetsFault.getDeclarantUserId())) {
-                User user = userExposeService.findById(assetsFault.getDeclarantUserId());
-                if (Objects.nonNull(user)){
-                    vo.setDeclarantUserName(user.getName());
-                    vo.setDeclarantUserHeadPortrait(user.getHeadPortrait());
-                    vo.setDeclarantUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
-                }
-            }
-            Assets assets = assetsService.findById(assetsFault.getAssetsId());
-            if (Objects.nonNull(assets)){
-                vo.setDeviceCode(assets.getCode());
-                vo.setImg(assets.getImg());
-                vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
-                vo.setName(assets.getName());
-                Build build = buildService.findById(assets.getBuildId());
-                if (Objects.nonNull(build)) {
-                    vo.setBuildName(build.getName());
-                }
-                BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)){
-                    vo.setBuildFloorName(buildFloor.getName());
-                }
-                Region region = regionService.findById(assets.getRegionId());
-                if (Objects.nonNull(region)){
-                    vo.setRegionName(region.getName());
-                }
-                Department department = departmentService.findById(assets.getDepartmentId());
-                if (Objects.nonNull(department)){
-                    vo.setDepartmentName(department.getName());
-                }
-            }
-            listAssetsFaultVos.add(vo);
-        });
-        return new PageResultData(listAssetsFaultVos, page.getPageable(), page.getTotalElements());
+
+        return assetsFaultService.list(departmentId, state, assetsId, code, assetsCode, keyword, startDateTime, endDateTime, lionPage);
+    }
+
+    @GetMapping("/fault/list/export")
+    @ApiOperation(value = "资产故障列表导出")
+    public void listFaultExport(@ApiParam("科室")Long departmentId, @ApiParam("状态") AssetsFaultState state, @ApiParam("资产ID") Long assetsId,@ApiParam("故障编码")String code,@ApiParam("设备-资产编码")String assetsCode,
+                                                              @ApiParam("关键字") String keyword,
+                                                              @ApiParam(value = "开始申报时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                              @ApiParam(value = "结束申报时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) throws IOException, IllegalAccessException {
+
+        assetsFaultService.export(departmentId, state, assetsId, code, assetsCode, keyword, startDateTime, endDateTime);
     }
 
     @GetMapping("/fault/details")

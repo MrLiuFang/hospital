@@ -33,6 +33,8 @@ import com.lion.person.entity.person.vo.ListTemporaryPersonVo;
 import com.lion.person.entity.person.vo.TemporaryPersonDetailsVo;
 import com.lion.person.service.person.PatientService;
 import com.lion.person.service.person.TemporaryPersonService;
+import com.lion.person.utils.ExcelColumn;
+import com.lion.person.utils.ExportExcelUtil;
 import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -45,6 +47,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -103,6 +109,9 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
 
     @DubboReference
     private SystemAlarmExposeService systemAlarmExposeService;
+
+    @Autowired
+    private HttpServletResponse response;
 
     @Override
     @Transactional
@@ -179,6 +188,22 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
             }
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
+    }
+
+    @Override
+    public void export(String name, Boolean isLeave, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListTemporaryPersonVo>> pageResultData = list(name,isLeave,tagCode,startDateTime,endDateTime,new LionPage(0, Integer.MAX_VALUE));
+        List<ListTemporaryPersonVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build("name", "name"));
+        excelColumn.add(ExcelColumn.build("gender", "gender"));
+        excelColumn.add(ExcelColumn.build("tag code", "tagCode"));
+        excelColumn.add(ExcelColumn.build("remarks", "remarks"));
+        excelColumn.add(ExcelColumn.build("state", "deviceState"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("temporaryPerson.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
     }
 
     @Override

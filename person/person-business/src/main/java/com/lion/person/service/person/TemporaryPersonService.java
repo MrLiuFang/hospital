@@ -13,6 +13,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -54,6 +56,16 @@ public interface TemporaryPersonService extends BaseService<TemporaryPerson> {
      */
     public IPageResultData<List<ListTemporaryPersonVo>> list(String name,Boolean isLeave,String tagCode, LocalDateTime startDateTime,LocalDateTime endDateTime,LionPage lionPage);
 
+    /**
+     * 导出
+     * @param name
+     * @param isLeave
+     * @param tagCode
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    public void export(String name,Boolean isLeave,String tagCode, LocalDateTime startDateTime,LocalDateTime endDateTime) throws IOException, IllegalAccessException;
     /**
      * 详情
      * @param id

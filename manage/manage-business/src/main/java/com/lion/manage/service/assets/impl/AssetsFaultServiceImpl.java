@@ -1,7 +1,11 @@
 package com.lion.manage.service.assets.impl;
 
 import com.lion.common.expose.file.FileExposeService;
-import com.lion.common.utils.MessageDelayUtil;
+import com.lion.constant.SearchConstant;
+import com.lion.core.IPageResultData;
+import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
+import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.assets.AssetsFaultDao;
@@ -10,27 +14,42 @@ import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.dto.AddAssetsFaultDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsFaultDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsFaultVo;
+import com.lion.manage.entity.assets.vo.ListAssetsBorrowVo;
+import com.lion.manage.entity.assets.vo.ListAssetsFaultVo;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsFaultState;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
+import com.lion.manage.utils.ExcelColumn;
+import com.lion.manage.utils.ExportExcelUtil;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * @author Mr.Liu
@@ -64,6 +83,12 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
     @Autowired
     private DepartmentService departmentService;
 
+    @Autowired
+    private HttpServletResponse response;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
     @Override
     public void add(AddAssetsFaultDto addAssetsFaultDto) {
         AssetsFault assetsFault = new AssetsFault();
@@ -87,6 +112,111 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
             assetsFault.setFinishTime(LocalDateTime.now());
         }
         super.update(assetsFault);
+    }
+
+    @Override
+    public IPageResultData<List<ListAssetsFaultVo>> list(Long departmentId, AssetsFaultState state, Long assetsId, String code, String assetsCode, String keyword, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        JpqlParameter jpqlParameter = new JpqlParameter();
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(departmentId);
+        List<Long> ids = new ArrayList<>();
+        if (departmentIds.size()>0) {
+            List<Assets> list = assetsService.findByDepartmentId(departmentIds);
+            ids.add(Long.MAX_VALUE);
+            list.forEach(assets -> {
+                ids.add(assets.getId());
+            });
+        }
+        if (StringUtils.hasText(keyword)) {
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",keyword);
+            List<Assets> list = assetsService.findByKeyword(keyword);
+            list.forEach(assets -> {
+                ids.add(assets.getId());
+            });
+            if (ids.size()<=0){
+                ids.add(Long.MAX_VALUE);
+            }
+        }
+        if (Objects.nonNull(assetsId)) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsId",assetsId);
+        }
+        if (Objects.nonNull(state)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_state",state);
+        }
+        if (StringUtils.hasText(code)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_code",code);
+        }
+        if (StringUtils.hasText(assetsCode)) {
+            List<Assets> list = assetsService.find(assetsCode);
+            list.forEach(assets -> {
+                ids.add(assets.getId());
+            });
+            if (ids.size()<=0){
+                ids.add(Long.MAX_VALUE);
+            }
+        }
+        if (ids.size()>0){
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids.stream().distinct().collect(Collectors.toList()));
+        }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
+        lionPage.setJpqlParameter(jpqlParameter);
+        Page<AssetsFault> page = findNavigator(lionPage);
+        List<AssetsFault> list = page.getContent();
+        List<ListAssetsFaultVo> listAssetsFaultVos = new ArrayList<ListAssetsFaultVo>();
+        list.forEach(assetsFault -> {
+            ListAssetsFaultVo vo = new ListAssetsFaultVo();
+            BeanUtils.copyProperties(assetsFault,vo);
+            if (Objects.nonNull(assetsFault.getDeclarantUserId())) {
+                User user = userExposeService.findById(assetsFault.getDeclarantUserId());
+                if (Objects.nonNull(user)){
+                    vo.setDeclarantUserName(user.getName());
+                    vo.setDeclarantUserHeadPortrait(user.getHeadPortrait());
+                    vo.setDeclarantUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                }
+            }
+            Assets assets = assetsService.findById(assetsFault.getAssetsId());
+            if (Objects.nonNull(assets)){
+                vo.setDeviceCode(assets.getCode());
+                vo.setImg(assets.getImg());
+                vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
+                vo.setName(assets.getName());
+                Build build = buildService.findById(assets.getBuildId());
+                if (Objects.nonNull(build)) {
+                    vo.setBuildName(build.getName());
+                }
+                BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
+                if (Objects.nonNull(buildFloor)){
+                    vo.setBuildFloorName(buildFloor.getName());
+                }
+                Region region = regionService.findById(assets.getRegionId());
+                if (Objects.nonNull(region)){
+                    vo.setRegionName(region.getName());
+                }
+                Department department = departmentService.findById(assets.getDepartmentId());
+                if (Objects.nonNull(department)){
+                    vo.setDepartmentName(department.getName());
+                }
+            }
+            listAssetsFaultVos.add(vo);
+        });
+        return new PageResultData(listAssetsFaultVos, page.getPageable(), page.getTotalElements());
+    }
+
+    @Override
+    public void export(Long departmentId, AssetsFaultState state, Long assetsId, String code, String assetsCode, String keyword, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListAssetsFaultVo>> pageResultData = list(departmentId,state,assetsId,code,assetsCode,keyword,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+        List<ListAssetsFaultVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build("code", "code"));
+        excelColumn.add(ExcelColumn.build("name", "name"));
+        excelColumn.add(ExcelColumn.build("deviceCode", "deviceCode"));
+        excelColumn.add(ExcelColumn.build("department name", "departmentName"));
+        excelColumn.add(ExcelColumn.build("region name", "regionName"));
+        excelColumn.add(ExcelColumn.build("describe", "describe"));
+        excelColumn.add(ExcelColumn.build("datetime", "createDateTime"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("assetsFault.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
     }
 
     @Override

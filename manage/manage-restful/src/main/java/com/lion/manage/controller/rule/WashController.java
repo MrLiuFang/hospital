@@ -61,9 +61,9 @@ public class WashController extends BaseControllerImpl implements BaseController
 //    }
 //
 //
-//    @GetMapping("/list")
+//    @GetMapping("/export")
 //    @ApiOperation(value = "洗手规则列表")
-//    public IPageResultData<List<ListWashVo>> list(@ApiParam(value = "名称") String name,@ApiParam(value = "洗手规则类型") WashRuleType type, LionPage lionPage){
+//    public IPageResultData<List<ListWashVo>> export(@ApiParam(value = "名称") String name,@ApiParam(value = "洗手规则类型") WashRuleType type, LionPage lionPage){
 //        ResultData resultData = ResultData.instance();
 //        JpqlParameter jpqlParameter = new JpqlParameter();
 //        if (StringUtils.hasText(name)){
@@ -75,9 +75,9 @@ public class WashController extends BaseControllerImpl implements BaseController
 //        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
 //        lionPage.setJpqlParameter(jpqlParameter);
 //        PageResultData page = (PageResultData) washService.findNavigator(lionPage);
-//        List<Wash> list = page.getContent();
+//        List<Wash> export = page.getContent();
 //        List<ListWashVo> returnList = new ArrayList<>();
-//        list.forEach(wash -> {
+//        export.forEach(wash -> {
 //            ListWashVo vo = new ListWashVo();
 //            BeanUtils.copyProperties(wash,vo);
 //            List<WashDevice> washDevices = washDeviceService.find(wash.getId());

@@ -21,6 +21,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -53,6 +54,14 @@ public class TemporaryPersonController extends BaseControllerImpl implements Bas
                                                              @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                              LionPage lionPage){
         return temporaryPersonService.list(name, isLeave, tagCode, startDateTime, endDateTime, lionPage);
+    }
+
+    @GetMapping("/export")
+    @ApiOperation(value = "流动人员列表导出")
+    public void export(@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出") Boolean isLeave,@ApiParam(value = "标签编码")String tagCode,
+                                                             @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                             @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) throws IOException, IllegalAccessException {
+        temporaryPersonService.export(name, isLeave, tagCode, startDateTime, endDateTime);
     }
 
     @GetMapping("/details")

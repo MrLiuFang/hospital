@@ -274,6 +274,10 @@ public class WashEventServiceImpl implements WashEventService {
             }else {
                 vo.setState("正确洗手");
             }
+            User user = userExposeService.findById(washEvent.getPi());
+            if (Objects.nonNull(user)) {
+                vo.setName(user.getName());
+            }
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,lionPage,0L);

@@ -239,8 +239,8 @@ public class WardController extends BaseControllerImpl implements BaseController
 
 //    public static void main(String agrs[]) throws JsonProcessingException {
 //        String json = "[{\"code\":\"STAR_AP\"},{\"code\":\"MONITOR\"},{\"code\":\"VIRTUAL_WALL\",\"count\":\"2\"},{\"code\":\"LF_EXCITER\"},{\"code\":\"HAND_WASHING\"},{\"code\":\"RECYCLING_BOX\"}]";
-//        List list = new ObjectMapper().readValue(json,List.class);
-//        list.forEach(o->{
+//        List export = new ObjectMapper().readValue(json,List.class);
+//        export.forEach(o->{
 //            LinkedHashMap linkedHashMap = (LinkedHashMap) o;
 //            System.out.println(linkedHashMap);
 //        });

@@ -386,14 +386,14 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
 
     private void persistenceRedis(Region region, List<Long> deviceIds,List<Long> oldDeviceIds,Boolean isDelete){
 //        if (Objects.nonNull(oldDevideGroupId)){
-//            List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(oldDevideGroupId);
-//            list.forEach(deviceGroupDevice -> {
+//            List<DeviceGroupDevice> export = deviceGroupDeviceExposeService.find(oldDevideGroupId);
+//            export.forEach(deviceGroupDevice -> {
 //                redisTemplate.delete(RedisConstants.DEVICE_REGION+deviceGroupDevice.getDeviceId());
 //            });
 //        }
 //        if (Objects.nonNull(devideGroupId)) {
-//            List<DeviceGroupDevice> list = deviceGroupDeviceExposeService.find(devideGroupId);
-//            list.forEach(deviceGroupDevice -> {
+//            List<DeviceGroupDevice> export = deviceGroupDeviceExposeService.find(devideGroupId);
+//            export.forEach(deviceGroupDevice -> {
 //                redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION + deviceGroupDevice.getDeviceId(), region.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
 //            });
 //        }

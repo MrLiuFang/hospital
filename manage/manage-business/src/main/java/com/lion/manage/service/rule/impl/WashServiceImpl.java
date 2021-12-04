@@ -244,8 +244,8 @@ package com.lion.manage.service.rule.impl;
 ////                BusinessException.throwException("已有其他人员在非全员的定时洗手规则中,不能再设置针对全员的定时洗手规则,会造成洗手监控冲突");
 ////            }
 ////        }
-//        List<Wash> list = washDao.findFirstByTypeAndIsAllUser(WashRuleType.LOOP, true);
-//        Wash washLoppAllUser = list.size()>0?list.get(0):null;
+//        List<Wash> export = washDao.findFirstByTypeAndIsAllUser(WashRuleType.LOOP, true);
+//        Wash washLoppAllUser = export.size()>0?export.get(0):null;
 //        if ((Objects.isNull(id) && Objects.nonNull(washLoppAllUser) ) || (Objects.nonNull(id) && Objects.nonNull(washLoppAllUser) &&  !Objects.equals(washLoppAllUser.getId(),id)) ){
 //            BusinessException.throwException(MessageI18nUtil.getMessage("2000087"));
 //        }
@@ -303,14 +303,14 @@ package com.lion.manage.service.rule.impl;
 //
 //        if (Objects.equals(wash.getType(),WashRuleType.LOOP)) {
 //            if (Objects.nonNull(wash.getIsAllUser()) && wash.getIsAllUser()){
-//                List<Long> list = redisTemplate.opsForList().range(RedisConstants.ALL_USER_LOOP_WASH,0,-1);
-//                if (Objects.isNull(list)){
-//                    list = new ArrayList<Long>();
+//                List<Long> export = redisTemplate.opsForList().range(RedisConstants.ALL_USER_LOOP_WASH,0,-1);
+//                if (Objects.isNull(export)){
+//                    export = new ArrayList<Long>();
 //                }
-//                list.remove(wash.getId());
+//                export.remove(wash.getId());
 //                redisTemplate.delete(RedisConstants.ALL_USER_LOOP_WASH);
-//                if (Objects.nonNull(list) && list.size()>0) {
-//                    redisTemplate.opsForList().leftPushAll(RedisConstants.ALL_USER_LOOP_WASH, list);
+//                if (Objects.nonNull(export) && export.size()>0) {
+//                    redisTemplate.opsForList().leftPushAll(RedisConstants.ALL_USER_LOOP_WASH, export);
 //                    redisTemplate.expire(RedisConstants.ALL_USER_LOOP_WASH, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
 //                }
 //                if (Objects.equals(false,isDelete)){
@@ -322,14 +322,14 @@ package com.lion.manage.service.rule.impl;
 //
 //            List<WashUser> washUserList = washUserService.find(wash.getId());
 //            washUserList.forEach(washUser -> {
-//                List<Long> list = redisTemplate.opsForList().range(RedisConstants.USER_LOOP_WASH+washUser.getUserId(),0,-1);
-//                if (Objects.isNull(list)){
-//                    list = new ArrayList<Long>();
+//                List<Long> export = redisTemplate.opsForList().range(RedisConstants.USER_LOOP_WASH+washUser.getUserId(),0,-1);
+//                if (Objects.isNull(export)){
+//                    export = new ArrayList<Long>();
 //                }
-//                list.remove(wash.getId());
+//                export.remove(wash.getId());
 //                redisTemplate.delete(RedisConstants.USER_LOOP_WASH+washUser.getUserId());
-//                if (Objects.nonNull(list) && list.size()>0) {
-//                    redisTemplate.opsForList().leftPushAll(RedisConstants.USER_LOOP_WASH + washUser.getUserId(), list);
+//                if (Objects.nonNull(export) && export.size()>0) {
+//                    redisTemplate.opsForList().leftPushAll(RedisConstants.USER_LOOP_WASH + washUser.getUserId(), export);
 //                    redisTemplate.expire(RedisConstants.USER_LOOP_WASH + washUser.getUserId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
 //                }
 //            });
@@ -345,14 +345,14 @@ package com.lion.manage.service.rule.impl;
 //
 //        List<WashRegion> washRegionList = washRegionService.find(wash.getId());
 //        washRegionList.forEach(washRegion -> {
-//            List<Long> list = redisTemplate.opsForList().range(RedisConstants.REGION_WASH+washRegion.getRegionId(),0,-1);
-//            if (Objects.isNull(list)){
-//                list = new ArrayList<Long>();
+//            List<Long> export = redisTemplate.opsForList().range(RedisConstants.REGION_WASH+washRegion.getRegionId(),0,-1);
+//            if (Objects.isNull(export)){
+//                export = new ArrayList<Long>();
 //            }
-//            list.remove(washRegion.getWashId());
+//            export.remove(washRegion.getWashId());
 //            redisTemplate.delete(RedisConstants.REGION_WASH+washRegion.getRegionId());
-//            if (Objects.nonNull(list) && list.size()>0) {
-//                redisTemplate.opsForList().leftPushAll(RedisConstants.REGION_WASH + washRegion.getRegionId(), list);
+//            if (Objects.nonNull(export) && export.size()>0) {
+//                redisTemplate.opsForList().leftPushAll(RedisConstants.REGION_WASH + washRegion.getRegionId(), export);
 //                redisTemplate.expire(RedisConstants.REGION_WASH + washRegion.getRegionId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
 //            }
 //        });
