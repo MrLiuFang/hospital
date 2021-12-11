@@ -103,6 +103,9 @@ public interface TagDao extends BaseDao<Tag> {
     @Query( " select t.id from Tag t ")
     public List<Long> allId();
 
+    @Query( " select t.id from Tag t where t.purpose = :tagPurpose")
+    public List<Long> allIdByTagPurpose(TagPurpose tagPurpose);
+
     @Modifying
     @Transactional
     @Query(" update Tag set deviceState =:state ,version=version +1 where id = :id ")

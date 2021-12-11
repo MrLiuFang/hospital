@@ -34,7 +34,8 @@ public enum SystemAlarmType implements IEnum {
     SDGDG(17, "湿度过低/高"),
 //    SDGG(18, "湿度过高"),
     BQDCBZ(19, "电池不足"),
-    SBGZ(20, "设备故障");
+    SBGZ(20, "设备故障"),
+    TAG_LOSE(21, "失联");
 
     private final int key;
 

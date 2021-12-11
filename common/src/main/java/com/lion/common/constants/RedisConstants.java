@@ -11,6 +11,8 @@ import javax.print.attribute.standard.PrinterURI;
  **/
 public class RedisConstants {
 
+    public static String TAG_LOSE = "tag_lose_";
+
     public static String LAST_DATA = "last_data_";
 
     public static String LAST_REGION = "last_region_";

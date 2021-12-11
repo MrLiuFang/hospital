@@ -96,6 +96,8 @@ public interface TagExposeService extends BaseService<Tag> {
 
     public List<Long> allId();
 
+    public List<Long> allId(TagPurpose tagPurpose);
+
     /**
      * 根据标签类型查询
      * @param tagType

@@ -150,6 +150,7 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 }
             }
             if (Objects.nonNull(patient)  ) { //处理患者数据
+                redisTemplate.delete(RedisConstants.TAG_LOSE + String.valueOf(patient.getId()));
                 patientService.patientEvent(deviceDataDto,monitor,star,tag,patient);
             }else if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
                 temporaryPersonService.temporaryPersonEvent(deviceDataDto,monitor,star,tag,temporaryPerson);

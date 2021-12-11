@@ -106,6 +106,11 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     }
 
     @Override
+    public List<Long> allId(TagPurpose tagPurpose) {
+        return tagDao.allIdByTagPurpose(tagPurpose);
+    }
+
+    @Override
     public List<Long> find(TagType tagType) {
         return tagDao.findId(tagType);
     }
