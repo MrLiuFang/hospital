@@ -117,6 +117,19 @@ public class RegionController extends BaseControllerImpl implements BaseControll
         return ResultData.instance();
     }
 
+    @GetMapping("/name/exist")
+    @ApiOperation(value = "判断名称是否存在")
+    public IResultData<Boolean> nameExist(@ApiParam(value = "区域名称") String name){
+        Region region = regionService.findByName(name);
+        return ResultData.instance().setData(Objects.nonNull(region));
+    }
+
+    @GetMapping("/code/exist")
+    @ApiOperation(value = "判断编码是否存在")
+    public IResultData<Boolean> codeExist(@ApiParam(value = "区域编码") String code){
+        Region region = regionService.findByCode(code);
+        return ResultData.instance().setData(Objects.nonNull(region));
+    }
 
     @GetMapping("/list")
     @ApiOperation(value = "区域列表")

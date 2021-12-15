@@ -94,7 +94,7 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @PutMapping("/update")
     @ApiOperation(value = "修改标签")
-    public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateTagDto updateTagDto){
+    public IResultData update(@RequestBody UpdateTagDto updateTagDto){
         tagService.update(updateTagDto);
         return ResultData.instance();
     }

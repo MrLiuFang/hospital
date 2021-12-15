@@ -23,4 +23,9 @@ public class RegionCctvExposeServiceImpl extends BaseServiceImpl<RegionCctv> imp
     public int count(Long regionId) {
         return regionCctvDao.countByRegionId(regionId);
     }
+
+    @Override
+    public RegionCctv find(Long cctvId) {
+        return regionCctvDao.findFirstByCctvId(cctvId);
+    }
 }

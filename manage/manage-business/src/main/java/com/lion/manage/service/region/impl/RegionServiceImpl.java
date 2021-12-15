@@ -139,6 +139,16 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     }
 
     @Override
+    public Region findByName(String name) {
+        return regionDao.findFirstByName(name);
+    }
+
+    @Override
+    public Region findByCode(String code) {
+        return regionDao.findFirstByCode(code);
+    }
+
+    @Override
     public List<Region> findByBuildFloorId(Long buildFloorId) {
         return regionDao.findByBuildFloorId(buildFloorId);
     }
@@ -238,6 +248,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
             regionCctvDao.deleteByRegionId(deleteDto.getId());
             wardRoomDao.updateRegionIdIsNull(deleteDto.getId());
             wardRoomSickbedDao.updateRegionIdIsNull(deleteDto.getId());
+            deviceExposeService.relationRegion(region.getId(),new ArrayList<Long>());
 //            regionExposeObjectDao.deleteByRegionId(deleteDto.getId());
             persistenceRedis(region,  null,getDeviceId(region.getId()), true);
         });

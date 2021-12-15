@@ -9,14 +9,17 @@ import com.lion.core.persistence.Validator;
 import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.cctv.dto.UpdateCctvDto;
 import com.lion.device.entity.cctv.vo.CctvVo;
+import com.lion.device.entity.device.Device;
 import com.lion.device.service.cctv.CctvService;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.entity.region.RegionCctv;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
+import com.lion.manage.expose.region.RegionCctvExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -57,6 +60,9 @@ public class CctvController extends BaseControllerImpl implements BaseController
     private RegionExposeService regionExposeService;
 
     @DubboReference
+    private RegionCctvExposeService regionCctvExposeService;
+
+    @DubboReference
     private DepartmentExposeService departmentExposeService;
 
     @GetMapping("/list")
@@ -88,6 +94,13 @@ public class CctvController extends BaseControllerImpl implements BaseController
         BeanUtils.copyProperties(updateCctvDto,cctv);
         this.cctvService.update(cctv);
         return ResultData.instance();
+    }
+
+    @GetMapping("/dind")
+    @ApiOperation(value = "CCTV是否绑定区域")
+    public IResultData<Boolean> isBind(@ApiParam(value = "cctvid") @NotNull(message = "{0000000}") Long id){
+        RegionCctv regionCctv = regionCctvExposeService.find(id);
+        return ResultData.instance().setData(Objects.nonNull(regionCctv));
     }
 
     @GetMapping("/details")

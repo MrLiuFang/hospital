@@ -31,6 +31,21 @@ public interface RegionService extends BaseService<Region> {
     public List<Region> find(Long departmentId);
 
     /**
+     * 根据名称查寻
+     * @param name
+     * @return
+     */
+    public Region findByName(String name);
+
+    /**
+     * 根据编码查寻
+     * @param code
+     * @return
+     */
+    public Region findByCode(String code);
+
+
+    /**
      * 根据建筑楼层查询
      * @param buildFloorId
      * @return
