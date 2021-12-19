@@ -255,13 +255,10 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
 
         if (Objects.nonNull(returnAssetsBorrowDto.getAssetsBorrowIds()) && returnAssetsBorrowDto.getAssetsBorrowIds().size()>0) {
             returnAssetsBorrowDto.getAssetsBorrowIds().forEach(id->{
-                AssetsBorrow assetsBorrow = new AssetsBorrow();
-                assetsBorrow.setId(id);
+                AssetsBorrow assetsBorrow = findById(id);
                 assetsBorrow.setReturnUserId(user.getId());
                 assetsBorrow.setReturnTime(LocalDateTime.now());
                 update(assetsBorrow);
-
-                assetsBorrow = findById(id);
                 if (Objects.nonNull(assetsBorrow)) {
                     Assets assets = assetsService.findById(assetsBorrow.getAssetsId());
                     if (Objects.nonNull(assets)) {

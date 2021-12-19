@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 @Schema
 public class EventRecordAddDto {
 
-    @Schema(description = "人员(员工,病人,流动人员)id")
-    private Long personId;
+    @Schema(description = "扩展字段-自由发挥")
+    private String extend;
 
     @Schema(description = "区域id")
     private Long regionId;

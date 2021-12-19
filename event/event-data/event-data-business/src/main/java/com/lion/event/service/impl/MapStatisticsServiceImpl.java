@@ -575,7 +575,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             deviceDetailsVo.setDepartmentId(id);
             Department department = departmentExposeService.findById(id);
             deviceDetailsVo.setDepartmentName(Objects.nonNull(department)?department.getName():"");
-            List<Device> devices = deviceExposeService.findByDepartmentId(id);
+            List<Device> devices = deviceExposeService.findByDepartmentId(id, keyword);
             List<DetailsDeviceVo> detailsDeviceVos =  new ArrayList<DetailsDeviceVo>();
             devices.forEach(device -> {
                 DetailsDeviceVo detailsDeviceVo = deviceExposeService.details(device.getId());

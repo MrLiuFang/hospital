@@ -149,7 +149,7 @@ public class PositionServiceImpl implements PositionService {
         }
         query.addCriteria(criteria);
         query.with(lionPage);
-        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        query.with(Sort.by(Sort.Direction.ASC,"ddt"));
         List<Position> items = mongoTemplate.find(query,Position.class);
 //        long count = mongoTemplate.count(query, DeviceData.class);
 //        PageableExecutionUtils.getPage(items, lionPage, () -> count);

@@ -121,14 +121,18 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     }
 
     @Override
-    public List<Device> findByDepartmentId(Long departmentId) {
+    public List<Device> findByDepartmentId(Long departmentId, String keyword) {
         List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);
         List<Long> reginIds = new ArrayList<>();
         reginIds.add(Long.MAX_VALUE);
         regionList.forEach(region -> {
             reginIds.add(region.getId());
         });
-        return deviceDao.findByRegionIdIn(reginIds);
+        if (StringUtils.hasText(keyword)) {
+            return deviceDao.findByRegionIdInAndNameLikeAndCodeLike(reginIds,keyword ,keyword );
+        }else {
+            return deviceDao.findByRegionIdIn(reginIds);
+        }
     }
 
     @Override

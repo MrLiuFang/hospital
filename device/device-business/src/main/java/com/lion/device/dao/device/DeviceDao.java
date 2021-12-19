@@ -115,8 +115,12 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
     /**
      * 根据区域查询设备
      * @param regionIds
+     * @param name
+     * @param code
      * @return
      */
+    public List<Device> findByRegionIdInAndNameLikeAndCodeLike(List<Long> regionIds,String name,String code);
+
     public List<Device> findByRegionIdIn(List<Long> regionIds);
 
     /**

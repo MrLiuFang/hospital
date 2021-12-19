@@ -1,6 +1,7 @@
 package com.lion.person.entity.person;
 
 import com.lion.core.persistence.Validator;
+import com.lion.person.entity.enums.ActionMode;
 import com.lion.person.entity.enums.IdentityDocumentType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -53,8 +54,13 @@ public class TemporaryPerson extends Person implements Serializable {
     @Column(name = "remarks")
     private String remarks;
 
-    @Schema(description = "通行级别")
-    @NotNull(message = "{1000050}", groups = {Validator.Insert.class, Validator.Update.class})
-    private Integer trafficLevel;
+//    @Schema(description = "通行级别")
+//    @NotNull(message = "{1000050}", groups = {Validator.Insert.class, Validator.Update.class})
+//    private Integer trafficLevel;
+
+    @Schema(description = "行动限制")
+    @Column(name = "action_mode")
+    @Convert(converter = ActionMode.ActionModeConverter.class)
+    private ActionMode actionMode;
 
 }

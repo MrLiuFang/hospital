@@ -231,7 +231,7 @@ public class CommonServiceImpl implements CommonService {
             }
         }else if (Objects.equals(type,Type.MIGRANT)) {
             TemporaryPerson temporaryPerson = redisUtil.getTemporaryPerson(pi);
-            if (!Objects.equals(temporaryPerson.getTrafficLevel(),region.getTrafficLevel())) {
+            if (!Objects.equals(temporaryPerson.getActionMode().getKey(),region.getTrafficLevel())) {
                 sendAlarm(type,pi,ri,ti);
             }else {
                 if (!isCanWalk(temporaryPerson.getTimeQuantum())) {

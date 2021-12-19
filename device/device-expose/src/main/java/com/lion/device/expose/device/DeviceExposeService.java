@@ -95,9 +95,10 @@ public interface DeviceExposeService extends BaseService<Device> {
     /**
      * 根据科室查询设备
      * @param departmentId
+     * @param keyword
      * @return
      */
-    public List<Device> findByDepartmentId(Long departmentId);
+    public List<Device> findByDepartmentId(Long departmentId,String keyword);
 
     /**
      * 关联区域
