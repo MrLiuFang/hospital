@@ -16,7 +16,10 @@ import com.lion.device.expose.tag.TagPatientExposeService;
 import com.lion.device.service.tag.TagLogService;
 import com.lion.device.service.tag.TagService;
 import com.lion.exception.BusinessException;
+import com.lion.manage.entity.department.Department;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.utils.MessageI18nUtil;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -50,6 +53,9 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
     @Autowired
     private TagService tagService;
 
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
 
     @Override
     @Transactional
@@ -66,7 +72,9 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
             BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
         }
         if (!Objects.equals(departmentId,tag.getDepartmentId())) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("4000026"));
+            Department tagDepartment = departmentExposeService.findById(tag.getDepartmentId());
+            Department department = departmentExposeService.findById(departmentId);
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000026",new Object[]{department.getName(),tagDepartment.getName()}));
         }
         if (!Objects.equals(tag.getPurpose(), TagPurpose.PATIENT)){
             BusinessException.throwException(MessageI18nUtil.getMessage("4000027"));

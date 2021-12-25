@@ -98,9 +98,17 @@ public class CctvController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/dind")
     @ApiOperation(value = "CCTV是否绑定区域")
-    public IResultData<Boolean> isBind(@ApiParam(value = "cctvid") @NotNull(message = "{0000000}") Long id){
-        RegionCctv regionCctv = regionCctvExposeService.find(id);
-        return ResultData.instance().setData(Objects.nonNull(regionCctv));
+    public IResultData<List<Cctv>> isBind(@ApiParam(value = "cctvid") @NotNull(message = "{0000000}") @RequestParam(value = "id",required = false) List<Long> id){
+        List<Cctv> returnList = new ArrayList<>();
+        if (Objects.nonNull(id) && id.size()>0) {
+            id.forEach(i->{
+                RegionCctv regionCctv = regionCctvExposeService.find(i);
+                if (Objects.nonNull(regionCctv)) {
+                    returnList.add(cctvService.findById(regionCctv.getCctvId()));
+                }
+            });
+        }
+        return ResultData.instance().setData(returnList);
     }
 
     @GetMapping("/details")

@@ -10,7 +10,9 @@ import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.HavingMonitor;
@@ -22,7 +24,11 @@ import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.entity.ward.dto.AddWardDto;
 import com.lion.manage.entity.ward.dto.UpdateWardDto;
 import com.lion.manage.entity.ward.vo.*;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.manage.expose.ward.WardExposeService;
+import com.lion.manage.expose.ward.WardRoomExposeService;
+import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardRoomService;
@@ -214,6 +220,45 @@ public class WardController extends BaseControllerImpl implements BaseController
                     }
                 }
             }
+        }
+        return ResultData.instance();
+    }
+
+    @DubboReference
+    private WardRoomSickbedExposeService wardRoomSickbedExposeService;
+
+    @DubboReference
+    private WardRoomExposeService wardRoomExposeService;
+
+    @DubboReference
+    private WardExposeService wardExposeService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
+    @DubboReference
+    private TagExposeService tagExposeService;
+
+    @GetMapping("/tag/sickbed/department")
+    @ApiOperation(value = "判断标签和病床是否在同一科室-不在同一科室抛异常")
+    public IResultData tagSickbedDepartment(@ApiParam(value = "病床id") Long wardRoomSickbedId,@ApiParam(value = "标签id")Long tagId) {
+        WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(wardRoomSickbedId);
+        if (Objects.isNull(wardRoomSickbed)){
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000035"));
+        }
+        WardRoom wardRoom = wardRoomExposeService.findById(wardRoomSickbed.getWardRoomId());
+        if (Objects.isNull(wardRoomSickbed)){
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000036"));
+        }
+        Ward ward = wardExposeService.findById(wardRoom.getWardId());
+        if (Objects.isNull(wardRoomSickbed)){
+            BusinessException.throwException(MessageI18nUtil.getMessage("1000037"));
+        }
+        Tag tag = tagExposeService.findById(tagId);
+        if (!Objects.equals(ward.getDepartmentId(),tag.getDepartmentId())) {
+            Department tagDepartment = departmentExposeService.findById(tag.getDepartmentId());
+            Department department = departmentExposeService.findById(ward.getDepartmentId());
+            BusinessException.throwException(MessageI18nUtil.getMessage("4000026",new Object[]{department.getName(),tagDepartment.getName()}));
         }
         return ResultData.instance();
     }

@@ -54,10 +54,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -425,6 +422,8 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 returnList.add(vo);
             }
         });
+        Collections.sort(returnList , (SevenDaysStatisticsVo b1, SevenDaysStatisticsVo b2) -> b1.getDate().compareTo(b2.getDate()));
+//        returnList.stream().sorted(Comparator.comparing(SevenDaysStatisticsVo::getDate));
         return returnList;
     }
 

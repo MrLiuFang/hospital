@@ -25,6 +25,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -61,9 +62,17 @@ public class WarningBellController extends BaseControllerImpl implements BaseCon
 
     @GetMapping("/dind")
     @ApiOperation(value = "警示铃是否绑定区域")
-    public IResultData<Boolean> isBind(@ApiParam(value = "警示铃id") @NotNull(message = "{0000000}") Long id){
-        RegionWarningBell regionWarningBell = warningBellExposeService.find(id);
-        return ResultData.instance().setData(Objects.nonNull(regionWarningBell));
+    public IResultData<List<RegionWarningBell>> isBind(@ApiParam(value = "警示铃id") @NotNull(message = "{0000000}") @RequestParam(value = "id",required = false) List<Long> id){
+        List<RegionWarningBell> returnList = new ArrayList<>();
+        if (Objects.nonNull(id) && id.size()>0) {
+            id.forEach(i->{
+                RegionWarningBell regionWarningBell = warningBellExposeService.find(i);
+                if (Objects.nonNull(regionWarningBell)) {
+                    returnList.add(regionWarningBell);
+                }
+            });
+        }
+        return ResultData.instance().setData(returnList);
     }
 
     @DeleteMapping("/delete")

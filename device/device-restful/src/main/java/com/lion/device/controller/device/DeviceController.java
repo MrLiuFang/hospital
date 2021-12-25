@@ -96,9 +96,17 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/dind")
     @ApiOperation(value = "设备是否绑定区域")
-    public IResultData<Boolean> isBind(@ApiParam(value = "设备id") @NotNull(message = "{0000000}") Long id){
-        Device device = deviceService.findById(id);
-        return ResultData.instance().setData(Objects.nonNull(device.getRegionId()));
+    public IResultData<List<Device>> isBind(@ApiParam(value = "设备id") @NotNull(message = "{0000000}") @RequestParam(value = "id",required = false) List<Long> id){
+        List<Device> returnList = new ArrayList<>();
+        if (Objects.nonNull(id) && id.size()>0) {
+            id.forEach(i->{
+                Device device = deviceService.findById(i);
+                if (Objects.nonNull(device.getRegionId()) && !Objects.equals(DeviceClassify.STAR_AP,device.getDeviceClassify())) {
+                    returnList.add(device);
+                }
+            });
+        }
+        return ResultData.instance().setData(returnList);
     }
 
     @GetMapping("/list")

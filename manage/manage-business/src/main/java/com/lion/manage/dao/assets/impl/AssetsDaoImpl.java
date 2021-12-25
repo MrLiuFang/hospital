@@ -51,9 +51,9 @@ public class AssetsDaoImpl implements AssetsDaoEx {
             searchParameter.put("borrowUserId",borrowUserId);
         }
         if (Objects.nonNull(isReturn) && Objects.equals(isReturn,true)) {
-            sb.append(" ab.returnUserId is not null");
+            sb.append(" and ab.returnUserId is not null");
         }else if (Objects.nonNull(isReturn) && Objects.equals(isReturn,false)) {
-            sb.append(" ab.returnUserId is not null");
+            sb.append(" and ab.returnUserId is null");
         }
         if (Objects.nonNull(startDateTime)) {
             sb.append(" and ab.startDateTime >= :startDateTime ");

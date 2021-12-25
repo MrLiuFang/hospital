@@ -237,6 +237,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
                 tagPatientExposeService.unbinding(deleteDto.getId(),true);
                 redisTemplate.delete(RedisConstants.PATIENT+deleteDto.getId());
                 currentPositionExposeService.delete(deleteDto.getId(),null,null);
+                patientTransferDao.deleteByPatientId(deleteDto.getId());
             });
         }
     }

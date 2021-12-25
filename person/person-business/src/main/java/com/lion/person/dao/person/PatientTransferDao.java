@@ -1,7 +1,6 @@
 package com.lion.person.dao.person;
 
 import com.lion.core.persistence.curd.BaseDao;
-import com.lion.core.service.BaseService;
 import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.PatientTransfer;
 
@@ -40,8 +39,16 @@ public interface PatientTransferDao extends BaseDao<PatientTransfer> {
     /**
      * 根据患者查询
      * @param patientId
+     * @param state
      * @return
      */
-    public List<PatientTransfer> findByPatientIdOrderByCreateDateTimeDesc(Long patientId);
+    public List<PatientTransfer> findByPatientIdAndStateOrderByCreateDateTimeDesc(Long patientId,TransferState state);
+
+    /**
+     * 根据患者删除转移记录
+     * @param patientId
+     * @return
+     */
+    public int deleteByPatientId(Long patientId);
 
 }

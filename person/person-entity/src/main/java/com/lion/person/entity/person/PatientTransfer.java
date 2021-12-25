@@ -1,5 +1,6 @@
 package com.lion.person.entity.person;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.core.persistence.entity.BaseEntity;
 import com.lion.person.entity.enums.Gender;
 import com.lion.person.entity.enums.TransferState;
@@ -55,6 +56,7 @@ public class PatientTransfer extends BaseEntity implements Serializable {
 
     @Schema(description = "接收/取消时间")
     @Column(name = "receive_date_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime receiveDateTime;
 
     @Schema(description = "转移状态")
@@ -64,10 +66,12 @@ public class PatientTransfer extends BaseEntity implements Serializable {
 
     @Schema(description = "离开时间（转移时间)")
     @Column(name = "leave_date_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime leaveDateTime;
 
     @Schema(description = "转移触发时间")
     @Column(name = "trigger_date_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime triggerDateTime;
 
 }

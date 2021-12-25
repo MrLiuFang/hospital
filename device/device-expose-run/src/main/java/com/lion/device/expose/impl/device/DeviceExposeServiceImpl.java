@@ -142,14 +142,21 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
             ids = new ArrayList<>();
             ids.add(Long.MAX_VALUE);
         }
-        ids.forEach(deviceId ->{
+        List<Long> new_ids = new ArrayList<>();
+        for (Long id : ids) {
+            Device device = findById(id);
+            if (!Objects.equals(device.getDeviceClassify(),DeviceClassify.STAR_AP)) {
+                new_ids.add(device.getId());
+            }
+        }
+        new_ids.forEach(deviceId ->{
             Device device = deviceDao.findFirstByIdAndRegionIdNotNull(deviceId);
-            if (Objects.nonNull(device)) {
+            if (Objects.nonNull(device) && !Objects.equals(regionId,device.getRegionId())) {
                 BusinessException.throwException(MessageI18nUtil.getMessage("2000119",new Object[]{device.getName()}));
             }
         });
         deviceDao.updateRegionIdIsNull(regionId);
-        deviceDao.updateRegion(regionId, ids);
+        deviceDao.updateRegion(regionId, new_ids);
     }
 
     @Override
