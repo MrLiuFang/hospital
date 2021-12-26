@@ -1,8 +1,11 @@
 package com.lion.device.dao.device;
 
 import com.lion.core.LionPage;
+import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.State;
 import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 /**
  * @description:
@@ -27,4 +30,13 @@ public interface DeviceDaoEx {
      * @return
      */
     Page deviceState(LionPage lionPage);
+
+    /**
+     * 查寻设备
+     * @param regionIds
+     * @param name
+     * @param code
+     * @return
+     */
+    public List<Device> find(List<Long> regionIds, String name, String code);
 }

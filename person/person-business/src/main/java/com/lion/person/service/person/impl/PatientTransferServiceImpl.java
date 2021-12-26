@@ -105,9 +105,9 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
             BusinessException.throwException(MessageI18nUtil.getMessage("1000046"));
         }
         if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH)) {
-            ReceivePatientDto updatePatientDto = new ReceivePatientDto();
-            BeanUtils.copyProperties(receivePatientDto, updatePatientDto);
-            patientService.update(updatePatientDto);
+            Patient patient = new Patient();
+            BeanUtils.copyProperties(receivePatientDto, patient);
+            patientService.update(patient);
         }
         List<TransferState> state = new ArrayList<>();
         state.add(TransferState.CANCEL);

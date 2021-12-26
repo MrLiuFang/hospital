@@ -29,6 +29,7 @@ import com.lion.device.service.device.DeviceGroupService;
 import com.lion.device.service.device.DeviceService;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
+import com.lion.manage.entity.region.RegionWarningBell;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import io.swagger.annotations.Api;
@@ -96,15 +97,16 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/dind")
     @ApiOperation(value = "设备是否绑定区域")
-    public IResultData<List<Device>> isBind(@ApiParam(value = "设备id") @NotNull(message = "{0000000}") @RequestParam(value = "id",required = false) List<Long> id){
-        List<Device> returnList = new ArrayList<>();
-        if (Objects.nonNull(id) && id.size()>0) {
-            id.forEach(i->{
-                Device device = deviceService.findById(i);
+    public IResultData<List<Long>> isBind(@ApiParam(value = "设备id-逗号隔开") @NotNull(message = "{0000000}") String ids){
+        List<Long> returnList = new ArrayList<>();
+        String[] id = ids.split(",");
+        if (Objects.nonNull(id) && id.length>0) {
+            for (int i = 0 ; i<id.length ;i ++){
+                Device device = deviceService.findById(Long.valueOf(id[i]));
                 if (Objects.nonNull(device.getRegionId()) && !Objects.equals(DeviceClassify.STAR_AP,device.getDeviceClassify())) {
-                    returnList.add(device);
+                    returnList.add(device.getId());
                 }
-            });
+            }
         }
         return ResultData.instance().setData(returnList);
     }

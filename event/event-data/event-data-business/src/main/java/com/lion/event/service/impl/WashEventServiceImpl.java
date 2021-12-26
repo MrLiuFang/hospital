@@ -16,6 +16,7 @@ import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
@@ -264,7 +265,7 @@ public class WashEventServiceImpl implements WashEventService {
             if (Objects.equals(washEvent.getIa(),false)) {
 //                if (Objects.equals(WashEventType.REGION.getKey(),washEvent.getWet())) {
 //                    if (date.isAfter(washEvent.getWt()) || Objects.isNull(washEvent.getWt())) {
-                        vo.setState("错过洗手");
+                        vo.setState(MessageI18nUtil.getMessage("4000053"));
 //                    }
 //                }else if (Objects.equals(WashEventType.LOOP.getKey(),washEvent.getWet())) {
 //                    if (date.isEqual(washEvent.getWt())) {
@@ -272,11 +273,15 @@ public class WashEventServiceImpl implements WashEventService {
 //                    }
 //                }
             }else {
-                vo.setState("正确洗手");
+                vo.setState(MessageI18nUtil.getMessage("4000052"));
             }
             User user = userExposeService.findById(washEvent.getPi());
             if (Objects.nonNull(user)) {
                 vo.setName(user.getName());
+            }
+            Device device = deviceExposeService.findById(washEvent.getDvi());
+            if (Objects.nonNull(device)) {
+                vo.setDvt(device.getDeviceClassify());
             }
             returnList.add(vo);
         });

@@ -98,15 +98,16 @@ public class CctvController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/dind")
     @ApiOperation(value = "CCTV是否绑定区域")
-    public IResultData<List<Cctv>> isBind(@ApiParam(value = "cctvid") @NotNull(message = "{0000000}") @RequestParam(value = "id",required = false) List<Long> id){
-        List<Cctv> returnList = new ArrayList<>();
-        if (Objects.nonNull(id) && id.size()>0) {
-            id.forEach(i->{
-                RegionCctv regionCctv = regionCctvExposeService.find(i);
+    public IResultData<List<Long>> isBind(@ApiParam(value = "cctvid-逗号隔开") @NotNull(message = "{0000000}") String ids) {
+        List<Long> returnList = new ArrayList<>();
+        String[] id = ids.split(",");
+        if (Objects.nonNull(id) && id.length > 0) {
+            for (int i = 0; i < id.length; i++) {
+                RegionCctv regionCctv = regionCctvExposeService.find(Long.valueOf(id[i]));
                 if (Objects.nonNull(regionCctv)) {
-                    returnList.add(cctvService.findById(regionCctv.getCctvId()));
+                    returnList.add(regionCctv.getCctvId());
                 }
-            });
+            }
         }
         return ResultData.instance().setData(returnList);
     }

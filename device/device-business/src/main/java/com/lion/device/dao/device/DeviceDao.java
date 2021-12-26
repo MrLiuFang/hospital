@@ -119,7 +119,7 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
      * @param code
      * @return
      */
-    public List<Device> findByRegionIdInAndNameLikeAndCodeLike(List<Long> regionIds,String name,String code);
+    public List<Device> findByRegionIdInAndNameLikeOrCodeLike(List<Long> regionIds, String name, String code);
 
     public List<Device> findByRegionIdIn(List<Long> regionIds);
 

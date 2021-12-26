@@ -245,7 +245,8 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             criteria.and("ti").in(tagIds);
         }
         if (Objects.isNull(startDateTime)) {
-            startDateTime = LocalDateTime.now().minusDays(30);
+//            startDateTime = LocalDateTime.now().minusDays(30);
+            startDateTime = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
             criteria.andOperator(Criteria.where("dt").gte(startDateTime), Criteria.where("dt").lte(endDateTime));

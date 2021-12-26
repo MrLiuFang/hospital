@@ -129,7 +129,7 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
             reginIds.add(region.getId());
         });
         if (StringUtils.hasText(keyword)) {
-            return deviceDao.findByRegionIdInAndNameLikeAndCodeLike(reginIds,keyword ,keyword );
+            return deviceDao.find(reginIds,keyword ,keyword );
         }else {
             return deviceDao.findByRegionIdIn(reginIds);
         }

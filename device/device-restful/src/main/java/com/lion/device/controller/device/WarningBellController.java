@@ -62,15 +62,16 @@ public class WarningBellController extends BaseControllerImpl implements BaseCon
 
     @GetMapping("/dind")
     @ApiOperation(value = "警示铃是否绑定区域")
-    public IResultData<List<RegionWarningBell>> isBind(@ApiParam(value = "警示铃id") @NotNull(message = "{0000000}") @RequestParam(value = "id",required = false) List<Long> id){
-        List<RegionWarningBell> returnList = new ArrayList<>();
-        if (Objects.nonNull(id) && id.size()>0) {
-            id.forEach(i->{
-                RegionWarningBell regionWarningBell = warningBellExposeService.find(i);
+    public IResultData<List<Long>> isBind(@ApiParam(value = "警示铃id-逗号隔开") @NotNull(message = "{0000000}") String ids){
+        List<Long> returnList = new ArrayList<>();
+        String[] id = ids.split(",");
+        if (Objects.nonNull(id) && id.length>0) {
+            for (int i = 0 ; i<id.length ;i ++){
+                RegionWarningBell regionWarningBell = warningBellExposeService.find(Long.valueOf(id[i]));
                 if (Objects.nonNull(regionWarningBell)) {
-                    returnList.add(regionWarningBell);
+                    returnList.add(regionWarningBell.getWarningBellId());
                 }
-            });
+            }
         }
         return ResultData.instance().setData(returnList);
     }
