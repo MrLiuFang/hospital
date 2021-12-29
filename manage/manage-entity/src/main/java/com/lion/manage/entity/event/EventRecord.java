@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.hibernate.annotations.DynamicInsert;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import java.io.Serializable;
@@ -34,6 +35,7 @@ public class EventRecord extends BaseEntity implements Serializable {
     private String code;
 
     @Schema(description = "extend")
+    @Column(name = "extend",length = 2000)
     private String extend;
 
     @Schema(description = "备注")
