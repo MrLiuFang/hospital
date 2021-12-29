@@ -33,6 +33,9 @@ public class EventRecord extends BaseEntity implements Serializable {
     @Schema(description = "事件编号")
     private String code;
 
+    @Schema(description = "extend")
+    private String extend;
+
     @Schema(description = "备注")
     private String remarks;
 

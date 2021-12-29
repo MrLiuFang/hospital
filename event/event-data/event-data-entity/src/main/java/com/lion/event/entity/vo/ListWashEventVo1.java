@@ -1,6 +1,7 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.common.enums.WashState;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.event.entity.WashEvent;
 import com.lion.upms.entity.enums.Gender;
@@ -20,7 +21,7 @@ import java.time.LocalDateTime;
 public class ListWashEventVo1 extends WashEvent {
 
     @Schema(description = "状态")
-    private String state;
+    private WashState state;
 
     @Schema(description = "姓名")
     private String name;

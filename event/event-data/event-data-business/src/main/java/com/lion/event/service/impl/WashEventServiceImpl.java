@@ -8,6 +8,7 @@ import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.lion.common.dto.UserLastWashDto;
 import com.lion.common.enums.WashEventType;
+import com.lion.common.enums.WashState;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.RedisUtil;
 import com.lion.constant.SearchConstant;
@@ -265,7 +266,7 @@ public class WashEventServiceImpl implements WashEventService {
             if (Objects.equals(washEvent.getIa(),false)) {
 //                if (Objects.equals(WashEventType.REGION.getKey(),washEvent.getWet())) {
 //                    if (date.isAfter(washEvent.getWt()) || Objects.isNull(washEvent.getWt())) {
-                        vo.setState(MessageI18nUtil.getMessage("4000053"));
+                        vo.setState(WashState.MISS);
 //                    }
 //                }else if (Objects.equals(WashEventType.LOOP.getKey(),washEvent.getWet())) {
 //                    if (date.isEqual(washEvent.getWt())) {
@@ -273,7 +274,7 @@ public class WashEventServiceImpl implements WashEventService {
 //                    }
 //                }
             }else {
-                vo.setState(MessageI18nUtil.getMessage("4000052"));
+                vo.setState(WashState.NORMAL);
             }
             User user = userExposeService.findById(washEvent.getPi());
             if (Objects.nonNull(user)) {
