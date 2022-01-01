@@ -288,9 +288,7 @@ public class PositionServiceImpl implements PositionService {
     public void eventRecordAdd(EventRecordAddDto eventRecordAddDto, HttpServletRequest request) throws JsonProcessingException {
         String code = eventRecordAddDto.getCode();
         String remarks = eventRecordAddDto.getRemarks();
-        eventRecordAddDto.setCode(null);
-        eventRecordAddDto.setRemarks(null);
-        eventRecordExposeService.add(code,remarks,"轨迹导出",objectMapper.writeValueAsString(eventRecordAddDto),request.getServletPath());
+        eventRecordExposeService.add(code,remarks,"轨迹导出",eventRecordAddDto.getExtend(),request.getServletPath());
     }
 
     @Override

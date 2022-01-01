@@ -21,11 +21,11 @@ public interface EventRecordExposeService extends BaseService<EventRecord> {
      * @param code
      * @param remarks
      * @param content
-     * @param searchCriteria
+     * @param extend
      * @param url
      * @return
      */
-    public EventRecord add(String code,String remarks,String content,String searchCriteria,String url);
+    public EventRecord add(String code, String remarks, String content, String extend, String url);
 
     /**
      * 列表

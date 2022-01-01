@@ -45,12 +45,12 @@ public class EventRecordExposeServiceImpl extends BaseServiceImpl<EventRecord> i
 
 
     @Override
-    public EventRecord add(String code, String remarks, String content, String searchCriteria, String url) {
+    public EventRecord add(String code, String remarks, String content, String extend, String url) {
         EventRecord eventRecord = new EventRecord();
         eventRecord.setRemarks(remarks);
         eventRecord.setContent(content);
         eventRecord.setCode(code);
-        eventRecord.setSearchCriteria(searchCriteria);
+        eventRecord.setExtend(extend);
         eventRecord = save(eventRecord);
         return eventRecord;
     }
