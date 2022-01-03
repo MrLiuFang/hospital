@@ -22,6 +22,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -81,6 +82,7 @@ public class AlarmModeRecordServiceImpl extends BaseServiceImpl<AlarmModeRecord>
         if (Objects.nonNull(userIds) && userIds.size()>0) {
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_userId",userIds);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<AlarmModeRecord> page = alarmModeRecordService.findNavigator(lionPage);
         List<AlarmModeRecord> list = page.getContent();

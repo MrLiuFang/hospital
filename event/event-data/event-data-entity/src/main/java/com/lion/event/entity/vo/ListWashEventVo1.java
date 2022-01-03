@@ -3,6 +3,7 @@ package com.lion.event.entity.vo;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.common.enums.WashState;
 import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.event.entity.WashEvent;
 import com.lion.upms.entity.enums.Gender;
 import com.lion.upms.entity.user.UserType;
@@ -27,6 +28,6 @@ public class ListWashEventVo1 extends WashEvent {
     private String name;
 
     @Schema(description = "设备类型")
-    private DeviceClassify dvt;
+    private DeviceType dvt;
 
 }

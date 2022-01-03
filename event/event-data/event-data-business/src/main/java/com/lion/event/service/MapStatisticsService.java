@@ -144,9 +144,10 @@ public interface MapStatisticsService {
      * @param startDateTime
      * @param endDateTime
      * @param lionPage
+     * @param sorts
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di, Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di, Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage,String... sorts);
 
     /**
      * 导出

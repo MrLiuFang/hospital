@@ -99,9 +99,10 @@ public interface SystemAlarmDaoEx {
      * @param tagIds
      * @param startDateTime
      * @param endDateTime
+     * @param sorts
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime,String... sorts);
 
     /**
      * 7天警告数量统计

@@ -300,7 +300,7 @@ public class PositionServiceImpl implements PositionService {
     public IPageResultData<List<ListPositionVo>> tagPosition(TagPurpose tagPurpose, Long regionId, Long departmentId, String deviceName, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Map<String, Object> searchParameter = new HashMap<>();
         if (Objects.nonNull(tagPurpose)){
-            searchParameter.put(SearchConstant.EQUAL+"_tagPurpose",tagPurpose);
+            searchParameter.put(SearchConstant.EQUAL+"_purpose",tagPurpose);
         }
         if (StringUtils.hasText(deviceName)){
             searchParameter.put(SearchConstant.LIKE+"_deviceName",deviceName);

@@ -40,7 +40,7 @@ public class Role extends BaseEntity implements Serializable {
     @Schema(description = "角色名称")
     @Column(name = "name")
     @NotBlank(message = "角色名称不能为空",groups = {Validator.Update.class, Validator.Insert.class})
-    @Size(message = "{0000010}",max = 30,min = 3,groups = {Validator.Update.class, Validator.Insert.class})
+    @Size(message = "{0000010}",max = 16,min = 1,groups = {Validator.Update.class, Validator.Insert.class})
     @Pattern(regexp = "^[\\u4E00-\\u9FA5\\w+]+$",message = "{0000011}",groups = {Validator.Update.class, Validator.Insert.class})
     private String name;
 

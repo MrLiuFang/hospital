@@ -44,10 +44,8 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @Author Mr.Liu
@@ -565,7 +563,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IPageResultData<List<SystemAlarmVo>> systemAlarmList(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                 LionPage lionPage){
-        return mapStatisticsService.systemAlarmList(false, false, null, null,null , null, null, startDateTime, endDateTime, lionPage);
+        return mapStatisticsService.systemAlarmList(false, false, null, null,null , null, null, startDateTime, endDateTime, lionPage,"sdt");
     }
 
     @GetMapping("/alarm/list1")
@@ -574,7 +572,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                                 @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                 LionPage lionPage){
-        return mapStatisticsService.systemAlarmList(true, alarmState, ri, di , alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage);
+        return mapStatisticsService.systemAlarmList(true, alarmState, ri, di , alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage,"dt");
     }
 
     @GetMapping("/alarm/list1/export")

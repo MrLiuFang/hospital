@@ -42,7 +42,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.util.NumberUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
@@ -224,7 +223,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime, String... sorts) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
@@ -258,7 +257,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         query.addCriteria(criteria);
         long count = mongoTemplate.count(query, SystemAlarm.class);
         query.with(lionPage);
-        query.with(Sort.by(Sort.Direction.DESC,"sdt"));
+        query.with(Sort.by(Sort.Direction.DESC,sorts));
         List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
         List<SystemAlarmVo> list = new ArrayList<>();
         if (Objects.nonNull(items) && items.size()>0){

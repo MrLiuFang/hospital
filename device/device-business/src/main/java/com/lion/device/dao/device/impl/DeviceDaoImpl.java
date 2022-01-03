@@ -22,10 +22,14 @@ public class DeviceDaoImpl implements DeviceDaoEx {
     private BaseDao<Device> baseDao;
 
     @Override
-    public Page deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, LionPage lionPage) {
+    public Page deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, String name, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> searchParameter = new HashMap<>();
         sb.append(" select d from Device d where 1=1 ");
+        if (StringUtils.hasText(name)) {
+            sb.append(" and d.name like :name ");
+            searchParameter.put("name","%"+name+"%");
+        }
         if (Objects.nonNull(buildId)){
             sb.append(" and d.buildId =:buildId ");
             searchParameter.put("buildId",buildId);

@@ -10,9 +10,11 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagRuleUserDao;
 import com.lion.device.entity.enums.TagRuleLogType;
+import com.lion.device.entity.tag.TagRule;
 import com.lion.device.entity.tag.TagRuleUser;
 import com.lion.device.entity.tag.vo.ListTagRuleUserVo;
 import com.lion.device.service.tag.TagRuleLogService;
+import com.lion.device.service.tag.TagRuleService;
 import com.lion.device.service.tag.TagRuleUserService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
@@ -65,6 +67,9 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private TagRuleService tagRuleService;
+
     @Override
     @Transactional
     public void relationUser(List<Long> newUser, List<Long> deleteUser,List<Long> allUser, Long tagRuleId) {
@@ -82,7 +87,8 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
             list.forEach(tagRuleUser -> {
                 if (!allUser.contains(tagRuleUser.getUserId())){
                     User user = userExposeService.findById(tagRuleUser.getUserId());
-                    tagRuleLogService.add(tagRuleId,user.getName()+"从规则中删除", TagRuleLogType.DELETE_USER);
+                    TagRule tagRule = tagRuleService.findById(tagRuleUser.getTagRuleId());
+                    tagRuleLogService.add(tagRuleId,user.getName()+"从规则("+(Objects.nonNull(tagRule)?tagRule.getName():"")+")中删除", TagRuleLogType.DELETE_USER);
                 }
                 redisTemplate.delete(RedisConstants.USER_TAG_RULE+tagRuleUser.getUserId());
             });
@@ -97,7 +103,8 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                 tagRuleUserDao.deleteByUserIdAndAndTagRuleId(id,tagRuleId);
                 User user = userExposeService.findById(id);
                 if (Objects.nonNull(user)){
-                    tagRuleLogService.add(tagRuleId,user.getName()+"从规则中删除", TagRuleLogType.DELETE_USER);
+                    TagRule tagRule = tagRuleService.findById(tagRuleId);
+                    tagRuleLogService.add(tagRuleId,user.getName()+"从规则("+(Objects.nonNull(tagRule)?tagRule.getName():"")+")中删除", TagRuleLogType.DELETE_USER);
                 }
             });
         }
@@ -114,10 +121,11 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                 newTagRuleUser.setTagRuleId(tagRuleId);
                 save(newTagRuleUser);
                 User user = userExposeService.findById(id);
+                TagRule tagRule = tagRuleService.findById(tagRuleId);
                 if (Objects.nonNull(user) && Objects.isNull(list)){
-                    tagRuleLogService.add(tagRuleId,user.getName()+"添加到规则中", TagRuleLogType.ADD_USER);
+                    tagRuleLogService.add(tagRuleId,user.getName()+"添加到规则("+(Objects.nonNull(tagRule)?tagRule.getName():"")+")中", TagRuleLogType.ADD_USER);
                 }else if (Objects.nonNull(list) && !list.contains(id)) {
-                    tagRuleLogService.add(tagRuleId,user.getName()+"添加到规则中", TagRuleLogType.ADD_USER);
+                    tagRuleLogService.add(tagRuleId,user.getName()+"添加到规则("+(Objects.nonNull(tagRule)?tagRule.getName():"")+")中", TagRuleLogType.ADD_USER);
                 }
                 redisTemplate.opsForValue().set(RedisConstants.USER_TAG_RULE+id,tagRuleId,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });

@@ -11,7 +11,6 @@ import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
 import com.lion.device.entity.enums.State;
 import org.springframework.data.domain.Page;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -46,7 +45,7 @@ public interface DeviceService extends BaseService<Device> {
      */
    public List<Long> allId();
 
-   public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, LionPage lionPage);
+   public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceState,String name, LionPage lionPage);
 
     /**
      * 详情

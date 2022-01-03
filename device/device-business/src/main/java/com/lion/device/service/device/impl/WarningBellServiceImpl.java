@@ -96,7 +96,7 @@ public class WarningBellServiceImpl extends BaseServiceImpl<WarningBell> impleme
     public IPageResultData<List<ListWarningBellVo>> list(String name, String code, String warningBellId, Long departmentId, LionPage LionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)) {
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_userTypeName", name);
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_name", name);
         }
         LionPage.setJpqlParameter(jpqlParameter);
         Page<WarningBell> page = this.findNavigator(LionPage);

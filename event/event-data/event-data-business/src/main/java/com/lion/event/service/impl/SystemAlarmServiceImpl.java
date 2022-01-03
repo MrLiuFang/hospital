@@ -211,8 +211,8 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        return alarmDao.list(lionPage,departmentIds,ua,ri, alarmType, tagIds, startDateTime, endDateTime);
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime, String... sorts) {
+        return alarmDao.list(lionPage,departmentIds,ua,ri, alarmType, tagIds, startDateTime, endDateTime,sorts);
     }
 
     @Override

@@ -282,7 +282,7 @@ public class WashEventServiceImpl implements WashEventService {
             }
             Device device = deviceExposeService.findById(washEvent.getDvi());
             if (Objects.nonNull(device)) {
-                vo.setDvt(device.getDeviceClassify());
+                vo.setDvt(device.getDeviceType());
             }
             returnList.add(vo);
         });

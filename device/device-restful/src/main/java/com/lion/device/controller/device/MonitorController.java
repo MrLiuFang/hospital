@@ -1,6 +1,5 @@
 package com.lion.device.controller.device;
 
-import com.lion.common.constants.RedisConstants;
 import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
 import com.lion.core.LionPage;
@@ -77,8 +76,8 @@ public class MonitorController {
 
     @GetMapping("/list")
     @ApiOperation(value = "设备监控列表")
-    public IPageResultData<List<ListDeviceMonitorVo>> list(@ApiParam(value = "建筑ID") Long buildId, @ApiParam(value = "建筑楼层ID") Long buildFloorId, @ApiParam(value = "状态") State state, LionPage lionPage){
-        return deviceService.deviceMonitorList(buildId, buildFloorId, state, lionPage);
+    public IPageResultData<List<ListDeviceMonitorVo>> list(@ApiParam(value = "建筑ID") Long buildId, @ApiParam(value = "建筑楼层ID") Long buildFloorId, @ApiParam(value = "状态") State state,@ApiParam(value = "名称")String name,LionPage lionPage){
+        return deviceService.deviceMonitorList(buildId, buildFloorId, state, name, lionPage);
     }
 
     private DeviceMonitorTopVo calculation(List<Long> ids, DeviceMonitorTopVo vo){

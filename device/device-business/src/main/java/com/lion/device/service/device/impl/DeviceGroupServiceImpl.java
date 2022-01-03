@@ -28,6 +28,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -104,6 +105,7 @@ public class DeviceGroupServiceImpl extends BaseServiceImpl<DeviceGroup> impleme
         if (StringUtils.hasText(code)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<DeviceGroup> page = findNavigator(lionPage);
         PageResultData<List<ListDeviceGroupVo>> pageResultData = new PageResultData<List<ListDeviceGroupVo>>(convertListDeviceGroupVo(page.getContent()),page.getPageable(),page.getTotalElements());

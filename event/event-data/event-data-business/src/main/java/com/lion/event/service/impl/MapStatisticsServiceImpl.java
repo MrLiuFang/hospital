@@ -801,7 +801,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, String... sorts) {
         List<Long> departmentIds = new ArrayList<>();
         if (Objects.equals(isAll,false)) {
             departmentIds = departmentExposeService.responsibleDepartment(di);
@@ -814,7 +814,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             startDateTime = LocalDateTime.now().minusDays(30);
         }
         List<Long> tagIds = tagExposeService.find(tagType,tagCode);
-        return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType, tagIds, startDateTime, endDateTime);
+        return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType, tagIds, startDateTime, endDateTime,sorts);
     }
 
     @Override

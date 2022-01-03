@@ -1,6 +1,5 @@
 package com.lion.device.service.device.impl;
 
-import cn.hutool.crypto.digest.mac.MacEngine;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.IPageResultData;
@@ -11,8 +10,6 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.cctv.CctvDao;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.dao.tag.TagDao;
-import com.lion.device.entity.device.DeviceGroup;
-import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
@@ -190,8 +187,8 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     }
 
     @Override
-    public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, LionPage lionPage) {
-        Page<Device> page = deviceDao.deviceMonitorList(buildId, buildFloorId, deviceState, lionPage);
+    public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, String name, LionPage lionPage) {
+        Page<Device> page = deviceDao.deviceMonitorList(buildId, buildFloorId, deviceState,name , lionPage);
         List<ListDeviceMonitorVo> returnList = new ArrayList<>();
         List<Device> list = page.getContent();
         list.forEach(device -> {
