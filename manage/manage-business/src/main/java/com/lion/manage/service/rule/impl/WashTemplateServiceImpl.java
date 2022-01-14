@@ -115,7 +115,7 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
     public IPageResultData<List<ListWashTemplateVo>> list(String name, LionPage LionPage) {
         Map<String,Object> searchParameter = new HashMap<String,Object>();
         if (StringUtils.hasText(name)) {
-            searchParameter.put(SearchConstant.LIKE + "_assetsTypeName", name);
+            searchParameter.put(SearchConstant.LIKE + "_name", name);
         }
         Page<WashTemplate> page = findNavigator(LionPage,searchParameter);
         List<WashTemplate> list = page.getContent();

@@ -175,4 +175,12 @@ public interface WashEventService {
      * @return
      */
     IPageResultData<List<ListViolationWashEventVo>> violationWashEvent(LocalDateTime startDateTime,LocalDateTime endDateTime, LionPage lionPage);
+
+    /**
+     * 统计事件数量
+     * @param startDateTime
+     * @param endDateTime
+     * @return
+     */
+    long count(LocalDateTime startDateTime, LocalDateTime endDateTime);
 }

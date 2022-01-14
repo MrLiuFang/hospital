@@ -15,6 +15,7 @@ import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.SystemAlarmDaoEx;
 import com.lion.event.entity.SystemAlarm;
+import com.lion.event.entity.WashEvent;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.entity.vo.SystemAlarmVo;
@@ -260,6 +261,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         query.with(Sort.by(Sort.Direction.DESC,sorts));
         List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
         List<SystemAlarmVo> list = new ArrayList<>();
+        HashMap<String,Object> cache = new HashMap<String,Object>();
         if (Objects.nonNull(items) && items.size()>0){
             items.forEach(systemAlarm -> {
                 SystemAlarmVo vo = new SystemAlarmVo();
@@ -269,7 +271,15 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                 vo.setDeviceDateTime(systemAlarm.getDt());
                 vo.setSortDateTime(systemAlarm.getSdt());
                 if (Objects.nonNull(systemAlarm.getTi())) {
-                    Tag tag = tagExposeService.findById(systemAlarm.getTi());
+                    Tag tag = null;
+                    if (cache.containsKey(systemAlarm.getTi())) {
+                        tag = (Tag) cache.get(systemAlarm.getTi());
+                    }else {
+                        tag = tagExposeService.findById(systemAlarm.getTi());
+                        if (Objects.nonNull(tag)) {
+                            cache.put(String.valueOf(systemAlarm.getTi()), tag);
+                        }
+                    }
                     if (Objects.nonNull(tag)){
                         vo.setTagCode(tag.getTagCode());
                         vo.setTagType(tag.getType());
@@ -282,54 +292,147 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                 }
                 if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.STAFF.getKey())) {
                     if (Objects.nonNull(systemAlarm.getPi())) {
-                        User user = userExposeService.findById(systemAlarm.getPi());
+                        User user = null;
+                        if (cache.containsKey(systemAlarm.getPi())) {
+                            user = (User) cache.get(systemAlarm.getPi());
+                        }else {
+                            user = userExposeService.findById(systemAlarm.getPi());
+                            if (Objects.nonNull(user)) {
+                                cache.put(String.valueOf(systemAlarm.getPi()), user);
+                            }
+                        }
                         if (Objects.nonNull(user)) {
                             vo.setTitle(user.getName());
                             vo.setImgId(user.getHeadPortrait());
-                            vo.setImgUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                            String headPortraitUrl = null;
+                            if (cache.containsKey(user.getHeadPortrait())) {
+                                headPortraitUrl = (String) cache.get(user.getHeadPortrait());
+                            }else {
+                                headPortraitUrl = fileExposeService.getUrl(user.getHeadPortrait());
+                                if (StringUtils.hasText(headPortraitUrl)) {
+                                    cache.put(String.valueOf(user.getHeadPortrait()), headPortraitUrl);
+                                }
+                            }
+                            vo.setImgUrl(headPortraitUrl);
                         }
                     }
                 }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.ASSET.getKey())) {
                     if (Objects.nonNull(systemAlarm.getAi())) {
-                        Assets assets = assetsExposeService.findById(systemAlarm.getAi());
+                        Assets assets = null;
+                        if (cache.containsKey(systemAlarm.getAi())) {
+                            assets = (Assets) cache.get(systemAlarm.getAi());
+                        }else {
+                            assets = assetsExposeService.findById(systemAlarm.getAi());
+                            if (Objects.nonNull(assets)) {
+                                cache.put(String.valueOf(systemAlarm.getAi()), assets);
+                            }
+                        }
                         if (Objects.nonNull(assets)) {
                             vo.setTitle(assets.getName());
                             vo.setImgId(assets.getImg());
-                            vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
+                            String imgUrl = null;
+                            if (cache.containsKey(assets.getImg())) {
+                                imgUrl = (String) cache.get(assets.getImg());
+                            }else {
+                                imgUrl = fileExposeService.getUrl(assets.getImg());
+                                if (StringUtils.hasText(imgUrl)) {
+                                    cache.put(String.valueOf(assets.getImg()), imgUrl);
+                                }
+                            }
+                            vo.setImgUrl(imgUrl);
                         }
                     }
                 }else if (Objects.nonNull(systemAlarm.getTy()) &&( Objects.equals(systemAlarm.getTy(),Type.TEMPERATURE.getKey()) ||Objects.equals(systemAlarm.getTy(),Type.HUMIDITY.getKey()) )) {
                     if (Objects.nonNull(systemAlarm.getTi())) {
-                        Tag tag = tagExposeService.findById(systemAlarm.getTi());
+                        Tag tag = null;
+                        if (cache.containsKey(systemAlarm.getTi())) {
+                            tag = (Tag) cache.get(systemAlarm.getTi());
+                        }else {
+                            tag = tagExposeService.findById(systemAlarm.getTi());
+                            if (Objects.nonNull(tag)) {
+                                cache.put(String.valueOf(systemAlarm.getTi()), tag);
+                            }
+                        }
                         if (Objects.nonNull(tag)) {
                             vo.setTitle(tag.getTagCode());
                         }
                     }
                 }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.PATIENT.getKey())) {
                     if (Objects.nonNull(systemAlarm.getPi())) {
-                        Patient patient = patientExposeService.findById(systemAlarm.getPi());
+                        Patient patient = null;
+                        if (cache.containsKey(systemAlarm.getPi())) {
+                            patient = (Patient) cache.get(systemAlarm.getPi());
+                        }else {
+                            patient = patientExposeService.findById(systemAlarm.getPi());
+                            if (Objects.nonNull(patient)) {
+                                cache.put(String.valueOf(systemAlarm.getPi()), patient);
+                            }
+                        }
                         if (Objects.nonNull(patient)){
                             vo.setTitle(patient.getName());
                             vo.setImgId(patient.getHeadPortrait());
-                            vo.setImgUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
+                            String imgUrl = null;
+                            if (cache.containsKey(patient.getHeadPortrait())) {
+                                imgUrl = (String) cache.get(patient.getHeadPortrait());
+                            }else {
+                                imgUrl = fileExposeService.getUrl(patient.getHeadPortrait());
+                                if (StringUtils.hasText(imgUrl)) {
+                                    cache.put(String.valueOf(patient.getHeadPortrait()), imgUrl);
+                                }
+                            }
+                            vo.setImgUrl(imgUrl);
                         }
                     }
                 }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.MIGRANT.getKey())) {
                     if (Objects.nonNull(systemAlarm.getPi())) {
-                        TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());
+                        TemporaryPerson temporaryPerson = null;
+                        if (cache.containsKey(systemAlarm.getPi())) {
+                            temporaryPerson = (TemporaryPerson) cache.get(systemAlarm.getPi());
+                        }else {
+                            temporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());
+                            if (Objects.nonNull(temporaryPerson)) {
+                                cache.put(String.valueOf(systemAlarm.getPi()), temporaryPerson);
+                            }
+                        }
                         if (Objects.nonNull(temporaryPerson)){
                             vo.setTitle(temporaryPerson.getName());
                             vo.setImgId(temporaryPerson.getHeadPortrait());
-                            vo.setImgUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
+                            String imgUrl = null;
+                            if (cache.containsKey(temporaryPerson.getHeadPortrait())) {
+                                imgUrl = (String) cache.get(temporaryPerson.getHeadPortrait());
+                            }else {
+                                imgUrl = fileExposeService.getUrl(temporaryPerson.getHeadPortrait());
+                                if (StringUtils.hasText(imgUrl)) {
+                                    cache.put(String.valueOf(temporaryPerson.getHeadPortrait()), imgUrl);
+                                }
+                            }
+                            vo.setImgUrl(imgUrl);
                         }
                     }
                 }else if (Objects.nonNull(systemAlarm.getTy()) && Objects.equals(systemAlarm.getTy(),Type.DEVICE.getKey())) {
                     if (Objects.nonNull(systemAlarm.getDvi())) {
-                        Device device = deviceExposeService.findById(systemAlarm.getDvi());
+                        Device device = null;
+                        if (cache.containsKey(systemAlarm.getDvi())) {
+                            device = (Device) cache.get(systemAlarm.getDvi());
+                        }else {
+                            device = deviceExposeService.findById(systemAlarm.getDvi());
+                            if (Objects.nonNull(device)) {
+                                cache.put(String.valueOf(systemAlarm.getDvi()), device);
+                            }
+                        }
                         if (Objects.nonNull(device)) {
                             vo.setTitle(device.getName());
                             vo.setImgId(device.getImg());
-                            vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
+                            String imgUrl = null;
+                            if (cache.containsKey(device.getImg())) {
+                                imgUrl = (String) cache.get(device.getImg());
+                            }else {
+                                imgUrl = fileExposeService.getUrl(device.getImg());
+                                if (StringUtils.hasText(imgUrl)) {
+                                    cache.put(String.valueOf(device.getImg()), imgUrl);
+                                }
+                            }
+                            vo.setImgUrl(imgUrl);
                         }
                     }
                 }
@@ -363,20 +466,45 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
-    public Document todayDaysStatistics(Type type) {
-        List<Bson> pipeline = new ArrayList<Bson>();
-        BasicDBObject match = new BasicDBObject();
-        if (Objects.nonNull(type)) {
-            match = BasicDBObjectUtil.put(match, "$match", "ty", new BasicDBObject("$eq", type.getKey()));
+    public long todayDaysStatistics(Type type, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+//        List<Bson> pipeline = new ArrayList<Bson>();
+//        BasicDBObject match = new BasicDBObject();
+//        if (Objects.isNull(startDateTime)) {
+//            startDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN );
+//        }
+//        if (Objects.nonNull(type)) {
+//            match = BasicDBObjectUtil.put(match, "$match", "ty", new BasicDBObject("$eq", type.getKey()));
+//        }
+//        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",startDateTime ).append("$lte",LocalDateTime.now()));
+//        pipeline.add(match);
+//        BasicDBObject group = new BasicDBObject();
+//        group = BasicDBObjectUtil.put(group,"$group","_id",new BasicDBObject("$dateToString",new BasicDBObject("format","%Y-%m-%d").append("date","$dt")));
+//        group = BasicDBObjectUtil.put(group,"$group","count",new BasicDBObject("$sum",1));
+//        pipeline.add(group);
+//        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("system_alarm").aggregate(pipeline);
+//        return aggregateIterable.first();
+
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
         }
-        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte", LocalDateTime.of(LocalDate.now(), LocalTime.MIN )).append("$lte",LocalDateTime.now()));
-        pipeline.add(match);
-        BasicDBObject group = new BasicDBObject();
-        group = BasicDBObjectUtil.put(group,"$group","_id",new BasicDBObject("$dateToString",new BasicDBObject("format","%Y-%m-%d").append("date","$dt")));
-        group = BasicDBObjectUtil.put(group,"$group","count",new BasicDBObject("$sum",1));
-        pipeline.add(group);
-        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("system_alarm").aggregate(pipeline);
-        return aggregateIterable.first();
+        if (Objects.isNull(endDateTime)) {
+            endDateTime = LocalDateTime.now();
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            criteria.andOperator(Criteria.where("dt").gte(startDateTime), Criteria.where("dt").lte(endDateTime));
+        }else if (Objects.nonNull(startDateTime)) {
+            criteria.and("dt").gte(startDateTime);
+        }else if (Objects.nonNull(endDateTime)) {
+            criteria.and("dt").lte(endDateTime);
+        }
+
+        if (Objects.nonNull(type)) {
+            criteria.and("ty").is(type.getKey());
+        }
+        query.addCriteria(criteria);
+        return mongoTemplate.count(query, WashEvent.class);
     }
 
     @Override

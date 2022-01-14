@@ -17,7 +17,6 @@ import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.device.entity.device.Device;
-import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
@@ -638,6 +637,24 @@ public class WashEventServiceImpl implements WashEventService {
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,lionPage,returnList.size());
+    }
+
+    @Override
+    public long count(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            criteria.andOperator(Criteria.where("dt").gte(startDateTime), Criteria.where("dt").lte(endDateTime));
+        }else if (Objects.nonNull(startDateTime)) {
+            criteria.and("dt").gte(startDateTime);
+        }else if (Objects.nonNull(endDateTime)) {
+            criteria.and("dt").lte(endDateTime);
+        }
+        query.addCriteria(criteria);
+        return mongoTemplate.count(query,WashEvent.class);
     }
 
     private ListUserWashMonitorVo init(LocalDateTime startDateTime, LocalDateTime endDateTime,Long userId,Document document){

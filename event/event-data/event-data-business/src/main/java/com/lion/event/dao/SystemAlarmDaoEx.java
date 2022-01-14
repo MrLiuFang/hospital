@@ -115,8 +115,10 @@ public interface SystemAlarmDaoEx {
      * 今日警报统计
      * @return
      * @param type
+     * @param startDateTime
+     * @param endDateTime
      */
-    public Document todayDaysStatistics(Type type);
+    public long todayDaysStatistics(Type type, LocalDateTime startDateTime, LocalDateTime endDateTime);
 
     /**
      * 查找最后一次资产警告

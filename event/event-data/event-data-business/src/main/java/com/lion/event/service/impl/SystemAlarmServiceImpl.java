@@ -428,44 +428,14 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     }
 
     @Override
-    public TodayDaysStatisticsVo todayDaysStatistics() {
-        Document document = alarmDao.todayDaysStatistics(null);
+    public TodayDaysStatisticsVo todayDaysStatistics(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         TodayDaysStatisticsVo vo = TodayDaysStatisticsVo.builder().build();
-        if (Objects.nonNull(document)) {
-            if (Objects.nonNull(document.get("count"))) {
-                vo.setTotal(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);
-            }
-        }
-        document = alarmDao.todayDaysStatistics(Type.STAFF);
-        if (Objects.nonNull(document)) {
-            if (Objects.nonNull(document.get("count"))) {
-                vo.setStaffCount(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);
-            }
-        }
-        document = alarmDao.todayDaysStatistics(Type.PATIENT);
-        if (Objects.nonNull(document)) {
-            if (Objects.nonNull(document.get("count"))) {
-                vo.setPatientCount(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);
-            }
-        }
-        document = alarmDao.todayDaysStatistics(Type.MIGRANT);
-        if (Objects.nonNull(document)) {
-            if (Objects.nonNull(document.get("count"))) {
-                vo.setTemporaryPersonCount(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);
-            }
-        }
-        document = alarmDao.todayDaysStatistics(Type.HUMIDITY);
-        if (Objects.nonNull(document)) {
-            if (Objects.nonNull(document.get("count"))) {
-                vo.setHumidCount(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);
-            }
-        }
-        document = alarmDao.todayDaysStatistics(Type.TEMPERATURE);
-        if (Objects.nonNull(document)) {
-            if (Objects.nonNull(document.get("count"))) {
-                vo.setHumidCount(vo.getHumidCount()+(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0));
-            }
-        }
+        vo.setTotal(alarmDao.todayDaysStatistics(null, startDateTime, endDateTime));
+        vo.setStaffCount(alarmDao.todayDaysStatistics(Type.STAFF, startDateTime, endDateTime ));
+        vo.setPatientCount(alarmDao.todayDaysStatistics(Type.PATIENT, startDateTime, endDateTime ));
+        vo.setTemporaryPersonCount(alarmDao.todayDaysStatistics(Type.MIGRANT, startDateTime, endDateTime ));
+        vo.setHumidCount(alarmDao.todayDaysStatistics(Type.HUMIDITY, startDateTime, endDateTime ));
+        vo.setHumidCount(alarmDao.todayDaysStatistics(Type.TEMPERATURE, startDateTime, endDateTime ));
         return vo;
     }
 

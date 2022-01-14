@@ -811,7 +811,10 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             }
         }
         if (Objects.isNull(startDateTime)) {
-            startDateTime = LocalDateTime.now().minusDays(30);
+            startDateTime = LocalDateTime.now().minusDays(3);
+        }
+        if (Objects.nonNull(endDateTime)) {
+            startDateTime = endDateTime.minusDays(3);
         }
         List<Long> tagIds = tagExposeService.find(tagType,tagCode);
         return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType, tagIds, startDateTime, endDateTime,sorts);

@@ -8,6 +8,7 @@ import com.lion.core.LionPage;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -139,8 +140,10 @@ public interface SystemAlarmService {
     /**
      * 今日警报统计
      * @return
+     * @param startDateTime
+     * @param endDateTime
      */
-    public TodayDaysStatisticsVo todayDaysStatistics();
+    public TodayDaysStatisticsVo todayDaysStatistics(LocalDateTime startDateTime, LocalDateTime endDateTime);
 
 
 }

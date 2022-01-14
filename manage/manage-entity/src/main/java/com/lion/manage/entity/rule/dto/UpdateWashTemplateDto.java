@@ -27,5 +27,9 @@ public class UpdateWashTemplateDto extends WashTemplate {
     @Schema(description = "规则项(全量-先删后增)")
     @Size(min = 2,max = 2,message = "{2000103}",groups = {Validator.Insert.class})
     @NotNull(message = "{2000103}",groups = {Validator.Insert.class})
+    @JsonIgnoreProperties(
+            ignoreUnknown = true,
+            value = {"id","createDateTime", "updateDateTime", "createUserId", "updateUserId"}
+    )
     private List<AddWashTemplateItemDto> washTemplateItems;
 }

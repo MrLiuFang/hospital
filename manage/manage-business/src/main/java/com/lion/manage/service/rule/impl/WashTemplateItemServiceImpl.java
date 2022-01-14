@@ -37,6 +37,7 @@ public class WashTemplateItemServiceImpl extends BaseServiceImpl<WashTemplateIte
             WashTemplateItem washTemplateItem =new WashTemplateItem();
             BeanUtils.copyProperties(dto, washTemplateItem);
             washTemplateItem.setWashTemplateId(washTemplateId);
+            washTemplateItem.setId(null);
             washTemplateItem = save(washTemplateItem);
             washDeviceTypeService.add(washTemplateItem.getId(),dto.getDeviceTypes());
         });

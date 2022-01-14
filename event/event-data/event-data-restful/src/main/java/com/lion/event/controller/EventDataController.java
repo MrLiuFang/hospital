@@ -721,8 +721,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/system/alarm/today/statistics")
     @ApiOperation(value = "今日警报统计")
-    public IResultData<TodayDaysStatisticsVo> todayDaysStatistics(){
-        return ResultData.instance().setData(systemAlarmService.todayDaysStatistics());
+    public IResultData<TodayDaysStatisticsVo> todayDaysStatistics(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                  @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime){
+        return ResultData.instance().setData(systemAlarmService.todayDaysStatistics(startDateTime, endDateTime));
     }
 
     @GetMapping("/violation/wash/event")
@@ -730,5 +731,12 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IPageResultData<List<ListViolationWashEventVo>> violationWashEvent(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                    @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
         return washEventService.violationWashEvent(startDateTime, endDateTime, lionPage);
+    }
+
+    @GetMapping("/count/event")
+    @ApiOperation(value = "统计事件数量-从某个时间点开始")
+    public IResultData<Integer> count(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                      @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) {
+        return ResultData.instance().setData(washEventService.count(startDateTime,endDateTime));
     }
 }
