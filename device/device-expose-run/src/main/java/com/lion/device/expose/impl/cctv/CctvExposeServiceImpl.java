@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -38,22 +39,28 @@ public class CctvExposeServiceImpl extends BaseServiceImpl<Cctv> implements Cctv
     public void relationPosition(List<Long> oldCctvIds, List<Long> newCctvIds, Long buildId, Long buildFloorId, Long regionId, Long departmentId) {
         if(Objects.nonNull(oldCctvIds)) {
             oldCctvIds.forEach(id -> {
-                Cctv cctv = findById(id);
-                cctv.setBuildId(null);
-                cctv.setBuildFloorId(null);
-                cctv.setRegionId(null);
-                cctv.setDepartmentId(null);
-                update(cctv);
+                com.lion.core.Optional<Cctv> optional = findById(id);
+                if (optional.isPresent()) {
+                    Cctv cctv = optional.get();
+                    cctv.setBuildId(null);
+                    cctv.setBuildFloorId(null);
+                    cctv.setRegionId(null);
+                    cctv.setDepartmentId(null);
+                    update(cctv);
+                }
             });
         }
         if(Objects.nonNull(newCctvIds)) {
             newCctvIds.forEach(id -> {
-                Cctv cctv = findById(id);
-                cctv.setBuildId(buildId);
-                cctv.setBuildFloorId(buildFloorId);
-                cctv.setRegionId(regionId);
-                cctv.setDepartmentId(departmentId);
-                update(cctv);
+                com.lion.core.Optional<Cctv> optional = findById(id);
+                if (optional.isPresent()) {
+                    Cctv cctv = optional.get();
+                    cctv.setBuildId(buildId);
+                    cctv.setBuildFloorId(buildFloorId);
+                    cctv.setRegionId(regionId);
+                    cctv.setDepartmentId(departmentId);
+                    update(cctv);
+                }
             });
         }
     }

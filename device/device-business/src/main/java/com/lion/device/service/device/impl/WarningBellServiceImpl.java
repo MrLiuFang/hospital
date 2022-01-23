@@ -38,6 +38,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -112,21 +113,22 @@ public class WarningBellServiceImpl extends BaseServiceImpl<WarningBell> impleme
 
     @Override
     public DetailsWarningBellVo details(Long id) {
-        WarningBell warningBell = this.findById(id);
-        if (Objects.nonNull(warningBell)){
+        com.lion.core.Optional<WarningBell> optionalWarningBell = this.findById(id);
+        if (optionalWarningBell.isPresent()){
+            WarningBell warningBell = optionalWarningBell.get();
             DetailsWarningBellVo detailsWarningBellVo = new DetailsWarningBellVo();
             BeanUtils.copyProperties(warningBell,detailsWarningBellVo);
             if (Objects.nonNull(warningBell.getDepartmentId())){
-                Department department = departmentExposeService.findById(warningBell.getDepartmentId());
-                if (Objects.nonNull(department)) {
-                    detailsWarningBellVo.setDepartmentName(department.getName());
+                com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(warningBell.getDepartmentId());
+                if (optionalDepartment.isPresent()) {
+                    detailsWarningBellVo.setDepartmentName(optionalDepartment.get().getName());
                 }
             }
             RegionWarningBell regionWarningBell = regionWarningBellExposeService.find(warningBell.getId());
             if (Objects.nonNull(regionWarningBell)) {
-                Region region = regionExposeService.findById(regionWarningBell.getRegionId());
-                if (Objects.nonNull(region)) {
-                    detailsWarningBellVo.setRegionName(region.getName());
+                com.lion.core.Optional<Region> optionalRegion = regionExposeService.findById(regionWarningBell.getRegionId());
+                if (optionalRegion.isPresent()) {
+                    detailsWarningBellVo.setRegionName(optionalRegion.get().getName());
                 }
             }
 

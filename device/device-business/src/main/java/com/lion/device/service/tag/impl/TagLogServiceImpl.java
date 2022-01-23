@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @Author Mr.Liu
@@ -71,8 +72,9 @@ public class TagLogServiceImpl extends BaseServiceImpl<TagLog> implements TagLog
             ListTagLogVo vo = new ListTagLogVo();
             vo.setContent(tagLog.getContent());
             vo.setDateTime(tagLog.getCreateDateTime());
-            User user = userExposeService.findById(tagLog.getUserId());
-            if (Objects.nonNull(user)) {
+            com.lion.core.Optional<User> optional = userExposeService.findById(tagLog.getUserId());
+            if (optional.isPresent()) {
+                User user = optional.get();
                 vo.setName(user.getName());
                 vo.setNumber(user.getNumber());
                 vo.setHeadPortrait(user.getHeadPortrait());

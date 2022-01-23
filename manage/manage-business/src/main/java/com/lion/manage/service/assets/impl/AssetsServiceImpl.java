@@ -22,6 +22,7 @@ import com.lion.manage.dao.assets.AssetsDao;
 import com.lion.manage.dao.assets.AssetsFaultDao;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.AssetsFault;
+import com.lion.manage.entity.assets.AssetsType;
 import com.lion.manage.entity.assets.dto.AddAssetsDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsVo;
@@ -63,6 +64,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -193,45 +195,49 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 
     @Override
     public DetailsAssetsVo details(Long id) {
-        Assets assets = this.findById(id);
-        if (Objects.isNull(assets)) {
+        com.lion.core.Optional<Assets> optionalAssets = this.findById(id);
+        if (optionalAssets.isEmpty()) {
             return null;
         }
+        Assets assets = optionalAssets.get();
         DetailsAssetsVo detailsAssetsVo = new DetailsAssetsVo();
         BeanUtils.copyProperties(assets,detailsAssetsVo);
         detailsAssetsVo.setBorrowCount(assetsBorrowDao.countByAssetsId(assets.getId()));
         detailsAssetsVo.setFaultCount(assetsFaultDao.countByAssetsId(assets.getId()));
         detailsAssetsVo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
         if (Objects.nonNull(assets.getBuildId())){
-            Build build = buildService.findById(assets.getBuildId());
-            if (Objects.nonNull(build)){
+            com.lion.core.Optional<Build> optionalBuild = buildService.findById(assets.getBuildId());
+            if (optionalBuild.isPresent()){
+                Build build = optionalBuild.get();
                 detailsAssetsVo.setPosition(build.getName());
                 detailsAssetsVo.setBuildName(build.getName());
             }
         }
         if (Objects.nonNull(assets.getBuildFloorId())){
-            BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
-            if (Objects.nonNull(buildFloor)){
+            com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorService.findById(assets.getBuildFloorId());
+            if (optionalBuildFloor.isPresent()){
+                BuildFloor buildFloor = optionalBuildFloor.get();
                 detailsAssetsVo.setPosition(detailsAssetsVo.getPosition()+buildFloor.getName());
                 detailsAssetsVo.setBuildFloorName(buildFloor.getName());
             }
         }
         if (Objects.nonNull(assets.getDepartmentId())){
-            Department department = departmentService.findById(assets.getDepartmentId());
-            if (Objects.nonNull(department)){
-                detailsAssetsVo.setDepartmentName(department.getName());
+            com.lion.core.Optional<Department> optional = departmentService.findById(assets.getDepartmentId());
+            if (optional.isPresent()){
+                detailsAssetsVo.setDepartmentName(optional.get().getName());
             }
         }
         if (Objects.nonNull(assets.getRegionId())) {
-            Region region = regionService.findById(assets.getRegionId());
-            if (Objects.nonNull(region)){
-                detailsAssetsVo.setRegionName(region.getName());
+            com.lion.core.Optional<Region> optional = regionService.findById(assets.getRegionId());
+            if (optional.isPresent()){
+                detailsAssetsVo.setRegionName(optional.get().getName());
             }
         }
         TagAssets tagAssets = tagAssetsExposeService.find(assets.getId());
         if (Objects.nonNull(tagAssets)) {
-            Tag tag = tagExposeService.findById(tagAssets.getTagId());
-            if (Objects.nonNull(tag)) {
+            com.lion.core.Optional<Tag> optional = tagExposeService.findById(tagAssets.getTagId());
+            if (optional.isPresent()) {
+                Tag tag = optional.get();
                 detailsAssetsVo.setTagCode(tag.getTagCode());
                 detailsAssetsVo.setTagId(tag.getId());
             }
@@ -256,8 +262,8 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     public Assets findByTagId(Long tagId) {
         TagAssets tagAssets =  tagAssetsExposeService.findByTagId(tagId);
         if (Objects.nonNull(tagAssets)) {
-            Assets assets = findById(tagAssets.getAssetsId());
-            return assets;
+            com.lion.core.Optional<Assets> optional = findById(tagAssets.getAssetsId());
+            return optional.isPresent()?optional.get():null;
         }
         return null;
     }
@@ -310,31 +316,33 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             ListAssetsVo listAssetsVo = new ListAssetsVo();
             BeanUtils.copyProperties(assets,listAssetsVo);
             if (Objects.nonNull(assets.getBuildId())){
-                Build build = buildService.findById(assets.getBuildId());
-                if (Objects.nonNull(build)){
-                    listAssetsVo.setPosition(build.getName());
+                com.lion.core.Optional<Build> optionalBuild = buildService.findById(assets.getBuildId());
+                if (optionalBuild.isPresent()){
+                    listAssetsVo.setPosition(optionalBuild.get().getName());
                 }
             }
             if (Objects.nonNull(assets.getBuildFloorId())){
-                BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)){
-                    listAssetsVo.setPosition(listAssetsVo.getPosition()+buildFloor.getName());
+                com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorService.findById(assets.getBuildFloorId());
+                if (optionalBuildFloor.isPresent()){
+                    listAssetsVo.setPosition(listAssetsVo.getPosition()+optionalBuildFloor.get().getName());
                 }
             }
             if (Objects.nonNull(assets.getDepartmentId())){
-                Department department = departmentService.findById(assets.getDepartmentId());
-                if (Objects.nonNull(department)){
+                com.lion.core.Optional<Department> optionalDepartment = departmentService.findById(assets.getDepartmentId());
+                if (optionalDepartment.isPresent()){
+                    Department department = optionalDepartment.get();
                     listAssetsVo.setDepartmentName(department.getName());
                     TagAssets tagAssets = tagAssetsExposeService.find(assets.getId());
                     if (Objects.nonNull(tagAssets)) {
-                        Tag tag = tagExposeService.findById(tagAssets.getTagId());
-                        if (Objects.nonNull(tag)) {
-                            listAssetsVo.setTagCode(tag.getTagCode());
+                        com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(tagAssets.getTagId());
+                        if (optionalTag.isPresent()) {
+                            listAssetsVo.setTagCode(optionalTag.get().getTagCode());
                         }
                     }
                 }
             }
-            listAssetsVo.setAssetsType(assetsTypeService.findById(assets.getAssetsTypeId()));
+            com.lion.core.Optional<AssetsType> optionalAssetsType = assetsTypeService.findById(assets.getAssetsTypeId());
+            listAssetsVo.setAssetsType(optionalAssetsType.isPresent()?optionalAssetsType.get():null);
             listAssetsVos.add(listAssetsVo);
         });
         return new PageResultData(listAssetsVos, page.getPageable(), page.getTotalElements());
@@ -359,26 +367,26 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     }
 
     private void assertDepartmentExist(Long id) {
-        Department department = this.departmentService.findById(id);
-        if (Objects.isNull(department) ){
+        com.lion.core.Optional<Department> optional = this.departmentService.findById(id);
+        if (optional.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000069"));
         }
     }
     private void assertBuildExist(Long id) {
-        Build build = this.buildService.findById(id);
-        if (Objects.isNull(build) ){
+        com.lion.core.Optional<Build> optional = this.buildService.findById(id);
+        if (optional.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000070"));
         }
     }
     private void assertBuildFloorExist(Long id) {
-        BuildFloor buildFloor = this.buildFloorService.findById(id);
-        if (Objects.isNull(buildFloor) ){
+        com.lion.core.Optional<BuildFloor> optional = this.buildFloorService.findById(id);
+        if (optional.isEmpty() ){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000071"));
         }
     }
     private void assertRegionExist(Long id) {
-        Region region = this.regionService.findById(id);
-        if (Objects.isNull(region) ){
+        com.lion.core.Optional<Region> optional = this.regionService.findById(id);
+        if (optional.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000072"));
         }
     }
@@ -398,7 +406,11 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     }
 
     private Assets setBuildAndFloorAndDepartment(Assets assets){
-        Region region = regionService.findById(assets.getRegionId());
+        com.lion.core.Optional<Region> optional = regionService.findById(assets.getRegionId());
+        if (optional.isEmpty()) {
+            return assets;
+        }
+        Region region = optional.get();
         assets.setBuildId(region.getBuildId());
         assets.setBuildFloorId(region.getBuildFloorId());
         assets.setDepartmentId(region.getDepartmentId());

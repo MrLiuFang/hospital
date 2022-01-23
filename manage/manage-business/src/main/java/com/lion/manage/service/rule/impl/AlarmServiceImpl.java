@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -90,8 +91,9 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
 
     @Override
     public DetailsAlarmVo details(Long id) {
-        Alarm alarm = findById(id);
-        if (Objects.nonNull(alarm)){
+        com.lion.core.Optional<Alarm> optional = findById(id);
+        if (optional.isPresent()){
+            Alarm alarm = optional.get();
             DetailsAlarmVo detailsAlarmVo = new DetailsAlarmVo();
             BeanUtils.copyProperties(alarm,detailsAlarmVo);
             detailsAlarmVo.setManagerVos(convertManagerVo(detailsAlarmVo.getManager()));
@@ -133,9 +135,11 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     @Override
     public void delete(List<DeleteDto> deleteDtos) {
         deleteDtos.forEach(deleteDto -> {
-            Alarm alarm = findById(deleteDto.getId());
+            com.lion.core.Optional<Alarm> optional = findById(deleteDto.getId());
+            if (optional.isPresent()) {
+                persistenceRedis(optional.get(), true);
+            }
             deleteById(deleteDto.getId());
-            persistenceRedis(alarm,true);
         });
     }
 
@@ -162,8 +166,9 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
             String ids[] = manger.split(",");
             List<DetailsAlarmVo.ManagerVo> list = new ArrayList<>();
             for (String userId : ids){
-                User user = userExposeService.findById(Long.valueOf(userId));
-                if (Objects.nonNull(user)){
+                com.lion.core.Optional<User> optional = userExposeService.findById(Long.valueOf(userId));
+                if (optional.isPresent()){
+                    User user = optional.get();
                     DetailsAlarmVo.ManagerVo vo = new DetailsAlarmVo.ManagerVo();
                     vo.setName(user.getName());
                     vo.setId(user.getId());

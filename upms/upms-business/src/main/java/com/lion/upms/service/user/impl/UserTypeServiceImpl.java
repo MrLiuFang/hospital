@@ -29,6 +29,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -64,9 +65,9 @@ public class UserTypeServiceImpl extends BaseServiceImpl<UserType> implements Us
     @Transactional
     public void delete(List<DeleteDto> deleteDto) {
         deleteDto.forEach(dto -> {
-            UserType userType = this.findById(dto.getId());
-            if (Objects.nonNull(userType)) {
-                AssertUtil.isTrue(userDao.countByUserTypeId(dto.getId()) > 0, MessageI18nUtil.getMessage("0000023",new Object[]{userType.getUserTypeName()}) );
+            com.lion.core.Optional<UserType> optional = this.findById(dto.getId());
+            if (optional.isPresent()) {
+                AssertUtil.isTrue(userDao.countByUserTypeId(dto.getId()) > 0, MessageI18nUtil.getMessage("0000023",new Object[]{optional.get().getUserTypeName()}) );
             }
         });
         deleteDto.forEach(dto -> {

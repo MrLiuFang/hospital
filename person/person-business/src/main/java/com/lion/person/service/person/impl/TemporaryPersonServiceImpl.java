@@ -55,6 +55,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -208,10 +209,11 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
 
     @Override
     public TemporaryPersonDetailsVo details(Long id) {
-        TemporaryPerson temporaryPerson = this.findById(id);
-        if (Objects.isNull(temporaryPerson)) {
+        com.lion.core.Optional<TemporaryPerson> optional = this.findById(id);
+        if (optional.isEmpty()) {
             return null;
         }
+        TemporaryPerson temporaryPerson = optional.get();
         TemporaryPersonDetailsVo temporaryPersonDetailsVo= new TemporaryPersonDetailsVo();
         BeanUtils.copyProperties(temporaryPerson,temporaryPersonDetailsVo);
         temporaryPersonDetailsVo.setHeadPortraitUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
@@ -219,9 +221,9 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         if (Objects.nonNull(tag)) {
             temporaryPersonDetailsVo.setBattery(tag.getBattery());
         }
-        Department department = departmentExposeService.findById(temporaryPerson.getDepartmentId());
-        if (Objects.nonNull(department)) {
-            temporaryPersonDetailsVo.setDepartmentName(department.getName());
+        com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(temporaryPerson.getDepartmentId());
+        if (optionalDepartment.isPresent()) {
+            temporaryPersonDetailsVo.setDepartmentName(optionalDepartment.get().getName());
         }
 //        List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(temporaryPerson.getId(), PersonType.TEMPORARY_PERSON);
 //        List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();
@@ -268,10 +270,11 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     }
 
     private TemporaryPerson assertPatientExist(TemporaryPerson temporaryPerson, Long patientId) {
-        Patient patient = patientService.findById(patientId);
-        if (Objects.isNull(patient)){
+        com.lion.core.Optional<Patient> optional = patientService.findById(patientId);
+        if (optional.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000043"));
         }
+        Patient patient = optional.get();
         if (!Objects.equals(patient.getIsLeave(), false)) {
             BusinessException.throwException(MessageI18nUtil.getMessage("1000044"));
         }

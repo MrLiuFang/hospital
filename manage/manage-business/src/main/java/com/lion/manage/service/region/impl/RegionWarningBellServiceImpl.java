@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -40,9 +41,9 @@ public class RegionWarningBellServiceImpl extends BaseServiceImpl<RegionWarningB
         warningBellIds.forEach(id->{
             RegionWarningBell regionWarningBell = regionWarningBellDao.findFirstByWarningBellIdAndRegionIdNot(id,regionId);
             if (Objects.nonNull(regionWarningBell)) {
-                WarningBell warningBell = warningBellExposeService.findById(regionWarningBell.getWarningBellId());
-                if (Objects.nonNull(warningBell)) {
-                    BusinessException.throwException(MessageI18nUtil.getMessage("2000117", new Object[]{warningBell.getName()}));
+                com.lion.core.Optional<WarningBell> optional = warningBellExposeService.findById(regionWarningBell.getWarningBellId());
+                if (optional.isPresent()) {
+                    BusinessException.throwException(MessageI18nUtil.getMessage("2000117", new Object[]{optional.get().getName()}));
                 }
             }
         });

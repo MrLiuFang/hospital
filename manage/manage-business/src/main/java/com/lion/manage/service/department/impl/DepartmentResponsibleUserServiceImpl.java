@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -76,9 +77,10 @@ public class DepartmentResponsibleUserServiceImpl extends BaseServiceImpl<Depart
         List<DepartmentResponsibleUser> list = departmentResponsibleUserDao.findByDepartmentId(departmentId);
         List<ResponsibleUserVo> returnList = new ArrayList<ResponsibleUserVo>();
         list.forEach(departmentResponsibleUser -> {
-            User user = userExposeService.findById(departmentResponsibleUser.getUserId());
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(departmentResponsibleUser.getUserId());
             ResponsibleUserVo responsibleUserVo = new ResponsibleUserVo();
-            if (Objects.nonNull(user)){
+            if (optionalUser.isPresent()){
+                User user = optionalUser.get();
                 responsibleUserVo.setId(user.getId());
                 responsibleUserVo.setName(user.getName());
                 responsibleUserVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));

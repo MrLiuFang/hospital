@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @Author Mr.Liu
@@ -72,8 +73,9 @@ public class TagRuleLogServiceImpl extends BaseServiceImpl<TagRuleLog> implement
             ListTagRuleLogVo vo = new ListTagRuleLogVo();
             vo.setContent(tagRuleLog.getContent());
             vo.setDateTime(tagRuleLog.getCreateDateTime());
-            User user = userExposeService.findById(tagRuleLog.getUserId());
-            if (Objects.nonNull(user)) {
+            com.lion.core.Optional<User> optional = userExposeService.findById(tagRuleLog.getUserId());
+            if (optional.isPresent()) {
+                User user = optional.get();
                 vo.setName(user.getName());
                 vo.setHeadPortrait(user.getHeadPortrait());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));

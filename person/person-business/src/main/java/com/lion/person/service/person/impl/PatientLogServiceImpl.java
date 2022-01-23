@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -69,8 +70,9 @@ public class PatientLogServiceImpl extends BaseServiceImpl<PatientLog> implement
         list.forEach(patientLog -> {
             ListPatientLogVo vo = new ListPatientLogVo();
             BeanUtils.copyProperties(patientLog,vo);
-            User user = userExposeService.findById(vo.getOperationUserId());
-            if (Objects.nonNull(user)) {
+            com.lion.core.Optional<User> optional = userExposeService.findById(vo.getOperationUserId());
+            if (optional.isPresent()) {
+                User user = optional.get();
                 vo.setUserName(user.getName());
                 vo.setUserHeadPortrait(user.getHeadPortrait());
                 vo.setUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));

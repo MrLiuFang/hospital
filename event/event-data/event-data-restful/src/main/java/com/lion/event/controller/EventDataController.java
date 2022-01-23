@@ -46,6 +46,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @Author Mr.Liu
@@ -415,8 +416,9 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
         List<DepartmentRegionInfoVo> returnList = new ArrayList<>();
         list.forEach(id->{
-            Department department = departmentExposeService.findById(id);
-            if (Objects.nonNull(department)) {
+            com.lion.core.Optional<Department> optional = departmentExposeService.findById(id);
+            if (optional.isPresent()) {
+                Department department = optional.get();
                 DepartmentRegionInfoVo vo = new DepartmentRegionInfoVo();
                 vo.setDepartmentId(department.getId());
                 vo.setDepartmentName(department.getName());
@@ -499,10 +501,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/region/visitor")
     @ApiOperation(value = "访客(不返回总行数)")
-    public IPageResultData<List<ListVisitorVo>> regionVisitor(@ApiParam("类型") @RequestParam(value = "types",required = false) List<Type> types, @ApiParam("区域id") Long regionId,
+    public IPageResultData<List<ListVisitorVo>> regionVisitor(@ApiParam("类型") Type type, @ApiParam("区域id") Long regionId,
                                                          @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                          @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                          LionPage lionPage) {
+        List<Type> types = new ArrayList<>();
+        if (Objects.nonNull(type)) {
+            types.add(type);
+        }
         return positionService.regionVisitor(types, regionId, startDateTime, endDateTime, lionPage);
     }
 

@@ -47,6 +47,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -102,9 +103,12 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
         String[] id = ids.split(",");
         if (Objects.nonNull(id) && id.length>0) {
             for (int i = 0 ; i<id.length ;i ++){
-                Device device = deviceService.findById(Long.valueOf(id[i]));
-                if (Objects.nonNull(device.getRegionId()) && !Objects.equals(DeviceClassify.STAR_AP,device.getDeviceClassify())) {
-                    returnList.add(device.getId());
+                com.lion.core.Optional<Device> optional = deviceService.findById(Long.valueOf(id[i]));
+                if (optional.isPresent()){
+                    Device device = optional.get();
+                    if (Objects.nonNull(device.getRegionId()) && !Objects.equals(DeviceClassify.STAR_AP,device.getDeviceClassify())) {
+                        returnList.add(device.getId());
+                    }
                 }
             }
         }

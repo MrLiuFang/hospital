@@ -56,6 +56,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -125,20 +126,21 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
         addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
             AssetsBorrow assetsBorrow = assetsBorrowDao.findFirstByAssetsIdAndReturnUserIdIsNull(assetsId);
             if (Objects.nonNull(assetsBorrow)) {
-                Assets assets = assetsService.findById(assetsId);
-                BusinessException.throwException((Objects.isNull(assets)?"":assets.getName())+ MessageI18nUtil.getMessage("2000061"));
+                com.lion.core.Optional<Assets> optional = assetsService.findById(assetsId);
+                BusinessException.throwException((optional.isEmpty()?"":optional.get().getName())+ MessageI18nUtil.getMessage("2000061"));
             }
         });
         User user = userExposeService.find(addAssetsBorrowDto.getBorrowUserNumber());
         if (Objects.isNull(user)) {
             BusinessException.throwException(MessageI18nUtil.getMessage("2000062"));
         }
-        Department department = departmentService.findById(addAssetsBorrowDto.getBorrowDepartmentId());
-        if (Objects.isNull(department)) {
+        com.lion.core.Optional<Department> optionalDepartment = departmentService.findById(addAssetsBorrowDto.getBorrowDepartmentId());
+        if (optionalDepartment.isEmpty()) {
             BusinessException.throwException(MessageI18nUtil.getMessage("2000063"));
         }
-        WardRoomSickbed wardRoomSickbed = wardRoomSickbedService.findById(addAssetsBorrowDto.getBorrowWardRoomSickbedId());
-        if (Objects.isNull(wardRoomSickbed)) {
+        Department department = optionalDepartment.get();
+        com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedService.findById(addAssetsBorrowDto.getBorrowWardRoomSickbedId());
+        if (optionalWardRoomSickbed.isEmpty()) {
             BusinessException.throwException(MessageI18nUtil.getMessage("2000064"));
         }
         addAssetsBorrowDto.getAssetsIds().forEach(assetsId->{
@@ -148,14 +150,16 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
             AssetsBorrow assetsBorrow = new AssetsBorrow();
             assetsBorrow.setAssetsId(assetsId);
             assetsBorrow.setBorrowDepartmentId(department.getId());
-            assetsBorrow.setBorrowWardRoomSickbedId(wardRoomSickbed.getId());
+            if (optionalWardRoomSickbed.isPresent()) {
+                assetsBorrow.setBorrowWardRoomSickbedId(optionalWardRoomSickbed.get().getId());
+            }
             assetsBorrow.setBorrowUserId(user.getId());
             assetsBorrow.setStartDateTime(addAssetsBorrowDto.getStartDateTime());
             assetsBorrow.setEndDateTime(addAssetsBorrowDto.getEndDateTime());
             save(assetsBorrow);
-
-            Assets assets = assetsService.findById(assetsBorrow.getAssetsId());
-            if (Objects.nonNull(assets)) {
+            com.lion.core.Optional<Assets> optional  = assetsService.findById(assetsBorrow.getAssetsId());
+            if (optional.isPresent()) {
+                Assets assets = optional.get();
                 assets.setUseState(AssetsUseState.USEING);
                 assetsService.update(assets);
             }
@@ -173,29 +177,29 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
             AssetsBorrow assetsBorrow = (AssetsBorrow) moreEntity.getEntity2();
             ListAssetsBorrowVo vo = new ListAssetsBorrowVo();
             BeanUtils.copyProperties(assets,vo);
-            Build build = buildService.findById(assets.getBuildId());
-            vo.setBuildName(Objects.isNull(build)?"":build.getName());
-            BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
-            vo.setBuildFloorName(Objects.isNull(buildFloor)?"":buildFloor.getName());
-            Department department = departmentService.findById(assets.getDepartmentId());
-            vo.setDepartmentName(Objects.isNull(department)?"":department.getName());
-            Region region = regionService.findById(assets.getRegionId());
-            vo.setRegionName(Objects.isNull(region)?"":region.getName());
+            com.lion.core.Optional<Build> optionalBuild = buildService.findById(assets.getBuildId());
+            vo.setBuildName(optionalBuild.isEmpty()?"":optionalBuild.get().getName());
+            com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorService.findById(assets.getBuildFloorId());
+            vo.setBuildFloorName(optionalBuildFloor.isEmpty()?"":optionalBuildFloor.get().getName());
+            com.lion.core.Optional<Department> optionalDepartment = departmentService.findById(assets.getDepartmentId());
+            vo.setDepartmentName(optionalDepartment.isEmpty()?"":optionalDepartment.get().getName());
+            com.lion.core.Optional<Region> optionalRegion = regionService.findById(assets.getRegionId());
+            vo.setRegionName(optionalRegion.isEmpty()?"":optionalRegion.get().getName());
             TagAssets tagAssets = tagAssetsExposeService.find(assets.getId());
             if (Objects.nonNull(tagAssets)){
-                Tag tag = tagExposeService.findById(tagAssets.getTagId());
-                if (Objects.nonNull(tag)){
-                    vo.setTagCode(tag.getTagCode());
+                com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(tagAssets.getTagId());
+                if (optionalTag.isPresent()){
+                    vo.setTagCode(optionalTag.get().getTagCode());
                 }
             }
 
 
-            department = departmentService.findById(assetsBorrow.getBorrowDepartmentId());
+            com.lion.core.Optional<Department> optionalDepartment1 = departmentService.findById(assetsBorrow.getBorrowDepartmentId());
             vo.setBorrowDepartmentId(assetsBorrow.getBorrowDepartmentId());
-            vo.setBorrowDepartmentName(Objects.isNull(department)?"":department.getName());
-            WardRoomSickbed wardRoomSickbed = wardRoomSickbedService.findById(assetsBorrow.getBorrowWardRoomSickbedId());
+            vo.setBorrowDepartmentName(optionalDepartment1.isEmpty()?"":optionalDepartment1.get().getName());
+            com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedService.findById(assetsBorrow.getBorrowWardRoomSickbedId());
             vo.setBorrowWardRoomSickbedId(assetsBorrow.getBorrowWardRoomSickbedId());
-            vo.setBorrowWardRoomSickbedCode(Objects.isNull(wardRoomSickbed)?"":wardRoomSickbed.getBedCode());
+            vo.setBorrowWardRoomSickbedCode(optionalWardRoomSickbed.isEmpty()?"":optionalWardRoomSickbed.get().getBedCode());
             vo.setRegistrationTime(assetsBorrow.getCreateDateTime());
             vo.setStartDateTime(assetsBorrow.getStartDateTime());
             vo.setEndDateTime(assetsBorrow.getEndDateTime());
@@ -210,14 +214,16 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
 //                }
 //            }
 
-            User user = userExposeService.findById(assetsBorrow.getBorrowUserId());
-            if (Objects.nonNull(user)){
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(assetsBorrow.getBorrowUserId());
+            if (optionalUser.isPresent()){
+                User user = optionalUser.get();
                 vo.setBorrowUserName(user.getName());
                 vo.setBorrowUserHeadPortrait(user.getHeadPortrait());
                 vo.setBorrowUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
             }
-            user = userExposeService.findById(assetsBorrow.getReturnUserId());
-            if (Objects.nonNull(user)){
+            com.lion.core.Optional<User> optionalUser1 = userExposeService.findById(assetsBorrow.getReturnUserId());
+            if (optionalUser1.isPresent()){
+                User user = optionalUser.get();
                 vo.setReturnUserName(user.getName());
                 vo.setReturnUserHeadPortrait(user.getHeadPortrait());
                 vo.setReturnUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
@@ -255,15 +261,19 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
 
         if (Objects.nonNull(returnAssetsBorrowDto.getAssetsBorrowIds()) && returnAssetsBorrowDto.getAssetsBorrowIds().size()>0) {
             returnAssetsBorrowDto.getAssetsBorrowIds().forEach(id->{
-                AssetsBorrow assetsBorrow = findById(id);
-                assetsBorrow.setReturnUserId(user.getId());
-                assetsBorrow.setReturnTime(LocalDateTime.now());
-                update(assetsBorrow);
-                if (Objects.nonNull(assetsBorrow)) {
-                    Assets assets = assetsService.findById(assetsBorrow.getAssetsId());
-                    if (Objects.nonNull(assets)) {
-                        assets.setUseState(AssetsUseState.NOT_USED);
-                        assetsService.update(assets);
+                com.lion.core.Optional<AssetsBorrow> optional = findById(id);
+                if (optional.isPresent()) {
+                    AssetsBorrow assetsBorrow = optional.get();
+                    assetsBorrow.setReturnUserId(user.getId());
+                    assetsBorrow.setReturnTime(LocalDateTime.now());
+                    update(assetsBorrow);
+                    if (Objects.nonNull(assetsBorrow)) {
+                        com.lion.core.Optional<Assets> optionalAssets = assetsService.findById(assetsBorrow.getAssetsId());
+                        if (optionalAssets.isPresent()) {
+                            Assets assets = optionalAssets.get();
+                            assets.setUseState(AssetsUseState.NOT_USED);
+                            assetsService.update(assets);
+                        }
                     }
                 }
             });
@@ -278,29 +288,31 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
         }
         DetailsAssetsBorrowVo vo = new DetailsAssetsBorrowVo();
         BeanUtils.copyProperties(assetsBorrow,vo);
-        Department department = departmentService.findById(vo.getBorrowDepartmentId());
-        if (Objects.nonNull(department)) {
-            vo.setBorrowDepartmentName(department.getName());
+        com.lion.core.Optional<Department> optionalDepartment = departmentService.findById(vo.getBorrowDepartmentId());
+        if (optionalDepartment.isPresent()) {
+            vo.setBorrowDepartmentName(optionalDepartment.get().getName());
         }
-        User borrowUser = userExposeService.findById(vo.getBorrowUserId());
-        if (Objects.nonNull(borrowUser)) {
-            vo.setBorrowUserName(borrowUser.getName());
-            vo.setBorrowUserHeadPortrait(borrowUser.getHeadPortrait());
-            vo.setBorrowUserHeadPortraitUrl(fileExposeService.getUrl(borrowUser.getHeadPortrait()));
+        com.lion.core.Optional<User> optionalBorrowUser = userExposeService.findById(vo.getBorrowUserId());
+        if (optionalBorrowUser.isPresent()) {
+            User user = optionalBorrowUser.get();
+            vo.setBorrowUserName(user.getName());
+            vo.setBorrowUserHeadPortrait(user.getHeadPortrait());
+            vo.setBorrowUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
         }
-        User returnUser = userExposeService.findById(vo.getBorrowUserId());
-        if (Objects.nonNull(returnUser)) {
-            vo.setReturnUserName(returnUser.getName());
-            vo.setReturnUserHeadPort(returnUser.getHeadPortrait());
-            vo.setReturnUserHeadPortraitUrl(fileExposeService.getUrl(returnUser.getHeadPortrait()));
+        com.lion.core.Optional<User> optionalReturnUser = userExposeService.findById(vo.getBorrowUserId());
+        if (optionalReturnUser.isPresent()) {
+            User user = optionalReturnUser.get();
+            vo.setReturnUserName(user.getName());
+            vo.setReturnUserHeadPort(user.getHeadPortrait());
+            vo.setReturnUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
         }
         return vo;
     }
 
     private void assertAssetsExist(Long id) {
-        Assets assets = this.assetsService.findById(id);
-        if (Objects.isNull(assets) ){
-            BusinessException.throwException(assets.getCode()+MessageI18nUtil.getMessage("2000066"));
+        com.lion.core.Optional<Assets> optional = this.assetsService.findById(id);
+        if (optional.isPresent() ){
+            BusinessException.throwException(optional.get().getCode()+MessageI18nUtil.getMessage("2000066"));
         }
     }
 

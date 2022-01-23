@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -50,8 +51,10 @@ public class DeviceGroupDeviceServiceImpl extends BaseServiceImpl<DeviceGroupDev
             deviceIds.forEach(id -> {
                 DeviceGroupDevice tmp = deviceGroupDeviceDao.findFirstByDeviceId(id);
                 if (Objects.nonNull(tmp) && !Objects.equals(tmp.getDeviceGroupId(),deviceGroupId)){
-                    Device device = deviceService.findById(id);
-                    BusinessException.throwException(device.getName()+ MessageI18nUtil.getMessage("4000035"));
+                    com.lion.core.Optional<Device> optional = deviceService.findById(id);
+                    if (optional.isPresent()) {
+                        BusinessException.throwException(optional.get().getName() + MessageI18nUtil.getMessage("4000035"));
+                    }
                 }
                 DeviceGroupDevice deviceGroupDevice = new DeviceGroupDevice();
                 deviceGroupDevice.setDeviceGroupId(deviceGroupId);

@@ -67,6 +67,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -169,7 +170,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @Transactional
     //    @GlobalTransactional
     public void update(UpdatePatientDto updatePatientDto) {
-        Patient oldPatient = findById(updatePatientDto.getId());
+        com.lion.core.Optional<Patient> optional = findById(updatePatientDto.getId());
         Patient patient = new Patient();
         BeanUtils.copyProperties(updatePatientDto,patient);
         sickbedIsCanUse(patient.getSickbedId(),patient.getId());
@@ -184,45 +185,49 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         if (Objects.nonNull(patient.getTagCode())) {
             tagPatientExposeService.binding(patient.getId(),patient.getTagCode(),patient.getDepartmentId());
         }
-        if (Objects.nonNull(patient.getBindPatientId()) && !Objects.equals(oldPatient.getBindPatientId(),patient.getBindPatientId())) {
-            patientLogService.add("",LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
+        if (optional.isPresent()){
+            Patient oldPatient = optional.get();
+            if (Objects.nonNull(patient.getBindPatientId()) && !Objects.equals(oldPatient.getBindPatientId(),patient.getBindPatientId())) {
+                patientLogService.add("",LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
+            }
+            if (Objects.nonNull(patient.getTagCode()) && !Objects.equals(oldPatient.getTagCode(),patient.getTagCode())) {
+                patientLogService.add(patient.getTagCode(), LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
+            }
+            if (Objects.nonNull(patient.getDepartmentId()) && !Objects.equals(oldPatient.getDepartmentId(),patient.getDepartmentId())) {
+                com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(patient.getDepartmentId());
+                patientLogService.add(optionalDepartment.isPresent()?optionalDepartment.get().getName():"",LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
+            }
+            if (Objects.nonNull(patient.getSickbedId()) && !Objects.equals(oldPatient.getSickbedId(),patient.getSickbedId())) {
+                com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
+                patientLogService.add(optionalWardRoomSickbed.isPresent()?optionalWardRoomSickbed.get().getBedCode():"",LogType.UPDATE_WARD, userId, patient.getId());
+            }
+            if (Objects.nonNull(patient.getBirthday()) && !Objects.equals(oldPatient.getBirthday(),patient.getBirthday())) {
+                DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+                patientLogService.add(Objects.nonNull(patient.getBirthday())?dtf2.format(patient.getBirthday()):"",LogType.UPDATE_BIRTHDAY, userId, patient.getId());
+            }
+            if (Objects.nonNull(patient.getMedicalRecordNo()) && !Objects.equals(oldPatient.getMedicalRecordNo(),patient.getMedicalRecordNo())) {
+                patientLogService.add(patient.getMedicalRecordNo(),LogType.UPDATE_MEDICAL_RECORD_NO, userId, patient.getId());
+            }
+            if (Objects.nonNull(patient.getDisease()) && !Objects.equals(oldPatient.getDisease(),patient.getDisease())) {
+                patientLogService.add(patient.getDisease(), LogType.UPDATE_DISEASE, userId, patient.getId());
+            }
+            if (Objects.nonNull(patient.getRemarks()) && !Objects.equals(oldPatient.getRemarks(),patient.getRemarks())) {
+                patientLogService.add(patient.getRemarks(), LogType.UPDATE_REMARKS, userId, patient.getId());
+            }
+            if (Objects.nonNull(patient.getAddress()) && !Objects.equals(oldPatient.getAddress(),patient.getAddress())) {
+                patientLogService.add(patient.getAddress(), LogType.UPDATE_ADDRESS, userId, patient.getId());
+            }
+            if (Objects.nonNull(patient.getLevel()) && !Objects.equals(oldPatient.getLevel(),patient.getLevel())) {
+                patientLogService.add(String.valueOf(patient.getLevel()), LogType.UPDATE_LEVEL, userId, patient.getId());
+            }
+            if (Objects.nonNull(patient.getActionMode()) && !Objects.equals(oldPatient.getActionMode(),patient.getActionMode())) {
+                patientLogService.add(patient.getActionMode().getName(), LogType.UPDATE_ACTION_MODE, userId, patient.getId());
+            }
+            if (Objects.nonNull(patient.getTimeQuantum()) && !Objects.equals(oldPatient.getTimeQuantum(),patient.getTimeQuantum())) {
+                patientLogService.add(patient.getTimeQuantum(), LogType.UPDATE_TIME_QUANTUM, userId, patient.getId());
+            }
         }
-        if (Objects.nonNull(patient.getTagCode()) && !Objects.equals(oldPatient.getTagCode(),patient.getTagCode())) {
-            patientLogService.add(patient.getTagCode(), LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
-        }
-        if (Objects.nonNull(patient.getDepartmentId()) && !Objects.equals(oldPatient.getDepartmentId(),patient.getDepartmentId())) {
-            Department department = departmentExposeService.findById(patient.getDepartmentId());
-            patientLogService.add(Objects.nonNull(department)?department.getName():"",LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
-        }
-        if (Objects.nonNull(patient.getSickbedId()) && !Objects.equals(oldPatient.getSickbedId(),patient.getSickbedId())) {
-            WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
-            patientLogService.add(Objects.nonNull(wardRoomSickbed)?wardRoomSickbed.getBedCode():"",LogType.UPDATE_WARD, userId, patient.getId());
-        }
-        if (Objects.nonNull(patient.getBirthday()) && !Objects.equals(oldPatient.getBirthday(),patient.getBirthday())) {
-            DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            patientLogService.add(Objects.nonNull(patient.getBirthday())?dtf2.format(patient.getBirthday()):"",LogType.UPDATE_BIRTHDAY, userId, patient.getId());
-        }
-        if (Objects.nonNull(patient.getMedicalRecordNo()) && !Objects.equals(oldPatient.getMedicalRecordNo(),patient.getMedicalRecordNo())) {
-            patientLogService.add(patient.getMedicalRecordNo(),LogType.UPDATE_MEDICAL_RECORD_NO, userId, patient.getId());
-        }
-        if (Objects.nonNull(patient.getDisease()) && !Objects.equals(oldPatient.getDisease(),patient.getDisease())) {
-            patientLogService.add(patient.getDisease(), LogType.UPDATE_DISEASE, userId, patient.getId());
-        }
-        if (Objects.nonNull(patient.getRemarks()) && !Objects.equals(oldPatient.getRemarks(),patient.getRemarks())) {
-            patientLogService.add(patient.getRemarks(), LogType.UPDATE_REMARKS, userId, patient.getId());
-        }
-        if (Objects.nonNull(patient.getAddress()) && !Objects.equals(oldPatient.getAddress(),patient.getAddress())) {
-            patientLogService.add(patient.getAddress(), LogType.UPDATE_ADDRESS, userId, patient.getId());
-        }
-        if (Objects.nonNull(patient.getLevel()) && !Objects.equals(oldPatient.getLevel(),patient.getLevel())) {
-            patientLogService.add(String.valueOf(patient.getLevel()), LogType.UPDATE_LEVEL, userId, patient.getId());
-        }
-        if (Objects.nonNull(patient.getActionMode()) && !Objects.equals(oldPatient.getActionMode(),patient.getActionMode())) {
-            patientLogService.add(patient.getActionMode().getName(), LogType.UPDATE_ACTION_MODE, userId, patient.getId());
-        }
-        if (Objects.nonNull(patient.getTimeQuantum()) && !Objects.equals(oldPatient.getTimeQuantum(),patient.getTimeQuantum())) {
-            patientLogService.add(patient.getTimeQuantum(), LogType.UPDATE_TIME_QUANTUM, userId, patient.getId());
-        }
+
         redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
@@ -332,25 +337,26 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
 
     @Override
     public PatientDetailsVo details(Long id) {
-        Patient patient = this.findById(id);
-        if (Objects.isNull(patient)){
+        com.lion.core.Optional<Patient> optional = this.findById(id);
+        if (optional.isEmpty()){
             return null;
         }
         PatientDetailsVo vo = new PatientDetailsVo();
+        Patient patient = optional.get();
         BeanUtils.copyProperties(patient,vo);
         if (Objects.nonNull(patient.getBirthday())) {
             Period period = Period.between(patient.getBirthday(), LocalDate.now());
             vo.setAge(period.getYears());
         }
         if (Objects.nonNull(vo.getSickbedId())) {
-            WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(vo.getSickbedId());
-            if (Objects.nonNull(wardRoomSickbed)) {
-                vo.setBedCode(wardRoomSickbed.getBedCode());
+            com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedExposeService.findById(vo.getSickbedId());
+            if (optionalWardRoomSickbed.isPresent()) {
+                vo.setBedCode(optionalWardRoomSickbed.get().getBedCode());
             }
         }
         if (Objects.nonNull(vo.getDepartmentId())) {
-            Department department = departmentExposeService.findById(vo.getDepartmentId());
-            vo.setDepartmentName(department.getName());
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(vo.getDepartmentId());
+            vo.setDepartmentName(optionalDepartment.isPresent()?optionalDepartment.get().getName():"");
         }
         vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
 //        List<PatientNurse> patientNurses = patientNurseService.find(patient.getId());
@@ -409,17 +415,18 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         PatientTransfer  patientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(patient.getId(),state);
         if (Objects.nonNull(patientTransfer)){
             vo.setNewDepartmentId(patientTransfer.getNewDepartmentId());
-            Department department = departmentExposeService.findById(patientTransfer.getNewDepartmentId());
-            if (Objects.nonNull(department)){
-                vo.setNewDepartmentName(department.getName());
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(patientTransfer.getNewDepartmentId());
+            if (optionalDepartment.isPresent()){
+                vo.setNewDepartmentName(optionalDepartment.get().getName());
             }
         }
         TempLeave tempLeave = tempLeaveDao.findFirstByPatientIdOrderByCreateDateTimeDesc(patient.getId());
         if (Objects.nonNull(tempLeave)){
             PatientDetailsVo.TempLeaveVo tempLeaveVo = new PatientDetailsVo.TempLeaveVo();
             tempLeaveVo.setUserId(tempLeave.getUserId());
-            User user = userExposeService.findById(tempLeave.getUserId());
-            if (Objects.nonNull(user)){
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(tempLeave.getUserId());
+            if (optionalUser.isPresent()){
+                User user = optionalUser.get();
                 tempLeaveVo.setUserName(user.getName());
                 tempLeaveVo.setHeadPortrait(user.getHeadPortrait());
                 tempLeaveVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
@@ -441,8 +448,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         if (Objects.nonNull(patientReport)) {
             DetailsPatientReportVo detailsPatientReportVo = new DetailsPatientReportVo();
             BeanUtils.copyProperties(patientReport,detailsPatientReportVo);
-            User user = userExposeService.findById(patientReport.getReportUserId());
-            if (Objects.nonNull(user)) {
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(patientReport.getReportUserId());
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
                 detailsPatientReportVo.setReportUserName(user.getName());
                 detailsPatientReportVo.setReportUserHeadPortrait(user.getHeadPortrait());
                 detailsPatientReportVo.setReportUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
@@ -461,31 +469,36 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     @Transactional
 //    @GlobalTransactional
     public void leave(PatientLeaveDto patientLeaveDto) {
-        Patient patient = findById(patientLeaveDto.getPatientId());
-        patient.setId(patientLeaveDto.getPatientId());
-        patient.setIsLeave(patientLeaveDto.getIsLeave());
-        patient.setIsWaitLeave(false);
-        patient.setLeaveRemarks(patientLeaveDto.getLeaveRemarks());
-        update(patient);
-        if (Objects.equals(patientLeaveDto.getIsLeave(),true)) {
-            tagPatientExposeService.unbinding(patient.getId(), false);
+        com.lion.core.Optional<Patient> optional = findById(patientLeaveDto.getPatientId());
+        if (optional.isPresent()) {
+            Patient patient = optional.get();
+            patient.setId(patientLeaveDto.getPatientId());
+            patient.setIsLeave(patientLeaveDto.getIsLeave());
+            patient.setIsWaitLeave(false);
+            patient.setLeaveRemarks(patientLeaveDto.getLeaveRemarks());
+            update(patient);
+            if (Objects.equals(patientLeaveDto.getIsLeave(), true)) {
+                tagPatientExposeService.unbinding(patient.getId(), false);
+            }
+            currentPositionExposeService.delete(patient.getId(), null, null);
         }
-        currentPositionExposeService.delete(patient.getId(),null,null);
     }
 
     private Patient setOtherInfo(Patient patient) {
-        WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
-        if (Objects.isNull(wardRoomSickbed)){
+        com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
+        if (optionalWardRoomSickbed.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000035"));
         }
-        WardRoom wardRoom = wardRoomExposeService.findById(wardRoomSickbed.getWardRoomId());
-        if (Objects.isNull(wardRoomSickbed)){
+        com.lion.core.Optional<WardRoom> optionalWardRoom = wardRoomExposeService.findById(optionalWardRoomSickbed.get().getWardRoomId());
+        if (optionalWardRoom.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000036"));
         }
-        Ward ward = wardExposeService.findById(wardRoom.getWardId());
-        if (Objects.isNull(wardRoomSickbed)){
+        com.lion.core.Optional<Ward> optionalWard = wardExposeService.findById(optionalWardRoom.get().getWardId());
+        if (optionalWard.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000037"));
         }
+        Ward ward = optionalWard.get();
+        WardRoom wardRoom = optionalWardRoom.get();
         patient.setWardId(ward.getId());
         patient.setRoomId(wardRoom.getId());
         patient.setDepartmentId(ward.getDepartmentId());
@@ -514,19 +527,22 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     private void checkSickbedHavingRegion(Long sickbedId){
-        WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(sickbedId);
-        if (Objects.isNull(wardRoomSickbed)) {
+        com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedExposeService.findById(sickbedId);
+        if (optionalWardRoomSickbed.isEmpty()) {
             BusinessException.throwException(MessageI18nUtil.getMessage("1000035"));
         }
-        if (Objects.isNull(wardRoomSickbed.getRegionId())) {
-            WardRoom wardRoom = wardRoomExposeService.findById(wardRoomSickbed.getWardRoomId());
-            Region region = regionExposeService.findById(wardRoom.getRegionId());
-            if (Objects.isNull(wardRoom) || Objects.isNull(wardRoom.getRegionId()) || Objects.isNull(region)) {
-                BusinessException.throwException(MessageI18nUtil.getMessage("1000049"));
+        if (Objects.isNull(optionalWardRoomSickbed.get().getRegionId())) {
+            com.lion.core.Optional<WardRoom> optionalWardRoom = wardRoomExposeService.findById(optionalWardRoomSickbed.get().getWardRoomId());
+            if (optionalWardRoom.isPresent()) {
+                WardRoom wardRoom = optionalWardRoom.get();
+                com.lion.core.Optional<Region> optionalRegion = regionExposeService.findById(wardRoom.getRegionId());
+                if (Objects.isNull(wardRoom.getRegionId()) || optionalRegion.isEmpty()) {
+                    BusinessException.throwException(MessageI18nUtil.getMessage("1000049"));
+                }
             }
         }else {
-            Region region = regionExposeService.findById(wardRoomSickbed.getRegionId());
-            if (Objects.isNull(region)) {
+            com.lion.core.Optional<Region> optionalRegion = regionExposeService.findById(optionalWardRoomSickbed.get().getRegionId());
+            if (optionalRegion.isEmpty()) {
                 BusinessException.throwException(MessageI18nUtil.getMessage("1000049"));
             }
         }

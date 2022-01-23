@@ -34,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -90,8 +91,9 @@ public class AlarmModeRecordServiceImpl extends BaseServiceImpl<AlarmModeRecord>
         list.forEach(alarmModeRecord -> {
             ListAlarmModeRecordVo vo = new ListAlarmModeRecordVo();
             BeanUtils.copyProperties(alarmModeRecord,vo);
-            User user = userExposeService.findById(alarmModeRecord.getUserId());
-            if (Objects.nonNull(user)) {
+            com.lion.core.Optional<User> optional = userExposeService.findById(alarmModeRecord.getUserId());
+            if (optional.isPresent()) {
+                User user = optional.get();
                 vo.setName(user.getName());
                 vo.setHeadPortrait(user.getHeadPortrait());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));

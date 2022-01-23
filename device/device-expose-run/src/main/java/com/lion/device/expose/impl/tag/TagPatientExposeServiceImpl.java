@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -72,9 +73,11 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
             BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
         }
         if (!Objects.equals(departmentId,tag.getDepartmentId())) {
-            Department tagDepartment = departmentExposeService.findById(tag.getDepartmentId());
-            Department department = departmentExposeService.findById(departmentId);
-            BusinessException.throwException(MessageI18nUtil.getMessage("4000026",new Object[]{department.getName(),tagDepartment.getName()}));
+            com.lion.core.Optional<Department> optionalTagDepartment = departmentExposeService.findById(tag.getDepartmentId());
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(departmentId);
+            if (optionalTagDepartment.isPresent() && optionalDepartment.isPresent()) {
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000026", new Object[]{optionalTagDepartment.get().getName(), optionalDepartment.get().getName()}));
+            }
         }
         if (!Objects.equals(tag.getPurpose(), TagPurpose.PATIENT)){
             BusinessException.throwException(MessageI18nUtil.getMessage("4000027"));
@@ -112,9 +115,12 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
             tagPatient.setUnbindingTime(LocalDateTime.now());
             update(tagPatient);
             tagLogService.add( TagLogContent.unbinding,tagPatient.getTagId());
-            Tag tag = tagService.findById(tagPatient.getTagId());
-            tag.setUseState(TagUseState.NOT_USED);
-            tagService.update(tag);
+            com.lion.core.Optional<Tag> optional = tagService.findById(tagPatient.getTagId());
+            if (optional.isPresent()) {
+                Tag tag = optional.get();
+                tag.setUseState(TagUseState.NOT_USED);
+                tagService.update(tag);
+            }
             redisTemplate.delete(RedisConstants.TAG_PATIENT + tagPatient.getTagId());
             redisTemplate.delete(RedisConstants.PATIENT_TAG + tagPatient.getPatientId());
             redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tagPatient.getTagId());

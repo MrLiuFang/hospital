@@ -19,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -50,8 +51,9 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
 
     @Override
     public void updateBattery(Long tagId, Integer battery) {
-        Tag tag = tagService.findById(tagId);
-        if (Objects.nonNull(tag)) {
+        com.lion.core.Optional<Tag> optional = tagService.findById(tagId);
+        if (optional.isPresent()) {
+            Tag tag = optional.get();
             tag.setBattery(battery);
             update(tag);
             redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);

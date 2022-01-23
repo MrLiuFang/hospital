@@ -15,7 +15,6 @@ import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.SystemAlarmDaoEx;
 import com.lion.event.entity.SystemAlarm;
-import com.lion.event.entity.WashEvent;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.entity.vo.SystemAlarmVo;
@@ -275,8 +274,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                     if (cache.containsKey(systemAlarm.getTi())) {
                         tag = (Tag) cache.get(systemAlarm.getTi());
                     }else {
-                        tag = tagExposeService.findById(systemAlarm.getTi());
-                        if (Objects.nonNull(tag)) {
+                        com.lion.core.Optional<Tag> optional = tagExposeService.findById(systemAlarm.getTi());
+                        if (optional.isPresent()) {
+                            tag = optional.get();
                             cache.put(String.valueOf(systemAlarm.getTi()), tag);
                         }
                     }
@@ -296,8 +296,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                         if (cache.containsKey(systemAlarm.getPi())) {
                             user = (User) cache.get(systemAlarm.getPi());
                         }else {
-                            user = userExposeService.findById(systemAlarm.getPi());
-                            if (Objects.nonNull(user)) {
+                            com.lion.core.Optional<User> optionalUser = userExposeService.findById(systemAlarm.getPi());
+                            if (optionalUser.isPresent()) {
+                                user = optionalUser.get();
                                 cache.put(String.valueOf(systemAlarm.getPi()), user);
                             }
                         }
@@ -322,8 +323,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                         if (cache.containsKey(systemAlarm.getAi())) {
                             assets = (Assets) cache.get(systemAlarm.getAi());
                         }else {
-                            assets = assetsExposeService.findById(systemAlarm.getAi());
-                            if (Objects.nonNull(assets)) {
+                            com.lion.core.Optional<Assets> optionalAssets = assetsExposeService.findById(systemAlarm.getAi());
+                            if (optionalAssets.isPresent()) {
+                                assets = optionalAssets.get();
                                 cache.put(String.valueOf(systemAlarm.getAi()), assets);
                             }
                         }
@@ -348,8 +350,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                         if (cache.containsKey(systemAlarm.getTi())) {
                             tag = (Tag) cache.get(systemAlarm.getTi());
                         }else {
-                            tag = tagExposeService.findById(systemAlarm.getTi());
-                            if (Objects.nonNull(tag)) {
+                            com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(systemAlarm.getTi());
+                            if (optionalTag.isPresent()) {
+                                tag = optionalTag.get();
                                 cache.put(String.valueOf(systemAlarm.getTi()), tag);
                             }
                         }
@@ -363,8 +366,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                         if (cache.containsKey(systemAlarm.getPi())) {
                             patient = (Patient) cache.get(systemAlarm.getPi());
                         }else {
-                            patient = patientExposeService.findById(systemAlarm.getPi());
-                            if (Objects.nonNull(patient)) {
+                            com.lion.core.Optional<Patient> optionalPatient = patientExposeService.findById(systemAlarm.getPi());
+                            if (optionalPatient.isPresent()) {
+                                patient = optionalPatient.get();
                                 cache.put(String.valueOf(systemAlarm.getPi()), patient);
                             }
                         }
@@ -389,8 +393,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                         if (cache.containsKey(systemAlarm.getPi())) {
                             temporaryPerson = (TemporaryPerson) cache.get(systemAlarm.getPi());
                         }else {
-                            temporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());
-                            if (Objects.nonNull(temporaryPerson)) {
+                            com.lion.core.Optional<TemporaryPerson> optionalTemporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());
+                            if (optionalTemporaryPerson.isPresent()) {
+                                temporaryPerson = optionalTemporaryPerson.get();
                                 cache.put(String.valueOf(systemAlarm.getPi()), temporaryPerson);
                             }
                         }
@@ -415,8 +420,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                         if (cache.containsKey(systemAlarm.getDvi())) {
                             device = (Device) cache.get(systemAlarm.getDvi());
                         }else {
-                            device = deviceExposeService.findById(systemAlarm.getDvi());
-                            if (Objects.nonNull(device)) {
+                            com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(systemAlarm.getDvi());
+                            if (optionalDevice.isPresent()) {
+                                device = optionalDevice.get();
                                 cache.put(String.valueOf(systemAlarm.getDvi()), device);
                             }
                         }
@@ -504,7 +510,17 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             criteria.and("ty").is(type.getKey());
         }
         query.addCriteria(criteria);
-        return mongoTemplate.count(query, WashEvent.class);
+        return mongoTemplate.count(query, SystemAlarm.class);
+//        Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.group("_id"), Aggregation.count().as("countNum"));
+//        AggregationResults<Document> results = mongoTemplate.aggregate(aggregation, "system_alarm",Document.class);
+//        List<Document> mappedResults = results.getMappedResults();
+//        if (mappedResults.size()>0) {
+//            Document document = mappedResults.get(0);
+//            if (document.containsKey("countNum")){
+//                return Long.valueOf(document.getInteger("countNum"));
+//            }
+//        }
+//        return 0;
     }
 
     @Override

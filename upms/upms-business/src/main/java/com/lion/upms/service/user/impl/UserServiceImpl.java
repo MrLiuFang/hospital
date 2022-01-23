@@ -301,10 +301,11 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     @Override
     public DetailsUserVo details(Long id) {
-        User user = findById(id);
-        if (Objects.isNull(user)){
+        com.lion.core.Optional<User> optional = findById(id);
+        if (optional.isEmpty()){
             return null;
         }
+        User user = optional.get();
         DetailsUserVo detailsUserVo = new DetailsUserVo();
         BeanUtils.copyProperties(user,detailsUserVo);
         Role role = roleDao.findByUserId(user.getId());
@@ -347,7 +348,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             detailsUserVo.setAlarmDataTime(systemAlarm.getDt());
             detailsUserVo.setAlarmId(systemAlarm.get_id());
         }
-        detailsUserVo.setUserType(userTypeService.findById(user.getUserTypeId()));
+        com.lion.core.Optional<UserType> optionalUserType = userTypeService.findById(user.getUserTypeId());
+        detailsUserVo.setUserType(optionalUserType.isPresent()?optionalUserType.get():null);
         detailsUserVo.setIsCreateAccount(StringUtils.hasText(user.getUsername()));
         return detailsUserVo;
     }
@@ -359,17 +361,20 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         User user = new User();
         BeanUtils.copyProperties(updateUserDto,user);
         if (Objects.equals(updateUserDto.getIsCreateAccount(),true)){
-            User tmp = findById(user.getId());
-            if (!StringUtils.hasText(tmp.getPassword()) && !StringUtils.hasText(tmp.getUsername())) {
-                if (!StringUtils.hasText(tmp.getEmail())) {
-                    BusinessException.throwException(MessageI18nUtil.getMessage("0000016"));
-                }else {
-                    user.setUsername(StringUtils.hasText(user.getEmail())?user.getEmail():tmp.getEmail());
-                    user.setPassword(passwordEncoder.encode(SecureUtil.md5(StringUtils.hasText(user.getEmail())?user.getEmail():tmp.getEmail())));
+            com.lion.core.Optional<User> optionalTmp = findById(user.getId());
+            if (optionalTmp.isPresent()) {
+                User tmp = optionalTmp.get();
+                if (!StringUtils.hasText(tmp.getPassword()) && !StringUtils.hasText(tmp.getUsername())) {
+                    if (!StringUtils.hasText(tmp.getEmail())) {
+                        BusinessException.throwException(MessageI18nUtil.getMessage("0000016"));
+                    } else {
+                        user.setUsername(StringUtils.hasText(user.getEmail()) ? user.getEmail() : tmp.getEmail());
+                        user.setPassword(passwordEncoder.encode(SecureUtil.md5(StringUtils.hasText(user.getEmail()) ? user.getEmail() : tmp.getEmail())));
+                    }
+                } else {
+                    user.setUsername(tmp.getUsername());
+                    user.setPassword(tmp.getPassword());
                 }
-            }else {
-                user.setUsername(tmp.getUsername());
-                user.setPassword(tmp.getPassword());
             }
         }else {
             user.setUsername("");
@@ -390,14 +395,14 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(d->{
-            User user = this.findById(d.getId());
-            if (Objects.nonNull(user) ) {
+            com.lion.core.Optional<User> optional = this.findById(d.getId());
+            if (optional.isPresent() ) {
                 deleteById(d.getId());
                 roleUserService.deleteByUserId(d.getId());
                 departmentUserExposeService.deleteByUserId(d.getId());
                 departmentResponsibleUserExposeService.deleteByUserId(d.getId());
                 redisTemplate.delete(RedisConstants.USER+d.getId());
-                tagUserExposeService.unbinding(user.getId(),false);
+                tagUserExposeService.unbinding(optional.get().getId(),false);
             }
             currentPositionExposeService.delete(d.getId(),null,null);
         });
@@ -417,7 +422,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
                 userVo.setRoleName(role.getName());
             }
             userVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
-            userVo.setUserType(userTypeService.findById(user.getUserTypeId()));
+            com.lion.core.Optional<UserType> optionalUserType = userTypeService.findById(user.getUserTypeId());
+            userVo.setUserType(optionalUserType.isPresent()?optionalUserType.get():null);
             userVo.setIsCreateAccount(StringUtils.hasText(user.getUsername()));
             returnList.add(userVo);
         });

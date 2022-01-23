@@ -49,6 +49,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -166,34 +167,36 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
             ListAssetsFaultVo vo = new ListAssetsFaultVo();
             BeanUtils.copyProperties(assetsFault,vo);
             if (Objects.nonNull(assetsFault.getDeclarantUserId())) {
-                User user = userExposeService.findById(assetsFault.getDeclarantUserId());
-                if (Objects.nonNull(user)){
+                com.lion.core.Optional<User> optionalUser = userExposeService.findById(assetsFault.getDeclarantUserId());
+                if (optionalUser.isPresent()){
+                    User user = optionalUser.get();
                     vo.setDeclarantUserName(user.getName());
                     vo.setDeclarantUserHeadPortrait(user.getHeadPortrait());
                     vo.setDeclarantUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                 }
             }
-            Assets assets = assetsService.findById(assetsFault.getAssetsId());
-            if (Objects.nonNull(assets)){
+            com.lion.core.Optional<Assets> optionalAssets = assetsService.findById(assetsFault.getAssetsId());
+            if (optionalAssets.isPresent()){
+                Assets assets = optionalAssets.get();
                 vo.setDeviceCode(assets.getCode());
                 vo.setImg(assets.getImg());
                 vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
                 vo.setName(assets.getName());
-                Build build = buildService.findById(assets.getBuildId());
-                if (Objects.nonNull(build)) {
-                    vo.setBuildName(build.getName());
+                com.lion.core.Optional<Build> optionalBuild = buildService.findById(assets.getBuildId());
+                if (optionalBuild.isPresent()) {
+                    vo.setBuildName(optionalBuild.get().getName());
                 }
-                BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)){
-                    vo.setBuildFloorName(buildFloor.getName());
+                com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorService.findById(assets.getBuildFloorId());
+                if (optionalBuildFloor.isPresent()){
+                    vo.setBuildFloorName(optionalBuildFloor.get().getName());
                 }
-                Region region = regionService.findById(assets.getRegionId());
-                if (Objects.nonNull(region)){
-                    vo.setRegionName(region.getName());
+                com.lion.core.Optional<Region> optionalRegion = regionService.findById(assets.getRegionId());
+                if (optionalRegion.isPresent()){
+                    vo.setRegionName(optionalRegion.get().getName());
                 }
-                Department department = departmentService.findById(assets.getDepartmentId());
-                if (Objects.nonNull(department)){
-                    vo.setDepartmentName(department.getName());
+                com.lion.core.Optional<Department> optionalDepartment = departmentService.findById(assets.getDepartmentId());
+                if (optionalDepartment.isPresent()){
+                    vo.setDepartmentName(optionalDepartment.get().getName());
                 }
             }
             listAssetsFaultVos.add(vo);
@@ -221,39 +224,42 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
 
     @Override
     public DetailsAssetsFaultVo details(Long id) {
-        AssetsFault assetsFault = this.findById(id);
-        if (Objects.nonNull(assetsFault)) {
+        com.lion.core.Optional<AssetsFault> optionalAssetsFault = this.findById(id);
+        if (optionalAssetsFault.isPresent()) {
+            AssetsFault assetsFault = optionalAssetsFault.get();
             DetailsAssetsFaultVo vo = new DetailsAssetsFaultVo();
             BeanUtils.copyProperties(assetsFault, vo);
             if (Objects.nonNull(assetsFault.getDeclarantUserId())) {
-                User user = userExposeService.findById(assetsFault.getDeclarantUserId());
-                if (Objects.nonNull(user)){
+                com.lion.core.Optional<User> optionalUser = userExposeService.findById(assetsFault.getDeclarantUserId());
+                if (optionalUser.isPresent()){
+                    User user = optionalUser.get();
                     vo.setDeclarantUserName(user.getName());
                     vo.setDeclarantUserHeadPortrait(user.getHeadPortrait());
                     vo.setDeclarantUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                 }
             }
-            Assets assets = assetsService.findById(assetsFault.getAssetsId());
-            if (Objects.nonNull(assets)){
+            com.lion.core.Optional<Assets> optionalAssets = assetsService.findById(assetsFault.getAssetsId());
+            if (optionalAssets.isPresent()){
+                Assets assets = optionalAssets.get();
                 vo.setDeviceCode(assets.getCode());
                 vo.setImg(assets.getImg());
                 vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
                 vo.setName(assets.getName());
-                Build build = buildService.findById(assets.getBuildId());
-                if (Objects.nonNull(build)) {
-                    vo.setBuildName(build.getName());
+                com.lion.core.Optional<Build> optionalBuild = buildService.findById(assets.getBuildId());
+                if (optionalBuild.isPresent()) {
+                    vo.setBuildName(optionalBuild.get().getName());
                 }
-                BuildFloor buildFloor = buildFloorService.findById(assets.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)){
-                    vo.setBuildFloorName(buildFloor.getName());
+                com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorService.findById(assets.getBuildFloorId());
+                if (optionalBuildFloor.isPresent()){
+                    vo.setBuildFloorName(optionalBuildFloor.get().getName());
                 }
-                Region region = regionService.findById(assets.getRegionId());
-                if (Objects.nonNull(region)){
-                    vo.setRegionName(region.getName());
+                com.lion.core.Optional<Region> optionalRegion = regionService.findById(assets.getRegionId());
+                if (optionalRegion.isPresent()){
+                    vo.setRegionName(optionalRegion.get().getName());
                 }
-                Department department = departmentService.findById(assets.getDepartmentId());
-                if (Objects.nonNull(department)){
-                    vo.setDepartmentName(department.getName());
+                com.lion.core.Optional<Department> optionalDepartment = departmentService.findById(assets.getDepartmentId());
+                if (optionalDepartment.isPresent()){
+                    vo.setDepartmentName(optionalDepartment.get().getName());
                 }
             }
             return vo;
@@ -262,16 +268,16 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
     }
 
     private void assertAssetsExist(Long id) {
-        Assets assets = this.assetsService.findById(id);
-        if (Objects.isNull(assets) ){
+        com.lion.core.Optional<Assets> optional = this.assetsService.findById(id);
+        if (optional.isPresent()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000066"));
         }
     }
 
 
     private void assertUserExist(Long id) {
-        User user = this.userExposeService.findById(id);
-        if (Objects.isNull(user) ){
+        com.lion.core.Optional<User> optional = this.userExposeService.findById(id);
+        if (optional.isPresent()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000068"));
         }
     }

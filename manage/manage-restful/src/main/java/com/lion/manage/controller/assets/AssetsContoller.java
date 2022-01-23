@@ -51,6 +51,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -340,10 +341,13 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @GetMapping("/type/details")
     @ApiOperation(value = "资产类型详情")
     public IResultData<DetailsAssetsTypeVo> detailsUserType(@ApiParam(value = "类型id") @NotNull(message = "{0000000}") Long id){
-        AssetsType assetsType = assetsTypeService.findById(id);
-        DetailsAssetsTypeVo vo = new DetailsAssetsTypeVo();
-        BeanUtils.copyProperties(assetsType,vo);
-        return ResultData.instance().setData(vo);
+        com.lion.core.Optional<AssetsType> optional = assetsTypeService.findById(id);
+        if (optional.isPresent()) {
+            DetailsAssetsTypeVo vo = new DetailsAssetsTypeVo();
+            BeanUtils.copyProperties(optional.get(), vo);
+            return ResultData.instance().setData(vo);
+        }
+        return ResultData.instance();
     }
 
 }

@@ -202,25 +202,25 @@ public class PositionServiceImpl implements PositionService {
             Type type = Type.instance(position.getTyp());
             Long img = null;
             if (Objects.equals(type,Type.ASSET)) {
-                Assets assets = assetsExposeService.findById(position.getAdi());
-                if (Objects.nonNull(assets)){
-                    vo.setName(assets.getName());
+                com.lion.core.Optional<Assets> optionalAssets = assetsExposeService.findById(position.getAdi());
+                if (optionalAssets.isPresent()){
+                    vo.setName(optionalAssets.get().getName());
                 }
-                img = assets.getImg();
+                img = optionalAssets.get().getImg();
             }else if (Objects.equals(type,Type.STAFF)) {
-                User user = userExposeService.findById(position.getPi());
-                if (Objects.nonNull(user)) {
-                    vo.setName(user.getName());
+                com.lion.core.Optional<User> optionalUser = userExposeService.findById(position.getPi());
+                if (optionalUser.isPresent()) {
+                    vo.setName(optionalUser.get().getName());
                 }
             }else if (Objects.equals(type,Type.PATIENT)) {
-                Patient patient = patientExposeService.findById(position.getPi());
-                if (Objects.nonNull(patient)) {
-                    vo.setName(patient.getName());
+                com.lion.core.Optional<Patient> optionalPatient = patientExposeService.findById(position.getPi());
+                if (optionalPatient.isPresent()) {
+                    vo.setName(optionalPatient.get().getName());
                 }
             }else if (Objects.equals(type,Type.MIGRANT)) {
-                TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(position.getPi());
-                if (Objects.nonNull(temporaryPerson)) {
-                    vo.setName(temporaryPerson.getName());
+                com.lion.core.Optional<TemporaryPerson> optionalTemporaryPerson = temporaryPersonExposeService.findById(position.getPi());
+                if (optionalTemporaryPerson.isPresent()) {
+                    vo.setName(optionalTemporaryPerson.get().getName());
                 }
             }
 
@@ -335,15 +335,16 @@ public class PositionServiceImpl implements PositionService {
         List<ListPositionVo> returnList = new ArrayList<>();
         items.forEach(position -> {
             ListPositionVo vo = new ListPositionVo();
-            Tag tag = tagExposeService.findById(position.getTi());
+            com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(position.getTi());
             BeanUtils.copyProperties(position,vo);
-            if (Objects.nonNull(tag)){
+            if (optionalTag.isPresent()){
+                Tag tag = optionalTag.get();
                 vo.setDeviceName(tag.getDeviceName());
                 vo.setTagCode(tag.getTagCode());
                 vo.setTagPurpose(tag.getPurpose());
-                Department department = departmentExposeService.findById(tag.getDepartmentId());
-                if (Objects.nonNull(department)) {
-                    vo.setDepartmentName(department.getName());
+                com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(tag.getDepartmentId());
+                if (optionalDepartment.isPresent()) {
+                    vo.setDepartmentName(optionalDepartment.get().getName());
                 }
             }
             returnList.add(vo);

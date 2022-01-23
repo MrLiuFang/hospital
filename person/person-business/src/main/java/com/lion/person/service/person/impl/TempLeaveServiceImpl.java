@@ -40,6 +40,7 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -121,8 +122,9 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
         list.forEach(tempLeave -> {
             ListTempLeaveVo vo = new ListTempLeaveVo();
             BeanUtils.copyProperties(tempLeave,vo);
-            Patient patient =patientService.findById(tempLeave.getPatientId());
-            if (Objects.nonNull(patient)){
+            com.lion.core.Optional<Patient> optional =patientService.findById(tempLeave.getPatientId());
+            if (optional.isPresent()){
+                Patient patient = optional.get();
                 vo.setPatientName(patient.getName());
                 vo.setGender(patient.getGender());
                 if (Objects.nonNull(patient.getBirthday())) {
@@ -135,16 +137,17 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
                 vo.setTagCode(patient.getTagCode());
                 vo.setHeadPortrait(patient.getHeadPortrait());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
+                com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(patient.getDepartmentId());
+                if (optionalDepartment.isPresent()) {
+                    vo.setDepartmentName(optionalDepartment.get().getName());
+                }
             }
-            User user = userExposeService.findById(tempLeave.getUserId());
-            if (Objects.nonNull(user)){
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(tempLeave.getUserId());
+            if (optionalUser.isPresent()){
+                User user = optionalUser.get();
                 vo.setUserName(user.getName());
                 vo.setUserHeadPortrait(user.getHeadPortrait());
                 vo.setUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
-            }
-            Department department = departmentExposeService.findById(patient.getDepartmentId());
-            if (Objects.nonNull(department)) {
-                vo.setDepartmentName(department.getName());
             }
             returnList.add(vo);
         });

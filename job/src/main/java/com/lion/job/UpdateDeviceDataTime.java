@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -95,9 +96,9 @@ public class UpdateDeviceDataTime {
                         redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
 
                     } else {
-                        device = deviceExposeService.findById(id);
-                        if (Objects.nonNull(device)) {
-                            dateTime = device.getLastDataTime();
+                        com.lion.core.Optional<Device> optional = deviceExposeService.findById(id);
+                        if (optional.isPresent()) {
+                            dateTime = optional.get().getLastDataTime();
                         }
                     }
                     if (Objects.nonNull(dateTime) && Objects.nonNull(device)) {

@@ -44,6 +44,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -140,8 +141,9 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(d->{
-            Device device = this.findById(d.getId());
-            if (Objects.nonNull(device) ) {
+            com.lion.core.Optional<Device> optional = this.findById(d.getId());
+            if (optional.isPresent() ) {
+                Device device = optional.get();
                 deleteById(d.getId());
                 deviceGroupDeviceService.deleteByDeviceId(d.getId());
                 redisTemplate.delete(RedisConstants.DEVICE+device.getId());
@@ -194,10 +196,10 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         list.forEach(device -> {
             ListDeviceMonitorVo vo = new ListDeviceMonitorVo();
             vo.setBattery(device.getBattery());
-            Build build = buildExposeService.findById(device.getBuildId());
-            vo.setBuildName(Objects.isNull(build)?"":build.getName());
-            BuildFloor buildFloor = buildFloorExposeService.findById(device.getBuildFloorId());
-            vo.setBuildFloorName(Objects.isNull(buildFloor)?"":buildFloor.getName());
+            com.lion.core.Optional<Build> optional = buildExposeService.findById(device.getBuildId());
+            vo.setBuildName(optional.isEmpty()?"":optional.get().getName());
+            com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorExposeService.findById(device.getBuildFloorId());
+            vo.setBuildFloorName(optionalBuildFloor.isEmpty()?"":optionalBuildFloor.get().getName());
             vo.setClassify(device.getDeviceClassify());
             vo.setCode(device.getCode());
             vo.setName(device.getName());
@@ -227,28 +229,35 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 
     @Override
     public DetailsDeviceVo details(Long id) {
-        Device device = findById(id);
+        com.lion.core.Optional<Device> optional = findById(id);
         DetailsDeviceVo detailsDeviceVo = new DetailsDeviceVo();
+        if (optional.isEmpty()) {
+            return detailsDeviceVo;
+        }
+        Device device = optional.get();
         BeanUtils.copyProperties(device,detailsDeviceVo);
         if (Objects.nonNull(device.getBuildId())){
-            Build build = buildExposeService.findById(device.getBuildId());
-            if (Objects.nonNull(build)){
-                detailsDeviceVo.setBuildName(build.getName());
+            com.lion.core.Optional<Build> optionalBuild = buildExposeService.findById(device.getBuildId());
+            if (optionalBuild.isPresent()){
+                detailsDeviceVo.setBuildName(optionalBuild.get().getName());
             }
         }
         if (Objects.nonNull(device.getBuildFloorId())){
-            BuildFloor buildFloor = buildFloorExposeService.findById(device.getBuildFloorId());
-            if (Objects.nonNull(buildFloor)){
+            com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorExposeService.findById(device.getBuildFloorId());
+            if (optionalBuildFloor.isPresent()){
+                BuildFloor buildFloor = optionalBuildFloor.get();
                 detailsDeviceVo.setBuildFloorName(buildFloor.getName());
                 detailsDeviceVo.setMapUrl(buildFloor.getMapUrl());
             }
         }
         detailsDeviceVo.setImgUrl(fileExposeService.getUrl(device.getImg()));
         if (Objects.nonNull(device.getRegionId())) {
-            Region region = regionExposeService.findById(device.getRegionId());
-            if (Objects.nonNull(region)) {
-                Department department = departmentExposeService.findById(region.getDepartmentId());
-                if (Objects.nonNull(department)) {
+            com.lion.core.Optional<Region> optionalRegion = regionExposeService.findById(device.getRegionId());
+            if (optionalRegion.isPresent()) {
+                Region region = optionalRegion.get();
+                com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(region.getDepartmentId());
+                if (optionalDepartment.isPresent()) {
+                    Department department = optionalDepartment.get();
                     detailsDeviceVo.setDepartmentId(department.getId());
                     detailsDeviceVo.setDepartmentName(department.getName());
                 }

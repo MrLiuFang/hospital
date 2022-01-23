@@ -55,6 +55,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -202,9 +203,12 @@ public class RegionController extends BaseControllerImpl implements BaseControll
     @GetMapping("/type/details")
     @ApiOperation(value = "区域类型详情")
     public IResultData<DetailsRegionTypeVo> detailsUserType(@ApiParam(value = "类型id") @NotNull(message = "{0000000}") Long id){
-        RegionType regionType = regionTypeService.findById(id);
-        DetailsRegionTypeVo vo = new DetailsRegionTypeVo();
-        BeanUtils.copyProperties(regionType,vo);
-        return ResultData.instance().setData(vo);
+        com.lion.core.Optional<RegionType> optional = regionTypeService.findById(id);
+        if (optional.isPresent()) {
+            DetailsRegionTypeVo vo = new DetailsRegionTypeVo();
+            BeanUtils.copyProperties(optional.get(), vo);
+            return ResultData.instance().setData(vo);
+        }
+        return ResultData.instance();
     }
 }

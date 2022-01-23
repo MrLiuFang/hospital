@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -69,23 +70,28 @@ public class RoleController extends BaseControllerImpl implements BaseController
     @GetMapping("/details")
     @ApiOperation(value = "角色详情")
     public IResultData<DetailsRoleVo> details(@NotNull(message = "{0000000}") Long id){
-        Role role = roleService.findById(id);
+        com.lion.core.Optional<Role> optional = roleService.findById(id);
         ResultData resultData = ResultData.instance();
-        DetailsRoleVo detailsRoleVo = new DetailsRoleVo();
-        BeanUtils.copyProperties(role,detailsRoleVo);
-        detailsRoleVo.setUsers(userService.detailsRoleUser(role.getId()));
-        resultData.setData(detailsRoleVo);
+        if (optional.isPresent()) {
+            Role role = optional.get();
+            DetailsRoleVo detailsRoleVo = new DetailsRoleVo();
+            BeanUtils.copyProperties(role,detailsRoleVo);
+            detailsRoleVo.setUsers(userService.detailsRoleUser(role.getId()));
+            resultData.setData(detailsRoleVo);
+        }
         return resultData;
     }
 
     @GetMapping("/editDetails")
     @ApiOperation(value = "编辑角色基础信息获取详情")
     public IResultData<EditDetailsRoleVo> editDetails(@NotNull(message = "{0000000}") Long id){
-        Role role = roleService.findById(id);
+        com.lion.core.Optional<Role> optional = roleService.findById(id);
         ResultData resultData = ResultData.instance();
-        EditDetailsRoleVo editDetailsRoleVo= new EditDetailsRoleVo();
-        BeanUtils.copyProperties(role,editDetailsRoleVo);
-        resultData.setData(editDetailsRoleVo);
+        if (optional.isPresent()) {
+            EditDetailsRoleVo editDetailsRoleVo = new EditDetailsRoleVo();
+            BeanUtils.copyProperties(optional.get(), editDetailsRoleVo);
+            resultData.setData(editDetailsRoleVo);
+        }
         return resultData;
     }
 
@@ -96,10 +102,12 @@ public class RoleController extends BaseControllerImpl implements BaseController
         BeanUtils.copyProperties(updateRoleDto,role);
         roleService.assertNameExist(role.getName(),role.getId());
 //        roleService.assertCodeExist(role.getCode(),role.getId());
-        Role old = roleService.findById(role.getId());
-        if (Objects.equals(old.getIsDefault(),true)) {
-            if (StringUtils.hasText(role.getName()) && !Objects.equals(old.getName(),role.getName())){
-                BusinessException.throwException(MessageI18nUtil.getMessage("0000025"));
+        com.lion.core.Optional<Role> optional = roleService.findById(role.getId());
+        if (optional.isPresent()) {
+            if (Objects.equals(optional.get().getIsDefault(), true)) {
+                if (StringUtils.hasText(role.getName()) && !Objects.equals(optional.get().getName(), role.getName())) {
+                    BusinessException.throwException(MessageI18nUtil.getMessage("0000025"));
+                }
             }
         }
         roleService.update(role);

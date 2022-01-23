@@ -1,9 +1,12 @@
 package com.lion.manage.dao.assets.impl;
 
+import com.alibaba.druid.sql.visitor.functions.If;
 import com.lion.core.LionPage;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.dao.assets.AssetsDaoEx;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.enums.State;
+import org.checkerframework.checker.i18nformatter.qual.I18nFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
@@ -66,5 +69,29 @@ public class AssetsDaoImpl implements AssetsDaoEx {
 
         sb.append(" order by a.createDateTime ");
         return baseDao.findNavigator(lionPage, sb.toString(), searchParameter);
+    }
+
+    @Override
+    public Integer count(Long departmentId, State deviceState, List<Long> assetsIds) {
+        StringBuilder sb = new StringBuilder();
+        Map<String, Object> searchParameter = new HashMap<String, Object>();
+        sb.append(" select count(a.id) from Assets a where 1=1 ");
+        if (Objects.nonNull(departmentId)){
+            sb.append(" and a.departmentId = :departmentId ");
+            searchParameter.put("departmentId",departmentId);
+        }
+        if (Objects.nonNull(deviceState)){
+            sb.append(" and a.deviceState = :deviceState ");
+            searchParameter.put("deviceState",deviceState);
+        }
+        if (Objects.nonNull(assetsIds) && assetsIds.size()>0) {
+            sb.append(" and a.id in :assetsIds ");
+            searchParameter.put("assetsIds",assetsIds);
+        }
+        List<Map> list = (List<Map>) baseDao.findAll(sb.toString(),searchParameter);
+        if (Objects.nonNull(list) && list.size()>0) {
+            return Integer.valueOf(String.valueOf(list.get(0)));
+        }
+        return 0;
     }
 }

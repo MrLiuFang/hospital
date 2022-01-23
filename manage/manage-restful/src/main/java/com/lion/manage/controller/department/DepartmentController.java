@@ -43,6 +43,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -132,8 +133,10 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
         deleteDtoList.forEach(d->{
             List<Region> list = regionService.find(d.getId());
             if (list.size()>0){
-                Department department = this.departmentService.findById(d.getId());
-                BusinessException.throwException(department.getName()+ MessageI18nUtil.getMessage("2000060"));
+                com.lion.core.Optional<Department> optional = this.departmentService.findById(d.getId());
+                if (optional.isPresent()) {
+                    BusinessException.throwException(optional.get().getName() + MessageI18nUtil.getMessage("2000060"));
+                }
             }
         });
         departmentService.delete(deleteDtoList);

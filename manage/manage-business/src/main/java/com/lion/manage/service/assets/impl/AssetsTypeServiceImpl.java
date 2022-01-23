@@ -28,6 +28,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -65,9 +66,9 @@ public class AssetsTypeServiceImpl extends BaseServiceImpl<AssetsType> implement
     @Override
     public void delete(List<DeleteDto> deleteDto) {
         deleteDto.forEach(dto -> {
-            AssetsType assetsType = this.findById(dto.getId());
-            if (Objects.nonNull(assetsType)) {
-                AssertUtil.isTrue(assetsDao.countByAssetsTypeId(dto.getId()) > 0, MessageI18nUtil.getMessage("2000101",new Object[]{assetsType.getAssetsTypeName()}) );
+            com.lion.core.Optional<AssetsType> optional = this.findById(dto.getId());
+            if (optional.isPresent()) {
+                AssertUtil.isTrue(assetsDao.countByAssetsTypeId(dto.getId()) > 0, MessageI18nUtil.getMessage("2000101",new Object[]{optional.get().getAssetsTypeName()}) );
             }
         });
         deleteDto.forEach(dto -> {

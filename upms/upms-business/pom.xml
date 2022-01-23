@@ -10,8 +10,10 @@
 	</parent>
 	<artifactId>upms-business</artifactId>
 	<packaging>jar</packaging>
-
 	<properties>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<java.version>17</java.version>
 		<lion-common-expose>1.0.0-SNAPSHOT</lion-common-expose>
 		<manage-entity.version>1.0.0-SNAPSHOT</manage-entity.version>
 		<manage-expose.version>1.0.0-SNAPSHOT</manage-expose.version>

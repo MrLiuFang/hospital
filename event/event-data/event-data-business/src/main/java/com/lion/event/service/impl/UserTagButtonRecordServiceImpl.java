@@ -32,6 +32,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -89,8 +90,9 @@ public class UserTagButtonRecordServiceImpl implements UserTagButtonRecordServic
         items.forEach(userTagButtonRecord -> {
             ListUserTagButtonRecordVo vo = new ListUserTagButtonRecordVo();
             BeanUtils.copyProperties(userTagButtonRecord,vo);
-            User user = userExposeService.findById(userTagButtonRecord.getPi());
-            if (Objects.nonNull(user)){
+            com.lion.core.Optional<User> optional = userExposeService.findById(userTagButtonRecord.getPi());
+            if (optional.isPresent()){
+                User user = optional.get();
                 vo.setHeadPortrait(user.getHeadPortrait());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
             }

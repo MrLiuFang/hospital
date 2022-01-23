@@ -26,6 +26,7 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.RegionCctv;
+import com.lion.manage.entity.region.RegionType;
 import com.lion.manage.entity.region.RegionWarningBell;
 import com.lion.manage.entity.region.dto.AddRegionDto;
 import com.lion.manage.entity.region.dto.BatchUpdateWashTemplateDto;
@@ -60,6 +61,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -205,8 +207,9 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     public void batchUpdateWashTemplate(BatchUpdateWashTemplateDto batchUpdateWashTemplateDto) {
         if (Objects.nonNull( batchUpdateWashTemplateDto.getRegionIds()) && batchUpdateWashTemplateDto.getRegionIds().size()>0) {
             batchUpdateWashTemplateDto.getRegionIds().forEach(id ->{
-                Region region = findById(id);
-                if (Objects.nonNull(region)) {
+                com.lion.core.Optional<Region> optional = findById(id);
+                if (optional.isPresent()) {
+                    Region region = optional.get();
                     if (Objects.nonNull(batchUpdateWashTemplateDto.getWashTemplateId())) {
                         region.setWashTemplateId(batchUpdateWashTemplateDto.getWashTemplateId());
                         update(region);
@@ -224,10 +227,13 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         if (Objects.isNull(updateRegionCoordinatesDto.getId())){
             BusinessException.throwException(MessageI18nUtil.getMessage("0000000"));
         }
-        Region region = findById(updateRegionCoordinatesDto.getId());
-        region.setCoordinates(updateRegionCoordinatesDto.getCoordinates());
-        update(region);
-        redisTemplate.opsForValue().set(RedisConstants.REGION + region.getId(), region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        com.lion.core.Optional<Region> optional = findById(updateRegionCoordinatesDto.getId());
+        if (optional.isPresent()) {
+            Region region = optional.get();
+            region.setCoordinates(updateRegionCoordinatesDto.getCoordinates());
+            update(region);
+            redisTemplate.opsForValue().set(RedisConstants.REGION + region.getId(), region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        }
     }
 
     @Override
@@ -235,37 +241,40 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
     @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(deleteDto -> {
-            Region region = findById(deleteDto.getId());
+            com.lion.core.Optional<Region> optional = findById(deleteDto.getId());
             deleteById(deleteDto.getId());
             List<RegionCctv> listreRegionCctvs = regionCctvDao.findByRegionId(deleteDto.getId());
             List<Long> oldCctvIds = new ArrayList<>();
             listreRegionCctvs.forEach(regionCctv -> {
                 oldCctvIds.add(regionCctv.getCctvId());
             });
-            if (Objects.nonNull(region)){
-                cctvExposeService.relationPosition(oldCctvIds,new ArrayList<Long>(),region.getBuildId(),region.getBuildFloorId(),deleteDto.getId(), region.getDepartmentId());
-            }
             regionCctvDao.deleteByRegionId(deleteDto.getId());
             wardRoomDao.updateRegionIdIsNull(deleteDto.getId());
             wardRoomSickbedDao.updateRegionIdIsNull(deleteDto.getId());
-            deviceExposeService.relationRegion(region.getId(),new ArrayList<Long>());
+            if (optional.isPresent()){
+                Region region = optional.get();
+                cctvExposeService.relationPosition(oldCctvIds,new ArrayList<Long>(),region.getBuildId(),region.getBuildFloorId(),deleteDto.getId(), region.getDepartmentId());
+                deviceExposeService.relationRegion(region.getId(),new ArrayList<Long>());
 //            regionExposeObjectDao.deleteByRegionId(deleteDto.getId());
-            persistenceRedis(region,  null,getDeviceId(region.getId()), true);
+                persistenceRedis(region,  null,getDeviceId(region.getId()), true);
+            }
         });
     }
 
     @Override
     public DetailsRegionVo details(Long id) {
-        Region region = findById(id);
-        if (Objects.isNull(region)) {
+        com.lion.core.Optional<Region> optional = findById(id);
+        if (optional.isEmpty()) {
             return null;
         }
+        Region region = optional.get();
         DetailsRegionVo detailsRegionVo = new DetailsRegionVo();
         BeanUtils.copyProperties(region,detailsRegionVo);
         detailsRegionVo.setDevices(deviceExposeService.findByRegionId(region.getId()));
         detailsRegionVo.setWardRooms(wardRoomService.findByRegionId(region.getId()));
         detailsRegionVo.setWardRoomSickbeds(wardRoomSickbedService.findByRegionId(region.getId()));
-        detailsRegionVo.setRegionType(regionTypeService.findById(region.getRegionTypeId()));
+        com.lion.core.Optional<RegionType> optionalRegionType  = regionTypeService.findById(region.getRegionTypeId());
+        detailsRegionVo.setRegionType(optionalRegionType.isPresent()?optionalRegionType.get():null);
         List<RegionCctv> list = regionCctvService.find(region.getId());
         List<Long> cctvIds = new ArrayList<>();
         list.forEach(regionCctv -> {
@@ -284,7 +293,8 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         List<RegionWarningBell> regionWarningBells = regionWarningBellService.find(region.getId());
         List<WarningBell> warningBells = new ArrayList<>();
         regionWarningBells.forEach(regionWarningBell -> {
-            warningBells.add(warningBellExposeService.findById(regionWarningBell.getWarningBellId()));
+            com.lion.core.Optional<WarningBell> optional1 = warningBellExposeService.findById(regionWarningBell.getWarningBellId());
+            warningBells.add(optional1.isPresent()?optional1.get():null);
         });
         detailsRegionVo.setWarningBells(warningBells);
         return detailsRegionVo;
@@ -323,22 +333,23 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         list.forEach(region -> {
             ListRegionVo vo = new ListRegionVo();
             BeanUtils.copyProperties(region,vo);
-            Build build = buildService.findById(region.getBuildId());
-            if (Objects.nonNull(build)){
-                vo.setBuildName(build.getName());
+            com.lion.core.Optional<Build> optionalBuild = buildService.findById(region.getBuildId());
+            if (optionalBuild.isPresent()){
+                vo.setBuildName(optionalBuild.get().getName());
             }
-            BuildFloor buildFloor = buildFloorService.findById(region.getBuildFloorId());
-            if (Objects.nonNull(buildFloor)){
-                vo.setBuildFloorName(buildFloor.getName());
+            com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorService.findById(region.getBuildFloorId());
+            if (optionalBuildFloor.isPresent()){
+                vo.setBuildFloorName(optionalBuildFloor.get().getName());
             }
-            Department department = departmentService.findById(region.getDepartmentId());
-            if (Objects.nonNull(department)){
-                vo.setDepartmentName(department.getName());
+            com.lion.core.Optional<Department> optionalDepartment = departmentService.findById(region.getDepartmentId());
+            if (optionalDepartment.isPresent()){
+                vo.setDepartmentName(optionalDepartment.get().getName());
             }
             if (Objects.nonNull(region.getWashTemplateId())) {
                 vo.setWashTemplateVo(washTemplateService.details(region.getWashTemplateId()));
             }
-            vo.setRegionType(regionTypeService.findById(region.getRegionTypeId()));
+            com.lion.core.Optional<RegionType> optionalRegionType = regionTypeService.findById(region.getRegionTypeId());
+            vo.setRegionType(optionalRegionType.isPresent()?optionalRegionType.get():null);
             vo.setDevices(deviceExposeService.findByRegionIdAndDeviceClassify(region.getId(), DeviceClassify.HAND_WASHING));
             returnList.add(vo);
         });
@@ -372,26 +383,28 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
 //    }
 
     private void assertBuildExist(Long buildId) {
-        Build build = buildService.findById(buildId);
-        if (Objects.isNull(build)){
+        com.lion.core.Optional<Build> optional = buildService.findById(buildId);
+        if (optional.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000070"));
         }
     }
 
     private void assertDepartmentExist(Long departmentId) {
-        Department department = departmentService.findById(departmentId);
-        if (Objects.isNull(department)){
+        com.lion.core.Optional<Department> optional = departmentService.findById(departmentId);
+        if (optional.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000069"));
         }
     }
 
     private void assertBuildFloorExist(Long buildId,Long buildFloorId) {
-        BuildFloor buildFloor = buildFloorService.findById(buildFloorId);
-        if (Objects.isNull(buildFloor)){
+        com.lion.core.Optional<BuildFloor> optional = buildFloorService.findById(buildFloorId);
+        if (optional.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000071"));
         }
-        if (!Objects.equals(buildFloor.getBuildId(),buildId)) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("2000082"));
+        if (optional.isPresent()) {
+            if (!Objects.equals(optional.get().getBuildId(), buildId)) {
+                BusinessException.throwException(MessageI18nUtil.getMessage("2000082"));
+            }
         }
     }
 

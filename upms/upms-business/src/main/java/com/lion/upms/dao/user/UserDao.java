@@ -44,7 +44,8 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
 
     /**
      *
-     * @param nameList
+     * @param name
+     * @param ids
      * @return
      */
     public List<User> findByNameLikeAndIdIn(String name,List<Long> ids);
@@ -63,8 +64,8 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
      */
     public User findFirstByNumber(Integer number);
 
-    @Override
-    Optional<User> findById(Serializable serializable);
+//    @Override
+//    Optional<User> findById(Serializable serializable);
 
     /**
      * 查询角色关联的用户

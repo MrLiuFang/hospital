@@ -46,17 +46,7 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
 
     @Override
     public Integer countByDepartmentId(Long departmentId, State deviceState, List<Long> assetsIds) {
-        if (Objects.isNull(deviceState) && (Objects.isNull(assetsIds) || assetsIds.size()<=0)) {
-            return assetsDao.countByDepartmentId(departmentId);
-        }else if (Objects.isNull(deviceState) && (Objects.nonNull(assetsIds) || assetsIds.size()>0)) {
-            return assetsDao.countByDepartmentIdAndIdIn(departmentId,assetsIds);
-        }
-
-        if (Objects.nonNull(deviceState) && (Objects.isNull(assetsIds) || assetsIds.size()<=0)) {
-            return assetsDao.countByDepartmentIdAndDeviceState(departmentId, deviceState);
-        }else {
-            return assetsDao.countByDepartmentIdAndDeviceStateAndIdIn(departmentId, deviceState,assetsIds);
-        }
+        return assetsDao.count(departmentId, deviceState,assetsIds);
     }
 
     @Override

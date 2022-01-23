@@ -22,6 +22,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -94,8 +95,9 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
         if (Objects.nonNull(tagAssets)){
             tagAssets.setUnbindingTime(LocalDateTime.now());
             tagAssetsService.update(tagAssets);
-            Tag tag = tagService.findById(tagAssets.getTagId());
-            if (Objects.nonNull(tag)){
+            com.lion.core.Optional<Tag> optional = tagService.findById(tagAssets.getTagId());
+            if (optional.isPresent()){
+                Tag tag = optional.get();
                 tag.setUseState(TagUseState.NOT_USED);
                 tagService.update(tag);
                 tagLogService.add( TagLogContent.unbinding,tagAssets.getTagId());

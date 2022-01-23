@@ -45,6 +45,7 @@ import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -135,8 +136,10 @@ public class UserController extends BaseControllerImpl implements BaseController
     @ApiOperation(value = "重置密码(用户编辑页面)")
     @PutMapping("/resetPassword")
     public IResultData resetPassword(@RequestBody @Validated ResetPasswordUserDto resetPasswordUserDto){
-        User user = userService.findById(resetPasswordUserDto.getId());
-        if (Objects.nonNull(user)){
+        com.lion.core.Optional<User> optional = userService.findById(resetPasswordUserDto.getId());
+        User user = null;
+        if (optional.isPresent()){
+            user = optional.get();
             if (!StringUtils.hasText(user.getUsername())){
                 BusinessException.throwException(MessageI18nUtil.getMessage("0000014"));
             }
@@ -151,17 +154,20 @@ public class UserController extends BaseControllerImpl implements BaseController
     @PutMapping("/updateCurrentUser")
     public IResultData updateCurrentUser(@RequestBody UpdateCurrentUserDto updateCurrentUserDto){
         Long userId = CurrentUserUtil.getCurrentUserId();
-        User user = userService.findById(userId);
-        user.setName(updateCurrentUserDto.getName());
-        user.setHeadPortrait(updateCurrentUserDto.getHeadPortrait());
-        if (StringUtils.hasText(updateCurrentUserDto.getNewPassword())){
-            if (passwordEncoder.matches(updateCurrentUserDto.getOldPassword(),user.getPassword())) {
-                user.setPassword(passwordEncoder.encode(updateCurrentUserDto.getNewPassword()));
-            }else {
-                BusinessException.throwException(MessageI18nUtil.getMessage("0000015"));
+        com.lion.core.Optional<User> optional = userService.findById(userId);
+        if (optional.isPresent()) {
+            User user = optional.get();
+            user.setName(updateCurrentUserDto.getName());
+            user.setHeadPortrait(updateCurrentUserDto.getHeadPortrait());
+            if (StringUtils.hasText(updateCurrentUserDto.getNewPassword())) {
+                if (passwordEncoder.matches(updateCurrentUserDto.getOldPassword(), user.getPassword())) {
+                    user.setPassword(passwordEncoder.encode(updateCurrentUserDto.getNewPassword()));
+                } else {
+                    BusinessException.throwException(MessageI18nUtil.getMessage("0000015"));
+                }
             }
+            userService.update(user);
         }
-        userService.update(user);
         ResultData resultData = ResultData.instance();
         return resultData;
     }
@@ -171,8 +177,9 @@ public class UserController extends BaseControllerImpl implements BaseController
     public IResultData<CurrentUserDetailsVo> currentUserDetails(){
         ResultData resultData = ResultData.instance();
         Long userId = CurrentUserUtil.getCurrentUserId();
-        User user = userService.findById(userId);
-        if (Objects.nonNull(user)){
+        com.lion.core.Optional<User> optional = userService.findById(userId);
+        if (optional.isPresent()){
+            User user = optional.get();
             CurrentUserDetailsVo currentUserDetailsVo = new CurrentUserDetailsVo();
             BeanUtils.copyProperties(user,currentUserDetailsVo);
             Role role = roleService.findByUserId(user.getId());
@@ -222,10 +229,14 @@ public class UserController extends BaseControllerImpl implements BaseController
     @GetMapping("/type/details")
     @ApiOperation(value = "用户类型详情")
     public IResultData<DetailsUserTypeVo> detailsUserType(@ApiParam(value = "类型id") @NotNull(message = "{0000000}") Long id){
-        UserType userType = userTypeService.findById(id);
+        com.lion.core.Optional<UserType> optional = userTypeService.findById(id);
         DetailsUserTypeVo vo = new DetailsUserTypeVo();
-        BeanUtils.copyProperties(userType,vo);
-        return ResultData.instance().setData(vo);
+        if (optional.isPresent()) {
+            UserType userType = optional.get();
+            BeanUtils.copyProperties(userType, vo);
+            return ResultData.instance().setData(vo);
+        }
+        return ResultData.instance();
     }
 
     @GetMapping("/export")

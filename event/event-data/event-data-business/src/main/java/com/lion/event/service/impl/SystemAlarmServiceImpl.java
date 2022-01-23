@@ -129,8 +129,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     public void unalarm(String id) throws JsonProcessingException {
         Long userId = CurrentUserUtil.getCurrentUserId();
         if (Objects.nonNull(userId)) {
-            User user = userExposeService.findById(userId);
-            if (Objects.nonNull(user)) {
+            com.lion.core.Optional<User> optional = userExposeService.findById(userId);
+            if (optional.isPresent()) {
+                User user = optional.get();
                 Query query = new Query();
                 Criteria criteria = new Criteria();
 //                if (Objects.nonNull(uuid)) {
@@ -156,9 +157,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     public void alarmReport(AlarmReportDto alarmReportDto) {
         Long userId = CurrentUserUtil.getCurrentUserId();
         if (Objects.nonNull(userId)) {
-            User user = userExposeService.findById(userId);
-            if (Objects.nonNull(user)){
-                alarmDao.alarmReport(alarmReportDto, userId,user.getName() );
+            com.lion.core.Optional<User> optional = userExposeService.findById(userId);
+            if (optional.isPresent()){
+                alarmDao.alarmReport(alarmReportDto, userId,optional.get().getName() );
             }
         }
 
@@ -296,8 +297,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 vo.setAlarmContent(systemAlarmType.getDesc());
             }
             if (Objects.equals(systemAlarm.getTy(),Type.STAFF.getKey())) {
-                User user = userExposeService.findById(systemAlarm.getPi());
-                if (Objects.nonNull(user)){
+                com.lion.core.Optional<User> optionalUser = userExposeService.findById(systemAlarm.getPi());
+                if (optionalUser.isPresent()){
+                    User user = optionalUser.get();
                     vo.setUserName(user.getName());
                     vo.setUserNumber(user.getNumber());
                     vo.setTitle(user.getName());
@@ -306,8 +308,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 }
             }
             if (Objects.equals(systemAlarm.getTy(),Type.PATIENT.getKey())) {
-                Patient patient = patientExposeService.findById(systemAlarm.getPi());
-                if (Objects.nonNull(patient)) {
+                com.lion.core.Optional<Patient> optionalPatient = patientExposeService.findById(systemAlarm.getPi());
+                if (optionalPatient.isPresent()) {
+                    Patient patient = optionalPatient.get();
                     vo.setPatientName(patient.getName());
                     vo.setTitle(patient.getName());
                     vo.setImg(patient.getHeadPortrait());
@@ -322,8 +325,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 //                vo.setRestrictedArea(restrictedAreaStringList);
             }
             if (Objects.equals(systemAlarm.getTy(),Type.MIGRANT.getKey())) {
-                TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());
-                if (Objects.nonNull(temporaryPerson)) {
+                com.lion.core.Optional<TemporaryPerson> optionalTemporaryPerson = temporaryPersonExposeService.findById(systemAlarm.getPi());
+                if (optionalTemporaryPerson.isPresent()) {
+                    TemporaryPerson temporaryPerson = optionalTemporaryPerson.get();
                     vo.setTemporaryPersonName(temporaryPerson.getName());
                     vo.setTitle(temporaryPerson.getName());
                     vo.setImg(temporaryPerson.getHeadPortrait());
@@ -331,8 +335,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 }
             }
             if (Objects.nonNull(systemAlarm.getTi())) {
-                Tag tag = tagExposeService.findById(systemAlarm.getTi());
-                if (Objects.nonNull(tag)) {
+                com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(systemAlarm.getTi());
+                if (optionalTag.isPresent()) {
+                    Tag tag = optionalTag.get();
                     vo.setTagCode(tag.getTagCode());
                     vo.setTitle(tag.getDeviceName());
                     vo.setTagType(tag.getType());
@@ -341,8 +346,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 }
             }
             if (Objects.equals(systemAlarm.getTy(),Type.ASSET.getKey())) {
-                Assets assets = assetsExposeService.findById(systemAlarm.getAi());
-                if (Objects.nonNull(assets)) {
+                com.lion.core.Optional<Assets> optionalAssets = assetsExposeService.findById(systemAlarm.getAi());
+                if (optionalAssets.isPresent()) {
+                    Assets assets = optionalAssets.get();
                     vo.setAssetsCode(assets.getCode());
                     vo.setAssetsName(assets.getName());
                     vo.setTitle(assets.getName());
@@ -351,8 +357,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 }
             }
             if (Objects.equals(systemAlarm.getTy(),Type.DEVICE.getKey())) {
-                Device device = deviceExposeService.findById(systemAlarm.getDvi());
-                if (Objects.nonNull(device)) {
+                com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(systemAlarm.getDvi());
+                if (optionalDevice.isPresent()) {
+                    Device device = optionalDevice.get();
                     vo.setBattery(device.getBattery());
                     vo.setDeviceName(device.getName());
                     vo.setDeviceCode(device.getCode());
@@ -361,14 +368,15 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                 }
             }
             if (Objects.nonNull(systemAlarm.getAli())) {
-                Alarm alarm = alarmExposeService.findById(systemAlarm.getAli());
-                if (Objects.nonNull(alarm)){
-                    vo.setBlueCode(alarm.getBlueCode());
+                com.lion.core.Optional<Alarm> optionalAlarm = alarmExposeService.findById(systemAlarm.getAli());
+                if (optionalAlarm.isPresent()){
+                    vo.setBlueCode(optionalAlarm.get().getBlueCode());
                 }
             }
             if (Objects.nonNull(systemAlarm.getUui())) {
-                User user = userExposeService.findById(systemAlarm.getUui());
-                if (Objects.nonNull(user)) {
+                com.lion.core.Optional<User> optionalUser = userExposeService.findById(systemAlarm.getUui());
+                if (optionalUser.isPresent()) {
+                    User user = optionalUser.get();
                     vo.setUuHeadPortrait(user.getHeadPortrait());
                     vo.setUuHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                 }

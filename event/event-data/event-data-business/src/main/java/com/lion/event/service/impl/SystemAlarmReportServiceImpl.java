@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -49,8 +50,9 @@ public class SystemAlarmReportServiceImpl implements SystemAlarmReportService {
 
     @Override
     public void alarmReport(AlarmReportDto alarmReportDto) {
-        User user = userExposeService.findById(alarmReportDto.getUserId());
-        if (Objects.nonNull(user)){
+        com.lion.core.Optional<User> optional = userExposeService.findById(alarmReportDto.getUserId());
+        if (optional.isPresent()){
+            User user = optional.get();
             SystemAlarmReport systemAlarmReport = new SystemAlarmReport();
             systemAlarmReport.setSli(alarmReportDto.getId());
             systemAlarmReport.setRdt(LocalDateTime.now());
@@ -75,8 +77,9 @@ public class SystemAlarmReportServiceImpl implements SystemAlarmReportService {
         items.forEach(systemAlarmReport -> {
             SystemAlarmReportDetailsVo vo = new SystemAlarmReportDetailsVo();
             BeanUtils.copyProperties(systemAlarmReport,vo);
-            User user = userExposeService.findById(systemAlarmReport.getRui());
-            if (Objects.nonNull(user)){
+            com.lion.core.Optional<User> optional = userExposeService.findById(systemAlarmReport.getRui());
+            if (optional.isPresent()){
+                User user = optional.get();
                 vo.setHeadPortrait(user.getHeadPortrait());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
             }

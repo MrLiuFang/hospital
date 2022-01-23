@@ -37,6 +37,7 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -94,8 +95,9 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
     @ApiOperation(value = "建筑详情")
     public IResultData<DetailsBuildVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
-        Build build = this.buildService.findById(id);
-        if (Objects.nonNull(build)){
+        com.lion.core.Optional<Build> optional = this.buildService.findById(id);
+        if (optional.isPresent()){
+            Build build = optional.get();
             DetailsBuildVo detailsBuildVo = new DetailsBuildVo();
             BeanUtils.copyProperties(build,detailsBuildVo);
             detailsBuildVo.setBuildFloors(this.buildFloorService.find(build.getId()));
@@ -152,9 +154,9 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
         list.forEach(buildFloor -> {
             ListBuildFloorVo buildFloorVo = new ListBuildFloorVo();
             BeanUtils.copyProperties(buildFloor,buildFloorVo);
-            Build build = buildService.findById(buildFloor.getBuildId());
-            if (Objects.nonNull(build)) {
-                buildFloorVo.setBuild(build);
+            com.lion.core.Optional<Build> optional = buildService.findById(buildFloor.getBuildId());
+            if (optional.isPresent()) {
+                buildFloorVo.setBuild(optional.get());
             }
             buildFloorVo.setRegions(regionService.findByBuildFloorId(buildFloor.getId()));
             listBuildFloorVos.add(buildFloorVo);
@@ -166,8 +168,8 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
     @ApiOperation(value = "建筑楼层详情")
     public IResultData<DetailsBuildVo> floorDetails(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
-        BuildFloor buildFloor = this.buildFloorService.findById(id);
-        resultData.setData(buildFloor);
+        com.lion.core.Optional<BuildFloor> optional = this.buildFloorService.findById(id);
+        resultData.setData(optional.isPresent()?optional.get():null);
         return resultData;
     }
 
@@ -190,8 +192,8 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
     }
 
     private void assertBuildExist(Long buildId){
-        Build build = this.buildService.findById(buildId);
-        if (Objects.isNull(build)){
+        com.lion.core.Optional<Build> optional = this.buildService.findById(buildId);
+        if (optional.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000059"));
         }
     }

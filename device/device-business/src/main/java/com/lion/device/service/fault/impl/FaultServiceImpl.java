@@ -43,6 +43,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -96,8 +97,9 @@ public class FaultServiceImpl extends BaseServiceImpl<Fault> implements FaultSer
 
     @Override
     public FaultDetailsVo details(Long id) {
-        Fault fault = this.findById(id);
-        if (Objects.nonNull(fault)) {
+        com.lion.core.Optional<Fault> optional = this.findById(id);
+        if (optional.isPresent()) {
+            Fault fault = optional.get();
             FaultDetailsVo vo = new FaultDetailsVo();
             BeanUtils.copyProperties(fault,vo);
             vo = setInfoVo(vo);
@@ -135,21 +137,21 @@ public class FaultServiceImpl extends BaseServiceImpl<Fault> implements FaultSer
     }
 
     public FaultDetailsVo setInfoVo(FaultDetailsVo vo) {
-        Region region = regionExposeService.findById(vo.getRegionId());
-        if (Objects.nonNull(region)) {
-            vo.setRegionName(region.getName());
+        com.lion.core.Optional<Region> optionalRegion = regionExposeService.findById(vo.getRegionId());
+        if (optionalRegion.isPresent()) {
+            vo.setRegionName(optionalRegion.get().getName());
         }
-        Build build = buildExposeService.findById(vo.getBuildId());
-        if (Objects.nonNull(build)){
-            vo.setBuildName(build.getName());
+        com.lion.core.Optional<Build> optionalBuild = buildExposeService.findById(vo.getBuildId());
+        if (optionalBuild.isPresent()){
+            vo.setBuildName(optionalBuild.get().getName());
         }
-        BuildFloor buildFloor = buildFloorExposeService.findById(vo.getBuildFloorId());
-        if (Objects.nonNull(buildFloor)){
-            vo.setBuildFloorName(buildFloor.getName());
+        com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorExposeService.findById(vo.getBuildFloorId());
+        if (optionalBuildFloor.isPresent()){
+            vo.setBuildFloorName(optionalBuildFloor.get().getName());
         }
-        Department department = departmentExposeService.findById(vo.getDepartmentId());
-        if (Objects.nonNull(department)) {
-            vo.setDepartmentName(department.getName());
+        com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(vo.getDepartmentId());
+        if (optionalDepartment.isPresent()) {
+            vo.setDepartmentName(optionalDepartment.get().getName());
         }
         return vo;
     }
@@ -173,24 +175,24 @@ public class FaultServiceImpl extends BaseServiceImpl<Fault> implements FaultSer
                 BusinessException.throwException(MessageI18nUtil.getMessage("4000041"));
             }
         }
-        Region region = regionExposeService.findById(regionId);
-        entity.setRegionId(region.getId());
-        if (Objects.nonNull(region)) {
-            if (Objects.nonNull(regionId)) {
-                Build build = buildExposeService.findById(region.getBuildId());
-                if (Objects.nonNull(build)){
-                    entity.setBuildId(build.getId());
-                }
-                BuildFloor buildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
-                if (Objects.nonNull(buildFloor)){
-                    entity.setBuildFloorId(buildFloor.getId());
-                }
-                Department department = departmentExposeService.findById(region.getDepartmentId());
-                if (Objects.nonNull(department)) {
-                    entity.setDepartmentId(department.getId());
-                }
+        com.lion.core.Optional<Region> optional = regionExposeService.findById(regionId);
+        if (optional.isPresent()){
+            Region region = optional.get();
+            entity.setRegionId(region.getId());
+            com.lion.core.Optional<Build> optionalBuild = buildExposeService.findById(region.getBuildId());
+            if (optionalBuild.isPresent()){
+                entity.setBuildId(optionalBuild.get().getId());
+            }
+            com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
+            if (optionalBuildFloor.isPresent()){
+                entity.setBuildFloorId(optionalBuildFloor.get().getId());
+            }
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(region.getDepartmentId());
+            if (optionalDepartment.isPresent()) {
+                entity.setDepartmentId(optionalDepartment.get().getId());
             }
         }
+
         return entity;
     }
 

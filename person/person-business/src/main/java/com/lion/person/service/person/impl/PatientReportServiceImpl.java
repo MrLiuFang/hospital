@@ -32,6 +32,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -61,11 +62,11 @@ public class PatientReportServiceImpl extends BaseServiceImpl<PatientReport> imp
     public void add(AddPatientReportDto addPatientReportDto) {
         PatientReport patientReport = new PatientReport();
         BeanUtils.copyProperties(addPatientReportDto,patientReport);
-        User user = userExposeService.findById(addPatientReportDto.getUserId());
-        if (Objects.isNull(user)) {
+        com.lion.core.Optional<User> optional = userExposeService.findById(addPatientReportDto.getUserId());
+        if (optional.isEmpty()) {
             BusinessException.throwException(MessageI18nUtil.getMessage("1000033"));
         }
-        patientReport.setReportUserId(user.getId());
+        patientReport.setReportUserId(optional.get().getId());
         patientReport = save(patientReport);
         patientLogService.add("",LogType.ADD_REPORT,CurrentUserUtil.getCurrentUserId() , patientReport.getPatientId());
     }
@@ -84,8 +85,9 @@ public class PatientReportServiceImpl extends BaseServiceImpl<PatientReport> imp
         list.forEach(patientReport -> {
             ListPatientReportVo vo = new ListPatientReportVo();
             BeanUtils.copyProperties(patientReport,vo);
-            User user = userExposeService.findById(vo.getReportUserId());
-            if (Objects.nonNull(user)) {
+            com.lion.core.Optional<User> optional = userExposeService.findById(vo.getReportUserId());
+            if (optional.isPresent()) {
+                User user = optional.get();
                 vo.setReportUserName(user.getName());
                 vo.setReportUserHeadPortrait(user.getHeadPortrait());
                 vo.setReportUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
@@ -100,16 +102,20 @@ public class PatientReportServiceImpl extends BaseServiceImpl<PatientReport> imp
     public void delete(List<DeleteDto> deleteDtoList) {
         Long userId = CurrentUserUtil.getCurrentUserId();
         deleteDtoList.forEach(deleteDto -> {
-            PatientReport patientReport = findById(deleteDto.getId());
-            if (!Objects.equals(userId,patientReport.getReportUserId())){
-                BusinessException.throwException(MessageI18nUtil.getMessage("1000034"));
+            com.lion.core.Optional<PatientReport> optional = findById(deleteDto.getId());
+            if (optional.isPresent()) {
+                if (!Objects.equals(userId,optional.get().getReportUserId())){
+                    BusinessException.throwException(MessageI18nUtil.getMessage("1000034"));
+                }
             }
         });
 
         deleteDtoList.forEach(deleteDto -> {
-            PatientReport patientReport = findById(deleteDto.getId());
-            deleteById(deleteDto.getId());
-            patientLogService.add("", LogType.DELETE_REPORT, userId, patientReport.getPatientId());
+            com.lion.core.Optional<PatientReport> optional = findById(deleteDto.getId());
+            if (optional.isPresent()) {
+                deleteById(deleteDto.getId());
+                patientLogService.add("", LogType.DELETE_REPORT, userId, optional.get().getPatientId());
+            }
         });
     }
 }

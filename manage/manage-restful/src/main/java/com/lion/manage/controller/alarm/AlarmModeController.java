@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -62,13 +63,15 @@ public class AlarmModeController extends BaseControllerImpl implements BaseContr
     public IResultData<AlarmMode> setAlarmMode(@RequestBody SetAlarmModeDto alarmMode) {
         if (Objects.nonNull(alarmMode.getAlarmMode())) {
             Long userId = CurrentUserUtil.getCurrentUserId();
-            User user = userExposeService.findById(userId);
-            AssertUtil.isFlase(passwordEncoder.matches(alarmMode.getPassword(),user.getPassword()), MessageI18nUtil.getMessage("3000035"));
-            redisTemplate.opsForValue().set(RedisConstants.ALARM_MODE,alarmMode.getAlarmMode());
-            AlarmModeRecord alarmModeRecord = new AlarmModeRecord();
-            alarmModeRecord.setAlarmMode(alarmMode.getAlarmMode());
-            alarmModeRecord.setUserId(userId);
-            alarmModeRecordService.save(alarmModeRecord);
+            com.lion.core.Optional<User> optional = userExposeService.findById(userId);
+            if (optional.isPresent()) {
+                AssertUtil.isFlase(passwordEncoder.matches(alarmMode.getPassword(), optional.get().getPassword()), MessageI18nUtil.getMessage("3000035"));
+                redisTemplate.opsForValue().set(RedisConstants.ALARM_MODE, alarmMode.getAlarmMode());
+                AlarmModeRecord alarmModeRecord = new AlarmModeRecord();
+                alarmModeRecord.setAlarmMode(alarmMode.getAlarmMode());
+                alarmModeRecord.setUserId(userId);
+                alarmModeRecordService.save(alarmModeRecord);
+            }
 
         }
         return alarmMode();

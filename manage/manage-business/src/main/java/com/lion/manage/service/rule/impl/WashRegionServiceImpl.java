@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -36,9 +37,9 @@ public class WashRegionServiceImpl extends BaseServiceImpl<WashRegion> implement
         regionId.forEach(id->{
             WashRegion washRegion = washRegionDao.findFirstByRegionId(id);
             if (Objects.nonNull(washRegion)){
-                Region region = regionService.findById(washRegion.getRegionId());
-                if (Objects.nonNull(region)){
-                    BusinessException.throwException(region.getName()+ MessageI18nUtil.getMessage("2000086"));
+                com.lion.core.Optional<Region> optional = regionService.findById(washRegion.getRegionId());
+                if (optional.isPresent()){
+                    BusinessException.throwException(optional.get().getName()+ MessageI18nUtil.getMessage("2000086"));
                 }
             }
             WashRegion newWashRegion = new WashRegion();

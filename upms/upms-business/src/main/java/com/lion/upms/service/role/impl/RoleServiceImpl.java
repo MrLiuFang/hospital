@@ -25,6 +25,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -84,11 +85,15 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
     @Transactional
     public void delete(List<DeleteDto> deleteDtoList) {
         deleteDtoList.forEach(d->{
-            Role role = this.findById(d.getId());
-            if (Objects.nonNull(role) && !role.getIsDefault()) {
-                deleteById(d.getId());
-                roleUserService.deleteByRoleId(d.getId());
+            com.lion.core.Optional<Role> optional = this.findById(d.getId());
+            if (optional.isPresent()){
+                Role role = optional.get();
+                if (!role.getIsDefault()) {
+                    deleteById(d.getId());
+                    roleUserService.deleteByRoleId(d.getId());
+                }
             }
+
         });
     }
 

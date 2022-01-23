@@ -96,8 +96,9 @@ public class HumitureRecordServiceImpl implements HumitureRecordService {
         items.forEach(humitureRecord -> {
             ListHumitureRecordVo vo = new ListHumitureRecordVo();
             BeanUtils.copyProperties(humitureRecord,vo);
-            Tag tag = tagExposeService.findById(humitureRecord.getTi());
-            if (Objects.nonNull(tag)){
+            com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(humitureRecord.getTi());
+            if (optionalTag.isPresent()){
+                Tag tag = optionalTag.get();
                 vo.setTagCode(tag.getTagCode());
                 vo.setDeviceName(tag.getDeviceName());
                 vo.setDeviceCode(tag.getDeviceCode());

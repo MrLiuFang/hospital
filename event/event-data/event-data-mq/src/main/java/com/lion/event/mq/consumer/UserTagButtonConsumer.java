@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -73,9 +74,9 @@ public class UserTagButtonConsumer implements RocketMQListener<MessageExt> {
                     userTagButtonRecord.setDn(department.getName());
                 }
             }
-            User user = userExposeService.findById(userTagButtonRecord.getPi());
-            if (Objects.nonNull(user)) {
-                userTagButtonRecord.setN(user.getName());
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(userTagButtonRecord.getPi());
+            if (optionalUser.isPresent()) {
+                userTagButtonRecord.setN(optionalUser.get().getName());
             }
             userTagButtonRecordService.add(userTagButtonRecord);
         }catch (Exception e){

@@ -175,12 +175,14 @@ public class WashEventServiceImpl implements WashEventService {
     @Override
     public UserWashDetailsVo userWashDetails(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         UserWashDetailsVo vo = new UserWashDetailsVo();
-        User user = userExposeService.findById(userId);
-        if (Objects.nonNull(user)){
+        com.lion.core.Optional<User> optionalUser = userExposeService.findById(userId);
+        if (optionalUser.isPresent()){
+            User user = optionalUser.get();
             BeanUtils.copyProperties(user,vo);
             vo.setHeadPortrait(user.getHeadPortrait());
             vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
-            vo.setUserType(userTypeExposeService.findById(user.getUserTypeId()));
+            com.lion.core.Optional<UserType> userType = userTypeExposeService.findById(user.getUserTypeId());
+            vo.setUserType(userType.isPresent()?userType.get():null);
             Department department = departmentUserExposeService.findDepartment(userId);
             if (Objects.nonNull(department)){
                 vo.setDepartmentName(department.getName());
@@ -275,13 +277,13 @@ public class WashEventServiceImpl implements WashEventService {
             }else {
                 vo.setState(WashState.NORMAL);
             }
-            User user = userExposeService.findById(washEvent.getPi());
-            if (Objects.nonNull(user)) {
-                vo.setName(user.getName());
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(washEvent.getPi());
+            if (optionalUser.isPresent()) {
+                vo.setName(optionalUser.get().getName());
             }
-            Device device = deviceExposeService.findById(washEvent.getDvi());
-            if (Objects.nonNull(device)) {
-                vo.setDvt(device.getDeviceType());
+            com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
+            if (optionalDevice.isPresent()) {
+                vo.setDvt(optionalDevice.get().getDeviceType());
             }
             returnList.add(vo);
         });
@@ -342,10 +344,13 @@ public class WashEventServiceImpl implements WashEventService {
         for (ListUserWashMonitorVo vo : list) {
             table.addCell(new Paragraph(vo.getUserName(), fontChinese));
             table.addCell(new Paragraph(vo.getDepartmentName(), fontChinese));
-            User user = userExposeService.findById(vo.getUserId());
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(vo.getUserId());
+            User user = null;
             UserType userType = null;
-            if (Objects.nonNull(user)) {
-                userType = userTypeExposeService.findById(user.getUserTypeId());
+            if (optionalUser.isPresent()) {
+                user = optionalUser.get();
+                com.lion.core.Optional<UserType> optionalUserType = userTypeExposeService.findById(optionalUser.get().getUserTypeId());
+                userType = optionalUserType.isPresent()?optionalUserType.get():null;
             }
             table.addCell(new Paragraph((Objects.nonNull(user)&&Objects.nonNull(userType))?userType.getUserTypeName():"", fontChinese));
             table.addCell(new Paragraph(Objects.nonNull(vo.getStartWorkTime())?dateTimeFormatter.format(vo.getStartWorkTime()):"", fontChinese));
@@ -404,9 +409,11 @@ public class WashEventServiceImpl implements WashEventService {
         List<ListWashEventVo> returnList = new ArrayList<>();
         items.forEach(washEvent -> {
             ListWashEventVo vo = new ListWashEventVo();
-            User user = userExposeService.findById(washEvent.getPi());
-            if (Objects.nonNull(user)){
-                vo.setUserType(userTypeExposeService.findById(user.getUserTypeId()));
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(washEvent.getPi());
+            if (optionalUser.isPresent()){
+                User user = optionalUser.get();
+                com.lion.core.Optional<UserType> optionalUserType =  userTypeExposeService.findById(user.getUserTypeId());
+                vo.setUserType(optionalUserType.isPresent()?optionalUserType.get():null);
                 vo.setName(user.getName());
                 vo.setNumber(user.getNumber());
                 vo.setGender(user.getGender());
@@ -415,9 +422,9 @@ public class WashEventServiceImpl implements WashEventService {
             vo.setIa(washEvent.getIa());
             vo.setTime(washEvent.getT());
             vo.setUseDateTime(washEvent.getDdt());
-            Device device = deviceExposeService.findById(washEvent.getDvi());
-            if (Objects.nonNull(device)){
-                vo.setDeviceName(device.getName());
+            com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
+            if (optionalDevice.isPresent()){
+                vo.setDeviceName(optionalDevice.get().getName());
             }
             returnList.add(vo);
         });
@@ -499,8 +506,8 @@ public class WashEventServiceImpl implements WashEventService {
             ListWashEventRegionVo vo = new ListWashEventRegionVo();
             vo.setRegionName(region.getName());
             vo.setRegionId(region.getId());
-            Department department = departmentExposeService.findById(region.getDepartmentId());
-            vo.setDepartmentName(Objects.isNull(department)?"":department.getName());
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(region.getDepartmentId());
+            vo.setDepartmentName(optionalDepartment.isEmpty()?"":optionalDepartment.get().getName());
 //            vo.setDeviceCount(vo.getDeviceCount()+deviceGroupDeviceExposeService.countDevice(region.getDeviceGroupId()));
             Document document = washEventDao.eventCount(startDateTime, endDateTime, region.getId());
             if (Objects.nonNull(document)) {
@@ -625,9 +632,9 @@ public class WashEventServiceImpl implements WashEventService {
         items.forEach(washEvent -> {
             ListViolationWashEventVo vo = new ListViolationWashEventVo();
             BeanUtils.copyProperties(washEvent,vo);
-            User user = userExposeService.findById(washEvent.getPi());
-            if (Objects.nonNull(user)) {
-                vo.setName(user.getName());
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(washEvent.getPi());
+            if (optionalUser.isPresent()) {
+                vo.setName(optionalUser.get().getName());
             }
             SystemAlarmType systemAlarmType = SystemAlarmType.instance(washEvent.getAt());
             if (Objects.nonNull(systemAlarmType)) {
@@ -670,12 +677,14 @@ public class WashEventServiceImpl implements WashEventService {
         vo.setStartWorkTime(startDateTime);
         vo.setEndWorkTime(endDateTime);
         vo.setUserId(userId);
-        User user = userExposeService.findById(vo.getUserId());
-        if (Objects.nonNull(user)) {
+        com.lion.core.Optional<User> optionalUser = userExposeService.findById(vo.getUserId());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
             vo.setUserName(user.getName());
             vo.setHeadPortrait(user.getHeadPortrait());
             vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
-            vo.setUserType(userTypeExposeService.findById(user.getUserTypeId()));
+            com.lion.core.Optional<UserType> optionalUserType = userTypeExposeService.findById(user.getUserTypeId());
+            vo.setUserType(optionalUserType.isPresent()?optionalUserType.get():null);
             Department department = departmentUserExposeService.findDepartment(vo.getUserId());
             if (Objects.nonNull(department)) {
                 vo.setDepartmentName(department.getName());

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -29,8 +30,9 @@ public class PatientTransferExposeServiceImpl extends BaseServiceImpl<PatientTra
 
     @Override
     public void updateState(Long patientId, TransferState state) {
-        PatientTransfer patientTransfer = findById(patientId);
-        if (Objects.nonNull(patientTransfer)){
+        com.lion.core.Optional<PatientTransfer> optional = findById(patientId);
+        if (optional.isPresent()){
+            PatientTransfer patientTransfer = optional.get();
             patientTransfer.setState(state);
             if (Objects.equals(TransferState.TRANSFERRING,state)) {
                 patientTransfer.setLeaveDateTime(LocalDateTime.now());

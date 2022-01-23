@@ -25,6 +25,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -85,8 +86,9 @@ public class EventRecordExposeServiceImpl extends BaseServiceImpl<EventRecord> i
         list.forEach(eventRecord -> {
             EventRecordVo vo = new EventRecordVo();
             BeanUtils.copyProperties(eventRecord,vo);
-            User user = userExposeService.findById(eventRecord.getCreateUserId());
-            if (Objects.nonNull(user)) {
+            com.lion.core.Optional<User> optional = userExposeService.findById(eventRecord.getCreateUserId());
+            if (optional.isPresent()) {
+                User user = optional.get();
                 vo.setHeadPortrait(user.getHeadPortrait());
                 vo.setCreateUserName(user.getName());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
@@ -98,12 +100,14 @@ public class EventRecordExposeServiceImpl extends BaseServiceImpl<EventRecord> i
 
     @Override
     public EventRecordVo details(Long id) {
-        EventRecord eventRecord = this.findById(id);
-        if (Objects.isNull(eventRecord)) {
+        com.lion.core.Optional<EventRecord> optional = this.findById(id);
+        if (optional.isEmpty()) {
             return null;
         }
-        User user = userExposeService.findById(eventRecord.getCreateUserId());
-        if (Objects.nonNull(user)) {
+        EventRecord eventRecord = optional.get();
+        com.lion.core.Optional<User> optionalUser = userExposeService.findById(eventRecord.getCreateUserId());
+        if (optionalUser.isPresent()) {
+            User user = optionalUser.get();
             EventRecordVo vo = new EventRecordVo();
             BeanUtils.copyProperties(eventRecord,vo);
             vo.setHeadPortrait(user.getHeadPortrait());

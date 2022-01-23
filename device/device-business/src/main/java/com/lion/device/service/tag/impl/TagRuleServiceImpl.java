@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -69,12 +70,14 @@ public class TagRuleServiceImpl extends BaseServiceImpl<TagRule> implements TagR
     @Transactional
     public void update(UpdateTagRuleDto updateTagRuleDto) {
         TagRule tagRule = new TagRule();
-        TagRule oldTagRule = this.findById(updateTagRuleDto.getId());
+        com.lion.core.Optional<TagRule> optional = this.findById(updateTagRuleDto.getId());
         BeanUtils.copyProperties(updateTagRuleDto,tagRule);
         assertNameExist(tagRule.getName(),tagRule.getId());
         update(tagRule);
         tagRuleUserService.relationUser(updateTagRuleDto.getNewUserIds(), updateTagRuleDto.getDeleteUserIds(),updateTagRuleDto.getAllUserIds() , tagRule.getId());
-        tagRuleLogService.add(tagRule.getId(),"修改规则("+(Objects.nonNull(oldTagRule)?oldTagRule.getName():"")+")", TagRuleLogType.UPDATE);
+        if (optional.isPresent()) {
+            tagRuleLogService.add(tagRule.getId(), "修改规则(" + optional.get().getName() + ")", TagRuleLogType.UPDATE);
+        }
         redisTemplate.opsForValue().set(RedisConstants.TAG_RULE+tagRule.getId(),tagRule,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
     }
 
@@ -85,8 +88,10 @@ public class TagRuleServiceImpl extends BaseServiceImpl<TagRule> implements TagR
             tagRuleLogDao.deleteByTagRuleId(deleteDto.getId());
             tagRuleUserDao.deleteByTagRuleId(deleteDto.getId());
             redisTemplate.delete(RedisConstants.TAG_RULE+deleteDto.getId());
-            TagRule tagRule = this.findById(deleteDto.getId());
-            tagRuleLogService.add(tagRule.getId(),"删除规则("+(Objects.nonNull(tagRule)?tagRule.getName():"")+")", TagRuleLogType.DELETE);
+            com.lion.core.Optional<TagRule> optional = this.findById(deleteDto.getId());
+            if (optional.isPresent()) {
+                tagRuleLogService.add(optional.get().getId(), "删除规则(" + optional.get().getName() + ")", TagRuleLogType.DELETE);
+            }
         });
     }
 

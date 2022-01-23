@@ -60,6 +60,7 @@ import com.lion.person.expose.person.PatientExposeService;
 import com.lion.person.expose.person.PatientReportExposeService;
 import com.lion.person.expose.person.TemporaryPersonExposeService;
 import com.lion.upms.entity.user.User;
+import com.lion.upms.entity.user.UserType;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.upms.expose.user.UserTypeExposeService;
 import com.lion.utils.CurrentUserUtil;
@@ -243,35 +244,39 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 //        List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
 //        List<DepartmentStatisticsDetailsVo> returnList = new ArrayList<>();
 //        list.forEach(id -> {
-            DepartmentStatisticsDetailsVo departmentStatisticsDetailsVo = new DepartmentStatisticsDetailsVo();
-            Department department = departmentExposeService.findById(departmentId);
-            if (Objects.nonNull(department)) {
+        DepartmentStatisticsDetailsVo departmentStatisticsDetailsVo = new DepartmentStatisticsDetailsVo();
+        com.lion.core.Optional<Department> optional = departmentExposeService.findById(departmentId);
+        if (!optional.isPresent()) {
+            return departmentStatisticsDetailsVo;
+        }
+        Department department = optional.get();
+        if (Objects.nonNull(department)) {
 //                departmentStatisticsDetailsVo.setDepartmentId(departmentId);
-                departmentStatisticsDetailsVo.setDepartmentName(department.getName());
-                List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);
-                List<Long> deviceGroupIds = new ArrayList<>();
+            departmentStatisticsDetailsVo.setDepartmentName(department.getName());
+            List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);
+            List<Long> deviceGroupIds = new ArrayList<>();
 //                regionList.forEach(region -> {
 //                    if (Objects.nonNull(region.getDeviceGroupId())) {
 //                        deviceGroupIds.add(region.getDeviceGroupId());
 //                    }
 //                });
-                departmentStatisticsDetailsVo.setLowPowerDeviceCount(deviceExposeService.countDevice(deviceGroupIds, 1));
-                departmentStatisticsDetailsVo.setLowPowerTagCount(tagExposeService.countTag(departmentId, 1));
-                Map<String, Integer> map = systemAlarmService.groupCount(departmentId);
-                if (map.containsKey("allAlarmCount")) {
-                    departmentStatisticsDetailsVo.setAllAlarmCount(map.get("allAlarmCount"));
-                }
-                if (map.containsKey("unalarmCount")) {
-                    departmentStatisticsDetailsVo.setUnalarmCount(map.get("unalarmCount"));
-                }
-                if (map.containsKey("alarmCount")) {
-                    departmentStatisticsDetailsVo.setAlarmCount(map.get("alarmCount"));
-                }
-                departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(departmentId, null, null));
-                departmentStatisticsDetailsVo.setTagCount(tagExposeService.countTag(departmentId));
-                departmentStatisticsDetailsVo.setCctvCount(cctvExposeService.count(departmentId));
-//                returnList.add(departmentStatisticsDetailsVo);
+            departmentStatisticsDetailsVo.setLowPowerDeviceCount(deviceExposeService.countDevice(deviceGroupIds, 1));
+            departmentStatisticsDetailsVo.setLowPowerTagCount(tagExposeService.countTag(departmentId, 1));
+            Map<String, Integer> map = systemAlarmService.groupCount(departmentId);
+            if (map.containsKey("allAlarmCount")) {
+                departmentStatisticsDetailsVo.setAllAlarmCount(map.get("allAlarmCount"));
             }
+            if (map.containsKey("unalarmCount")) {
+                departmentStatisticsDetailsVo.setUnalarmCount(map.get("unalarmCount"));
+            }
+            if (map.containsKey("alarmCount")) {
+                departmentStatisticsDetailsVo.setAlarmCount(map.get("alarmCount"));
+            }
+            departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(departmentId, null, null));
+            departmentStatisticsDetailsVo.setTagCount(tagExposeService.countTag(departmentId));
+            departmentStatisticsDetailsVo.setCctvCount(cctvExposeService.count(departmentId));
+//                returnList.add(departmentStatisticsDetailsVo);
+        }
 //        });
 //        DepartmentStatisticsDetailsVo returnVo = new DepartmentStatisticsDetailsVo();
 //        returnList.forEach(o->{
@@ -295,11 +300,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Override
     public RegionStatisticsDetailsVo regionStatisticsDetails1(Long regionId) {
-        Region region = regionExposeService.findById(regionId);
-        if (Objects.isNull(region)) {
+        com.lion.core.Optional<Region> optional = regionExposeService.findById(regionId);
+        if (!optional.isPresent()) {
             return null;
         }
-        List<RegionStatisticsDetails> list = regionStatisticsDetails(region.getBuildFloorId());
+        List<RegionStatisticsDetails> list = regionStatisticsDetails(optional.get().getBuildFloorId());
         RegionStatisticsDetailsVo vo = new RegionStatisticsDetailsVo();
         list.forEach(regionStatisticsDetails -> {
             if (Objects.equals(regionStatisticsDetails.getRegionId(),regionId)) {
@@ -337,7 +342,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
         List<Long> finalListIds = listIds;
         list.forEach(id -> {
-            Department department = departmentExposeService.findById(id);
+            com.lion.core.Optional<Department> optional = departmentExposeService.findById(id);
+            if (!optional.isPresent()){
+                return;
+            }
+            Department department = optional.get();
             DepartmentStaffStatisticsDetailsVo.DepartmentVo vo = new DepartmentStaffStatisticsDetailsVo.DepartmentVo();
             vo.setDepartmentName(department.getName());
             vo.setDepartmentId(department.getId());
@@ -347,21 +356,24 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             List<Long> userIds = departmentUserExposeService.findAllUser(department.getId(),name, (Objects.equals(false,isAll) || Objects.nonNull(regionId)) ?finalListIds:null);
             List<DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo> listStaff = new ArrayList<>();
             userIds.forEach(userId->{
-                User user = userExposeService.findById(userId);
-                if (Objects.nonNull(user)) {
+                com.lion.core.Optional<User> optionalUser = userExposeService.findById(userId);
+                if (optionalUser.isPresent()) {
+                    User user = optionalUser.get();
                     DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo staff = new DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo();
                     staff.setUserId(user.getId());
                     staff.setUserName(user.getName());
                     staff.setDeviceState(user.getDeviceState());
                     staff.setIsInRegion(finalListIds.contains(user.getId()));
-                    staff.setUserType(userTypeExposeService.findById(user.getUserTypeId()));
+                    com.lion.core.Optional<UserType> optionalUserType = userTypeExposeService.findById(user.getUserTypeId());
+                    staff.setUserType(optionalUserType.isPresent()?optionalUserType.get():null);
                     staff.setHeadPortrait(user.getHeadPortrait());
                     staff.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                     staff.setNumber(user.getNumber());
                     TagUser tagUser = tagUserExposeService.findByUserId(user.getId());
                     if (Objects.nonNull(tagUser)) {
-                        Tag tag = tagExposeService.findById(tagUser.getTagId());
-                        if (Objects.nonNull(tag)){
+                        com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(tagUser.getTagId());
+                        if (optionalTag.isPresent()){
+                            Tag tag = optionalTag.get();
                             staff.setBattery(tag.getBattery());
                             staff.setTagCode(tag.getTagCode());
                         }
@@ -394,8 +406,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         }
         List<Long> finalListIds = listIds;
         list.forEach(id -> {
-            Department department = departmentExposeService.findById(id);
-            if (Objects.nonNull(department)) {
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(id);
+            if (optionalDepartment.isPresent()) {
+                Department department = optionalDepartment.get();
                 DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo vo = new DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo();
                 vo.setDepartmentName(department.getName());
                 vo.setDepartmentId(department.getId());
@@ -410,8 +423,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     assetsVo.setIsFault(assetsFaultExposeService.countNotFinish(a.getId())>0);
                     TagAssets tagAssets = tagAssetsExposeService.find(a.getId());
                     if (Objects.nonNull(tagAssets)) {
-                        Tag tag = tagExposeService.findById(tagAssets.getTagId());
-                        if (Objects.nonNull(tag)) {
+                        com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(tagAssets.getTagId());
+                        if (optionalTag.isPresent()) {
+                            Tag tag = optionalTag.get();
                             assetsVo.setBattery(tag.getBattery());
                             assetsVo.setTagCode(tag.getTagCode());
                             assetsVo.setDeviceName(tag.getDeviceName());
@@ -436,8 +450,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         List<DepartmentTagStatisticsDetailsVo.TagDepartmentVo> tagDepartmentVos = new ArrayList<>();
         departmentTagStatisticsDetailsVo.setTagDepartmentVos(tagDepartmentVos);
         list.forEach(id -> {
-            Department department = departmentExposeService.findById(id);
-            if (Objects.nonNull(department)) {
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(id);
+            if (optionalDepartment.isPresent()) {
+                Department department = optionalDepartment.get();
                 DepartmentTagStatisticsDetailsVo.TagDepartmentVo tagDepartmentVo = new DepartmentTagStatisticsDetailsVo.TagDepartmentVo();
                 tagDepartmentVo.setDepartmentName(department.getName());
                 tagDepartmentVo.setDepartmentId(department.getId());
@@ -482,8 +497,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         }
         List<Long> finalListIds = listIds;
         list.forEach(id -> {
-            Department department = departmentExposeService.findById(id);
-            if (Objects.nonNull(department)) {
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(id);
+            if (optionalDepartment.isPresent()) {
+                Department department = optionalDepartment.get();
                 DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo patientDepartmentVo = new DepartmentPatientStatisticsDetailsVo.PatientDepartmentVo();
                 patientDepartmentVo.setDepartmentName(department.getName());
                 patientDepartmentVo.setDepartmentId(department.getId());
@@ -498,9 +514,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     if (Objects.nonNull(tag)) {
                         vo.setBattery(tag.getBattery());
                     }
-                    WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
-                    if (Objects.nonNull(wardRoomSickbed)) {
-                        vo.setBedCode(wardRoomSickbed.getBedCode());
+                    com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
+                    if (optionalWardRoomSickbed.isPresent()) {
+                        vo.setBedCode(optionalWardRoomSickbed.get().getBedCode());
                     }
                     vo.setId(patient.getId());
                     vo.setName(patient.getName());
@@ -530,8 +546,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         }
         List<Long> finalListIds = listIds;
         list.forEach(id -> {
-            Department department = departmentExposeService.findById(departmentId);
-            if (Objects.nonNull(department)) {
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(departmentId);
+            if (optionalDepartment.isPresent()) {
+                Department department = optionalDepartment.get();
                 DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo temporaryPersonDepartmentVo = new DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo();
                 temporaryPersonDepartmentVo.setDepartmentName(department.getName());
                 temporaryPersonDepartmentVo.setDepartmentId(department.getId());
@@ -573,8 +590,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             departmentDeviceStatisticsDetailsVo.setAbnormalDeviceCount(departmentDeviceStatisticsDetailsVo.getAbnormalDeviceCount() + deviceExposeService.count(id, Arrays.asList(new com.lion.device.entity.enums.State[]{com.lion.device.entity.enums.State.ALARM,com.lion.device.entity.enums.State.FAULT,com.lion.device.entity.enums.State.REPAIR})));
             DepartmentDeviceStatisticsDetailsVo.DepartmentDeviceDetailsVo deviceDetailsVo = new DepartmentDeviceStatisticsDetailsVo.DepartmentDeviceDetailsVo();
             deviceDetailsVo.setDepartmentId(id);
-            Department department = departmentExposeService.findById(id);
-            deviceDetailsVo.setDepartmentName(Objects.nonNull(department)?department.getName():"");
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(id);
+            deviceDetailsVo.setDepartmentName(optionalDepartment.isPresent()?optionalDepartment.get().getName():"");
             List<Device> devices = deviceExposeService.findByDepartmentId(id, keyword);
             List<DetailsDeviceVo> detailsDeviceVos =  new ArrayList<DetailsDeviceVo>();
             devices.forEach(device -> {
@@ -613,17 +630,18 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Override
     public StaffDetailsVo staffDetails(Long userId) {
-        User user = userExposeService.findById(userId);
-        if (Objects.isNull(user)){
+        com.lion.core.Optional<User> optionalUser = userExposeService.findById(userId);
+        if (!optionalUser.isPresent()){
             return null;
         }
+        User user = optionalUser.get();
         StaffDetailsVo staffDetailsVo = new StaffDetailsVo();
         BeanUtils.copyProperties(user,staffDetailsVo);
         TagUser tagUser = tagUserExposeService.findByUserId(userId);
         if (Objects.nonNull(tagUser)){
-            Tag tag = tagExposeService.findById(tagUser.getTagId());
-            if (Objects.nonNull(tag)){
-                staffDetailsVo.setBattery(tag.getBattery());
+            com.lion.core.Optional<Tag>  optionalTag = tagExposeService.findById(tagUser.getTagId());
+            if (optionalTag.isPresent()){
+                staffDetailsVo.setBattery(optionalTag.get().getBattery());
             }
         }
         SystemAlarm systemAlarm =  systemAlarmService.findLast(userId);
@@ -642,11 +660,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         List<Long> departmentResponsibleList = departmentExposeService.responsibleDepartment(null);
         List<StaffDetailsVo.DepartmentResponsibleVo> departmentResponsibleVos = new ArrayList<>();
         departmentResponsibleList.forEach(id -> {
-            Department d = departmentExposeService.findById(id);
-            if (Objects.nonNull(d)) {
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(id);
+            if (optionalDepartment.isPresent()) {
+                Department department1 = optionalDepartment.get();
                 StaffDetailsVo.DepartmentResponsibleVo vo = new StaffDetailsVo.DepartmentResponsibleVo();
-                vo.setDepartmentId(d.getId());
-                vo.setDepartmentName(d.getName());
+                vo.setDepartmentId(department1.getId());
+                vo.setDepartmentName(department1.getName());
                 departmentResponsibleVos.add(vo);
             }
         });
@@ -671,37 +690,42 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Override
     public AssetsDetailsVo assetsDetails(Long assetsId) {
-        Assets assets = assetsExposeService.findById(assetsId);
-        if (Objects.isNull(assets)){
+        com.lion.core.Optional<Assets> optionalAssets = assetsExposeService.findById(assetsId);
+        if (!optionalAssets.isPresent()){
             return null;
         }
+        Assets assets = optionalAssets.get();
         AssetsDetailsVo assetsDetailsVo = new AssetsDetailsVo();
         BeanUtils.copyProperties(assets,assetsDetailsVo);
-        Region region = regionExposeService.findById(assetsDetailsVo.getRegionId());
-        if (Objects.nonNull(region)) {
+        com.lion.core.Optional<Region> optionalRegion = regionExposeService.findById(assetsDetailsVo.getRegionId());
+        if (optionalRegion.isPresent()) {
+            Region region = optionalRegion.get();
             assetsDetailsVo.setRegionId(region.getId());
             assetsDetailsVo.setRegionName(region.getName());
-            Build build = buildExposeService.findById(region.getBuildId());
-            if (Objects.nonNull(build)) {
+            com.lion.core.Optional<Build> optionalBuild = buildExposeService.findById(region.getBuildId());
+            if (optionalBuild.isPresent()) {
+                Build build = optionalBuild.get();
                 assetsDetailsVo.setBuildId(build.getId());
                 assetsDetailsVo.setBuildName(build.getName());
             }
-            BuildFloor buildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
-            if (Objects.nonNull(buildFloor)) {
+            com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorExposeService.findById(region.getBuildFloorId());
+            if (optionalBuildFloor.isPresent()) {
+                BuildFloor buildFloor = optionalBuildFloor.get();
                 assetsDetailsVo.setBuildFloorId(buildFloor.getId());
                 assetsDetailsVo.setBuildFloorName(buildFloor.getName());
             }
-            Department department =  departmentExposeService.findById(region.getDepartmentId());
-            if (Objects.nonNull(department)) {
+            com.lion.core.Optional<Department> optionalDepartment =  departmentExposeService.findById(region.getDepartmentId());
+            if (optionalDepartment.isPresent()) {
+                Department department = optionalDepartment.get();
                 assetsDetailsVo.setDepartmentId(department.getId());
                 assetsDetailsVo.setDepartmentName(department.getName());
             }
         }
         TagAssets tagAssets = tagAssetsExposeService.find(assetsId);
         if (Objects.nonNull(tagAssets)) {
-            Tag tag = tagExposeService.findById(tagAssets.getTagId());
-            if (Objects.nonNull(tag)){
-                assetsDetailsVo.setBattery(tag.getBattery());
+            com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(tagAssets.getTagId());
+            if (optionalTag.isPresent()){
+                assetsDetailsVo.setBattery(optionalTag.get().getBattery());
             }
         }
         LocalDateTime now = LocalDateTime.now();
@@ -711,10 +735,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @Override
     public PatientDetailsVo patientDetails(Long patientId) {
         PatientDetailsVo vo = new PatientDetailsVo();
-        Patient patient = patientExposeService.findById(patientId);
-        if (Objects.isNull(patient)) {
+        com.lion.core.Optional<Patient> optionalPatient = patientExposeService.findById(patientId);
+        if (!optionalPatient.isPresent()) {
             return null;
         }
+        Patient patient = optionalPatient.get();
         BeanUtils.copyProperties(patient,vo);
         Tag tag = tagExposeService.find(patient.getTagCode());
         if (Objects.nonNull(tag)) {
@@ -732,8 +757,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         if (Objects.nonNull(patientReport)) {
             vo.setReportContent(patientReport.getContent());
             vo.setReportDataTime(patientReport.getCreateDateTime());
-            User user = userExposeService.findById(patientReport.getReportUserId());
-            if (Objects.nonNull(user)) {
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(patientReport.getReportUserId());
+            if (optionalUser.isPresent()) {
+                User user = optionalUser.get();
                 vo.setReportUserId(user.getId());
                 vo.setReportUserName(user.getName());
                 vo.setReportUserHeadPortrait(user.getHeadPortrait());
@@ -741,9 +767,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             }
         }
 //        vo.setRestrictedAreaVos(this.restrictedArea(patientId,PersonType.PATIENT));
-        WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
-        if (Objects.nonNull(wardRoomSickbed)) {
-            vo.setBedCode(wardRoomSickbed.getBedCode());
+        com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
+        if (optionalWardRoomSickbed.isPresent()) {
+            vo.setBedCode(optionalWardRoomSickbed.get().getBedCode());
         }
         CurrentRegionDto currentRegion = (CurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.PATIENT_CURRENT_REGION+patientId);
         vo.setCurrentRegionVo(convertVo(currentRegion));
@@ -778,10 +804,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Override
     public TemporaryPersonDetailsVo temporaryPersonDetails(Long temporaryPersonId) {
-        TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(temporaryPersonId);
-        if (Objects.isNull(temporaryPerson)) {
+        com.lion.core.Optional<TemporaryPerson> optionalTemporaryPerson = temporaryPersonExposeService.findById(temporaryPersonId);
+        if (optionalTemporaryPerson.isEmpty()) {
             return null;
         }
+        TemporaryPerson temporaryPerson = optionalTemporaryPerson.get();
         TemporaryPersonDetailsVo vo = new TemporaryPersonDetailsVo();
         BeanUtils.copyProperties(temporaryPerson,vo);
         Tag tag = tagExposeService.find(temporaryPerson.getTagCode());
@@ -862,8 +889,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             table.addCell(new Paragraph(Type.instance(systemAlarmVo.getTy()).getDesc(), fontChinese));
             table.addCell(new Paragraph(systemAlarmVo.getTagCode(), fontChinese));
             table.addCell(new Paragraph(systemAlarmVo.getType().getDesc(), fontChinese));
-            Department department = departmentExposeService.findById(systemAlarmVo.getDi());
-            table.addCell(new Paragraph(Objects.isNull(department)?"":department.getName(), fontChinese));
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(systemAlarmVo.getDi());
+            table.addCell(new Paragraph(optionalDepartment.isEmpty()?"":optionalDepartment.get().getName(), fontChinese));
             table.addCell(new Paragraph(dateTimeFormatter.format(systemAlarmVo.getDt()), fontChinese));
 			table.addCell(new Paragraph(systemAlarmVo.getRn(), fontChinese));
 			table.addCell(new Paragraph(systemAlarmVo.getAlarmContent(), fontChinese));

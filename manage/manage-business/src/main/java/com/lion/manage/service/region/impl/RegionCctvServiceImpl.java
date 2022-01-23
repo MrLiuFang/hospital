@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -53,8 +54,9 @@ public class RegionCctvServiceImpl extends BaseServiceImpl<RegionCctv> implement
                 save(regionCctv);
             });
         }
-        Region region = regionService.findById(regionId);
-        if (Objects.nonNull(region)) {
+        com.lion.core.Optional<Region> optional = regionService.findById(regionId);
+        if (optional.isPresent()) {
+            Region region = optional.get();
             cctvExposeService.relationPosition(oldCctvIds, cctvIds, region.getBuildId(), region.getBuildFloorId(), regionId,region.getDepartmentId() );
         }
     }

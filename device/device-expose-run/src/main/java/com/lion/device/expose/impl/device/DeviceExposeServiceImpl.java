@@ -58,8 +58,9 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
 
     @Override
     public void updateBattery(Long deviceId, Integer battery) {
-        Device device = deviceService.findById(deviceId);
-        if (Objects.nonNull(device)) {
+        com.lion.core.Optional<Device> optional = deviceService.findById(deviceId);
+        if (optional.isPresent()) {
+            Device device = optional.get();
             device.setBattery(battery);
             update(device);
             redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+device.getCode(),device, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
@@ -144,9 +145,12 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
         }
         List<Long> new_ids = new ArrayList<>();
         for (Long id : ids) {
-            Device device = findById(id);
-            if (!Objects.equals(device.getDeviceClassify(),DeviceClassify.STAR_AP)) {
-                new_ids.add(device.getId());
+            com.lion.core.Optional<Device> optional = findById(id);
+            if (optional.isPresent()) {
+                Device device = optional.get();
+                if (!Objects.equals(device.getDeviceClassify(), DeviceClassify.STAR_AP)) {
+                    new_ids.add(device.getId());
+                }
             }
         }
         new_ids.forEach(deviceId ->{

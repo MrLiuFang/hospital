@@ -100,9 +100,9 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
     @Transactional
     public void delete(List<DeleteDto> deleteDto) {
         deleteDto.forEach(dto->{
-            WashTemplate washTemplate = this.findById(dto.getId());
-            if (Objects.nonNull(washTemplate)) {
-                AssertUtil.isTrue(regionDao.countByWashTemplateId(dto.getId()) > 0, MessageI18nUtil.getMessage("2000104",new Object[]{washTemplate.getName()}));
+            com.lion.core.Optional<WashTemplate> optional = this.findById(dto.getId());
+            if (optional.isPresent()) {
+                AssertUtil.isTrue(regionDao.countByWashTemplateId(dto.getId()) > 0, MessageI18nUtil.getMessage("2000104",new Object[]{optional.get().getName()}));
             }
         });
         deleteDto.forEach(dto->{
@@ -124,8 +124,9 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
             ListWashTemplateVo listWashTemplateVo = new ListWashTemplateVo();
             DetailsWashTemplateVo detailsWashTemplateVo = details(washTemplate.getId());
             BeanUtils.copyProperties(detailsWashTemplateVo,listWashTemplateVo);
-            User user = userExposeService.findById(listWashTemplateVo.getCreateUserId());
-            if (Objects.nonNull(user)) {
+            com.lion.core.Optional<User> optional = userExposeService.findById(listWashTemplateVo.getCreateUserId());
+            if (optional.isPresent()) {
+                User user = optional.get();
                 listWashTemplateVo.setCreateUserName(user.getName());
                 listWashTemplateVo.setCreateUserHeadPortrait(user.getHeadPortrait());
                 listWashTemplateVo.setCreateUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
@@ -137,10 +138,11 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
 
     @Override
     public DetailsWashTemplateVo details(Long id) {
-        WashTemplate washTemplate = this.findById(id);
-        if (Objects.isNull(washTemplate)) {
+        com.lion.core.Optional<WashTemplate> optional = this.findById(id);
+        if (optional.isEmpty()) {
             return null;
         }
+        WashTemplate washTemplate = optional.get();
         DetailsWashTemplateVo detailsWashTemplateVo = new DetailsWashTemplateVo();
         BeanUtils.copyProperties(washTemplate,detailsWashTemplateVo);
         List<WashTemplateItem> list = washTemplateItemDao.findByWashTemplateId(washTemplate.getId());
@@ -156,9 +158,9 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
             listWashTemplateItemVo.setWashDeviceTypes(deviceTypes);
             listWashTemplateItemVos.add(listWashTemplateItemVo);
         });
-        User user = userExposeService.findById(washTemplate.getCreateUserId());
-        if (Objects.nonNull(user)) {
-            detailsWashTemplateVo.setCreateUserName(user.getName());
+        com.lion.core.Optional<User> optionalUser = userExposeService.findById(washTemplate.getCreateUserId());
+        if (optionalUser.isPresent()) {
+            detailsWashTemplateVo.setCreateUserName(optionalUser.get().getName());
         }
         detailsWashTemplateVo.setListWashTemplateItemVos(listWashTemplateItemVos);
         return detailsWashTemplateVo;

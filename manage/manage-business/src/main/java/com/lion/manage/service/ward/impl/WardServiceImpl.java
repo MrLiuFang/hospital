@@ -164,8 +164,8 @@ public class WardServiceImpl extends BaseServiceImpl<Ward> implements WardServic
         }
     }
     private void assertDepartmentExist(Long id) {
-        Department department = this.departmentService.findById(id);
-        if (Objects.isNull(department) ){
+        com.lion.core.Optional<Department> optional = this.departmentService.findById(id);
+        if (optional.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000069"));
         }
     }

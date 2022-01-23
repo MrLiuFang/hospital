@@ -42,6 +42,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -148,8 +149,9 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
         List<ListRecyclingBoxCurrentVo> returnList = new ArrayList<>();
         aggregateIterable.forEach(document -> {
             ListRecyclingBoxCurrentVo vo = new ListRecyclingBoxCurrentVo();
-            Device device = deviceExposeService.findById(document.getLong("_id"));
-            if (Objects.nonNull(device)) {
+            com.lion.core.Optional<Device> optional = deviceExposeService.findById(document.getLong("_id"));
+            if (optional.isPresent()) {
+                Device device = optional.get();
                 vo.setCode(device.getCode());
                 vo.setName(device.getName());
                 vo.setCount(NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0);

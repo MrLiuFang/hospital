@@ -40,6 +40,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -113,9 +114,9 @@ public class WardController extends BaseControllerImpl implements BaseController
             ListWardVo listWardVo = new ListWardVo();
             BeanUtils.copyProperties(ward,listWardVo);
             if (Objects.nonNull(ward.departmentId)){
-                Department department =departmentService.findById(ward.departmentId);
-                if (Objects.nonNull(department)){
-                    listWardVo.setDepartmentName(department.getName());
+                com.lion.core.Optional<Department> optional =departmentService.findById(ward.departmentId);
+                if (optional.isPresent()){
+                    listWardVo.setDepartmentName(optional.get().getName());
                 }
             }
             List<WardRoom> wardRoomList = wardRoomService.find(ward.getId());
@@ -132,8 +133,9 @@ public class WardController extends BaseControllerImpl implements BaseController
     @ApiOperation(value = "病房详情")
     public IResultData<DetailsWardVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
-        Ward ward = this.wardService.findById(id);
-        if (Objects.nonNull(ward)){
+        com.lion.core.Optional<Ward> optional = this.wardService.findById(id);
+        if (optional.isPresent()){
+            Ward ward = optional.get();
             DetailsWardVo detailsWardVo = new DetailsWardVo();
             BeanUtils.copyProperties(ward,detailsWardVo);
             List<WardRoom> list = wardRoomService.find(ward.getId());
@@ -242,23 +244,28 @@ public class WardController extends BaseControllerImpl implements BaseController
     @GetMapping("/tag/sickbed/department")
     @ApiOperation(value = "判断标签和病床是否在同一科室-不在同一科室抛异常")
     public IResultData tagSickbedDepartment(@ApiParam(value = "病床id") Long wardRoomSickbedId,@ApiParam(value = "标签id")Long tagId) {
-        WardRoomSickbed wardRoomSickbed = wardRoomSickbedExposeService.findById(wardRoomSickbedId);
-        if (Objects.isNull(wardRoomSickbed)){
+        com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedExposeService.findById(wardRoomSickbedId);
+        if (optionalWardRoomSickbed.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000035"));
         }
-        WardRoom wardRoom = wardRoomExposeService.findById(wardRoomSickbed.getWardRoomId());
-        if (Objects.isNull(wardRoomSickbed)){
+        com.lion.core.Optional<WardRoom> optionalWardRoom = wardRoomExposeService.findById(optionalWardRoomSickbed.get().getWardRoomId());
+        if (optionalWardRoom.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000036"));
         }
-        Ward ward = wardExposeService.findById(wardRoom.getWardId());
-        if (Objects.isNull(wardRoomSickbed)){
+        com.lion.core.Optional<Ward> optionalWard = wardExposeService.findById(optionalWardRoom.get().getWardId());
+        if (optionalWard.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000037"));
         }
-        Tag tag = tagExposeService.findById(tagId);
-        if (!Objects.equals(ward.getDepartmentId(),tag.getDepartmentId())) {
-            Department tagDepartment = departmentExposeService.findById(tag.getDepartmentId());
-            Department department = departmentExposeService.findById(ward.getDepartmentId());
-            BusinessException.throwException(MessageI18nUtil.getMessage("4000026",new Object[]{department.getName(),tagDepartment.getName()}));
+        com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(tagId);
+        if (optionalTag.isPresent()) {
+            Tag tag = optionalTag.get();
+            if (!Objects.equals(optionalWard.get().getDepartmentId(), tag.getDepartmentId())) {
+                com.lion.core.Optional<Department> optionalTagDepartment = departmentExposeService.findById(tag.getDepartmentId());
+                com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(optionalWard.get().getDepartmentId());
+                if (optionalTagDepartment.isPresent() && optionalDepartment.isPresent()) {
+                    BusinessException.throwException(MessageI18nUtil.getMessage("4000026", new Object[]{optionalDepartment.get().getName(), optionalTagDepartment.get().getName()}));
+                }
+            }
         }
         return ResultData.instance();
     }
@@ -266,16 +273,22 @@ public class WardController extends BaseControllerImpl implements BaseController
     private Region getRegion(Long wardRoomSickbedId,Long wardRoomId){
         Region region =null;
         if (Objects.nonNull(wardRoomSickbedId)) {
-            WardRoomSickbed wardRoomSickbed = wardRoomSickbedService.findById(wardRoomSickbedId);
-            if (Objects.nonNull(wardRoomSickbed)) {
-                region = regionService.findById(wardRoomSickbed.getRegionId());
+            com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedService.findById(wardRoomSickbedId);
+            if (optionalWardRoomSickbed.isPresent()) {
+                com.lion.core.Optional<Region> optionalRegion = regionService.findById(optionalWardRoomSickbed.get().getRegionId());
+                if (optionalRegion.isPresent()) {
+                    region = optionalRegion.get();
+                }
                 return region;
             }
         }
         if ( Objects.nonNull(wardRoomId)){
-            WardRoom wardRoom = wardRoomService.findById(wardRoomId);
-            if (Objects.nonNull(wardRoom)) {
-                region = regionService.findById(wardRoom.getRegionId());
+            com.lion.core.Optional<WardRoom> optionalWardRoom = wardRoomService.findById(wardRoomId);
+            if (optionalWardRoom.isPresent()) {
+                com.lion.core.Optional<Region> optionalRegion = regionService.findById(optionalWardRoom.get().getRegionId());
+                if (optionalRegion.isPresent()) {
+                    region = optionalRegion.get();
+                }
                 return region;
             }
         }

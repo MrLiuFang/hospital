@@ -32,10 +32,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -77,18 +74,20 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
             allUser.forEach(id->{
                 TagRuleUser tagRuleUser = tagRuleUserDao.findFirstByUserIdAndTagRuleIdNot(id, tagRuleId);
                 if (Objects.nonNull(tagRuleUser)) {
-                    User user = userExposeService.findById(id);
-                    if (Objects.nonNull(user)){
-                        BusinessException.throwException(user.getName() + MessageI18nUtil.getMessage("4000043"));
+                    com.lion.core.Optional<User> optional = userExposeService.findById(id);
+                    if (optional.isPresent()){
+                        BusinessException.throwException(optional.get().getName() + MessageI18nUtil.getMessage("4000043"));
                     }
                 }
             });
             List<TagRuleUser> list = tagRuleUserDao.findByTagRuleId(tagRuleId);
             list.forEach(tagRuleUser -> {
                 if (!allUser.contains(tagRuleUser.getUserId())){
-                    User user = userExposeService.findById(tagRuleUser.getUserId());
-                    TagRule tagRule = tagRuleService.findById(tagRuleUser.getTagRuleId());
-                    tagRuleLogService.add(tagRuleId,user.getName()+"从规则("+(Objects.nonNull(tagRule)?tagRule.getName():"")+")中删除", TagRuleLogType.DELETE_USER);
+                    com.lion.core.Optional<User> optionalUser = userExposeService.findById(tagRuleUser.getUserId());
+                    com.lion.core.Optional<TagRule> optionalTagRule = tagRuleService.findById(tagRuleUser.getTagRuleId());
+                    if (optionalUser.isPresent() && optionalTagRule.isPresent()) {
+                        tagRuleLogService.add(tagRuleId, optionalUser.get().getName() + "从规则(" + optionalTagRule.get().getName() + ")中删除", TagRuleLogType.DELETE_USER);
+                    }
                 }
                 redisTemplate.delete(RedisConstants.USER_TAG_RULE+tagRuleUser.getUserId());
             });
@@ -101,10 +100,11 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
             deleteUser.forEach(id->{
                 redisTemplate.delete(RedisConstants.USER_TAG_RULE+id);
                 tagRuleUserDao.deleteByUserIdAndAndTagRuleId(id,tagRuleId);
-                User user = userExposeService.findById(id);
-                if (Objects.nonNull(user)){
-                    TagRule tagRule = tagRuleService.findById(tagRuleId);
-                    tagRuleLogService.add(tagRuleId,user.getName()+"从规则("+(Objects.nonNull(tagRule)?tagRule.getName():"")+")中删除", TagRuleLogType.DELETE_USER);
+                com.lion.core.Optional<User> optional = userExposeService.findById(id);
+                if (optional.isPresent()){
+                    com.lion.core.Optional<TagRule> optionalTagRule = tagRuleService.findById(tagRuleId);
+                    if (optionalTagRule.isPresent())
+                    tagRuleLogService.add(tagRuleId,optional.get().getName()+"从规则("+optionalTagRule.get().getName()+")中删除", TagRuleLogType.DELETE_USER);
                 }
             });
         }
@@ -120,12 +120,12 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                 newTagRuleUser.setUserId(id);
                 newTagRuleUser.setTagRuleId(tagRuleId);
                 save(newTagRuleUser);
-                User user = userExposeService.findById(id);
-                TagRule tagRule = tagRuleService.findById(tagRuleId);
-                if (Objects.nonNull(user) && Objects.isNull(list)){
-                    tagRuleLogService.add(tagRuleId,user.getName()+"添加到规则("+(Objects.nonNull(tagRule)?tagRule.getName():"")+")中", TagRuleLogType.ADD_USER);
+                com.lion.core.Optional<User> optionalUser = userExposeService.findById(id);
+                com.lion.core.Optional<TagRule> optionalTagRule = tagRuleService.findById(tagRuleId);
+                if (optionalUser.isPresent() && Objects.isNull(list) && optionalTagRule.isPresent()){
+                    tagRuleLogService.add(tagRuleId,optionalUser.get().getName()+"添加到规则("+optionalTagRule.get().getName()+")中", TagRuleLogType.ADD_USER);
                 }else if (Objects.nonNull(list) && !list.contains(id)) {
-                    tagRuleLogService.add(tagRuleId,user.getName()+"添加到规则("+(Objects.nonNull(tagRule)?tagRule.getName():"")+")中", TagRuleLogType.ADD_USER);
+                    tagRuleLogService.add(tagRuleId,(optionalUser.isPresent()?optionalUser.get().getName():"")+"添加到规则("+(optionalTagRule.isPresent()?optionalTagRule.get().getName():"")+")中", TagRuleLogType.ADD_USER);
                 }
                 redisTemplate.opsForValue().set(RedisConstants.USER_TAG_RULE+id,tagRuleId,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
             });
@@ -145,17 +145,18 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
         List<ListTagRuleUserVo> returnList = new ArrayList<>();
         list.forEach(tagRuleUser -> {
             ListTagRuleUserVo vo = new ListTagRuleUserVo();
-            User user = userExposeService.findById(tagRuleUser.getUserId());
-            if (Objects.nonNull(user)){
+            com.lion.core.Optional<User> optional = userExposeService.findById(tagRuleUser.getUserId());
+            if (optional.isPresent()){
+                User user = optional.get();
                 returnList.add(vo);
                 vo.setName(user.getName());
                 vo.setId(user.getId());
                 vo.setHeadPortrait(user.getHeadPortrait());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                 vo.setNumber(user.getNumber());
-                UserType userType = userTypeExposeService.findById(user.getUserTypeId());
-                if (Objects.nonNull(userType)) {
-                    vo.setPosition(userType.getUserTypeName());
+                com.lion.core.Optional<UserType> optionalUserType = userTypeExposeService.findById(user.getUserTypeId());
+                if (optionalUserType.isPresent()) {
+                    vo.setPosition(optionalUserType.get().getUserTypeName());
                 }
                 Department department = departmentUserExposeService.findDepartment(user.getId());
                 if (Objects.nonNull(department)) {

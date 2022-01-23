@@ -116,7 +116,10 @@ public class CctvController extends BaseControllerImpl implements BaseController
     @ApiOperation(value = "cctv详情")
     public IResultData<CctvVo> details(@ApiParam(value = "id") @NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
-        resultData.setData(convertVo(cctvService.findById(id)));
+        com.lion.core.Optional<Cctv> optional = cctvService.findById(id);
+        if (optional.isPresent()) {
+            resultData.setData(convertVo(optional.get()));
+        }
         return resultData;
     }
 
@@ -127,24 +130,24 @@ public class CctvController extends BaseControllerImpl implements BaseController
         CctvVo vo = new CctvVo();
         BeanUtils.copyProperties(cctv,vo);
 
-        Build build = buildExposeService.findById(cctv.getBuildId());
-        if (Objects.nonNull(build)){
-            vo.setBuildName(build.getName());
+        com.lion.core.Optional<Build> optionalBuild = buildExposeService.findById(cctv.getBuildId());
+        if (optionalBuild.isPresent()){
+            vo.setBuildName(optionalBuild.get().getName());
         }
 
-        BuildFloor buildFloor = buildFloorExposeService.findById(cctv.getBuildFloorId());
-        if (Objects.nonNull(buildFloor)){
-            vo.setBuildFloorName(buildFloor.getName());
+        com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorExposeService.findById(cctv.getBuildFloorId());
+        if (optionalBuildFloor.isPresent()){
+            vo.setBuildFloorName(optionalBuildFloor.get().getName());
         }
 
-        Region region = regionExposeService.findById(cctv.getRegionId());
-        if (Objects.nonNull(region)){
-            vo.setRegionName(region.getName());
+        com.lion.core.Optional<Region> optionalRegion = regionExposeService.findById(cctv.getRegionId());
+        if (optionalRegion.isPresent()){
+            vo.setRegionName(optionalRegion.get().getName());
         }
 
-        Department department = departmentExposeService.findById(cctv.getDepartmentId());
-        if (Objects.nonNull(department)){
-            vo.setDepartmentName(department.getName());
+        com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(cctv.getDepartmentId());
+        if (optionalDepartment.isPresent()){
+            vo.setDepartmentName(optionalDepartment.get().getName());
         }
 
         return vo;

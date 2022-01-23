@@ -34,6 +34,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -102,8 +103,9 @@ public class TagController extends BaseControllerImpl implements BaseController 
     @PutMapping("/update/state")
     @ApiOperation(value = "修改标签状态")
     public IResultData updateState(@RequestBody @Validated({Validator.Update.class}) UpdateTagStateDto updateTagStateDto){
-        Tag tag = tagService.findById(updateTagStateDto.getId());
-        if (Objects.nonNull(tag)){
+        com.lion.core.Optional<Tag> optional = tagService.findById(updateTagStateDto.getId());
+        if (optional.isPresent()){
+            Tag tag=optional.get();
             tag.setState(updateTagStateDto.getState());
             tagService.update(tag);
         }
@@ -161,10 +163,10 @@ public class TagController extends BaseControllerImpl implements BaseController 
     @GetMapping("/rule/details")
     @ApiOperation(value = "标签规则详情")
     public IResultData<TagRuleDetailsVo> ruleDetails(@ApiParam(value = "id") @NotNull(message = "{0000000}") Long id){
-        TagRule tagRule = tagRuleService.findById(id);
-        if (Objects.nonNull(tagRule)) {
+        com.lion.core.Optional<TagRule> optional = tagRuleService.findById(id);
+        if (optional.isPresent()) {
             TagRuleDetailsVo vo = new TagRuleDetailsVo();
-            BeanUtils.copyProperties(tagRule,vo);
+            BeanUtils.copyProperties(optional.get(),vo);
             List<Long> userIds = new ArrayList<>();
             List<TagRuleUser> list =  tagRuleUserService.find(id);
             list.forEach(tagUser -> {

@@ -31,6 +31,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -68,9 +69,9 @@ public class RegionTypeServiceImpl extends BaseServiceImpl<RegionType> implement
     @Override
     public void delete(List<DeleteDto> deleteDto) {
         deleteDto.forEach(dto -> {
-            RegionType regionType = this.findById(dto.getId());
-            if (Objects.nonNull(regionType)) {
-                AssertUtil.isTrue(regionDao.countByRegionTypeId(dto.getId()) > 0, MessageI18nUtil.getMessage("2000107",new Object[]{regionType.getRegionTypeName()}) );
+            com.lion.core.Optional<RegionType> optional = this.findById(dto.getId());
+            if (optional.isPresent()) {
+                AssertUtil.isTrue(regionDao.countByRegionTypeId(dto.getId()) > 0, MessageI18nUtil.getMessage("2000107",new Object[]{optional.get().getRegionTypeName()}) );
             }
         });
         deleteDto.forEach(dto -> {

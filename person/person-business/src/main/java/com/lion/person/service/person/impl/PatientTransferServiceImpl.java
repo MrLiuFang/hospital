@@ -30,10 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @description:
@@ -64,8 +61,8 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
     @Override
     public void transfer(TransferDto transferDto) {
         PatientTransfer patientTransfer = new PatientTransfer();
-        Patient patient = patientService.findById(transferDto.getPatientId());
-        Department department = departmentExposeService.findById(transferDto.getDepartmentId());
+        com.lion.core.Optional<Patient> optionalPatient = patientService.findById(transferDto.getPatientId());
+        com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(transferDto.getDepartmentId());
         List<TransferState> state = new ArrayList<>();
         state.add(TransferState.CANCEL);
         state.add(TransferState.FINISH);
@@ -73,12 +70,13 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
         if (Objects.nonNull(oldPatientTransfer)) {
             BusinessException.throwException(MessageI18nUtil.getMessage("1000041"));
         }
-        if (Objects.isNull(department)) {
+        if (optionalDepartment.isEmpty()) {
             BusinessException.throwException(MessageI18nUtil.getMessage("1000042"));
         }
-        if (Objects.isNull(patient)) {
+        if (optionalPatient.isEmpty()) {
             BusinessException.throwException(MessageI18nUtil.getMessage("1000043"));
         }
+        Patient patient = optionalPatient.get();
         if (Objects.equals(patient.getIsLeave(),true)){
             BusinessException.throwException(MessageI18nUtil.getMessage("1000044"));
         }
@@ -139,22 +137,22 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
             PatientDetailsVo patientDetailsVo = patientService.details(patientTransfer.getPatientId());
             if (Objects.nonNull(patientDetailsVo)) {
                 vo.setPatientDetailsVo(patientDetailsVo);
-                Department newDepartment = departmentExposeService.findById(vo.getNewDepartmentId());
-                vo.setNewDepartmentName(Objects.isNull(newDepartment) ? "" : newDepartment.getName());
-                WardRoomSickbed newWardRoomSickbed = wardRoomSickbedExposeService.findById(patientTransfer.getNewSickbedId());
-                vo.setNewSickbedCode(Objects.isNull(newWardRoomSickbed) ? "" : newWardRoomSickbed.getBedCode());
-                Department oldDepartment = departmentExposeService.findById(vo.getOldDepartmentId());
-                vo.setOldDepartmentName(Objects.isNull(oldDepartment) ? "" : oldDepartment.getName());
-                WardRoomSickbed oldWardRoomSickbed = wardRoomSickbedExposeService.findById(patientTransfer.getOldSickbedId());
-                vo.setOldSickbedCode(Objects.isNull(oldWardRoomSickbed) ? "" : oldWardRoomSickbed.getBedCode());
-                User ransferUser = userExposeService.findById(vo.getCreateUserId());
-                vo.setRansferUserName(Objects.isNull(ransferUser) ? "" : ransferUser.getName());
-                vo.setRansferUserHeadPortrait(Objects.isNull(ransferUser) ? null : ransferUser.getHeadPortrait());
-                vo.setRansferUserHeadPortraitUrl(fileExposeService.getUrl(Objects.isNull(ransferUser) ? null : ransferUser.getHeadPortrait()));
-                User receiveUser = userExposeService.findById(vo.getReceiveUserId());
-                vo.setReceiveUserName(Objects.isNull(receiveUser) ? "" : receiveUser.getName());
-                vo.setReceiveUserHeadPortrait(Objects.isNull(receiveUser) ? null : receiveUser.getHeadPortrait());
-                vo.setReceiveUserHeadPortraitUrl(fileExposeService.getUrl(Objects.isNull(receiveUser) ? null : receiveUser.getHeadPortrait()));
+                com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(vo.getNewDepartmentId());
+                vo.setNewDepartmentName(optionalDepartment.isEmpty() ? "" : optionalDepartment.get().getName());
+                com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedExposeService.findById(patientTransfer.getNewSickbedId());
+                vo.setNewSickbedCode(optionalWardRoomSickbed.isEmpty() ? "" : optionalWardRoomSickbed.get().getBedCode());
+                com.lion.core.Optional<Department> optionalDepartment1 = departmentExposeService.findById(vo.getOldDepartmentId());
+                vo.setOldDepartmentName(optionalDepartment1.isEmpty() ? "" : optionalDepartment1.get().getName());
+                com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed1 = wardRoomSickbedExposeService.findById(patientTransfer.getOldSickbedId());
+                vo.setOldSickbedCode(optionalWardRoomSickbed1.isEmpty() ? "" : optionalWardRoomSickbed1.get().getBedCode());
+                com.lion.core.Optional<User> optionalUser = userExposeService.findById(vo.getCreateUserId());
+                vo.setRansferUserName(optionalUser.isEmpty() ? "" : optionalUser.get().getName());
+                vo.setRansferUserHeadPortrait(optionalUser.isEmpty() ? null : optionalUser.get().getHeadPortrait());
+                vo.setRansferUserHeadPortraitUrl(fileExposeService.getUrl(optionalUser.isEmpty() ? null : optionalUser.get().getHeadPortrait()));
+                com.lion.core.Optional<User> optionalUser1 = userExposeService.findById(vo.getReceiveUserId());
+                vo.setReceiveUserName(optionalUser1.isEmpty() ? "" : optionalUser1.get().getName());
+                vo.setReceiveUserHeadPortrait(optionalUser1.isEmpty() ? null : optionalUser1.get().getHeadPortrait());
+                vo.setReceiveUserHeadPortraitUrl(fileExposeService.getUrl(optionalUser1.isEmpty() ? null : optionalUser1.get().getHeadPortrait()));
                 returnList.add(vo);
             }
         });

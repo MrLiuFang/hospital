@@ -44,6 +44,7 @@ import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,10 +56,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -164,23 +162,31 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         deleteDtoList.forEach(deleteDto -> {
             TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagUser)) {
-                Tag tag = findById(tagUser.getTagId());
-                BusinessException.throwException(tag.getTagCode() + MessageI18nUtil.getMessage("4000044"));
+                com.lion.core.Optional<Tag> optional = findById(tagUser.getTagId());
+                if (optional.isPresent()) {
+                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000044"));
+                }
             }
             TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagUser)) {
-                Tag tag = findById(tagAssets.getTagId());
-                BusinessException.throwException(tag.getTagCode() + MessageI18nUtil.getMessage("4000045"));
+                com.lion.core.Optional<Tag> optional = findById(tagAssets.getTagId());
+                if (optional.isPresent()) {
+                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000045"));
+                }
             }
             TagPatient tagPatient = tagPatientDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagPatient)) {
-                Tag tag = findById(tagPatient.getTagId());
-                BusinessException.throwException(tag.getTagCode() + MessageI18nUtil.getMessage("4000046"));
+                com.lion.core.Optional<Tag> optional = findById(tagPatient.getTagId());
+                if (optional.isPresent()) {
+                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000046"));
+                }
             }
             TagPostdocs tagPostdocs = tagPostdocsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagPostdocs)) {
-                Tag tag = findById(tagPostdocs.getTagId());
-                BusinessException.throwException(tag.getTagCode() + MessageI18nUtil.getMessage("4000047"));
+                com.lion.core.Optional<Tag> optional = findById(tagPostdocs.getTagId());
+                if (optional.isPresent()) {
+                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000047"));
+                }
             }
             currentPositionExposeService.delete(null,null,deleteDto.getId());
         });
@@ -229,16 +235,17 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             ListTagVo vo = new ListTagVo();
             BeanUtils.copyProperties(tag,vo);
             if (Objects.nonNull(tag.getDepartmentId())) {
-                Department department = departmentExposeService.findById(tag.getDepartmentId());
-                if (Objects.nonNull(department)){
-                    vo.setDepartmentName(department.getName());
+                com.lion.core.Optional<Department> optional = departmentExposeService.findById(tag.getDepartmentId());
+                if (optional.isPresent()){
+                    vo.setDepartmentName(optional.get().getName());
                 }
             }
             if (Objects.equals(tag.getPurpose(),TagPurpose.STAFF)) {
                 TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
                 if (Objects.nonNull(tagUser)) {
-                    User user = userExposeService.findById(tagUser.getUserId());
-                    if (Objects.nonNull(user)) {
+                    com.lion.core.Optional<User> optional = userExposeService.findById(tagUser.getUserId());
+                    if (optional.isPresent()) {
+                        User user = optional.get();
                         vo.setBindingName(user.getName()+":"+user.getNumber());
                         vo.setBindingId(user.getId());
 //                        Department department = departmentUserExposeService.findDepartment(user.getId());
@@ -250,8 +257,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             }else if (Objects.equals(tag.getPurpose(),TagPurpose.PATIENT)) {
                 TagPatient tagPatient = tagPatientDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
                 if (Objects.nonNull(tagPatient)) {
-                    Patient patient = patientExposeService.findById(tagPatient.getPatientId());
-                    if (Objects.nonNull(patient)) {
+                    com.lion.core.Optional<Patient> optional = patientExposeService.findById(tagPatient.getPatientId());
+                    if (optional.isPresent()) {
+                        Patient patient = optional.get();
                         vo.setBindingName(patient.getName());
                         vo.setBindingId(patient.getId());
                     }
@@ -259,8 +267,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             }else if (Objects.equals(tag.getPurpose(),TagPurpose.POSTDOCS)) {
                 TagPostdocs tagPostdocs = tagPostdocsDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
                 if (Objects.nonNull(tagPostdocs)) {
-                    TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(tagPostdocs.getPostdocsId());
-                    if (Objects.nonNull(temporaryPerson)) {
+                    com.lion.core.Optional<TemporaryPerson> optional = temporaryPersonExposeService.findById(tagPostdocs.getPostdocsId());
+                    if (optional.isPresent()) {
+                        TemporaryPerson temporaryPerson = optional.get();
                         vo.setBindingName(temporaryPerson.getName());
                         vo.setBindingId(temporaryPerson.getId());
                     }
@@ -268,8 +277,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             }else if (Objects.equals(tag.getPurpose(),TagPurpose.ASSETS)) {
                 TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
                 if (Objects.nonNull(tagAssets)){
-                    Assets assets = assetsExposeService.findById(tagAssets.getAssetsId());
-                    if (Objects.nonNull(assets)){
+                    com.lion.core.Optional<Assets> optional = assetsExposeService.findById(tagAssets.getAssetsId());
+                    if (optional.isPresent()){
+                        Assets assets = optional.get();
                         vo.setBindingName(assets.getName());
                         vo.setBindingId(assets.getId());
                     }
@@ -287,16 +297,18 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 
     @Override
     public DetailsTagVo details(Long id) {
-        Tag tag = findById(id);
-        if (Objects.isNull(tag)) {
+        com.lion.core.Optional<Tag> optional = findById(id);
+        if (optional.isEmpty()) {
             return null;
         }
+        Tag tag = optional.get();
         DetailsTagVo vo = new DetailsTagVo();
         BeanUtils.copyProperties(tag,vo);
         TagUser tagUser = tagUserExposeService.find(tag.getId());
         if (Objects.nonNull(tagUser)){
-            User user = userExposeService.findById(tagUser.getUserId());
-            if (Objects.nonNull(user)){
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(tagUser.getUserId());
+            if (optionalUser.isPresent()){
+                User user = optionalUser.get();
                 vo.setBindingName(user.getName());
                 vo.setImg(user.getHeadPortrait());
                 vo.setImgUrl(fileExposeService.getUrl(user.getHeadPortrait()));
@@ -306,8 +318,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         }
         TagAssets tagAssets = tagAssetsExposeService.findByTagId(tag.getId());
         if (Objects.nonNull(tagAssets)) {
-            Assets assets = assetsExposeService.findById(tagAssets.getAssetsId());
-            if (Objects.nonNull(assets)) {
+            com.lion.core.Optional<Assets> optionalAssets = assetsExposeService.findById(tagAssets.getAssetsId());
+            if (optionalAssets.isPresent()) {
+                Assets assets = optionalAssets.get();
                 vo.setBindingName(assets.getName());
                 vo.setImg(assets.getImg());
                 vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
@@ -317,8 +330,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         }
         TagPatient tagPatient = tagPatientExposeService.find(tag.getId());
         if (Objects.nonNull(tagPatient)) {
-            Patient patient = patientExposeService.findById(tagPatient.getPatientId());
-            if (Objects.nonNull(patient)) {
+            com.lion.core.Optional<Patient> optionalPatient = patientExposeService.findById(tagPatient.getPatientId());
+            if (optionalPatient.isPresent()) {
+                Patient patient = optionalPatient.get();
                 vo.setBindingName(patient.getName());
                 vo.setImg(patient.getHeadPortrait());
                 vo.setImgUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
@@ -328,8 +342,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         }
         TagPostdocs tagPostdocs = tagPostdocsExposeService.find(tag.getId());
         if (Objects.nonNull(tagPostdocs)) {
-            TemporaryPerson temporaryPerson = temporaryPersonExposeService.findById(tagPostdocs.getPostdocsId());
-            if (Objects.nonNull(temporaryPerson)) {
+            com.lion.core.Optional<TemporaryPerson> optionalTemporaryPerson = temporaryPersonExposeService.findById(tagPostdocs.getPostdocsId());
+            if (optionalTemporaryPerson.isPresent()) {
+                TemporaryPerson temporaryPerson = optionalTemporaryPerson.get();
                 vo.setBindingName(temporaryPerson.getName());
                 vo.setImg(temporaryPerson.getHeadPortrait());
                 vo.setImgUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
@@ -337,9 +352,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             }
             return vo;
         }
-        Department department = departmentExposeService.findById(tag.getDepartmentId());
-        if (Objects.nonNull(department)) {
-            vo.setDepartmentName(department.getName());
+        com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(tag.getDepartmentId());
+        if (optionalDepartment.isPresent()) {
+            vo.setDepartmentName(optionalDepartment.get().getName());
         }
         if (Objects.equals(tag.getPurpose(),TagPurpose.THERMOHYGROGRAPH)) {
             HumitureRecord humitureRecord = humitureRecordExposeService.findLast(tag.getId());
@@ -447,8 +462,8 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     }
 
     private void assertDepartmentExist(Long departmentId) {
-        Department department = departmentExposeService.findById(departmentId);
-        if (Objects.isNull(department) ){
+        com.lion.core.Optional<Department> optional = departmentExposeService.findById(departmentId);
+        if (optional.isEmpty() ){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000069"));
         }
     }

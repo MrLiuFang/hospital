@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @Author Mr.Liu
@@ -64,9 +65,9 @@ public class WashCommonUtil {
 
         User user = redisUtil.getUserById(washRecordDto.getPi());
         if (Objects.nonNull(user)){
-            UserType userType = userTypeExposeService.findById(user.getUserTypeId());
-            if (Objects.nonNull(userType)) {
-                washRecordDto.setPy(userType.getId());
+            com.lion.core.Optional<UserType> optional = userTypeExposeService.findById(user.getUserTypeId());
+            if (optional.isPresent()) {
+                washRecordDto.setPy(optional.get().getId());
             }
         }
         return washRecordDto;

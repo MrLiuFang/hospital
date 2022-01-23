@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -95,9 +96,12 @@ public class TagPostdocsExposeServiceImpl extends BaseServiceImpl<TagPostdocs> i
             tagPostdocs.setUnbindingTime(LocalDateTime.now());
             update(tagPostdocs);
             tagLogService.add( TagLogContent.unbinding,tagPostdocs.getTagId());
-            Tag tag = tagService.findById(tagPostdocs.getTagId());
-            tag.setUseState(TagUseState.NOT_USED);
-            tagService.update(tag);
+            com.lion.core.Optional<Tag> optional = tagService.findById(tagPostdocs.getTagId());
+            if (optional.isPresent()) {
+                Tag tag = optional.get();
+                tag.setUseState(TagUseState.NOT_USED);
+                tagService.update(tag);
+            }
             redisTemplate.delete(RedisConstants.TAG_TEMPORARY_PERSON + tagPostdocs.getTagId());
             redisTemplate.delete(RedisConstants.TEMPORARY_PERSON_TAG + tagPostdocs.getPostdocsId());
             redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tagPostdocs.getTagId());

@@ -28,6 +28,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import com.lion.core.Optional;
 
 /**
  * @description:
@@ -82,16 +83,19 @@ public class MonitorController {
 
     private DeviceMonitorTopVo calculation(List<Long> ids, DeviceMonitorTopVo vo){
         ids.forEach(id->{
-            Device device = deviceService.findById(id);
-            if (Objects.nonNull(device.getLastDataTime()) ){
-                Duration duration = Duration.between(device.getLastDataTime(),LocalDateTime.now());
-                if (duration.toMinutes()>120) {
+            com.lion.core.Optional<Device> optional = deviceService.findById(id);
+            if (optional.isPresent()) {
+                Device device = optional.get();
+                if (Objects.nonNull(device.getLastDataTime())) {
+                    Duration duration = Duration.between(device.getLastDataTime(), LocalDateTime.now());
+                    if (duration.toMinutes() > 120) {
+                        vo.setOfflineCount(vo.getOfflineCount() + 1);
+                        vo.setNormalCount(vo.getNormalCount() - 1);
+                    }
+                } else {
                     vo.setOfflineCount(vo.getOfflineCount() + 1);
                     vo.setNormalCount(vo.getNormalCount() - 1);
                 }
-            }else {
-                vo.setOfflineCount(vo.getOfflineCount() + 1);
-                vo.setNormalCount(vo.getNormalCount() - 1);
             }
         });
         return vo;
