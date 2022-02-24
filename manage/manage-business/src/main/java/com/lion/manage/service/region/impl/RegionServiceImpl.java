@@ -216,6 +216,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
                     }else {
                         regionDao.updateWashTemplateId(region.getId());
                     }
+
                 }
             });
         }

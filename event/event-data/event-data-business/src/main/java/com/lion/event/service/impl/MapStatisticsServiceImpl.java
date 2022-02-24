@@ -12,6 +12,7 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.RedisUtil;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.Optional;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.enums.TagPurpose;
@@ -36,6 +37,7 @@ import com.lion.event.entity.UserTagButtonRecord;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.assets.AssetsType;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
@@ -44,6 +46,7 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.assets.AssetsFaultExposeService;
+import com.lion.manage.expose.assets.AssetsTypeExposeService;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
@@ -197,6 +200,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Autowired
     private CurrentPositionDao currentPositionDao;
+
+    @DubboReference
+    private AssetsTypeExposeService assetsTypeExposeService;
 
     private final String FONT = "simsun.ttc";
 
@@ -430,7 +436,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                             assetsVo.setTagCode(tag.getTagCode());
                             assetsVo.setDeviceName(tag.getDeviceName());
                             assetsVo.setDeviceCode(tag.getDeviceCode());
-                            assetsVo.setTagType(tag.getType());
+                            Optional<AssetsType> optional = assetsTypeExposeService.findById(a.getAssetsTypeId());
+                            if (optional.isPresent()) {
+                                assetsVo.setAssetsTypeName(optional.get().getAssetsTypeName());
+                            }
+//                            assetsVo.setTagType(tag.getType());
                             assetsVo.setTagPurpose(tag.getPurpose());
                         }
                     }

@@ -171,6 +171,8 @@ public class RedisConstants {
      */
     public static final String USER_LAST_WASH = "user_last_wash_";
 
+    public static final String BEFORE_UUID = "before_uuid_";
+
     /**
      * 当前用户所在的区域(key:userId,value:UserCurrentRegionDto)
      */
@@ -260,7 +262,7 @@ public class RedisConstants {
     /**
      * 洗手监控(key:userId,value:region_id)
      */
-    public static final String WAH_MONITOR = "wah_monitor_";
+    public static final String WASH_MONITOR = "wash_monitor_";
 
     /**
      * 按钮规则(key:tagRuleId,value:tagRule)

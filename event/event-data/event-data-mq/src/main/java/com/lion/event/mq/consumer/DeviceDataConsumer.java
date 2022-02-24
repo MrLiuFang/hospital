@@ -107,23 +107,10 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                     deviceData.setTn(tag.getDeviceName());
                 }
             }
-
-            if (Objects.nonNull(deviceDataDto.getButtonId())) {
-                deviceData.setE("标签按钮");
+            Type type = redisUtil.getTagBindType(tag.getId());
+            if (Objects.nonNull(type)) {
+                deviceData.setE(type.getDesc());
             }
-
-            if (Objects.nonNull(deviceDataDto.getTemperature()) || Objects.nonNull(deviceDataDto.getHumidity())) {
-                deviceData.setE("温湿");
-            }
-
-            if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.HAND_WASHING)) {
-                deviceData.setE("洗手");
-            }
-
-            if (Objects.nonNull(monitor) && Objects.equals(monitor.getDeviceClassify(), DeviceClassify.RECYCLING_BOX)) {
-                deviceData.setE("回收标签");
-            }
-
             deviceDataService.save(deviceData);
 
         }catch (Exception exception){

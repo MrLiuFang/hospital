@@ -51,8 +51,11 @@ public class DepartmentAssetsStatisticsDetailsVo {
     @JsonIgnoreProperties(ignoreUnknown = true,value = {"img","departmentId","buildFloorId","buildId","regionId","createDateTime","updateDateTime","createUserId","updateUserId"})
     public static class AssetsVo extends Assets{
 
-        @Schema(description = "标签类型")
-        private TagType tagType;
+        @Schema(description = "标签类型名称")
+        private String assetsTypeName;
+
+//        @Schema(description = "标签类型")
+//        private TagType tagType;
 
         @Schema(description = "标签用途")
         private TagPurpose tagPurpose;

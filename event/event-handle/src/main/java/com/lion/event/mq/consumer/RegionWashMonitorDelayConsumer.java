@@ -73,6 +73,7 @@ public class RegionWashMonitorDelayConsumer implements RocketMQListener<MessageE
                             if (millis <= 1000) {
                                 //推送洗手检测命令
                                 rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
+                                after(washTemplateItemVo,regionWashMonitorDelayDto);
                             } else {
                                 Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashMonitorDelayDto.getDelayDateTime());
                                 if (delayLevel > -1) {
@@ -84,30 +85,40 @@ public class RegionWashMonitorDelayConsumer implements RocketMQListener<MessageE
                         }
 
                         //延迟推送洗手监控命令 循环延迟的第一次处理 根据洗手规则的检测时间BeforeEnteringTime/AfterEnteringTime来设置延迟推送洗手检测命令
+                        //监控进入区域前洗手监控
                         if (Objects.nonNull(washTemplateItemVo.getBeforeTime())) {
                             try {
                                 rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
                             } catch (JsonProcessingException e) {
                                 e.printStackTrace();
                             }
-                        } else if ( Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime()>0) {
-                            //进入X区域之后X几分钟检测是否洗手（延迟推送洗手检测命令）
-                            LocalDateTime delayDateTime = LocalDateTime.now().plusMinutes(washTemplateItemVo.getAfterTime());
-                            regionWashMonitorDelayDto.setDelayDateTime(delayDateTime);
-                            try {
-                                Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashMonitorDelayDto.getDelayDateTime());
-                                if (delayLevel > -1) {
-                                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build(), 2000, delayLevel);
-                                }
-                            } catch (JsonProcessingException e) {
-                                e.printStackTrace();
-                            }
                         }
+                        after(washTemplateItemVo,regionWashMonitorDelayDto);
+
                     }
                 }
             }
         }catch (Exception exception){
             exception.printStackTrace();
+        }
+    }
+
+    private void after(ListWashTemplateItemVo washTemplateItemVo,RegionWashMonitorDelayDto regionWashMonitorDelayDto){
+        //监控进入区域前后洗手监控
+        if ( Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime()>0) {
+            //进入X区域之后X几分钟检测是否洗手（延迟推送洗手检测命令）
+            LocalDateTime delayDateTime = LocalDateTime.now().plusMinutes(washTemplateItemVo.getAfterTime());
+            regionWashMonitorDelayDto.setDelayDateTime(delayDateTime);
+            try {
+                LocalDateTime localDateTime =LocalDateTime.now().plusSeconds(washTemplateItemVo.getAfterTime());
+                regionWashMonitorDelayDto.setDelayDateTime(localDateTime);
+                Integer delayLevel = MessageDelayUtil.getDelayLevel(localDateTime);
+                if (delayLevel > -1) {
+                    rocketMQTemplate.syncSend(TopicConstants.REGION_WASH_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build(), 2000, delayLevel);
+                }
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

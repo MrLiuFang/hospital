@@ -29,6 +29,7 @@ import org.springframework.stereotype.Component;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @Author Mr.Liu
@@ -67,7 +68,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
             if (Objects.nonNull(regionWashMonitorDelayDto) && Objects.nonNull(regionWashMonitorDelayDto.getUserId())) {
                 UserCurrentRegionDto userCurrentRegionDto = (UserCurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.USER_CURRENT_REGION + regionWashMonitorDelayDto.getUserId());
                 if (Objects.nonNull(userCurrentRegionDto)) {
-                    String str = (String) redisTemplate.opsForValue().get(RedisConstants.WAH_MONITOR+regionWashMonitorDelayDto.getUserId());
+                    String str = (String) redisTemplate.opsForValue().get(RedisConstants.WASH_MONITOR +regionWashMonitorDelayDto.getUserId());
                     if (Objects.isNull(str)) {
                         return;
                     }
@@ -78,7 +79,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                     }
                     //判断用户是否从X区域离开 如果离开就不进行洗手检测
                     if (Objects.nonNull(userCurrentRegionDto.getRegionId()) && Objects.equals(userCurrentRegionDto.getRegionId(),regionWashMonitorDelayDto.getRegionId())) {
-                        redisTemplate.delete(RedisConstants.WAH_MONITOR+regionWashMonitorDelayDto.getUserId());
+                        redisTemplate.delete(RedisConstants.WASH_MONITOR +regionWashMonitorDelayDto.getUserId());
                         Region region = redisUtil.getRegionById(userCurrentRegionDto.getRegionId());
                         ListWashTemplateItemVo washTemplateItemVo = redisUtil.getWashTemplate(region.getWashTemplateId());
                         if (Objects.isNull(washTemplateItemVo)) {
@@ -90,19 +91,23 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                         washEventDto.setWi(washTemplateItemVo.getId());
                         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
                         if ( Objects.nonNull(washTemplateItemVo.getBeforeTime()) && washTemplateItemVo.getBeforeTime() >0){
-                            if (Objects.isNull(userLastWashDto)) {
-                                alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,null,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
-                                return;
-                            }
-                            Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
-                            if (duration.toMinutes() > washTemplateItemVo.getBeforeTime()){
-                                alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,userLastWashDto,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
-                                return;
-                            }
-                            Boolean b = washRuleUtil.judgeDevideType(userLastWashDto.getMonitorId(), washTemplateItemVo.getWashDeviceTypes());
-                            if (Objects.equals(b,false)){
-                                alarm(washEventDto,true,SystemAlarmType.WXYBZDXSSBXS,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
-                                return;
+                            String before = (String) redisTemplate.opsForValue().get(RedisConstants.BEFORE_UUID+uuid);
+                            redisTemplate.opsForValue().set(RedisConstants.BEFORE_UUID+uuid,uuid,24, TimeUnit.DAYS);
+                            if (Objects.isNull(before)) {
+                                if (Objects.isNull(userLastWashDto)) {
+                                    alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,null,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
+                                    return;
+                                }
+                                Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
+                                if (duration.toMinutes() > washTemplateItemVo.getBeforeTime()){
+                                    alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,userLastWashDto,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
+                                    return;
+                                }
+                                Boolean b = washRuleUtil.judgeDevideType(userLastWashDto.getMonitorId(), washTemplateItemVo.getWashDeviceTypes());
+                                if (Objects.equals(b,false)){
+                                    alarm(washEventDto,true,SystemAlarmType.WXYBZDXSSBXS,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
+                                    return;
+                                }
                             }
                         }else if (Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime() >0){
                             if (Objects.isNull(userLastWashDto)) {

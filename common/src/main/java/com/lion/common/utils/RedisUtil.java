@@ -578,7 +578,7 @@ public class RedisUtil {
         if (Objects.isNull(user)){
             TagUser tagUser = tagUserExposeService.find(tagId);
             if (Objects.nonNull(tagUser)){
-                com.lion.core.Optional<User> optional = userExposeService.findById(userId);
+                com.lion.core.Optional<User> optional = userExposeService.findById(tagUser.getUserId());
                 if (optional.isPresent()) {
                     user = optional.get();
                     redisTemplate.opsForValue().set(RedisConstants.TAG_USER + tagId, user.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
@@ -843,7 +843,7 @@ public class RedisUtil {
         }
         Object obj = redisTemplate.opsForValue().get(RedisConstants.WASH_TEMPLATE+ washTemplateId);
         DetailsWashTemplateVo detailsWashTemplateVo = null;
-        if (!(obj instanceof DetailsWashTemplateVo)) {
+        if (Objects.nonNull(obj) && !(obj instanceof DetailsWashTemplateVo)) {
             redisTemplate.delete(RedisConstants.WASH_TEMPLATE+ washTemplateId);
         }else {
             detailsWashTemplateVo = (DetailsWashTemplateVo) obj;

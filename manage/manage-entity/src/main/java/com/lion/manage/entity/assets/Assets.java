@@ -48,6 +48,8 @@ public class Assets extends BaseEntity implements Serializable {
     @NotBlank(message = "{2000001}", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 
+    private String govCode;
+
     @Schema(description = "资产分类")
     @Column(name = "assets_type_id")
 //    @Convert(converter = AssetsType.AssetsTypeConverter.class)
