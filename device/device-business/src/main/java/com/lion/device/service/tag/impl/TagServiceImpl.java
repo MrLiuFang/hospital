@@ -188,6 +188,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                     BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000047"));
                 }
             }
+            redisTemplate.delete(RedisConstants.TAG_BIND_TYPE+deleteDto.getId());
             currentPositionExposeService.delete(null,null,deleteDto.getId());
         });
 

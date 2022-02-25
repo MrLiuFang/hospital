@@ -84,7 +84,7 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
         tagLogService.add( TagLogContent.binding,tag.getId());
         tag.setUseState(TagUseState.USEING);
         tagService.update(tag);
-
+        redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
         redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.ASSET, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         return true;
     }
@@ -101,6 +101,7 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
                 tag.setUseState(TagUseState.NOT_USED);
                 tagService.update(tag);
                 tagLogService.add( TagLogContent.unbinding,tagAssets.getTagId());
+                redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
             }
             redisTemplate.delete(RedisConstants.TAG_BIND_TYPE+tagAssets.getTagId());
         }

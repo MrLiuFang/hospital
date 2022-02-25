@@ -94,6 +94,7 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         tagLogService.add( TagLogContent.binding,tag.getId());
         tag.setUseState(TagUseState.USEING);
         tagService.update(tag);
+        redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
         redisTemplate.opsForValue().set(RedisConstants.TAG_USER+tag.getId(),userId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.USER_TAG+userId,tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.STAFF, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
@@ -119,6 +120,7 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
                 Tag tag = optional.get();
                 tag.setUseState(TagUseState.NOT_USED);
                 tagService.update(tag);
+                redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
             }
             redisTemplate.delete(RedisConstants.TAG_USER + tagUser.getTagId());
             redisTemplate.delete(RedisConstants.USER_TAG + tagUser.getUserId());

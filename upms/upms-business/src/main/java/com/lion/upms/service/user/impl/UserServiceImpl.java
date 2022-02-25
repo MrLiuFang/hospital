@@ -389,6 +389,10 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),updateUserDto.getResponsibleDepartmentIds());
         tagUserExposeService.binding(user.getId(),user.getTagCode(), updateUserDto.getDepartmentId());
         redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        Tag tag = tagExposeService.find(user.getTagCode());
+        if (Objects.nonNull(tag)) {
+            redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
+        }
     }
 
     @Override
@@ -403,6 +407,10 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
                 departmentResponsibleUserExposeService.deleteByUserId(d.getId());
                 redisTemplate.delete(RedisConstants.USER+d.getId());
                 tagUserExposeService.unbinding(optional.get().getId(),false);
+                Tag tag = tagExposeService.find(optional.get().getTagCode());
+                if (Objects.nonNull(tag)) {
+                    redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
+                }
             }
             currentPositionExposeService.delete(d.getId(),null,null);
         });
