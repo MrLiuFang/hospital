@@ -229,10 +229,10 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
                 }
 
 
-                if (Objects.nonNull(alarm) && Objects.equals(alarm.getAgain(),true ) && !Objects.equals(newSystemAlarm.getUa(),SystemAlarmState.PROCESSED.getKey())) {
-                    systemAlarmDto.setDelayDateTime(LocalDateTime.now().plusMinutes(alarm.getInterval()));
-                    againAlarm(systemAlarmDto);
-                }
+//                if (Objects.nonNull(alarm) && Objects.equals(alarm.getAgain(),true ) && !Objects.equals(newSystemAlarm.getUa(),SystemAlarmState.PROCESSED.getKey())) {
+//                    systemAlarmDto.setDelayDateTime(LocalDateTime.now().plusMinutes(alarm.getInterval()));
+//                    againAlarm(systemAlarmDto);
+//                }
             }
 
         }catch (Exception e){

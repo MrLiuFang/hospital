@@ -79,7 +79,6 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                     }
                     //判断用户是否从X区域离开 如果离开就不进行洗手检测
                     if (Objects.nonNull(userCurrentRegionDto.getRegionId()) && Objects.equals(userCurrentRegionDto.getRegionId(),regionWashMonitorDelayDto.getRegionId())) {
-                        redisTemplate.delete(RedisConstants.WASH_MONITOR +regionWashMonitorDelayDto.getUserId());
                         Region region = redisUtil.getRegionById(userCurrentRegionDto.getRegionId());
                         ListWashTemplateItemVo washTemplateItemVo = redisUtil.getWashTemplate(region.getWashTemplateId());
                         if (Objects.isNull(washTemplateItemVo)) {
@@ -109,7 +108,8 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                     return;
                                 }
                             }
-                        }else if (Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime() >0){
+                        }
+                        if (Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime() >0){
                             if (Objects.isNull(userLastWashDto)) {
                                 alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,null,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
                                 return;
