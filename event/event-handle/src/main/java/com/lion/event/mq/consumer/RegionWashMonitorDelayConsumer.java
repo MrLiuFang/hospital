@@ -73,7 +73,7 @@ public class RegionWashMonitorDelayConsumer implements RocketMQListener<MessageE
                             if (millis <= 1000) {
                                 //推送洗手检测命令
                                 rocketMQTemplate.syncSend(TopicConstants.REGION_WASH, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(regionWashMonitorDelayDto)).build());
-                                after(washTemplateItemVo,regionWashMonitorDelayDto);
+//                                after(washTemplateItemVo,regionWashMonitorDelayDto);
                             } else {
                                 Integer delayLevel = MessageDelayUtil.getDelayLevel(regionWashMonitorDelayDto.getDelayDateTime());
                                 if (delayLevel > -1) {
