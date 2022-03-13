@@ -18,4 +18,9 @@ public class AssetsFaultExposeServiceImpl extends BaseServiceImpl<AssetsFault> i
     public int countNotFinish(Long assetsId) {
         return assetsFaultDao.countByAssetsIdAndState(assetsId, AssetsFaultState.NOT_FINISHED);
     }
+
+    @Override
+    public AssetsFault find(Long assetsId, AssetsFaultState state) {
+        return assetsFaultDao.findFirstByAssetsIdAndStateOrderByCreateDateTimeDesc(assetsId,AssetsFaultState.NOT_FINISHED);
+    }
 }

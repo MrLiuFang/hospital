@@ -88,7 +88,7 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
         patientTransfer.setPatientId(transferDto.getPatientId());
         patientTransfer.setOldSickbedId(patient.getSickbedId());
         patientTransfer.setOldDepartmentId(patient.getDepartmentId());
-        patientTransfer.setState(TransferState.PENDING_TRANSFER);
+        patientTransfer.setState(TransferState.TRANSFERRING);
         save(patientTransfer);
 
     }

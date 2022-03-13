@@ -54,6 +54,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -438,6 +439,13 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     @Override
     public TodayDaysStatisticsVo todayDaysStatistics(LocalDateTime startDateTime, LocalDateTime endDateTime) {
         TodayDaysStatisticsVo vo = TodayDaysStatisticsVo.builder().build();
+        LocalDateTime now = LocalDateTime.now();
+        if (Objects.isNull(startDateTime)) {
+            startDateTime =LocalDateTime.of(now.toLocalDate(), LocalTime.MIN);
+        }
+        if (Objects.isNull(endDateTime)) {
+            endDateTime =LocalDateTime.of(now.toLocalDate(), LocalTime.MAX);
+        }
         vo.setTotal(alarmDao.todayDaysStatistics(null, startDateTime, endDateTime));
         vo.setStaffCount(alarmDao.todayDaysStatistics(Type.STAFF, startDateTime, endDateTime ));
         vo.setPatientCount(alarmDao.todayDaysStatistics(Type.PATIENT, startDateTime, endDateTime ));

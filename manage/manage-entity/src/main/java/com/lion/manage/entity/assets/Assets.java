@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
+import com.lion.manage.entity.enums.AssetsState;
 import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.enums.State;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -81,6 +82,11 @@ public class Assets extends BaseEntity implements Serializable {
     @Convert(converter = AssetsUseState.AssetsUseStateConverter.class)
 //    @NotNull(message = "使用状态不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private AssetsUseState useState = AssetsUseState.NOT_USED;
+
+    @Schema(description = "状态")
+    @Column(name = "state")
+    @Convert(converter = AssetsState.AssetsStateConverter.class)
+    private AssetsState state = AssetsState.NOT_USED;
 
     @Schema(description = "是否需要使用登记")
     @Column(name = "use_registration")

@@ -113,6 +113,7 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 tag = redisUtil.getTag(deviceDataDto.getTagId());
             }
             if (Objects.nonNull(tag)){
+                redisTemplate.opsForValue().set(RedisConstants.LAST_DATA+String.valueOf(tag.getId()),LocalDateTime.now(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                 Type type = redisUtil.getTagBindType(tag.getId());
                 if (Objects.equals(type,Type.STAFF)) {
                     user = redisUtil.getUser(tag.getId());
@@ -150,7 +151,6 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 }
             }
             if (Objects.nonNull(patient)  ) { //处理患者数据
-                redisTemplate.delete(RedisConstants.TAG_LOSE + String.valueOf(patient.getId()));
                 patientService.patientEvent(deviceDataDto,monitor,star,tag,patient);
             }else if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
                 temporaryPersonService.temporaryPersonEvent(deviceDataDto,monitor,star,tag,temporaryPerson);

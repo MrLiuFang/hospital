@@ -266,8 +266,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 //                        deviceGroupIds.add(region.getDeviceGroupId());
 //                    }
 //                });
-            departmentStatisticsDetailsVo.setLowPowerDeviceCount(deviceExposeService.countDevice(deviceGroupIds, 1));
-            departmentStatisticsDetailsVo.setLowPowerTagCount(tagExposeService.countTag(departmentId, 1));
+            departmentStatisticsDetailsVo.setLowPowerDeviceCount(deviceExposeService.countDevice(deviceGroupIds, 2));
+            departmentStatisticsDetailsVo.setLowPowerTagCount(tagExposeService.countTag(departmentId, 2));
             Map<String, Integer> map = systemAlarmService.groupCount(departmentId);
             if (map.containsKey("allAlarmCount")) {
                 departmentStatisticsDetailsVo.setAllAlarmCount(map.get("allAlarmCount"));

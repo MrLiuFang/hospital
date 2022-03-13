@@ -161,14 +161,14 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         BasicDBObject match = new BasicDBObject();
         LocalDateTime now = LocalDateTime.now();
         match = BasicDBObjectUtil.put(match,"$match","sdi",new BasicDBObject("$eq",departmentId) );
-        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",LocalDateTime.of(now.toLocalDate(), LocalTime.MIN) ).append("$lte",now));
+        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",LocalDateTime.of(now.toLocalDate().minusDays(3), LocalTime.MIN) ).append("$lte",now));
 //        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",now.toLocalDate().minusDays(30) ).append("$lte",now));
         pipeline.add(match);
         BasicDBObject group = new BasicDBObject();
         group = BasicDBObjectUtil.put(group,"$group","_id","$sdi");
         group = BasicDBObjectUtil.put(group,"$group","allAlarmCount",new BasicDBObject("$sum",1));
-        group = BasicDBObjectUtil.put(group,"$group","unalarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ua",false?1:0})})).append("then",1).append("else",0))));
-        group = BasicDBObjectUtil.put(group,"$group","alarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ua",true?1:0})})).append("then",1).append("else",0))));
+        group = BasicDBObjectUtil.put(group,"$group","unalarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$in",new Object[]{"$ua",new Integer[]{SystemAlarmState.UNTREATED.getKey(),SystemAlarmState.CALL.getKey()}})})).append("then",1).append("else",0))));
+        group = BasicDBObjectUtil.put(group,"$group","alarmCount",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$in",new Object[]{"$ua",new Integer[]{SystemAlarmState.PROCESSED.getKey(),SystemAlarmState.CANCEL_CALL.getKey()}})})).append("then",1).append("else",0))));
         pipeline.add(group);
         AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("system_alarm").aggregate(pipeline);
         Map<String, Integer> map = new HashMap<>();

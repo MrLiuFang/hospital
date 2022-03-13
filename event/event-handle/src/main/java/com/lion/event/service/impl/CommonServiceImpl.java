@@ -176,14 +176,14 @@ public class CommonServiceImpl implements CommonService {
         }
         Region patientRegion = null;
         if (Objects.equals(type,Type.PATIENT)) {
-            if (Objects.nonNull(patientTransfer) ){
-                if (Objects.equals(patientTransfer.getNewDepartmentId(),region.departmentId)) {
-                    patientTransferExposeService.updateState(pi, TransferState.WAITING_TO_RECEIVE);
-                }else {
-                    patientTransferExposeService.updateState(pi, TransferState.TRANSFERRING);
-                }
-                return;
-            }
+//            if (Objects.nonNull(patientTransfer) ){
+//                if (Objects.equals(patientTransfer.getNewDepartmentId(),region.departmentId)) {
+//                    patientTransferExposeService.updateState(pi, TransferState.WAITING_TO_RECEIVE);
+//                }else {
+//                    patientTransferExposeService.updateState(pi, TransferState.TRANSFERRING);
+//                }
+//                return;
+//            }
             List<TempLeave> tempLeaves =tempLeaveExposeService.find(pi);
             if (Objects.nonNull(tempLeaves) && tempLeaves.size()>0 ) {
                 for (TempLeave tempLeave :tempLeaves) {

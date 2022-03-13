@@ -225,12 +225,17 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
         list.forEach(department -> {
             TreeDepartmentVo treeDepartmentVo = new TreeDepartmentVo();
             BeanUtils.copyProperties(department,treeDepartmentVo);
+            if (Objects.isNull(department.getParentId()) || !Objects.equals(department.getParentId(),0L)) {
+
+            }
             treeDepartmentVo.setChildren(convertVo(departmentDao.findByParentIdOrderByCreateDateTimeAsc(department.getId())));
             treeDepartmentVo.setResponsibleUser(departmentResponsibleUserService.responsibleUser(department.getId()));
             returnList.add(treeDepartmentVo);
         });
         return returnList;
     }
+
+
 
     private void persistenceRedis(Department department){
         redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT+department.getId(),department,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);

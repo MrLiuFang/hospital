@@ -264,6 +264,7 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         temporaryPerson.setIsLeave(true);
         temporaryPerson.setLeaveRemarks(temporaryPersonLeaveDto.getLeaveRemarks());
         temporaryPerson.setLeaveDateTime(LocalDateTime.now());
+        temporaryPerson.setVersion(temporaryPersonLeaveDto.getVersion());
         update(temporaryPerson);
         tagPostdocsExposeService.unbinding(temporaryPerson.getId(),false);
         currentPositionExposeService.delete(temporaryPerson.getId(),null,null);

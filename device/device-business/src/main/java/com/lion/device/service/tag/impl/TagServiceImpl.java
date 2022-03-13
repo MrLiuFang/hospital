@@ -286,6 +286,13 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                     }
                 }
             }
+            if (Objects.nonNull(vo.getBindingId())) {
+                if (!Objects.equals(tag.getUseState(),TagUseState.USEING)) {
+                    tag.setUseState(TagUseState.USEING);
+                    update(tag);
+                    vo.setUseState(TagUseState.USEING);
+                }
+            }
             returnList.add(vo);
         });
         return new PageResultData<List<ListTagVo>>(returnList,page.getPageable(),page.getTotalElements());

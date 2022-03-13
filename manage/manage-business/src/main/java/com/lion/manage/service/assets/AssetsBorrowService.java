@@ -67,4 +67,6 @@ public interface AssetsBorrowService extends BaseService<AssetsBorrow> {
      * @return
      */
     public DetailsAssetsBorrowVo lastDetails(Long assetsId);
+
+    public AssetsBorrow findFirstByAssetsIdAndReturnUserIdIsNull(Long assetsId);
 }

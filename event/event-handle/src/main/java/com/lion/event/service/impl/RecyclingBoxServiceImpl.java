@@ -6,14 +6,20 @@ import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.CurrentRegionDto;
 import com.lion.common.dto.DeviceDataDto;
 import com.lion.common.dto.RecyclingBoxRecordDto;
+import com.lion.core.Optional;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
+import com.lion.device.entity.tag.TagUser;
+import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.event.service.CommonService;
 import com.lion.event.service.RecyclingBoxService;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.PatientExposeService;
 import com.lion.person.expose.person.TemporaryPersonExposeService;
+import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +51,11 @@ public class RecyclingBoxServiceImpl implements RecyclingBoxService {
     @Autowired
     private CommonService commonService;
 
+    @DubboReference
+    private TagUserExposeService tagUserExposeService;
+
+    @DubboReference
+    private UserExposeService userExposeService;
 
     @Override
     public void event(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient, TemporaryPerson temporaryPerson) throws JsonProcessingException {
@@ -52,6 +63,16 @@ public class RecyclingBoxServiceImpl implements RecyclingBoxService {
             patientExposeService.updateIsWaitLeave(patient.getId(),true);
         }else if (Objects.nonNull(temporaryPerson)){
             temporaryPersonExposeService.updateIsWaitLeave(temporaryPerson.getId(),true);
+        }
+        if (Objects.equals(tag.getType(), TagType.STAFF)){
+            TagUser tagUser = tagUserExposeService.find(tag.getId());
+            tagUserExposeService.unbinding(tagUser.getUserId(),false);
+            Optional<User> optional = userExposeService.findById(tagUser.getUserId());
+            if (optional.isPresent()) {
+                User user = optional.get();
+                user.setTagCode("");
+                userExposeService.update(user);
+            }
         }
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
         RecyclingBoxRecordDto recyclingBoxRecordDto = new RecyclingBoxRecordDto();

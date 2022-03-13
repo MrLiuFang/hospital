@@ -22,6 +22,7 @@ import com.lion.manage.entity.assets.vo.ListAssetsBorrowVo;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.enums.AssetsState;
 import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoomSickbed;
@@ -160,8 +161,11 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
             com.lion.core.Optional<Assets> optional  = assetsService.findById(assetsBorrow.getAssetsId());
             if (optional.isPresent()) {
                 Assets assets = optional.get();
-                assets.setUseState(AssetsUseState.USEING);
-                assetsService.update(assets);
+                if (Objects.nonNull(assets.getState()) && assets.getState().getKey()<=AssetsState.NOT_USED.getKey()) {
+                    assets.setUseState(AssetsUseState.USEING);
+                    assets.setState(AssetsState.USEING);
+                    assetsService.update(assets);
+                }
             }
         });
     }
@@ -271,8 +275,11 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
                         com.lion.core.Optional<Assets> optionalAssets = assetsService.findById(assetsBorrow.getAssetsId());
                         if (optionalAssets.isPresent()) {
                             Assets assets = optionalAssets.get();
-                            assets.setUseState(AssetsUseState.NOT_USED);
-                            assetsService.update(assets);
+                            if (Objects.nonNull(assets.getState()) && assets.getState().getKey()<=AssetsState.NOT_USED.getKey()) {
+                                assets.setUseState(AssetsUseState.NOT_USED);
+                                assets.setState(AssetsState.NOT_USED);
+                                assetsService.update(assets);
+                            }
                         }
                     }
                 }
@@ -307,6 +314,11 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
             vo.setReturnUserHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
         }
         return vo;
+    }
+
+    @Override
+    public AssetsBorrow findFirstByAssetsIdAndReturnUserIdIsNull(Long assetsId) {
+        return assetsBorrowDao.findFirstByAssetsIdAndReturnUserIdIsNull(assetsId);
     }
 
     private void assertAssetsExist(Long id) {

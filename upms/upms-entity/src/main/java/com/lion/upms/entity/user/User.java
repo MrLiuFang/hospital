@@ -43,7 +43,7 @@ public class User extends BaseEntity implements Serializable {
 
     private static final long serialVersionUID = 2414603096785043264L;
     @Schema(description = "用户登陆账号")
-    @Column(name = "username",updatable = false)
+    @Column(name = "username")
 //    @NotBlank(message = "用户登陆账号不能为空", groups = {Validator.Insert.class})
 //    @Length(min = 3, max = 30, message = "账号为{min}-{max}个字符", groups = {Validator.Insert.class})
 //    @Pattern(regexp = "[A-Za-z0-9\\-]{3,30}", message = "账号只能是3-30个(英文/数字)字符", groups = {Validator.Insert.class})

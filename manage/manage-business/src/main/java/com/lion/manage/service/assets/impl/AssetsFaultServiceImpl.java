@@ -10,6 +10,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.assets.AssetsFaultDao;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.assets.AssetsBorrow;
 import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.dto.AddAssetsFaultDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsFaultDto;
@@ -20,8 +21,11 @@ import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsFaultState;
+import com.lion.manage.entity.enums.AssetsState;
+import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.department.DepartmentExposeService;
+import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
 import com.lion.manage.service.build.BuildFloorService;
@@ -39,6 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
@@ -87,10 +92,15 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
     @Autowired
     private HttpServletResponse response;
 
+    @Autowired
+    private AssetsBorrowService assetsBorrowService;
+
     @DubboReference
     private DepartmentExposeService departmentExposeService;
 
+
     @Override
+    @Transactional
     public void add(AddAssetsFaultDto addAssetsFaultDto) {
         AssetsFault assetsFault = new AssetsFault();
         BeanUtils.copyProperties(addAssetsFaultDto,assetsFault);
@@ -101,6 +111,14 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
             BusinessException.throwException(MessageI18nUtil.getMessage("2000067"));
         }
         save(assetsFault);
+        Optional<Assets> optional =  assetsService.findById(assetsFault.getAssetsId());
+        if (optional.isPresent()) {
+            Assets assets = optional.get();
+            if (Objects.nonNull(assets.getState()) && assets.getState().getKey()<= AssetsState.REPAIR.getKey()) {
+                assets.setState(AssetsState.REPAIR);
+                assetsService.update(assets);
+            }
+        }
     }
 
     @Override
@@ -111,6 +129,19 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
 //        assertAssetsExist(assetsFault.getAssetsId());
         if (Objects.equals( assetsFault.getState(), AssetsFaultState.FINISH)) {
             assetsFault.setFinishTime(LocalDateTime.now());
+            Optional<Assets> optional =  assetsService.findById(assetsFault.getAssetsId());
+            if (optional.isPresent()) {
+                Assets assets = optional.get();
+                if (Objects.nonNull(assets.getState()) && assets.getState().getKey()<= AssetsState.REPAIR.getKey()) {
+                    AssetsBorrow assetsBorrow = assetsBorrowService.findFirstByAssetsIdAndReturnUserIdIsNull(updateAssetsFaultDto.getAssetsId());
+                    if (Objects.nonNull(assetsBorrow)) {
+                        assets.setState(AssetsState.NOT_USED);
+                    }else {
+                        assets.setState(AssetsState.USEING);
+                    }
+                    assetsService.update(assets);
+                }
+            }
         }
         super.update(assetsFault);
     }

@@ -21,4 +21,6 @@ public class TemporaryPersonLeaveDto {
 
     @Schema(description = "登出原因")
     private String leaveRemarks;
+
+    private Long version;
 }

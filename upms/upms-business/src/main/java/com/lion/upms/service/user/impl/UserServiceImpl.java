@@ -364,17 +364,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             com.lion.core.Optional<User> optionalTmp = findById(user.getId());
             if (optionalTmp.isPresent()) {
                 User tmp = optionalTmp.get();
-                if (!StringUtils.hasText(tmp.getPassword()) && !StringUtils.hasText(tmp.getUsername())) {
-                    if (!StringUtils.hasText(tmp.getEmail())) {
-                        BusinessException.throwException(MessageI18nUtil.getMessage("0000016"));
-                    } else {
-                        user.setUsername(StringUtils.hasText(user.getEmail()) ? user.getEmail() : tmp.getEmail());
-                        user.setPassword(passwordEncoder.encode(SecureUtil.md5(StringUtils.hasText(user.getEmail()) ? user.getEmail() : tmp.getEmail())));
-                    }
-                } else {
-                    user.setUsername(tmp.getUsername());
-                    user.setPassword(tmp.getPassword());
-                }
+                user.setUsername(StringUtils.hasText(user.getEmail()) ? user.getEmail() : tmp.getEmail());
+                user.setPassword(passwordEncoder.encode(SecureUtil.md5(StringUtils.hasText(user.getEmail()) ? user.getEmail() : tmp.getEmail())));
             }
         }else {
             user.setUsername("");
