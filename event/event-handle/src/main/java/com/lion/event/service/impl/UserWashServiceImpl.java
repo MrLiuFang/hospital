@@ -217,7 +217,7 @@ public class UserWashServiceImpl implements UserWashService {
                 if (Objects.isNull(str)) {
                     return;
                 }
-                redisTemplate.delete(RedisConstants.WASH_MONITOR +user.getId());
+//                redisTemplate.delete(RedisConstants.WASH_MONITOR +user.getId());
                 WashEventDto washEventDto = new WashEventDto();
                 BeanUtils.copyProperties(washRecordDto,washEventDto);
                 washEventDto.setWi(washTemplateItemVo.getId());
