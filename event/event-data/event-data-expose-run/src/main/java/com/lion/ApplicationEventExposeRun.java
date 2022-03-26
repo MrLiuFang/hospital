@@ -10,12 +10,13 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerA
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 
 @SpringBootApplication (exclude = {DataSourceAutoConfiguration.class,
         DataSourceTransactionManagerAutoConfiguration.class,
         DruidDataSourceAutoConfigure.class ,
         HibernateJpaAutoConfiguration.class})
-@ComponentScan(basePackages = {"com.lion.**"})
+@ComponentScan(basePackages = {"com.lion.**"},excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,classes = JPAQueryFactoryConfiguration.class)})
 @DubboComponentScan(basePackages = {"com.lion.**"})
 @EnableDiscoveryClient
 public class ApplicationEventExposeRun {

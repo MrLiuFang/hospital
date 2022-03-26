@@ -160,7 +160,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         List<Bson> pipeline = new ArrayList<Bson>();
         BasicDBObject match = new BasicDBObject();
         LocalDateTime now = LocalDateTime.now();
-        match = BasicDBObjectUtil.put(match,"$match","sdi",new BasicDBObject("$eq",departmentId) );
+        if (Objects.nonNull(departmentId)) {
+            match = BasicDBObjectUtil.put(match, "$match", "sdi", new BasicDBObject("$eq", departmentId));
+        }
         match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",LocalDateTime.of(now.toLocalDate().minusDays(3), LocalTime.MIN) ).append("$lte",now));
 //        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",now.toLocalDate().minusDays(30) ).append("$lte",now));
         pipeline.add(match);

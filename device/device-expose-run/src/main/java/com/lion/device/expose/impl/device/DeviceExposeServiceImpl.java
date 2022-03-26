@@ -148,9 +148,9 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
             com.lion.core.Optional<Device> optional = findById(id);
             if (optional.isPresent()) {
                 Device device = optional.get();
-                if (!Objects.equals(device.getDeviceClassify(), DeviceClassify.STAR_AP)) {
+//                if (!Objects.equals(device.getDeviceClassify(), DeviceClassify.STAR_AP)) {
                     new_ids.add(device.getId());
-                }
+//                }
             }
         }
         new_ids.forEach(deviceId ->{

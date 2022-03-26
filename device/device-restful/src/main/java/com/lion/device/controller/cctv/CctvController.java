@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 
@@ -98,7 +99,7 @@ public class CctvController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/dind")
     @ApiOperation(value = "CCTV是否绑定区域")
-    public IResultData<List<Long>> isBind(@ApiParam(value = "cctvid-逗号隔开") @NotNull(message = "{0000000}") String ids) {
+    public IResultData<List<Long>> isBind(@ApiParam(value = "cctvid-逗号隔开") @NotBlank(message = "{0000000}") String ids) {
         List<Long> returnList = new ArrayList<>();
         String[] id = ids.split(",");
         if (Objects.nonNull(id) && id.length > 0) {

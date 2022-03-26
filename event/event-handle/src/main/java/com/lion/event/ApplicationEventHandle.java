@@ -1,15 +1,17 @@
 package com.lion.event;
 
+import com.lion.config.JPAQueryFactoryConfiguration;
 import org.apache.dubbo.config.spring.context.annotation.DubboComponentScan;
 import org.apache.rocketmq.client.log.ClientLogger;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 
 @SpringBootApplication ()
-@ComponentScan(basePackages = "com.lion.**")
+@ComponentScan(basePackages = "com.lion.**",excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,classes = JPAQueryFactoryConfiguration.class)})
 @EnableDiscoveryClient
 @DubboComponentScan(basePackages = {"com.lion.**"})
 @EnableOpenApi

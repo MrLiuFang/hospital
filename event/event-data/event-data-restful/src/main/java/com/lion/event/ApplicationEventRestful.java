@@ -14,10 +14,11 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import springfox.documentation.oas.annotations.EnableOpenApi;
 
-@SpringBootApplication (scanBasePackages = "com.lion.**",exclude = {DataSourceAutoConfiguration.class,
+@SpringBootApplication (exclude = {DataSourceAutoConfiguration.class,
         DataSourceTransactionManagerAutoConfiguration.class,
         DruidDataSourceAutoConfigure.class ,
         HibernateJpaAutoConfiguration.class})
+@ComponentScan(basePackages = "com.lion.**",excludeFilters = {@ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE,classes = JPAQueryFactoryConfiguration.class)})
 @EnableDiscoveryClient
 @EnableDubbo
 @DubboComponentScan(basePackages = {"com.lion.**"})
