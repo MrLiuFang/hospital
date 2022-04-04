@@ -308,7 +308,7 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
 
     private void assertUserExist(Long id) {
         com.lion.core.Optional<User> optional = this.userExposeService.findById(id);
-        if (optional.isPresent()){
+        if (optional.isEmpty()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000068"));
         }
     }

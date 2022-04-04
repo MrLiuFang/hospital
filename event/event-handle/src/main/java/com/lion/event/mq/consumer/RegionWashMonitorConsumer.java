@@ -114,7 +114,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                 alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,null,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
                                 return;
                             }
-                            if(!(userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusMinutes(washTemplateItemVo.getAfterTime())) && userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime()))){
+                            if(userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime().plusSeconds(washTemplateItemVo.getAfterTime())) && userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime())){
                                 alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,userLastWashDto,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
                                 return;
                             }
