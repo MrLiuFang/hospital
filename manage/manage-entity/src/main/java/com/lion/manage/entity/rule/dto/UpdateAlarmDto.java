@@ -21,4 +21,7 @@ public class UpdateAlarmDto extends Alarm {
 
     @Schema(description = "警报方式(全量,先删后增)")
     private List<AlarmWay> ways;
+
+    @Schema(description = "用户id(全量,先删后增)")
+    private List<Long> userIds;
 }

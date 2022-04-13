@@ -8,7 +8,7 @@ import com.lion.core.LionPage;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.entity.dto.AlarmReportDto;
 import com.lion.event.entity.vo.*;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.bson.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -91,11 +91,12 @@ public interface SystemAlarmService {
      * @param tagIds
      * @param startDateTime
      * @param endDateTime
+     * @param tagId
      * @param sorts
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds,  LocalDateTime startDateTime,LocalDateTime endDateTime,String... sorts);
-
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds,  LocalDateTime startDateTime,LocalDateTime endDateTime,Long tagId,String... sorts);
+    public List<Document> listGroup(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
     /**
      * 查询未处理的告警
      * @param pi

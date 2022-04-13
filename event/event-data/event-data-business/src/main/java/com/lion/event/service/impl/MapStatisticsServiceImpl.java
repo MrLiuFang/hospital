@@ -838,7 +838,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, String... sorts) {
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, Long tagId, String... sorts) {
         List<Long> departmentIds = new ArrayList<>();
         if (Objects.equals(isAll,false)) {
             departmentIds = departmentExposeService.responsibleDepartment(di);
@@ -854,12 +854,65 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             startDateTime = endDateTime.minusDays(3);
         }
         List<Long> tagIds = tagExposeService.find(tagType,tagCode);
-        return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType, tagIds, startDateTime, endDateTime,sorts);
+        return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType, tagIds, startDateTime, endDateTime,tagId , sorts);
+    }
+
+    @Override
+    public List<SystemAlarmGroupVo> systemAlarmGroupList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, String... sorts) {
+        List<Long> departmentIds = new ArrayList<>();
+        if (Objects.equals(isAll,false)) {
+            departmentIds = departmentExposeService.responsibleDepartment(di);
+        }else if (Objects.equals(isAll,true)) {
+            if (Objects.nonNull(di)) {
+                departmentIds.add(di);
+            }
+        }
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(3);
+        }
+        if (Objects.nonNull(endDateTime)) {
+            startDateTime = endDateTime.minusDays(3);
+        }
+        List<Long> tagIds = tagExposeService.find(tagType,tagCode);
+        List<org.bson.Document> list = systemAlarmService.listGroup(lionPage,departmentIds,isUa,ri,alarmType,tagIds,startDateTime,endDateTime);
+        List<SystemAlarmGroupVo> returnList = new ArrayList<>();
+        list.forEach(document -> {
+            if (document.containsKey("_id")) {
+                SystemAlarmGroupVo vo = new SystemAlarmGroupVo();
+                Optional<Tag > optional = tagExposeService.findById(Long.valueOf(String.valueOf(document.get("_id"))));
+                if (optional.isPresent()) {
+                    Tag tag = optional.get();
+                    vo.setTagId(tag.getId());
+                    vo.setTagCode(tag.getTagCode());
+                    User user = redisUtil.getUser(tag.getId());
+                    Patient patient = redisUtil.getPatientByTagId(tag.getId());
+                    TemporaryPerson temporaryPerson = redisUtil.getTemporaryPersonByTagId(tag.getId());
+                    if (Objects.nonNull(user)) {
+                        vo.setTitle(user.getName());
+                        vo.setImgId(user.getHeadPortrait());
+                        vo.setImgUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                    } else if (Objects.nonNull(patient)) {
+                        vo.setTitle(patient.getName());
+                        vo.setImgId(patient.getHeadPortrait());
+                        vo.setImgUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
+                    } else if (Objects.nonNull(temporaryPerson)) {
+                        vo.setTitle(temporaryPerson.getName());
+                        vo.setImgId(temporaryPerson.getHeadPortrait());
+                        vo.setImgUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
+                    }
+                    vo.setTagType(tag.getType());
+                    vo.setCount(Integer.valueOf(String.valueOf(document.get("count"))));
+
+                    returnList.add(vo);
+                }
+            }
+        });
+        return returnList;
     }
 
     @Override
     public void systemAlarmListExport(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
-        IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage);
+        IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage, null);
         List<SystemAlarmVo> list = pageResultData.getData();
         BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
         Font fontChinese = new Font(bfChinese);

@@ -46,7 +46,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @Author Mr.Liu
@@ -564,12 +563,20 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return ResultData.instance().setData(mapStatisticsService.assetsDetails(assetsId));
     }
 
+    @GetMapping("/alarm/list/group")
+    @ApiOperation(value = "地图监控警告列表(只获取负责科室的警告)默认30天内数据")
+    public IResultData<List<SystemAlarmGroupVo>> systemAlarmListGroup(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                                LionPage lionPage){
+        return ResultData.instance().setData( mapStatisticsService.systemAlarmGroupList(false, false, null, null,null , null, null, startDateTime, endDateTime, lionPage,"sdt"));
+    }
+
     @GetMapping("/alarm/list")
     @ApiOperation(value = "地图监控警告列表(只获取负责科室的警告)默认30天内数据")
     public IPageResultData<List<SystemAlarmVo>> systemAlarmList(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
-                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,@ApiParam(value = "tag id")Long tagId,
                                                                 LionPage lionPage){
-        return mapStatisticsService.systemAlarmList(false, false, null, null,null , null, null, startDateTime, endDateTime, lionPage,"sdt");
+        return mapStatisticsService.systemAlarmList(false, false, null, null,null , null, null, startDateTime, endDateTime, lionPage, tagId, "sdt");
     }
 
     @GetMapping("/alarm/list1")
@@ -578,7 +585,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                                 @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                 LionPage lionPage){
-        return mapStatisticsService.systemAlarmList(true, alarmState, ri, di , alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage,"dt");
+        return mapStatisticsService.systemAlarmList(true, alarmState, ri, di , alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage,null , "dt");
     }
 
     @GetMapping("/alarm/list1/export")

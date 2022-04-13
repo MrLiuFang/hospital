@@ -99,11 +99,13 @@ public interface SystemAlarmDaoEx {
      * @param tagIds
      * @param startDateTime
      * @param endDateTime
+     * @param tagId
      * @param sorts
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime,String... sorts);
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime,Long tagId,String... sorts);
 
+    public List<Document> listGroup(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
     /**
      * 7天警告数量统计
      * @param departmentId

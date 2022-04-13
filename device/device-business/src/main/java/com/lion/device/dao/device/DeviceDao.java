@@ -130,7 +130,7 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
      */
     @Modifying
     @Transactional
-    @Query(" update Device set regionId =null ,version=version+1 where regionId = :regionId ")
+    @Query(" update Device set regionId =null ,deviceState=4,version=version+1 where regionId = :regionId ")
     public int updateRegionIdIsNull(@Param("regionId")Long regionId);
 
     /**
@@ -141,7 +141,7 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
      */
     @Modifying
     @Transactional
-    @Query(" update Device set regionId =:regionId ,version=version+1 where id in :ids ")
+    @Query(" update Device set regionId =:regionId, deviceState=3, version=version+1 where id in :ids ")
     public int updateRegion(@Param("regionId")Long regionId,@Param("ids")List<Long> ids);
 
 

@@ -20,6 +20,7 @@ import com.lion.manage.entity.rule.dto.UpdateAlarmDto;
 import com.lion.manage.entity.rule.vo.DetailsAlarmVo;
 import com.lion.manage.entity.rule.vo.ListAlarmVo;
 import com.lion.manage.service.rule.AlarmService;
+import com.lion.manage.service.rule.AlarmUserService;
 import com.lion.manage.service.rule.AlarmWayService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
@@ -61,6 +62,9 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     private AlarmWayService alarmWayService;
 
     @Autowired
+    private AlarmUserService alarmUserService;
+
+    @Autowired
     private RedisTemplate redisTemplate;
 
     @Override
@@ -73,6 +77,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         assertAlarmClassifytExist(alarm.getClassify(),alarm.getContent(),alarm.getLevel(),null);
         alarm = save(alarm);
         alarmWayService.add(alarm.getId(),addAlarmDto.getWays());
+        alarmUserService.add(alarm.getId(),addAlarmDto.getUserIds());
         persistenceRedis(alarm,false);
     }
 
@@ -86,6 +91,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
         assertAlarmClassifytExist(alarm.getClassify(),alarm.getContent(),alarm.getLevel(),alarm.getId());
         update(alarm);
         alarmWayService.add(alarm.getId(),updateAlarmDto.getWays());
+        alarmUserService.add(alarm.getId(),updateAlarmDto.getUserIds());
         persistenceRedis(alarm,false);
     }
 
@@ -141,6 +147,11 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
             }
             deleteById(deleteDto.getId());
         });
+    }
+
+    @Override
+    public Alarm userAlarm(Long userId) {
+        return alarmDao.findByUserId(userId);
     }
 
     private void persistenceRedis(Alarm alarm,Boolean delete){

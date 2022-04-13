@@ -4,6 +4,8 @@ import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.rule.Alarm;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 /**
  * @author Mr.Liu
@@ -69,4 +71,7 @@ public interface AlarmDao extends BaseDao<Alarm> {
      * @return
      */
     public Alarm findFirstByCodeAndClassifyAndLevel(SystemAlarmType code,AlarmClassify classify,Integer level);
+
+    @Query("select a from Alarm a join AlarmUser au on a.id = au.alarmId where au.userId = :userId")
+    public Alarm findByUserId( @Param("userId") Long userId);
 }

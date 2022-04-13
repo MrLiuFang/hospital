@@ -10,6 +10,7 @@ import com.lion.manage.entity.rule.dto.AddAlarmDto;
 import com.lion.manage.entity.rule.dto.UpdateAlarmDto;
 import com.lion.manage.entity.rule.vo.DetailsAlarmVo;
 import com.lion.manage.entity.rule.vo.ListAlarmVo;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.List;
 
@@ -54,4 +55,6 @@ public interface AlarmService extends BaseService<Alarm> {
      * @param deleteDtos
      */
     public void delete(List<DeleteDto> deleteDtos);
+
+    public Alarm userAlarm(Long userId);
 }

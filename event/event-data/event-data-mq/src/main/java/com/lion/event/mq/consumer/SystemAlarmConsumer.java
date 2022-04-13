@@ -90,150 +90,150 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
 //                    return;
 //                }
 //            }
-            Duration duration = Duration.between(LocalDateTime.now(),systemAlarmDto.getDelayDateTime());
-            if (systemAlarmDto.getDelayDateTime().isAfter(LocalDateTime.now()) && duration.toMillis()>1000 ){
-                againAlarm(systemAlarmDto);
-                return;
+//            Duration duration = Duration.between(LocalDateTime.now(),systemAlarmDto.getDelayDateTime());
+//            if (systemAlarmDto.getDelayDateTime().isAfter(LocalDateTime.now()) && duration.toMillis()>1000 ){
+//                againAlarm(systemAlarmDto);
+//                return;
+//            }else {
+//                Alarm alarm = getAlarm(systemAlarmDto);
+//                if (Objects.isNull(alarm)) {
+//                    return;
+//                }
+//                if (systemAlarmDto.getCount()>1){
+//                    systemAlarmDto.setCount(systemAlarmDto.getCount()+1);
+//                    systemAlarmService.updateSdt(systemAlarmDto.getId());
+//                }else {
+
+            newSystemAlarm.setAi(systemAlarmDto.getAssetsId());
+            if (Objects.nonNull(systemAlarmDto.getHumidity())) {
+                newSystemAlarm.setH(systemAlarmDto.getHumidity());
+            }
+            if (Objects.nonNull(systemAlarmDto.getTemperature())) {
+                newSystemAlarm.setT(systemAlarmDto.getTemperature());
+            }
+            newSystemAlarm.setDvi(systemAlarmDto.getDeviceId());
+            newSystemAlarm.setPi(systemAlarmDto.getPeopleId());
+            if (Objects.nonNull(systemAlarmDto.getSystemAlarmType())) {
+                newSystemAlarm.setSat(systemAlarmDto.getSystemAlarmType().getKey());
+            }
+            newSystemAlarm.setTi(systemAlarmDto.getTagId());
+            if (Objects.nonNull(systemAlarmDto.getType())) {
+                newSystemAlarm.setTy(systemAlarmDto.getType().getKey());
+            }
+            if (Objects.equals(systemAlarmDto.getSystemAlarmType(), SystemAlarmType.ZDHJ)) {
+                newSystemAlarm.setUa(SystemAlarmState.CALL);
             }else {
-                Alarm alarm = getAlarm(systemAlarmDto);
-                if (Objects.isNull(alarm)) {
-                    return;
+                newSystemAlarm.setUa(SystemAlarmState.UNTREATED);
+            }
+            newSystemAlarm.setDt(systemAlarmDto.getDateTime());
+            newSystemAlarm.setSdt( systemAlarmDto.getDateTime() );
+//                    if (Objects.nonNull(alarm)) {
+//                        newSystemAlarm.setAli(alarm.getId());
+//                    }
+            Region region = redisUtil.getRegionById(systemAlarmDto.getRegionId());
+            if (Objects.nonNull(region)) {
+                newSystemAlarm.setRi(region.getId());
+                newSystemAlarm.setRn(region.getName());
+                Build build = redisUtil.getBuild(region.getBuildId());
+                if (Objects.nonNull(build)) {
+                    newSystemAlarm.setBui(build.getId());
+                    newSystemAlarm.setBun(build.getName());
                 }
-                if (systemAlarmDto.getCount()>1){
-                    systemAlarmDto.setCount(systemAlarmDto.getCount()+1);
-                    systemAlarmService.updateSdt(systemAlarmDto.getId());
-                }else {
-
-                    newSystemAlarm.setAi(systemAlarmDto.getAssetsId());
-                    if (Objects.nonNull(systemAlarmDto.getHumidity())) {
-                        newSystemAlarm.setH(systemAlarmDto.getHumidity());
-                    }
-                    if (Objects.nonNull(systemAlarmDto.getTemperature())) {
-                        newSystemAlarm.setT(systemAlarmDto.getTemperature());
-                    }
-                    newSystemAlarm.setDvi(systemAlarmDto.getDeviceId());
-                    newSystemAlarm.setPi(systemAlarmDto.getPeopleId());
-                    if (Objects.nonNull(systemAlarmDto.getSystemAlarmType())) {
-                        newSystemAlarm.setSat(systemAlarmDto.getSystemAlarmType().getKey());
-                    }
-                    newSystemAlarm.setTi(systemAlarmDto.getTagId());
-                    if (Objects.nonNull(systemAlarmDto.getType())) {
-                        newSystemAlarm.setTy(systemAlarmDto.getType().getKey());
-                    }
-                    if (Objects.equals(systemAlarmDto.getSystemAlarmType(), SystemAlarmType.ZDHJ)) {
-                        newSystemAlarm.setUa(SystemAlarmState.CALL);
-                    }else {
-                        newSystemAlarm.setUa(SystemAlarmState.UNTREATED);
-                    }
-                    newSystemAlarm.setDt(systemAlarmDto.getDateTime());
-                    newSystemAlarm.setSdt( systemAlarmDto.getDateTime() );
-                    if (Objects.nonNull(alarm)) {
-                        newSystemAlarm.setAli(alarm.getId());
-                    }
-                    Region region = redisUtil.getRegionById(systemAlarmDto.getRegionId());
-                    if (Objects.nonNull(region)) {
-                        newSystemAlarm.setRi(region.getId());
-                        newSystemAlarm.setRn(region.getName());
-                        Build build = redisUtil.getBuild(region.getBuildId());
-                        if (Objects.nonNull(build)) {
-                            newSystemAlarm.setBui(build.getId());
-                            newSystemAlarm.setBun(build.getName());
-                        }
-                        BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
-                        if (Objects.nonNull(buildFloor)) {
-                            newSystemAlarm.setBfi(buildFloor.getId());
-                            newSystemAlarm.setBfn(buildFloor.getName());
-                        }
-                        Department department = redisUtil.getDepartment(region.getDepartmentId());
-                        if (Objects.nonNull(department)) {
-                            newSystemAlarm.setDi(department.getId());
-                            newSystemAlarm.setDn(department.getName());
-                        }
-                    }
-                    DepartmentAlarm departmentAlarm = null;
-                    if (Objects.equals(newSystemAlarm.getTy(),Type.STAFF.getKey())) {
-                        User user = redisUtil.getUserById(newSystemAlarm.getPi()) ;
-                        if (Objects.nonNull(user)) {
-                            Department department = redisUtil.getDepartmentByUserId(user.getId());
-                            newSystemAlarm.setSdi(department.getId());
-                            departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
-                            if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getStaffWash(),false) && (Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.ZZDQYWJXXSCZ.getKey()) || Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.WXYBZDXSSBXS.getKey()))) {
-                                newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
-                            }
-                            if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getStaffBattery(),false) && Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
-                                newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
-                            }
-                        }
-                    }else if (Objects.equals(newSystemAlarm.getTy(),Type.PATIENT.getKey())) {
-                        Patient patient = redisUtil.getPatient(newSystemAlarm.getPi());
-                        if (Objects.nonNull(patient)) {
-                            newSystemAlarm.setSdi(patient.getDepartmentId());
-                            departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
-                            if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getLeaveDepartment(),false) &&(Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.CCXDFW.getKey())||Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.JRJQ.getKey())) ) {
-                                newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
-                            }
-                        }
-                    }else if (Objects.equals(newSystemAlarm.getTy(),Type.MIGRANT.getKey())) {
-                        TemporaryPerson temporaryPerson = redisUtil.getTemporaryPerson(newSystemAlarm.getPi());
-                        if (Objects.nonNull(temporaryPerson)) {
-                            newSystemAlarm.setSdi(temporaryPerson.getDepartmentId());
-                        }
-                    }else if (Objects.equals(newSystemAlarm.getTy(),Type.ASSET.getKey())) {
-                        Assets assets = redisUtil.getAssets(newSystemAlarm.getTi());
-                        if (Objects.nonNull(assets)){
-                            newSystemAlarm.setSdi(assets.getDepartmentId());
-                            departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
-                            if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getAssetsBattery(),false) &&Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
-                                newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
-                            }
-                        }
-                    }else if (Objects.equals(newSystemAlarm.getTy(),Type.DEVICE.getKey())) {
-                        Device device = redisUtil.getDevice(newSystemAlarm.getDvi());
-                        if (Objects.nonNull(device)){
-                            Department department = redisUtil.getDepartmentByDeviceId(device.getId());
-                            if (Objects.nonNull(department)){
-                                newSystemAlarm.setSdi(department.getId());
-                            }
-                            departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
-                            if ((Objects.equals(device.getDeviceClassify(), DeviceClassify.MONITOR) ||Objects.equals(device.getDeviceClassify(), DeviceClassify.LF_EXCITER) ) && Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getMonitorBattery(),false) &&Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
-                                newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
-                            }
-                        }
-                    }else if (Objects.equals(newSystemAlarm.getTy(),Type.HUMIDITY.getKey()) || Objects.equals(newSystemAlarm.getTy(),Type.TEMPERATURE.getKey()) ) {
-                        Tag tag = redisUtil.getTagById(newSystemAlarm.getTi());
-                        if (Objects.nonNull(tag)) {
-                            newSystemAlarm.setSdi(tag.getDepartmentId());
-                        }
-                        departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
-                        if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getHumidBattery(),false) &&Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
-                            newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
-                        }
-                    }
-                    newSystemAlarm = systemAlarmService.save(newSystemAlarm);
-                    systemAlarmDto.setId(newSystemAlarm.get_id());
-                    systemAlarmDto.setCount(systemAlarmDto.getCount() + 1);
-
-                    UpdateStateDto updateStateDto = new UpdateStateDto();
-                    updateStateDto.setType(systemAlarmDto.getType());
-                    updateStateDto.setState(2);
-                    if (Objects.equals(updateStateDto.getType(),Type.STAFF) || Objects.equals(updateStateDto.getType(),Type.PATIENT) || Objects.equals(updateStateDto.getType(),Type.MIGRANT)) {
-                        updateStateDto.setId(newSystemAlarm.getPi());
-                    }else if (Objects.equals(updateStateDto.getType(),Type.ASSET)) {
-                        updateStateDto.setId(newSystemAlarm.getAi());
-                    }else if (Objects.equals(updateStateDto.getType(),Type.DEVICE)) {
-                        updateStateDto.setId(newSystemAlarm.getDvi());
-                    }else if (Objects.equals(updateStateDto.getType(),Type.HUMIDITY) || Objects.equals(updateStateDto.getType(),Type.TEMPERATURE)) {
-                        updateStateDto.setId(newSystemAlarm.getTi());
-                    }
-                    rocketMQTemplate.syncSend(TopicConstants.UPDATE_STATE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(updateStateDto)).build());
+                BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
+                if (Objects.nonNull(buildFloor)) {
+                    newSystemAlarm.setBfi(buildFloor.getId());
+                    newSystemAlarm.setBfn(buildFloor.getName());
                 }
+                Department department = redisUtil.getDepartment(region.getDepartmentId());
+                if (Objects.nonNull(department)) {
+                    newSystemAlarm.setDi(department.getId());
+                    newSystemAlarm.setDn(department.getName());
+                }
+            }
+            DepartmentAlarm departmentAlarm = null;
+            if (Objects.equals(newSystemAlarm.getTy(),Type.STAFF.getKey())) {
+                User user = redisUtil.getUserById(newSystemAlarm.getPi()) ;
+                if (Objects.nonNull(user)) {
+                    Department department = redisUtil.getDepartmentByUserId(user.getId());
+                    newSystemAlarm.setSdi(department.getId());
+                    departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
+                    if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getStaffWash(),false) && (Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.ZZDQYWJXXSCZ.getKey()) || Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.WXYBZDXSSBXS.getKey()))) {
+                        newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
+                    }
+                    if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getStaffBattery(),false) && Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
+                        newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
+                    }
+                }
+            }else if (Objects.equals(newSystemAlarm.getTy(),Type.PATIENT.getKey())) {
+                Patient patient = redisUtil.getPatient(newSystemAlarm.getPi());
+                if (Objects.nonNull(patient)) {
+                    newSystemAlarm.setSdi(patient.getDepartmentId());
+                    departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
+                    if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getLeaveDepartment(),false) &&(Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.CCXDFW.getKey())||Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.JRJQ.getKey())) ) {
+                        newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
+                    }
+                }
+            }else if (Objects.equals(newSystemAlarm.getTy(),Type.MIGRANT.getKey())) {
+                TemporaryPerson temporaryPerson = redisUtil.getTemporaryPerson(newSystemAlarm.getPi());
+                if (Objects.nonNull(temporaryPerson)) {
+                    newSystemAlarm.setSdi(temporaryPerson.getDepartmentId());
+                }
+            }else if (Objects.equals(newSystemAlarm.getTy(),Type.ASSET.getKey())) {
+                Assets assets = redisUtil.getAssets(newSystemAlarm.getTi());
+                if (Objects.nonNull(assets)){
+                    newSystemAlarm.setSdi(assets.getDepartmentId());
+                    departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
+                    if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getAssetsBattery(),false) &&Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
+                        newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
+                    }
+                }
+            }else if (Objects.equals(newSystemAlarm.getTy(),Type.DEVICE.getKey())) {
+                Device device = redisUtil.getDevice(newSystemAlarm.getDvi());
+                if (Objects.nonNull(device)){
+                    Department department = redisUtil.getDepartmentByDeviceId(device.getId());
+                    if (Objects.nonNull(department)){
+                        newSystemAlarm.setSdi(department.getId());
+                    }
+                    departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
+                    if ((Objects.equals(device.getDeviceClassify(), DeviceClassify.MONITOR) ||Objects.equals(device.getDeviceClassify(), DeviceClassify.LF_EXCITER) ) && Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getMonitorBattery(),false) &&Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
+                        newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
+                    }
+                }
+            }else if (Objects.equals(newSystemAlarm.getTy(),Type.HUMIDITY.getKey()) || Objects.equals(newSystemAlarm.getTy(),Type.TEMPERATURE.getKey()) ) {
+                Tag tag = redisUtil.getTagById(newSystemAlarm.getTi());
+                if (Objects.nonNull(tag)) {
+                    newSystemAlarm.setSdi(tag.getDepartmentId());
+                }
+                departmentAlarm = redisUtil.getDepartmentAlarm(newSystemAlarm.getSdi());
+                if (Objects.nonNull(departmentAlarm) && Objects.equals(departmentAlarm.getHumidBattery(),false) &&Objects.equals(newSystemAlarm.getSat(),SystemAlarmType.BQDCBZ.getKey()) ) {
+                    newSystemAlarm.setUa(SystemAlarmState.PROCESSED);
+                }
+            }
+            newSystemAlarm = systemAlarmService.save(newSystemAlarm);
+            systemAlarmDto.setId(newSystemAlarm.get_id());
+            systemAlarmDto.setCount(systemAlarmDto.getCount() + 1);
+
+            UpdateStateDto updateStateDto = new UpdateStateDto();
+            updateStateDto.setType(systemAlarmDto.getType());
+            updateStateDto.setState(2);
+            if (Objects.equals(updateStateDto.getType(),Type.STAFF) || Objects.equals(updateStateDto.getType(),Type.PATIENT) || Objects.equals(updateStateDto.getType(),Type.MIGRANT)) {
+                updateStateDto.setId(newSystemAlarm.getPi());
+            }else if (Objects.equals(updateStateDto.getType(),Type.ASSET)) {
+                updateStateDto.setId(newSystemAlarm.getAi());
+            }else if (Objects.equals(updateStateDto.getType(),Type.DEVICE)) {
+                updateStateDto.setId(newSystemAlarm.getDvi());
+            }else if (Objects.equals(updateStateDto.getType(),Type.HUMIDITY) || Objects.equals(updateStateDto.getType(),Type.TEMPERATURE)) {
+                updateStateDto.setId(newSystemAlarm.getTi());
+            }
+            rocketMQTemplate.syncSend(TopicConstants.UPDATE_STATE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(updateStateDto)).build());
+//                }
 
 
 //                if (Objects.nonNull(alarm) && Objects.equals(alarm.getAgain(),true ) && !Objects.equals(newSystemAlarm.getUa(),SystemAlarmState.PROCESSED.getKey())) {
 //                    systemAlarmDto.setDelayDateTime(LocalDateTime.now().plusMinutes(alarm.getInterval()));
 //                    againAlarm(systemAlarmDto);
 //                }
-            }
+//            }
 
         }catch (Exception e){
             e.printStackTrace();

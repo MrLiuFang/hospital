@@ -52,6 +52,14 @@ public class AlarmController extends BaseControllerImpl implements BaseControlle
         return alarmService.list(content, classify, level, lionPage);
     }
 
+    @GetMapping("/user/details")
+    @ApiOperation(value = "获取用户警报规则详情")
+    public IResultData<DetailsAlarmVo> userDetails( Long userid){
+        ResultData resultData = ResultData.instance();
+        resultData.setData(alarmService.userAlarm(userid));
+        return resultData;
+    }
+
     @GetMapping("/details")
     @ApiOperation(value = "警报规则详情")
     public IResultData<DetailsAlarmVo> details(@NotNull(message = "{0000000}") Long id){

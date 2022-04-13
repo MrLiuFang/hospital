@@ -21,4 +21,7 @@ public class AddAlarmDto extends Alarm {
 
     @Schema(description = "警报方式")
     private List<AlarmWay> ways;
+
+    @Schema(description = "用户id")
+    private List<Long> userIds;
 }

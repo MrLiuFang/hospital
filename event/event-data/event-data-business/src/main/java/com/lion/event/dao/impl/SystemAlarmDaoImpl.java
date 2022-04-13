@@ -225,7 +225,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime, String... sorts) {
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime, Long tagId, String... sorts) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
@@ -242,9 +242,12 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         if (Objects.nonNull(alarmType)) {
             criteria.and("ty").is(alarmType.getKey());
         }
-        if (Objects.nonNull(tagIds) && tagIds.size()>0) {
+        if (Objects.nonNull(tagId) ) {
+            criteria.and("ti").is(tagId);
+        }else if (Objects.nonNull(tagIds) && tagIds.size()>0) {
             criteria.and("ti").in(tagIds);
         }
+
         if (Objects.isNull(startDateTime)) {
 //            startDateTime = LocalDateTime.now().minusDays(30);
             startDateTime = LocalDateTime.of(LocalDateTime.now().toLocalDate(), LocalTime.MIN);
@@ -449,6 +452,43 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         }
         return new PageResultData<>(list,lionPage,count);
     }
+
+    @Override
+    public List<Document> listGroup(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<Bson> pipeline = new ArrayList<Bson>();
+        BasicDBObject match = new BasicDBObject();
+        LocalDateTime now = LocalDateTime.now();
+        if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
+            match = BasicDBObjectUtil.put(match, "$match", "sdi", new BasicDBObject("$in", departmentIds));
+        }
+        if (Objects.nonNull(tagIds) && tagIds.size()>0) {
+            match = BasicDBObjectUtil.put(match, "$match", "ti", new BasicDBObject("$in", tagIds));
+        }
+        List<Integer> uaList= new ArrayList<>();
+        uaList.add(SystemAlarmState.UNTREATED.getKey());
+        uaList.add(SystemAlarmState.CALL.getKey());
+        match = BasicDBObjectUtil.put(match, "$match", "ua", new BasicDBObject("$in", uaList));
+//        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",LocalDateTime.of(now.toLocalDate(), LocalTime.MIN) ).append("$lte",now));
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.of(now.toLocalDate(), LocalTime.MIN);
+        }
+        if (Objects.isNull(endDateTime)) {
+            endDateTime = now;
+        }
+        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte", startDateTime).append("$lte",endDateTime));
+        pipeline.add(match);
+        BasicDBObject group = new BasicDBObject();
+        group = BasicDBObjectUtil.put(group,"$group","_id","$ti");
+        group = BasicDBObjectUtil.put(group,"$group","count",new BasicDBObject("$sum",1));
+        pipeline.add(group);
+        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("system_alarm").aggregate(pipeline);
+        List<Document> list = new ArrayList<>();
+        aggregateIterable.forEach(document -> {
+            list.add(document);
+        });
+        return list;
+    }
+
 
     @Override
     public List<Document> sevenDaysStatistics(Long departmentId) {
