@@ -33,4 +33,9 @@ public class SystemAlarmGroupVo {
 
     @Schema(description = "图片url")
     private String imgUrl;
+
+    @Schema(description = "告警内容")
+    private SystemAlarmVo systemAlarm;
+
+
 }

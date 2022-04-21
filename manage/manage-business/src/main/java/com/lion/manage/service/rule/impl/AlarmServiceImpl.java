@@ -150,7 +150,7 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     }
 
     @Override
-    public Alarm userAlarm(Long userId) {
+    public List<Alarm> userAlarm(Long userId) {
         return alarmDao.findByUserId(userId);
     }
 
@@ -201,27 +201,27 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     }
 
     private void assertCodeExist(SystemAlarmType code,AlarmClassify classify,Integer level, Long id) {
-        Alarm alarm = null;
-        if (Objects.nonNull(level)) {
-            alarm = alarmDao.findFirstByCodeAndClassifyAndLevel(code,classify,level);
-        }else {
-            alarm = alarmDao.findFirstByCodeAndClassify(code,classify);
-        }
-        if ((Objects.isNull(id) && Objects.nonNull(alarm)) || (Objects.nonNull(id) && Objects.nonNull(alarm) && !Objects.equals(alarm.getId(),id)) ){
-            BusinessException.throwException(MessageI18nUtil.getMessage("2000084"));
-        }
+//        Alarm alarm = null;
+//        if (Objects.nonNull(level)) {
+//            alarm = alarmDao.findFirstByCodeAndClassifyAndLevel(code,classify,level);
+//        }else {
+//            alarm = alarmDao.findFirstByCodeAndClassify(code,classify);
+//        }
+//        if ((Objects.isNull(id) && Objects.nonNull(alarm)) || (Objects.nonNull(id) && Objects.nonNull(alarm) && !Objects.equals(alarm.getId(),id)) ){
+//            BusinessException.throwException(MessageI18nUtil.getMessage("2000084"));
+//        }
     }
 
     private void assertAlarmClassifytExist(AlarmClassify classify,String content, Integer level, Long id) {
-        Alarm alarm = null;
-        if (Objects.equals(classify,AlarmClassify.PATIENT)){
-            alarm = alarmDao.findFirstByClassifyAndLevelAndContent(classify,level,content);
-        }else {
-            alarm = alarmDao.findFirstByClassifyAndContent(classify,content);
-        }
-        if ((Objects.isNull(id) && Objects.nonNull(alarm)) || (Objects.nonNull(id) && Objects.nonNull(alarm) && !Objects.equals(alarm.getId(),id)) ){
-            BusinessException.throwException(MessageI18nUtil.getMessage("2000085",new String[]{content}));
-        }
+//        Alarm alarm = null;
+//        if (Objects.equals(classify,AlarmClassify.PATIENT)){
+//            alarm = alarmDao.findFirstByClassifyAndLevelAndContent(classify,level,content);
+//        }else {
+//            alarm = alarmDao.findFirstByClassifyAndContent(classify,content);
+//        }
+//        if ((Objects.isNull(id) && Objects.nonNull(alarm)) || (Objects.nonNull(id) && Objects.nonNull(alarm) && !Objects.equals(alarm.getId(),id)) ){
+//            BusinessException.throwException(MessageI18nUtil.getMessage("2000085",new String[]{content}));
+//        }
     }
 
 }

@@ -9,6 +9,7 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
 import com.lion.manage.entity.enums.AlarmClassify;
+import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.entity.rule.dto.AddAlarmDto;
 import com.lion.manage.entity.rule.dto.UpdateAlarmDto;
 import com.lion.manage.entity.rule.vo.DetailsAlarmVo;
@@ -53,8 +54,8 @@ public class AlarmController extends BaseControllerImpl implements BaseControlle
     }
 
     @GetMapping("/user/details")
-    @ApiOperation(value = "获取用户警报规则详情")
-    public IResultData<DetailsAlarmVo> userDetails( Long userid){
+    @ApiOperation(value = "获取用户警报规则")
+    public IResultData<List<Alarm>> userDetails(Long userid){
         ResultData resultData = ResultData.instance();
         resultData.setData(alarmService.userAlarm(userid));
         return resultData;

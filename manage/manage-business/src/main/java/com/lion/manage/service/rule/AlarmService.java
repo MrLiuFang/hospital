@@ -56,5 +56,5 @@ public interface AlarmService extends BaseService<Alarm> {
      */
     public void delete(List<DeleteDto> deleteDtos);
 
-    public Alarm userAlarm(Long userId);
+    public List<Alarm> userAlarm(Long userId);
 }

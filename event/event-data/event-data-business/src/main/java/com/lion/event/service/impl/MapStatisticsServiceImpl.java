@@ -1,5 +1,6 @@
 package com.lion.event.service.impl;
 
+import ch.qos.logback.classic.turbo.TurboFilter;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -876,6 +877,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         List<Long> tagIds = tagExposeService.find(tagType,tagCode);
         List<org.bson.Document> list = systemAlarmService.listGroup(lionPage,departmentIds,isUa,ri,alarmType,tagIds,startDateTime,endDateTime);
         List<SystemAlarmGroupVo> returnList = new ArrayList<>();
+        LocalDateTime finalStartDateTime = startDateTime;
         list.forEach(document -> {
             if (document.containsKey("_id")) {
                 SystemAlarmGroupVo vo = new SystemAlarmGroupVo();
@@ -902,7 +904,12 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     }
                     vo.setTagType(tag.getType());
                     vo.setCount(Integer.valueOf(String.valueOf(document.get("count"))));
-
+                    LionPage lionPage1 = new LionPage(0,1);
+                    IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false,null,null,null,null,null, finalStartDateTime,null,lionPage1,tag.getId(),"dt");
+                    List<SystemAlarmVo> list1 = listIPageResultData.getData();
+                    if (Objects.nonNull(list1) && list1.size()>0) {
+                        vo.setSystemAlarm(list1.get(0));
+                    }
                     returnList.add(vo);
                 }
             }
