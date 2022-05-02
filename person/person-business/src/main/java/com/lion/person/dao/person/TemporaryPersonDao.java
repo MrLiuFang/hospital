@@ -106,4 +106,8 @@ public interface TemporaryPersonDao extends BaseDao<TemporaryPerson> {
      */
     public List<TemporaryPerson> findByDepartmentIdAndIsLeaveAndIdIn(Long departmentId, Boolean isLeave,List<Long> ids);
 
+    int countByCreateDateTimeGreaterThanEqual(LocalDateTime startDateTime);
+
+    int countByIsLeaveIsFalse();
+
 }

@@ -28,10 +28,8 @@ import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.ward.WardExposeService;
 import com.lion.manage.expose.ward.WardRoomExposeService;
 import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
-import com.lion.person.dao.person.PatientDao;
-import com.lion.person.dao.person.PatientReportDao;
-import com.lion.person.dao.person.PatientTransferDao;
-import com.lion.person.dao.person.TempLeaveDao;
+import com.lion.person.dao.person.*;
+import com.lion.person.entity.enums.Gender;
 import com.lion.person.entity.enums.LogType;
 import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.Patient;
@@ -41,9 +39,7 @@ import com.lion.person.entity.person.TempLeave;
 import com.lion.person.entity.person.dto.AddPatientDto;
 import com.lion.person.entity.person.dto.PatientLeaveDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
-import com.lion.person.entity.person.vo.DetailsPatientReportVo;
-import com.lion.person.entity.person.vo.ListPatientVo;
-import com.lion.person.entity.person.vo.PatientDetailsVo;
+import com.lion.person.entity.person.vo.*;
 import com.lion.person.service.person.PatientLogService;
 import com.lion.person.service.person.PatientService;
 import com.lion.upms.entity.user.User;
@@ -60,14 +56,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.Period;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -128,6 +126,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private TemporaryPersonDao temporaryPersonDao;
 
 //    @Autowired
 //    private PatientDoctorService patientDoctorService;
@@ -466,6 +467,15 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     @Override
+    public PatientDetailsVo detailsCardNumber(String cardNumber) {
+        java.util.Optional<Patient> option = this.patientDao.findFirstByCardNumberOrderByCreateDateTimeDesc(cardNumber);
+        if (option.isPresent()) {
+            return details(option.get().getId());
+        }
+        return null;
+    }
+
+    @Override
     @Transactional
 //    @GlobalTransactional
     public void leave(PatientLeaveDto patientLeaveDto) {
@@ -482,6 +492,41 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             }
             currentPositionExposeService.delete(patient.getId(), null, null);
         }
+    }
+
+    public IPageResultData<List<ListMergeVo>> listMerge(Integer type, String name, String cardNumber, String tagCode, String medicalRecordNo, String sort, LionPage lionPage) {
+        Page<Map<String, Object>> page = this.patientDao.listMerge(type, name, cardNumber, tagCode, medicalRecordNo, sort, lionPage);
+        List<Map<String, Object>> list = page.getContent();
+        List<ListMergeVo> returnList = new ArrayList();
+        list.forEach((map) -> {
+            ListMergeVo vo = new ListMergeVo();
+            if (Objects.nonNull(map.get("headPortrait"))){
+                vo.setHeadPortrait(Long.valueOf(String.valueOf(map.get("headPortrait"))));
+            }
+            vo.setCreateDateTime(((Timestamp)map.get("createDateTime")).toLocalDateTime());
+            vo.setTagCode(String.valueOf(map.get("tagCode")));
+            vo.setType((Integer)map.get("type"));
+            vo.setName(String.valueOf(map.get("name")));
+            vo.setId(Long.valueOf(String.valueOf(map.get("id"))));
+            if (Objects.nonNull(map.get("gender"))) {
+                vo.setGender(Gender.instance(Integer.valueOf(String.valueOf(map.get("gender")))));
+            }
+            returnList.add(vo);
+        });
+        return new PageResultData(returnList, lionPage, page.getTotalElements());
+    }
+
+    public TodayStatisticsVo todayStatistics() {
+        LocalDateTime startDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
+        TodayStatisticsVo vo = new TodayStatisticsVo();
+        vo.setTodayRegisterCount(this.patientDao.countByCreateDateTimeGreaterThanEqual(startDateTime));
+        vo.setTodayTemporaryPersonRegisterCount(this.temporaryPersonDao.countByCreateDateTimeGreaterThanEqual(startDateTime));
+        vo.setTodayRegisterCount(vo.getTodayRegisterCount() + vo.getTodayTemporaryPersonRegisterCount());
+
+        vo.setPatientNotLeaveCount(this.patientDao.countByIsLeaveIsFalse());
+        vo.setTemporaryPersonNotLeaveCount(this.temporaryPersonDao.countByIsLeaveIsFalse());
+        vo.setNotLeaveCount(vo.getPatientNotLeaveCount() + vo.getTemporaryPersonNotLeaveCount());
+        return vo;
     }
 
     private Patient setOtherInfo(Patient patient) {

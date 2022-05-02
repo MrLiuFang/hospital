@@ -38,7 +38,6 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -150,8 +149,13 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
     }
 
     @Override
-    public List<Alarm> userAlarm(Long userId) {
-        return alarmDao.findByUserId(userId);
+    public List<DetailsAlarmVo> userAlarm(Long userId) {
+        List<Alarm> list = alarmDao.findByUserId(userId);
+        List<DetailsAlarmVo> returnList = new ArrayList<>();
+        list.forEach(alarm -> {
+            returnList.add(details(alarm.getId()));
+        });
+        return returnList;
     }
 
     private void persistenceRedis(Alarm alarm,Boolean delete){

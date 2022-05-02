@@ -55,7 +55,7 @@ public class AlarmController extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/user/details")
     @ApiOperation(value = "获取用户警报规则")
-    public IResultData<List<Alarm>> userDetails(Long userid){
+    public IResultData<List<DetailsAlarmVo>> userDetails(Long userid){
         ResultData resultData = ResultData.instance();
         resultData.setData(alarmService.userAlarm(userid));
         return resultData;

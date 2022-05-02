@@ -58,6 +58,11 @@ public class PatientController extends BaseControllerImpl implements BaseControl
         return ResultData.instance();
     }
 
+    @GetMapping({"/list/merge"})
+    @ApiOperation("患者,流动人员合并查询")
+    public IPageResultData<List<ListMergeVo>> listMerge(@ApiParam("类型：1=患者，2=流动人员，不传查所有") Integer type, @ApiParam("姓名") String name, @ApiParam("金卡号") String cardNumber, @ApiParam("标签编码") String tagCode, @ApiParam("病历号") String medicalRecordNo,@ApiParam("排序字段逗号隔开(name,tagCode)") String sort, LionPage lionPage) {
+        return this.patientService.listMerge(type, name, cardNumber, tagCode, medicalRecordNo,sort , lionPage);
+    }
 
     @GetMapping("/list")
     @ApiOperation(value = "患者列表")
@@ -73,6 +78,14 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     public IResultData<PatientDetailsVo> details(@NotNull(message = "{0000000}") Long id){
         ResultData resultData = ResultData.instance();
         resultData.setData(patientService.details(id));
+        return resultData;
+    }
+
+    @GetMapping("/details/cardNumber")
+    @ApiOperation(value = "根据金卡号查询最后一次登记记录")
+    public IResultData<PatientDetailsVo> detailsCardNumber(@ApiParam(value = "金卡号")String cardNumber){
+        ResultData resultData = ResultData.instance();
+        resultData.setData(patientService.detailsCardNumber(cardNumber));
         return resultData;
     }
 
@@ -184,5 +197,11 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     @ApiOperation(value = "患者日志")
     public IPageResultData<List<ListPatientLogVo>> listLog(@ApiParam(value = "患者id") @NotNull(message = "{1000026}") Long patientId,LionPage lionPage) {
         return patientLogService.list(patientId, lionPage);
+    }
+
+    @GetMapping({"/today/statistics"})
+    @ApiOperation("今日登记和登出统计")
+    public IResultData<TodayStatisticsVo> todayStatistics() {
+        return ResultData.instance().setData(this.patientService.todayStatistics());
     }
 }

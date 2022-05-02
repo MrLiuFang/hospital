@@ -3,7 +3,7 @@ server:
 spring:
   nacos:
     group: @project.version@
-    host: 172.16.30.130:8848
+    host: 192.168.2.130:8848
     namespace: 7d03f927-32d1-4fa3-810d-9a5311ec5bf1
   application:
     name: @project.artifactId@
@@ -25,5 +25,8 @@ spring:
             refresh: true
             group: GLOBAL_GROUP
           - data-id: lion-redis-common.${spring.cloud.nacos.config.file-extension}
+            refresh: true
+            group: GLOBAL_GROUP
+          - data-id: lion-seata-common.${spring.cloud.nacos.config.file-extension}
             refresh: true
             group: GLOBAL_GROUP

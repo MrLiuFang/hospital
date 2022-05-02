@@ -10,7 +10,6 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.upms.dao.user.UserDao;
 import com.lion.upms.entity.user.QUserType;
-import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.UserType;
 import com.lion.upms.entity.user.dto.AddUserTypeDto;
 import com.lion.upms.entity.user.dto.UpdateUserTypeDto;
@@ -29,7 +28,6 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu

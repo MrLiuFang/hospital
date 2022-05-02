@@ -9,8 +9,10 @@ import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.dto.AddPatientDto;
 import com.lion.person.entity.person.dto.PatientLeaveDto;
 import com.lion.person.entity.person.dto.UpdatePatientDto;
+import com.lion.person.entity.person.vo.ListMergeVo;
 import com.lion.person.entity.person.vo.ListPatientVo;
 import com.lion.person.entity.person.vo.PatientDetailsVo;
+import com.lion.person.entity.person.vo.TodayStatisticsVo;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -66,11 +68,17 @@ public interface PatientService extends BaseService<Patient> {
      */
     public PatientDetailsVo details(Long id);
 
+    PatientDetailsVo detailsCardNumber(String cardNumber);
+
     /**
      * 患者登出
      * @param patientLeaveDto
      */
     public void leave(PatientLeaveDto patientLeaveDto);
 
+
+    IPageResultData<List<ListMergeVo>> listMerge(Integer type,String name, String cardNumber, String tagCode, String medicalRecordNo,String sort, LionPage lionPage);
+
+    TodayStatisticsVo todayStatistics();
 
 }

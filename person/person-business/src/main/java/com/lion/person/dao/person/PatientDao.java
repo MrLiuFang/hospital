@@ -11,13 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @description:
  * @author: Mr.Liu
  * @time: 2021/5/25 上午9:03
  */
-public interface PatientDao extends BaseDao<Patient> {
+public interface PatientDao extends BaseDao<Patient>, PatientDaoEx {
 
     /**
      * 根据床位查询患者
@@ -131,4 +132,10 @@ public interface PatientDao extends BaseDao<Patient> {
     public List<Patient> findByDepartmentIdAndIsLeaveOrderByPatientStateDesc(Long departmentId, Boolean isLeave);
 
     public List<Patient> findByDepartmentIdAndIsLeaveAndIdIn(Long departmentId, Boolean isLeave,List<Long> ids);
+
+    int countByCreateDateTimeGreaterThanEqual(LocalDateTime startDateTime);
+
+    int countByIsLeaveIsFalse();
+
+    Optional<Patient> findFirstByCardNumberOrderByCreateDateTimeDesc(String cardNumber);
 }
