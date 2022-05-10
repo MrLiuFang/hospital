@@ -130,4 +130,6 @@ public interface DeviceExposeService extends BaseService<Device> {
      */
     public DetailsDeviceVo details(Long id);
 
+    public void updateState(String code, State state);
+
 }

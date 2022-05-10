@@ -106,7 +106,7 @@ public class Device extends BaseEntity implements Serializable {
     @Schema(description = "设备状态")
     @Column(name = "device_state")
     @Convert(converter = State.StateConverter.class)
-    private State deviceState = State.NORMAL;
+    private State deviceState = State.NOT_ACTIVE;
 
     @Schema(description = "最后的设备数据时间")
     @Column(name = "last_data_time")

@@ -184,4 +184,12 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
         return deviceService.details(id);
     }
 
+    @Override
+    public void updateState(String code, State state) {
+        Device device = deviceDao.findFirstByCode(code);
+        if (Objects.nonNull(device)){
+            device.setDeviceState(state);
+        }
+    }
+
 }
