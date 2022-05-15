@@ -75,6 +75,7 @@ public abstract class Person extends BaseEntity implements Serializable {
 
     @Schema(description = "登出时间（离开时间）")
     @Column(name = "leave_date_time")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime leaveDateTime;
 
     @Schema(description = "登出原因")

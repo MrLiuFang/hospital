@@ -5,10 +5,7 @@ import com.lion.common.enums.Type;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagDao;
 import com.lion.device.dao.tag.TagPatientDao;
-import com.lion.device.entity.enums.TagLogContent;
-import com.lion.device.entity.enums.TagPurpose;
-import com.lion.device.entity.enums.TagState;
-import com.lion.device.entity.enums.TagUseState;
+import com.lion.device.entity.enums.*;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagPatient;
 import com.lion.device.entity.tag.TagUser;
@@ -68,6 +65,9 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){
             BusinessException.throwException(MessageI18nUtil.getMessage("4000021"));
+        }
+        if (Objects.equals(tag.getDeviceState(), State.NOT_ACTIVE)) {
+            BusinessException.throwException(tag.getDeviceName() +"未激活不能使用");
         }
         if (Objects.equals(tag.getState(), TagState.DISABLE)) {
             BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));

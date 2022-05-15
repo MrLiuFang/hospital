@@ -22,8 +22,10 @@ import com.lion.event.expose.service.SystemAlarmExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.SystemAlarmType;
+import com.lion.manage.entity.license.License;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.manage.expose.license.LicenseExposeService;
 import com.lion.upms.dao.role.RoleDao;
 import com.lion.upms.dao.user.UserDao;
 import com.lion.upms.entity.enums.Gender;
@@ -133,6 +135,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     @Autowired
     private HttpServletResponse response;
 
+    @DubboReference
+    private LicenseExposeService licenseExposeService;
+
 
     @Override
     public User findUser(String username) {
@@ -160,6 +165,14 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     @Transactional
 //    @GlobalTransactional
     public void add(AddUserDto addUserDto) {
+        List<License> list = licenseExposeService.findAll();
+        if (Objects.nonNull(list) && list.size()>0) {
+            License license = list.get(0);
+            long userCount = this.count();
+            if (userCount >= license.getUserNum()) {
+                BusinessException.throwException("用户数已超过授权用户数");
+            }
+        }
         User user = new User();
         BeanUtils.copyProperties(addUserDto,user);
         if (Objects.nonNull(addUserDto.getIsCreateAccount()) && addUserDto.getIsCreateAccount()){

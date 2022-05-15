@@ -323,7 +323,7 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
 
     private void assertAssetsExist(Long id) {
         com.lion.core.Optional<Assets> optional = this.assetsService.findById(id);
-        if (optional.isPresent() ){
+        if (!optional.isPresent() ){
             BusinessException.throwException(optional.get().getCode()+MessageI18nUtil.getMessage("2000066"));
         }
     }

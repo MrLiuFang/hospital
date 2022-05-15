@@ -57,8 +57,8 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
     @DubboReference
     private DeviceExposeService deviceExposeService;
 
-//    private String licensePath = "D:/license/";
-    private String licensePath = "/workspace/澳门医院/license/";
+    private String licensePath = "D:\\license\\";
+//    private String licensePath = "/workspace/澳门医院/license/";
     private String fileName ="";
 
     @PostMapping("/upload")

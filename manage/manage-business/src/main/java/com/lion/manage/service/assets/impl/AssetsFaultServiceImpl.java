@@ -300,7 +300,7 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
 
     private void assertAssetsExist(Long id) {
         com.lion.core.Optional<Assets> optional = this.assetsService.findById(id);
-        if (optional.isPresent()){
+        if (!optional.isPresent()){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000066"));
         }
     }

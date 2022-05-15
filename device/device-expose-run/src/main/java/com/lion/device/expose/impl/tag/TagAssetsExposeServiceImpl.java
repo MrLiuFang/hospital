@@ -5,6 +5,7 @@ import com.lion.common.enums.Type;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.TagAssetsDao;
 import com.lion.device.dao.tag.TagDao;
+import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagLogContent;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagUseState;
@@ -56,6 +57,9 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
         Tag tag = tagDao.findFirstByTagCode(tagCode);
         if (Objects.isNull(tag)){
             BusinessException.throwException(MessageI18nUtil.getMessage("4000021"));
+        }
+        if (Objects.equals(tag.getDeviceState(), State.NOT_ACTIVE)) {
+            BusinessException.throwException(tag.getDeviceName() +"未激活不能使用");
         }
         if (!Objects.equals(tag.getPurpose(), TagPurpose.ASSETS)){
             BusinessException.throwException(MessageI18nUtil.getMessage("4000022"));

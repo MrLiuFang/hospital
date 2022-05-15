@@ -68,7 +68,8 @@ public class SearchTemplateController extends BaseControllerImpl implements Base
     @GetMapping("/details")
     @ApiOperation(value = "搜索模板详情")
     public IResultData<SearchTemplate> details(@NotNull(message = "{0000000}") Long id){
-        return ResultData.instance().setData(searchTemplateService.findById(id));
+        Optional optional = searchTemplateService.findById(id);
+        return ResultData.instance().setData(optional.isPresent()?optional.get():null);
     }
 
     @PutMapping("/update")

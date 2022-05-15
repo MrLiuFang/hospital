@@ -86,7 +86,7 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
 
     @Modifying
     @Transactional
-    @Query(" update Device set previousDisinfectDate =:previousDisinfectDate ,version=version+1 where id = :id ")
+    @Query(" update Device set deviceState = 4,   previousDisinfectDate =:previousDisinfectDate ,version=version+1 where id = :id ")
     public void updateDisinfectDate(@Param("id")Long id,@Param("previousDisinfectDate") LocalDate previousDisinfectDate);
 
     /**
