@@ -2,6 +2,7 @@ package com.lion.manage.entity.assets.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.assets.AssetsType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.Data;
@@ -92,4 +93,7 @@ public class ListAssetsBorrowVo extends Assets {
     @Schema(description = "归还时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime returnTime = LocalDateTime.now();
+
+    @Schema(description = "资产类型")
+    private AssetsType assetsType;
 }

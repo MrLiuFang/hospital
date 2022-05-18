@@ -84,6 +84,7 @@ public class DepartmentResponsibleUserServiceImpl extends BaseServiceImpl<Depart
                 responsibleUserVo.setId(user.getId());
                 responsibleUserVo.setName(user.getName());
                 responsibleUserVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                responsibleUserVo.setHeadPortrait(user.getHeadPortrait());
                 returnList.add(responsibleUserVo);
             }
         });

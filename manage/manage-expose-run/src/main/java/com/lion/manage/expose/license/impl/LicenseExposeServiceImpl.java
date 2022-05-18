@@ -8,7 +8,7 @@ import com.lion.manage.expose.license.LicenseExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-@DubboService(interfaceClass = EventRecordExposeService.class)
+@DubboService(interfaceClass = LicenseExposeService.class)
 public class LicenseExposeServiceImpl extends BaseServiceImpl<License> implements LicenseExposeService {
 
     @Autowired

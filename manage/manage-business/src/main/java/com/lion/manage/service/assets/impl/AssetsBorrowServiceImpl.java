@@ -15,6 +15,7 @@ import com.lion.manage.dao.assets.AssetsBorrowDao;
 import com.lion.manage.dao.assets.AssetsDao;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.assets.AssetsBorrow;
+import com.lion.manage.entity.assets.AssetsType;
 import com.lion.manage.entity.assets.dto.AddAssetsBorrowDto;
 import com.lion.manage.entity.assets.dto.ReturnAssetsBorrowDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsBorrowVo;
@@ -30,6 +31,7 @@ import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsService;
+import com.lion.manage.service.assets.AssetsTypeService;
 import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
@@ -120,6 +122,9 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
 
     @DubboReference
     private DepartmentResponsibleUserExposeService departmentResponsibleUserExposeService;
+
+    @Autowired
+    private AssetsTypeService assetsTypeService;
 
     @Override
     @Transactional
@@ -234,6 +239,8 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
             }
             vo.setReturnTime(assetsBorrow.getReturnTime());
             vo.setAssetsBorrowId(assetsBorrow.getId());
+            com.lion.core.Optional<AssetsType> assetsTypeOptional = assetsTypeService.findById(assets.getAssetsTypeId());
+            vo.setAssetsType(assetsTypeOptional.isPresent()?assetsTypeOptional.get():null);
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());

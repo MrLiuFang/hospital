@@ -21,4 +21,8 @@ public class ResponsibleUserVo {
 
     @Schema(description = "负责人头像地址")
     private String headPortraitUrl;
+
+
+    @Schema(description = "负责人头像Id")
+    private Long headPortrait;
 }

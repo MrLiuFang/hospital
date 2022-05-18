@@ -188,44 +188,64 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         }
         if (optional.isPresent()){
             Patient oldPatient = optional.get();
+            Boolean update = false;
+            if (Objects.nonNull(patient.getName()) && !Objects.equals(oldPatient.getName(),patient.getName())) {
+                patientLogService.add(patient.getName(),LogType.UPDATE_NAME, userId, patient.getId());
+                update = true;
+            }
             if (Objects.nonNull(patient.getBindPatientId()) && !Objects.equals(oldPatient.getBindPatientId(),patient.getBindPatientId())) {
                 patientLogService.add("",LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
+                update = true;
             }
             if (Objects.nonNull(patient.getTagCode()) && !Objects.equals(oldPatient.getTagCode(),patient.getTagCode())) {
                 patientLogService.add(patient.getTagCode(), LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
+                update = true;
             }
             if (Objects.nonNull(patient.getDepartmentId()) && !Objects.equals(oldPatient.getDepartmentId(),patient.getDepartmentId())) {
                 com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(patient.getDepartmentId());
                 patientLogService.add(optionalDepartment.isPresent()?optionalDepartment.get().getName():"",LogType.UPDATE_BIND_PATIENT, userId, patient.getId());
+                update = true;
             }
             if (Objects.nonNull(patient.getSickbedId()) && !Objects.equals(oldPatient.getSickbedId(),patient.getSickbedId())) {
                 com.lion.core.Optional<WardRoomSickbed> optionalWardRoomSickbed = wardRoomSickbedExposeService.findById(patient.getSickbedId());
                 patientLogService.add(optionalWardRoomSickbed.isPresent()?optionalWardRoomSickbed.get().getBedCode():"",LogType.UPDATE_WARD, userId, patient.getId());
+                update = true;
             }
             if (Objects.nonNull(patient.getBirthday()) && !Objects.equals(oldPatient.getBirthday(),patient.getBirthday())) {
                 DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy-MM-dd");
                 patientLogService.add(Objects.nonNull(patient.getBirthday())?dtf2.format(patient.getBirthday()):"",LogType.UPDATE_BIRTHDAY, userId, patient.getId());
+                update = true;
             }
             if (Objects.nonNull(patient.getMedicalRecordNo()) && !Objects.equals(oldPatient.getMedicalRecordNo(),patient.getMedicalRecordNo())) {
                 patientLogService.add(patient.getMedicalRecordNo(),LogType.UPDATE_MEDICAL_RECORD_NO, userId, patient.getId());
+                update = true;
             }
             if (Objects.nonNull(patient.getDisease()) && !Objects.equals(oldPatient.getDisease(),patient.getDisease())) {
                 patientLogService.add(patient.getDisease(), LogType.UPDATE_DISEASE, userId, patient.getId());
+                update = true;
             }
             if (Objects.nonNull(patient.getRemarks()) && !Objects.equals(oldPatient.getRemarks(),patient.getRemarks())) {
                 patientLogService.add(patient.getRemarks(), LogType.UPDATE_REMARKS, userId, patient.getId());
+                update = true;
             }
             if (Objects.nonNull(patient.getAddress()) && !Objects.equals(oldPatient.getAddress(),patient.getAddress())) {
                 patientLogService.add(patient.getAddress(), LogType.UPDATE_ADDRESS, userId, patient.getId());
+                update = true;
             }
             if (Objects.nonNull(patient.getLevel()) && !Objects.equals(oldPatient.getLevel(),patient.getLevel())) {
                 patientLogService.add(String.valueOf(patient.getLevel()), LogType.UPDATE_LEVEL, userId, patient.getId());
+                update = true;
             }
             if (Objects.nonNull(patient.getActionMode()) && !Objects.equals(oldPatient.getActionMode(),patient.getActionMode())) {
                 patientLogService.add(patient.getActionMode().getName(), LogType.UPDATE_ACTION_MODE, userId, patient.getId());
+                update = true;
             }
             if (Objects.nonNull(patient.getTimeQuantum()) && !Objects.equals(oldPatient.getTimeQuantum(),patient.getTimeQuantum())) {
                 patientLogService.add(patient.getTimeQuantum(), LogType.UPDATE_TIME_QUANTUM, userId, patient.getId());
+                update = true;
+            }
+            if (Objects.equals(update,false)){
+                patientLogService.add("", LogType.UPDATE, userId, patient.getId());
             }
         }
 

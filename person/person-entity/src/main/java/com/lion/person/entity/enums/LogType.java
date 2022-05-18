@@ -30,8 +30,9 @@ public enum LogType implements IEnum {
     ADD(18, "添加患者"),
     UPDATE_BIND_PATIENT(19, "修改绑定患者"),
     DELETE_REPORT(20, "删除汇报"),
-    ADD_TEMP_LEAVE(20, "新增临时离开权限");
-
+    ADD_TEMP_LEAVE(21, "新增临时离开权限"),
+    UPDATE_NAME(22, "修改患者名称"),
+    UPDATE(23, "修改患者");
     private final int key;
 
     private final String desc;
