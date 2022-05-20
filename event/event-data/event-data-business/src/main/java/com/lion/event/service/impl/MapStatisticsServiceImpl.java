@@ -848,10 +848,10 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 departmentIds.add(di);
             }
         }
-        if (Objects.isNull(startDateTime)) {
+        if (Objects.isNull(startDateTime) ) {
             startDateTime = LocalDateTime.now().minusDays(3);
         }
-        if (Objects.nonNull(endDateTime)) {
+        if (Objects.nonNull(endDateTime) && Objects.isNull(startDateTime)) {
             startDateTime = endDateTime.minusDays(3);
         }
         List<Long> tagIds = tagExposeService.find(tagType,tagCode);

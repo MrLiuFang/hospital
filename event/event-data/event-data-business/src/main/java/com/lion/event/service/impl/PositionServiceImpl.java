@@ -318,6 +318,7 @@ public class PositionServiceImpl implements PositionService {
         if (tagIds.size()>0) {
             criteria.and("ti").in(tagIds);
         }
+
         if (Objects.isNull(startDateTime)) {
             startDateTime = LocalDateTime.now().minusDays(30);
         }
@@ -327,6 +328,12 @@ public class PositionServiceImpl implements PositionService {
             criteria.and("ddt").gte(startDateTime);
         }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
             criteria.and("ddt").lte(endDateTime);
+        }
+        if (Objects.nonNull(departmentId)) {
+            criteria.and("di").is(departmentId);
+        }
+        if (Objects.nonNull(regionId)) {
+            criteria.and("ri").is(regionId);
         }
         query.addCriteria(criteria);
         query.with(lionPage);

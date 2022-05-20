@@ -18,6 +18,10 @@ import java.time.LocalDateTime;
 @Schema
 public class ListWashEventVo {
 
+
+    @Schema(description = "用户ID")
+    private Long userId;
+
     @Schema(description = "姓名")
     private String name;
 

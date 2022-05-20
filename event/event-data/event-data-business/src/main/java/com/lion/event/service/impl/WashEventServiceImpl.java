@@ -415,6 +415,7 @@ public class WashEventServiceImpl implements WashEventService {
                 com.lion.core.Optional<UserType> optionalUserType =  userTypeExposeService.findById(user.getUserTypeId());
                 vo.setUserType(optionalUserType.isPresent()?optionalUserType.get():null);
                 vo.setName(user.getName());
+                vo.setUserId(user.getId());
                 vo.setNumber(user.getNumber());
                 vo.setGender(user.getGender());
             }
@@ -493,7 +494,7 @@ public class WashEventServiceImpl implements WashEventService {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_buildFloorId",buildFloorId);
         }
         if (Objects.nonNull(regionId)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_regionId",regionId);
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_id",regionId);
         }
         if (Objects.nonNull(departmentId)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);

@@ -61,7 +61,7 @@ public class AlarmModeRecordServiceImpl extends BaseServiceImpl<AlarmModeRecord>
 
     @Override
     public IPageResultData<List<ListAlarmModeRecordVo>> list(LocalDateTime startDateTime, LocalDateTime endDateTime, AlarmMode alarmMode, String name, LionPage lionPage) {
-        List<Long> userIds = null;
+        List<Long> userIds = new ArrayList<>();
         if (StringUtils.hasText(name)) {
             List<User> users = userExposeService.findByName(name);
             userIds.add(Long.MAX_VALUE);
