@@ -210,6 +210,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
                 com.lion.core.Optional<Region> optional = findById(id);
                 if (optional.isPresent()) {
                     Region region = optional.get();
+                    redisTemplate.delete(RedisConstants.REGION+region.getId());
                     if (Objects.nonNull(batchUpdateWashTemplateDto.getWashTemplateId())) {
                         region.setWashTemplateId(batchUpdateWashTemplateDto.getWashTemplateId());
                         update(region);

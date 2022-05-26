@@ -138,4 +138,7 @@ public interface PatientDao extends BaseDao<Patient>, PatientDaoEx {
     int countByIsLeaveIsFalse();
 
     Optional<Patient> findFirstByCardNumberOrderByCreateDateTimeDesc(String cardNumber);
+
+    @Query(" select p.tagCode from Patient p where p.isLeave = false ")
+    public List<String> allTagCode();
 }

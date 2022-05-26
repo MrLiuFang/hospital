@@ -10,11 +10,13 @@ import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.rule.Alarm;
+import com.lion.manage.entity.rule.Lose;
 import com.lion.manage.entity.rule.dto.AddAlarmDto;
 import com.lion.manage.entity.rule.dto.UpdateAlarmDto;
 import com.lion.manage.entity.rule.vo.DetailsAlarmVo;
 import com.lion.manage.entity.rule.vo.ListAlarmVo;
 import com.lion.manage.service.rule.AlarmService;
+import com.lion.manage.service.rule.LoseService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -38,6 +40,9 @@ public class AlarmController extends BaseControllerImpl implements BaseControlle
 
     @Autowired
     private AlarmService alarmService;
+
+    @Autowired
+    private LoseService loseService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增警报规则")
@@ -80,6 +85,45 @@ public class AlarmController extends BaseControllerImpl implements BaseControlle
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
         alarmService.delete(deleteDtoList);
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
+    @PostMapping("/lose/add")
+    @ApiOperation(value = "新增失联警报规则")
+    public IResultData addLose(@RequestBody Lose lose){
+        loseService.save(lose);
+        return ResultData.instance();
+    }
+
+
+    @GetMapping("/lose/list")
+    @ApiOperation(value = "失联警报规则列表")
+    public IPageResultData<List<Lose>> listLose( LionPage lionPage){
+        return (IPageResultData<List<Lose>>) loseService.findNavigator(lionPage);
+    }
+
+    @GetMapping("/lose/details")
+    @ApiOperation(value = "失联警报规则详情")
+    public IResultData<DetailsAlarmVo> detailsLose(@NotNull(message = "{0000000}") Long id){
+        ResultData resultData = ResultData.instance();
+        resultData.setData(loseService.findById(id).get());
+        return resultData;
+    }
+
+    @PutMapping("/lose/update")
+    @ApiOperation(value = "修改失联警报规则")
+    public IResultData updateLose(@RequestBody Lose lose){
+        loseService.update(lose);
+        return ResultData.instance();
+    }
+
+    @ApiOperation(value = "删除失联警报规则")
+    @DeleteMapping("/lose/delete")
+    public IResultData deleteLose(@RequestBody List<DeleteDto> deleteDtoList){
+        deleteDtoList.forEach(deleteDto -> {
+            loseService.deleteById(deleteDto.getId());
+        });
         ResultData resultData = ResultData.instance();
         return resultData;
     }

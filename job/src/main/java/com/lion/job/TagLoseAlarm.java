@@ -62,7 +62,7 @@ public class TagLoseAlarm {
     @DubboReference
     private AssetsBorrowExposeService assetsBorrowExposeService;
 
-    @Scheduled(fixedDelay = 5000)
+//    @Scheduled(fixedDelay = 5000)
     public void execute() {
         {
         List<Long> tagId = tagExposeService.allId(TagPurpose.PATIENT);
@@ -95,67 +95,67 @@ public class TagLoseAlarm {
         }
         }
 
-        {
-            List<Long> ids = assetsExposeService.allId();
-            ids.forEach(id->{
-                LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
-                if (Objects.nonNull(dateTime)) {
-                    Duration duration = Duration.between(dateTime, LocalDateTime.now());
-                    long millis = duration.toMillis();
-                    if (millis >= 1000*60*10) {
-                        Optional<Assets> optional = assetsExposeService.findById(id);
-                        if (optional.isPresent()){
-                            Assets assets = optional.get();
-                            assets.setState(AssetsState.LOSE);
-                            assetsExposeService.update(assets);
-                            redisTemplate.opsForValue().set(RedisConstants.TAG_LOSE + String.valueOf(id), true);
-                        }
-                    }
-                }
-            });
-        }
+//        {
+//            List<Long> ids = assetsExposeService.allId();
+//            ids.forEach(id->{
+//                LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
+//                if (Objects.nonNull(dateTime)) {
+//                    Duration duration = Duration.between(dateTime, LocalDateTime.now());
+//                    long millis = duration.toMillis();
+//                    if (millis >= 1000*60*10) {
+//                        Optional<Assets> optional = assetsExposeService.findById(id);
+//                        if (optional.isPresent()){
+//                            Assets assets = optional.get();
+//                            assets.setState(AssetsState.LOSE);
+//                            assetsExposeService.update(assets);
+//                            redisTemplate.opsForValue().set(RedisConstants.TAG_LOSE + String.valueOf(id), true);
+//                        }
+//                    }
+//                }
+//            });
+//        }
 
     }
 
     @Scheduled(fixedDelay = 1000*60)
     public void execute1() {
-        List<Long> ids = assetsExposeService.allId();
-        ids.forEach(id->{
-            Optional<Assets> optional = assetsExposeService.findById(id);
-            LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
-            if (Objects.nonNull(dateTime)) {
-                Duration duration = Duration.between(dateTime, LocalDateTime.now());
-                long millis = duration.toMillis();
-                if (millis >= 1000*60*10) {
-                    if (optional.isPresent()){
-                        Assets assets = optional.get();
-                        assets.setState(AssetsState.LOSE);
-                        assetsExposeService.update(assets);
-                    }
-                }
-            }else {
-                AssetsFault assetsFault = assetsFaultExposeService.find(id, AssetsFaultState.NOT_FINISHED);
-                if (Objects.nonNull(assetsFault)) {
-                    if (optional.isPresent()){
-                        Assets assets = optional.get();
-                        assets.setState(AssetsState.REPAIR);
-                        assetsExposeService.update(assets);
-                    }
-                }else {
-                    AssetsBorrow assetsBorrow = assetsBorrowExposeService.findNotReturn(id);
-                    if (optional.isPresent()){
-                        Assets assets = optional.get();
-                        if (Objects.nonNull(assetsBorrow)) {
-                            assets.setState(AssetsState.USEING);
-                        }else {
-                            assets.setState(AssetsState.NOT_USED);
-                        }
-                        assetsExposeService.update(assets);
-                    }
-
-                }
-            }
-        });
+//        List<Long> ids = assetsExposeService.allId();
+//        ids.forEach(id->{
+//            Optional<Assets> optional = assetsExposeService.findById(id);
+//            LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
+//            if (Objects.nonNull(dateTime)) {
+//                Duration duration = Duration.between(dateTime, LocalDateTime.now());
+//                long millis = duration.toMillis();
+//                if (millis >= 1000*60*10) {
+//                    if (optional.isPresent()){
+//                        Assets assets = optional.get();
+//                        assets.setState(AssetsState.LOSE);
+//                        assetsExposeService.update(assets);
+//                    }
+//                }
+//            }else {
+//                AssetsFault assetsFault = assetsFaultExposeService.find(id, AssetsFaultState.NOT_FINISHED);
+//                if (Objects.nonNull(assetsFault)) {
+//                    if (optional.isPresent()){
+//                        Assets assets = optional.get();
+//                        assets.setState(AssetsState.REPAIR);
+//                        assetsExposeService.update(assets);
+//                    }
+//                }else {
+//                    AssetsBorrow assetsBorrow = assetsBorrowExposeService.findNotReturn(id);
+//                    if (optional.isPresent()){
+//                        Assets assets = optional.get();
+//                        if (Objects.nonNull(assetsBorrow)) {
+//                            assets.setState(AssetsState.USEING);
+//                        }else {
+//                            assets.setState(AssetsState.NOT_USED);
+//                        }
+//                        assetsExposeService.update(assets);
+//                    }
+//
+//                }
+//            }
+//        });
     }
 
 }

@@ -82,4 +82,9 @@ public class PatientExposeServiceImpl extends BaseServiceImpl<Patient> implement
     public int countUseSickbed(List<Long> sickbedIds) {
         return patientDao.countBySickbedIdInAndIsLeave(sickbedIds,false);
     }
+
+    @Override
+    public List<String> allTagCode() {
+        return null;
+    }
 }

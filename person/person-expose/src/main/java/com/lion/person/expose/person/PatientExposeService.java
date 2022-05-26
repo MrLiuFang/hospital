@@ -67,4 +67,6 @@ public interface PatientExposeService extends BaseService<Patient> {
      * @return
      */
     public int countUseSickbed(List<Long> sickbedIds);
+
+    public List<String> allTagCode();
 }
