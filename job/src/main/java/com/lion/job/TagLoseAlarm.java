@@ -8,20 +8,14 @@ import com.lion.common.dto.CurrentRegionDto;
 import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.enums.Type;
 import com.lion.common.utils.RedisUtil;
-import com.lion.core.Optional;
-import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
-import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.assets.AssetsBorrow;
-import com.lion.manage.entity.assets.AssetsFault;
-import com.lion.manage.entity.enums.AssetsFaultState;
-import com.lion.manage.entity.enums.AssetsState;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.expose.assets.AssetsBorrowExposeService;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.assets.AssetsFaultExposeService;
 import com.lion.person.entity.person.Patient;
+import com.lion.person.expose.person.PatientExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +28,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class TagLoseAlarm {
@@ -62,38 +57,27 @@ public class TagLoseAlarm {
     @DubboReference
     private AssetsBorrowExposeService assetsBorrowExposeService;
 
-//    @Scheduled(fixedDelay = 5000)
+    @DubboReference
+    private PatientExposeService patientExposeService;
+
+    @Scheduled(fixedDelay = 5000)
     public void execute() {
-        {
-        List<Long> tagId = tagExposeService.allId(TagPurpose.PATIENT);
-        if (Objects.nonNull(tagId) && tagId.size()>=0) {
-            tagId.forEach(id -> {
-                LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
+        List<Patient> patientList = patientExposeService.find(false);
+        patientList.forEach(patient -> {
+            Tag tag = redisUtil.getTag(patient.getTagCode());
+            if (Objects.nonNull(tag) && Objects.nonNull(patient.getLoseTime())) {
+                LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(tag.getId()));
                 if (Objects.nonNull(dateTime)) {
                     Duration duration = Duration.between(dateTime, LocalDateTime.now());
                     long millis = duration.toMillis();
-                    if (millis >= 5000) {
-                        CurrentRegionDto currentRegionDto = (CurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.LAST_REGION + String.valueOf(id));
-                        Patient patient = redisUtil.getPatientByTagId(id);
-                        SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
-                        systemAlarmDto.setDateTime(LocalDateTime.now());
-                        systemAlarmDto.setType(Type.PATIENT);
-                        systemAlarmDto.setTagId(id);
-                        systemAlarmDto.setRegionId(Objects.nonNull(currentRegionDto) ? currentRegionDto.getRegionId() : null);
-                        systemAlarmDto.setPeopleId(patient.getId());
-                        systemAlarmDto.setSystemAlarmType(SystemAlarmType.TAG_LOSE);
-                        try {
-                            rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-                        } catch (JsonProcessingException e) {
-                            e.printStackTrace();
-                        }
+                    if (millis >= patient.getLoseTime() * 1000) {
+                        alarm(tag.getId(),patient);
                     }
+                }else {
+                    alarm(tag.getId(),patient);
                 }
-            });
-            tagId.clear();
-            tagId = null;
-        }
-        }
+            }
+        });
 
 //        {
 //            List<Long> ids = assetsExposeService.allId();
@@ -115,6 +99,27 @@ public class TagLoseAlarm {
 //            });
 //        }
 
+    }
+
+    private void alarm(Long tagId,Patient patient){
+        Long _id = (Long) redisTemplate.opsForValue().get(RedisConstants.TAG_LOSE+tagId);
+        if (Objects.nonNull(_id)) {
+            return;
+        }
+        CurrentRegionDto currentRegionDto = (CurrentRegionDto) redisTemplate.opsForValue().get(RedisConstants.LAST_REGION + String.valueOf(tagId));
+        SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
+        systemAlarmDto.setDateTime(LocalDateTime.now());
+        systemAlarmDto.setType(Type.PATIENT);
+        systemAlarmDto.setTagId(tagId);
+        systemAlarmDto.setRegionId(Objects.nonNull(currentRegionDto) ? currentRegionDto.getRegionId() : null);
+        systemAlarmDto.setPeopleId(patient.getId());
+        systemAlarmDto.setSystemAlarmType(SystemAlarmType.TAG_LOSE);
+        try {
+            rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+            redisTemplate.opsForValue().set(RedisConstants.TAG_LOSE+tagId,tagId,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
     }
 
     @Scheduled(fixedDelay = 1000*60)

@@ -217,4 +217,7 @@ public class TopicConstants {
      */
     public static final String UPDATE_POSITION_LEAVE_TIME_CONSUMER_GROUP = "update_position_leave_time_consumer_group";
 
+    public static  final String unbind_tag = "unbind_tag";
+
+
 }

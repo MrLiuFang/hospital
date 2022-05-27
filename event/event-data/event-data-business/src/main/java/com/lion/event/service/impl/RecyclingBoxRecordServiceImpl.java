@@ -36,13 +36,11 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @description:
@@ -76,13 +74,16 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
     }
 
     @Override
-    public IPageResultData<List<ListRecyclingBoxRecordVo>> list(Boolean isDisinfect, TagType tagType, String name, String code, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<ListRecyclingBoxRecordVo>> list(Boolean isDisinfect, TagType tagType, String name, String code, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, Long id, LionPage lionPage) {
 //        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         Query query = new Query();
         Criteria criteria = new Criteria();
 //        criteria.and("di").in(departmentIds);
         if (Objects.nonNull(isDisinfect)){
             criteria.and("id").is(isDisinfect);
+        }
+        if (Objects.nonNull(id)){
+            criteria.and("rbi").is(id);
         }
         if (Objects.nonNull(tagType)){
             criteria.and("tt").is(tagType.getKey());
@@ -161,6 +162,11 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
             }
         });
         return new PageResultData(returnList,lionPage,returnList.size());
+    }
+
+    @Override
+    public IPageResultData<List<ListRecyclingBoxCurrentVo>> recyclingBoxCurrentTagList(Long id) {
+        return null;
     }
 
     @Override

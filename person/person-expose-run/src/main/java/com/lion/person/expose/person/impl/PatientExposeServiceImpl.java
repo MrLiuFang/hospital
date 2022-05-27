@@ -84,7 +84,8 @@ public class PatientExposeServiceImpl extends BaseServiceImpl<Patient> implement
     }
 
     @Override
-    public List<String> allTagCode() {
-        return null;
+    public List<Patient> find(Boolean isLeave) {
+        return patientDao.findByIsLeave(isLeave);
     }
+
 }

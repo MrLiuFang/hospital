@@ -112,8 +112,10 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             if (Objects.nonNull(deviceDataDto.getTagId())) {
                 tag = redisUtil.getTag(deviceDataDto.getTagId());
             }
+
             if (Objects.nonNull(tag)){
                 redisTemplate.opsForValue().set(RedisConstants.LAST_DATA+String.valueOf(tag.getId()),LocalDateTime.now(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.delete(RedisConstants.TAG_LOSE+tag.getId());
                 Type type = redisUtil.getTagBindType(tag.getId());
                 if (Objects.equals(type,Type.STAFF)) {
                     user = redisUtil.getUser(tag.getId());
@@ -157,7 +159,7 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             }else if ((Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
                 deviceService.deviceEevent(deviceDataDto,monitor,star,tag);
             }else if (Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
-                recyclingBoxService.event(deviceDataDto,monitor,star,tag,patient,temporaryPerson);
+                recyclingBoxService.event(deviceDataDto,monitor,star,tag,patient,temporaryPerson, user);
             }
 
             //低电量警报

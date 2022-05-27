@@ -8,7 +8,6 @@ import com.lion.event.entity.vo.ListRecyclingBoxCurrentVo;
 import com.lion.event.entity.vo.ListRecyclingBoxRecordVo;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,10 +30,11 @@ public interface RecyclingBoxRecordService {
      * @param tagCode
      * @param startDateTime
      * @param endDateTime
+     * @param id
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListRecyclingBoxRecordVo>> list(Boolean isDisinfect,TagType tagType, String name, String code, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<ListRecyclingBoxRecordVo>> list(Boolean isDisinfect,TagType tagType, String name, String code, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime,Long id, LionPage lionPage);
 
     /**
      * 回收箱当前
@@ -44,6 +44,8 @@ public interface RecyclingBoxRecordService {
      */
     public IPageResultData<List<ListRecyclingBoxCurrentVo>> recyclingBoxCurrentList(LocalDateTime startPreviousDisinfectDate,LocalDateTime endPreviousDisinfectDate, String name,String code, LionPage lionPage);
 
+
+    IPageResultData<List<ListRecyclingBoxCurrentVo>> recyclingBoxCurrentTagList(Long id);
     /**
      * 回收箱导出
      * @param startPreviousDisinfectDate

@@ -6,6 +6,7 @@ import com.lion.device.entity.device.Device;
 import com.lion.device.entity.tag.Tag;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
+import com.lion.upms.entity.user.User;
 
 /**
  * @description:
@@ -16,12 +17,14 @@ public interface RecyclingBoxService {
 
     /**
      * 回收箱事件处理
+     *
      * @param deviceDataDto
      * @param monitor
      * @param star
      * @param tag
      * @param patient
      * @param temporaryPerson
+     * @param user
      */
-    public void event(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient, TemporaryPerson temporaryPerson) throws JsonProcessingException;
+    public void event(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient, TemporaryPerson temporaryPerson, User user) throws JsonProcessingException;
 }

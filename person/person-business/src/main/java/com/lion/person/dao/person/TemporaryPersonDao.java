@@ -30,7 +30,7 @@ public interface TemporaryPersonDao extends BaseDao<TemporaryPerson> {
 
     @Modifying
     @Transactional
-    @Query(" update TemporaryPerson  set isWaitLeave =:isWaitLeave ,version = version+1 where id = :id ")
+    @Query(" update TemporaryPerson  set isWaitLeave =:isWaitLeave ,tagCode = null ,version = version+1 where id = :id ")
     public void updateIsWaitLeave(@Param("id")Long id, @Param("isWaitLeave") Boolean isWaitLeave);
 
 

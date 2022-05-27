@@ -60,7 +60,7 @@ public interface PatientDao extends BaseDao<Patient>, PatientDaoEx {
 
     @Modifying
     @Transactional
-    @Query(" update Patient  set isWaitLeave =:isWaitLeave ,version = version+1 where id = :id ")
+    @Query(" update Patient  set isWaitLeave =:isWaitLeave , tagCode = null , version = version+1 where id = :id ")
     public void updateIsWaitLeave(@Param("id")Long id, @Param("isWaitLeave") Boolean isWaitLeave);
 
     @Modifying
@@ -141,4 +141,6 @@ public interface PatientDao extends BaseDao<Patient>, PatientDaoEx {
 
     @Query(" select p.tagCode from Patient p where p.isLeave = false ")
     public List<String> allTagCode();
+
+    public List<Patient> findByIsLeave(Boolean isLeave);
 }

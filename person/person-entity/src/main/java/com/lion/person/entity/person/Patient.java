@@ -108,4 +108,7 @@ public class Patient extends Person implements Serializable {
     @Schema(description = "金卡号")
     @Column(name = "card_number")
     private String cardNumber;
+
+    @Schema(description = "失联时间")
+    private Integer loseTime;
 }

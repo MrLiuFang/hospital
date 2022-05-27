@@ -68,5 +68,7 @@ public interface PatientExposeService extends BaseService<Patient> {
      */
     public int countUseSickbed(List<Long> sickbedIds);
 
-    public List<String> allTagCode();
+    public List<Patient> find(Boolean isLeave);
+
+
 }

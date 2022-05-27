@@ -58,21 +58,15 @@ public class RecyclingBoxServiceImpl implements RecyclingBoxService {
     private UserExposeService userExposeService;
 
     @Override
-    public void event(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient, TemporaryPerson temporaryPerson) throws JsonProcessingException {
+    public void event(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient, TemporaryPerson temporaryPerson, User user) throws JsonProcessingException {
         if (Objects.nonNull(patient)) {
             patientExposeService.updateIsWaitLeave(patient.getId(),true);
         }else if (Objects.nonNull(temporaryPerson)){
             temporaryPersonExposeService.updateIsWaitLeave(temporaryPerson.getId(),true);
         }
-        if (Objects.equals(tag.getType(), TagType.STAFF)){
-            TagUser tagUser = tagUserExposeService.find(tag.getId());
-            tagUserExposeService.unbinding(tagUser.getUserId(),false);
-            Optional<User> optional = userExposeService.findById(tagUser.getUserId());
-            if (optional.isPresent()) {
-                User user = optional.get();
-                user.setTagCode("");
-                userExposeService.update(user);
-            }
+        if (Objects.nonNull(user)){
+            user.setTagCode("");
+            userExposeService.update(user);
         }
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
         RecyclingBoxRecordDto recyclingBoxRecordDto = new RecyclingBoxRecordDto();
