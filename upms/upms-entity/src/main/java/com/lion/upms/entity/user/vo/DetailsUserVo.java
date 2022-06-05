@@ -84,6 +84,9 @@ public class DetailsUserVo extends User {
         private String name;
         @Schema(description = "负责人头像")
         private String headPortraitUrl;
+
+        @Schema(description = "负责人头像Id")
+        private Long headPortrait;
     }
 
 }

@@ -117,7 +117,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/list")
     @ApiOperation(value = "设备列表")
-    public IPageResultData<List<Device>> list(@ApiParam(value = "区域ID")Long regionId, @ApiParam(value = "电量")Integer battery, @ApiParam(value = "设备组ID") Long deviceGroupId,@ApiParam(value = "设备名称") String name, @ApiParam(value = "设备编号") String code, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备分类")  DeviceType deviceType, LionPage lionPage){
+    public IPageResultData<List<Device>> list(@ApiParam(value = "区域ID")Long regionId,@ApiParam(value = "是否绑定区域")Boolean isBind, @ApiParam(value = "电量")Integer battery, @ApiParam(value = "设备组ID") Long deviceGroupId,@ApiParam(value = "设备名称") String name, @ApiParam(value = "设备编号") String code, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备分类")  DeviceType deviceType, LionPage lionPage){
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
@@ -133,6 +133,9 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
         }
         if (Objects.nonNull(deviceType)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_deviceType",deviceType);
+        }
+        if (Objects.equals(isBind,true)) {
+            jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_regionId",null);
         }
         if (Objects.nonNull(deviceGroupId)){
             List<DeviceGroupDevice> list = deviceGroupDeviceService.find(deviceGroupId);

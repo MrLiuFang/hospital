@@ -18,6 +18,7 @@ public class PatientDaoImpl implements PatientDaoEx {
 
     public Page<Map<String, Object>> listMerge(Integer type, String name, String cardNumber, String tagCode, String medicalRecordNo, String sort, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
+        sb.append(" select t.* from ( ");
         Map<String, Object> searchParameter = new HashMap();
         if (StringUtils.hasText(name)) {
             searchParameter.put("name", "%" + name + "%");
@@ -27,7 +28,7 @@ public class PatientDaoImpl implements PatientDaoEx {
         }
 
         if ((Objects.nonNull(type) && Objects.equals(type,1)) ||  Objects.isNull(type)) {
-            sb.append(" select id, 1 as 'type', head_portrait as 'headPortrait' , name,tag_code as 'tagCode', create_date_time as 'createDateTime' ,gender from t_patient where is_leave  <> 1  ");
+            sb.append(" select  id, 1 as 'type', head_portrait as 'headPortrait' , name,tag_code as 'tagCode', create_date_time as 'createDateTime' ,gender from t_patient where is_leave  <> 1  ");
             if (StringUtils.hasText(name)) {
                 sb.append(" and name like :name ");
             }
@@ -60,6 +61,8 @@ public class PatientDaoImpl implements PatientDaoEx {
                 sb.append(" and tag_code like :tagCode ");
             }
         }
+
+        sb.append(" ) t order by t.createDateTime desc ");
 
 //        if (Objects.nonNull(sort)) {
 //            String[] sorts= sort.split(",");

@@ -47,4 +47,6 @@ public interface WardRoomDao extends BaseDao<WardRoom> , WardRoomDaoEx{
      * @return
      */
     public List<WardRoom> findByRegionId(Long reginId);
+
+    public List<WardRoom> findByIdIn(List<Long> ids);
 }

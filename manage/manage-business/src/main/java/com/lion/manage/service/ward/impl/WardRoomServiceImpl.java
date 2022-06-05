@@ -2,15 +2,19 @@ package com.lion.manage.service.ward.impl;
 
 import com.lion.common.constants.RedisConstants;
 import com.lion.core.LionPage;
+import com.lion.core.Optional;
 import com.lion.core.PageResultData;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.exception.BusinessException;
 import com.lion.manage.dao.ward.WardRoomDao;
 import com.lion.manage.dao.ward.WardRoomSickbedDao;
+import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.entity.ward.dto.AddWardRoomDto;
 import com.lion.manage.entity.ward.dto.UpdateWardRoomDto;
 import com.lion.manage.entity.ward.vo.ListWardRoomVo;
+import com.lion.manage.entity.work.Work;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
@@ -154,6 +158,17 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
     @Override
     @Transactional
     public void updateRegionId(List<Long> ids, Long regionId) {
+        if (Objects.nonNull(ids) && ids.size()>0 ) {
+            List<WardRoom> list = wardRoomDao.findByIdIn(ids);
+            list.forEach(wardRoom -> {
+                if (!Objects.equals(wardRoom.getRegionId(),regionId)) {
+                    Optional<Region> optional = regionService.findById(regionId);
+                    if (optional.isPresent()){
+                        BusinessException.throwException(wardRoom.getCode().concat("在").concat(optional.get().getName()).concat("已绑定"));
+                    }
+                }
+            });
+        }
         wardRoomDao.updateRegionIdIsNull(regionId);
         if (Objects.nonNull(ids) && ids.size()>0) {
             wardRoomDao.updateRegionId(regionId, ids);
