@@ -183,6 +183,11 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     }
 
     @Override
+    public long countActive(State state) {
+        return count()-deviceDao.countByDeviceState(state);
+    }
+
+    @Override
     public DetailsDeviceVo details(Long id) {
         return deviceService.details(id);
     }

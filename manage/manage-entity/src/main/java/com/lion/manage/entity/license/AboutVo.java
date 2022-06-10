@@ -18,21 +18,27 @@ public class AboutVo {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate endDate;
 
+    @Schema(description = "负责人")
+    private String personInCharge;
+
     @Schema(description = "激活时间")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate activeTime;
 
-    @Schema(description = "授权工作站")
+    @Schema(description = "授权工作站数量")
     private int workstation;
+
+    @Schema(description = "授权工作站列表")
+    private String workstations;
 
     @Schema(description = "授权用户数")
     private int userNum;
 
-    @Schema(description = "网络设备-无数据")
-    private int cctvNum;
+    @Schema(description = "网络设备")
+    private long cctvNum;
 
-    @Schema(description = "标签设备-无数据")
-    private int tagNum;
+    @Schema(description = "标签设备")
+    private long tagNum;
 
     @Schema(description = "授权菜单")
     private String menuList;

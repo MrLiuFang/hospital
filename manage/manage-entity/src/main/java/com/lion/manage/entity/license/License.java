@@ -27,6 +27,8 @@ public class License  extends BaseEntity implements Serializable {
 
     private Long userNum;
 
+    private String personInCharge;
+
     @Column(length = 2000)
     private String menuList;
 

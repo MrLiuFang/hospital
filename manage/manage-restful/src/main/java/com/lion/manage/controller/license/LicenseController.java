@@ -8,8 +8,11 @@ import com.lion.core.IResultData;
 import com.lion.core.ResultData;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
+import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.enums.State;
+import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.manage.entity.license.AboutVo;
 import com.lion.manage.entity.license.License;
 import com.lion.manage.service.license.LicenseService;
@@ -57,6 +60,12 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
     @DubboReference
     private DeviceExposeService deviceExposeService;
 
+    @DubboReference
+    private CctvExposeService cctvExposeService;
+
+    @DubboReference
+    private TagExposeService tagExposeService;
+
     private String licensePath = "D:\\license\\";
 //    private String licensePath = "/workspace/澳门医院/license/";
     private String fileName ="";
@@ -66,6 +75,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
     @ApiOperation(value = "上传license",notes = "上传license")
     public IResultData upload(@ApiIgnore StandardMultipartHttpServletRequest multipartHttpServletRequest) throws Exception {
         fileName = UUID.randomUUID().toString();
+        ObjectMapper objectMapper = new ObjectMapper();
         Map<String, MultipartFile> files = multipartHttpServletRequest.getFileMap();
         for(String originalFileName : files.keySet()) {
             MultipartFile file = files.get(originalFileName);
@@ -78,47 +88,56 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
             java.io.File file1 = new java.io.File(licensePath+fileName+".zip");
             file.transferTo(file1);
             unPacket(file1, Paths.get(licensePath+fileName));
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(licensePath+fileName+"/EquipmentOrder_EN1.lic")), "UTF-8"));
-            String lineTxt = null;
-            String str = "";
-            // 逐行读取
-            while ((lineTxt = br.readLine()) != null) {
-                if (Objects.nonNull(lineTxt)) {
-                    str += lineTxt;
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(licensePath+fileName+"/EquipmentOrder_EN1.lic")), "UTF-8"));
+                String lineTxt = null;
+                String str = "";
+                // 逐行读取
+                while ((lineTxt = br.readLine()) != null) {
+                    if (Objects.nonNull(lineTxt)) {
+                        str += lineTxt;
+                    }
                 }
-            }
-            br.close();
-            String equipmentOrder = decryptByPublicKeyStr(str,public_key);
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(equipmentOrder);
-            JsonNode interfaceEquipmentOrderList = jsonNode.get("interfaceEquipmentOrderList");
-            if (interfaceEquipmentOrderList.isArray()){
-                interfaceEquipmentOrderList.forEach(jsonNode1 -> {
-                    String equipmentNo = jsonNode1.get("equipmentNo").asText();
-                    deviceExposeService.updateState(equipmentNo, State.ACTIVE);
-                });
+                br.close();
+                String equipmentOrder = decryptByPublicKeyStr(str,public_key);
+
+                JsonNode jsonNode = objectMapper.readTree(equipmentOrder);
+                JsonNode interfaceEquipmentOrderList = jsonNode.get("interfaceEquipmentOrderList");
+                if (interfaceEquipmentOrderList.isArray()){
+                    interfaceEquipmentOrderList.forEach(jsonNode1 -> {
+                        String equipmentNo = jsonNode1.get("equipmentNo").asText();
+                        deviceExposeService.updateState(equipmentNo, State.ACTIVE);
+                        tagExposeService.updateDeviceState(equipmentNo,State.ACTIVE);
+                    });
+                }
+            } catch (Exception e) {
+
             }
 //            interfaceEquipmentOrderList
-            BufferedReader br1 = new BufferedReader(new InputStreamReader(new FileInputStream(new File(licensePath+fileName+"/Order_EN1.lic")), "UTF-8"));
-            String lineTxt1 = null;
-            String str1 = "";
-            // 逐行读取
-            while ((lineTxt1 = br1.readLine()) != null) {
-                if (Objects.nonNull(lineTxt1)) {
-                    str1 += lineTxt1;
+            try {
+                BufferedReader br1 = new BufferedReader(new InputStreamReader(new FileInputStream(new File(licensePath+fileName+"/Order_EN1.lic")), "UTF-8"));
+                String lineTxt1 = null;
+                String str1 = "";
+                while ((lineTxt1 = br1.readLine()) != null) {
+                    if (Objects.nonNull(lineTxt1)) {
+                        str1 += lineTxt1;
+                    }
                 }
+                br1.close();
+                String order = decryptByPublicKeyStr(str1,public_key);
+                licenseService.deleteAll();
+                JsonNode jsonNode1 = objectMapper.readTree(order);
+                License license = new License();
+                license.setStartDate(LocalDate.parse(jsonNode1.get("startDate").asText()));
+                license.setEndDate(LocalDate.parse(jsonNode1.get("endDate").asText()));
+                license.setMenuList(jsonNode1.get("interfacePermissionMenuList").toString());
+                license.setUserNum(jsonNode1.get("userNum").asLong());
+                license.setPersonInCharge(jsonNode1.get("personInCharge").asText());
+                license.setWorkstationOrderList(jsonNode1.get("interfaceWorkstationOrderLsit").toString());
+                licenseService.save(license);
+            } catch (Exception e) {
+
             }
-            br1.close();
-            String order = decryptByPublicKeyStr(str1,public_key);
-            licenseService.deleteAll();
-            JsonNode jsonNode1 = objectMapper.readTree(order);
-            License license = new License();
-            license.setStartDate(LocalDate.parse(jsonNode1.get("startDate").asText()));
-            license.setEndDate(LocalDate.parse(jsonNode1.get("endDate").asText()));
-            license.setMenuList(jsonNode1.get("interfacePermissionMenuList").toString());
-            license.setUserNum(jsonNode1.get("userNum").asLong());
-            license.setWorkstationOrderList(jsonNode1.get("interfaceWorkstationOrderLsit").toString());
-            licenseService.save(license);
         }
         return ResultData.instance();
     }
@@ -147,10 +166,14 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
             aboutVo.setStartDate(license.getStartDate());
             aboutVo.setEndDate(license.getEndDate());
             aboutVo.setUserNum(license.getUserNum().intValue());
+            aboutVo.setPersonInCharge(license.getPersonInCharge());
             ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(license.getWorkstationOrderList());
+            aboutVo.setWorkstations(license.getWorkstationOrderList());
             aboutVo.setWorkstation(jsonNode.size());
             aboutVo.setMenuList(license.getMenuList());
+            aboutVo.setCctvNum(cctvExposeService.count());
+            aboutVo.setTagNum(tagExposeService.countActive());
             return ResultData.instance().setData(aboutVo);
 
         }
@@ -227,5 +250,22 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
         byte[] decryptedData = out.toByteArray();
         out.close();
         return new String(decryptedData,"UTF-8");
+    }
+
+    public static void main(String[] agrs) throws Exception {
+        LicenseController licenseController = new LicenseController();
+
+        BufferedReader br1 = new BufferedReader(new InputStreamReader(new FileInputStream(new File("/home/coby/下载/t/EquipmentOrder_EN10001.lic")), "UTF-8"));
+        String lineTxt1 = null;
+        String str1 = "";
+        // 逐行读取
+        while ((lineTxt1 = br1.readLine()) != null) {
+            if (Objects.nonNull(lineTxt1)) {
+                str1 += lineTxt1;
+            }
+        }
+        br1.close();
+        String order = licenseController.decryptByPublicKeyStr(str1,"MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCbPckqYVqA0RjTH+Qid69aB/M3Sex4gCUGTxyVlwmL02Q16Ws7KvvwYZnaL5d8sfH5yztkvQOArEJdOblnT0/kouP/DakscD88ZEtmsPRzwLE6UsnzJ9vTysAA4wA21AWLA3+x67jJfxsC2dcu9aK5axpCW5NOWMybes3DckS82wIDAQAB");
+        System.out.println(order);
     }
 }

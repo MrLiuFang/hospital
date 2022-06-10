@@ -93,6 +93,11 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     }
 
     @Override
+    public void updateDeviceState(String code, State state) {
+        tagDao.updateDeviceState1(code,state);
+    }
+
+    @Override
     public void updateState(Long id, Integer state) {
         tagDao.updateState(id, TagState.instance(state));
     }
@@ -133,5 +138,10 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
             }
         }
         return list;
+    }
+
+    @Override
+    public long countActive() {
+        return count()-tagDao.countByDeviceState(State.NOT_ACTIVE);
     }
 }

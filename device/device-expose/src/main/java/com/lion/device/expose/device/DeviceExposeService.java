@@ -123,6 +123,8 @@ public interface DeviceExposeService extends BaseService<Device> {
      */
     public int count(Long departmentId, List<State> states);
 
+    public long countActive(State state);
+
     /**
      * 详情
      * @param id

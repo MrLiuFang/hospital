@@ -80,6 +80,8 @@ public interface TagExposeService extends BaseService<Tag> {
      */
     public void updateDeviceState(Long id, Integer state);
 
+    public void updateDeviceState(String code, State state);
+
     /**
      * 修改状态
      * @param id
@@ -112,5 +114,7 @@ public interface TagExposeService extends BaseService<Tag> {
      * @return
      */
     public List<Long> find(TagType tagType,String tagCode);
+
+    public long countActive();
 
 }

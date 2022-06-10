@@ -113,6 +113,11 @@ public interface TagDao extends BaseDao<Tag> {
 
     @Modifying
     @Transactional
+    @Query(" update Tag set deviceState =:state ,version=version +1 where tagCode = :code ")
+    public void updateDeviceState1(@Param("code")String code, @Param("state") State state);
+
+    @Modifying
+    @Transactional
     @Query(" update Tag set state =:state ,version = version+1 where id = :id ")
     public void updateState(@Param("id")Long id, @Param("state") TagState state);
 
@@ -136,4 +141,6 @@ public interface TagDao extends BaseDao<Tag> {
      * @return
      */
     public int countByPurpose(TagPurpose purpose);
+
+    public long countByDeviceState(State state);
 }
