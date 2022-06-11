@@ -195,7 +195,10 @@ public class UserController extends BaseControllerImpl implements BaseController
                 currentUserDetailsVo.setResources(role.getResources());
                 List<License> list = licenseExposeService.findAll();
                 if (list.size()>0){
-                    currentUserDetailsVo.setIsE(list.get(0).getEffectivTime().isBefore(LocalDate.now()));
+                    License license = list.get(0);
+                    if (Objects.nonNull(license.getEffectivTime())) {
+                        currentUserDetailsVo.setIsE(license.getEffectivTime().isBefore(LocalDate.now()));
+                    }
                 }
 
             }

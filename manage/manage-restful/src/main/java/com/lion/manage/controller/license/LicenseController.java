@@ -66,8 +66,8 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
     @DubboReference
     private TagExposeService tagExposeService;
 
-//    private String licensePath = "D:\\license\\";
-    private String licensePath = "/workspace/澳门医院/license/";
+    private String licensePath = "D:\\license\\";
+//    private String licensePath = "/workspace/澳门医院/license/";
     private String fileName ="";
 
     @PostMapping("/upload")
@@ -150,6 +150,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
         List<License> list = licenseService.findAll();
         if (list.size()>0) {
             License license = list.get(0);
+            license.getMenuList();
             return ResultData.instance().setData(license.getMenuList());
         }
         return ResultData.instance();
