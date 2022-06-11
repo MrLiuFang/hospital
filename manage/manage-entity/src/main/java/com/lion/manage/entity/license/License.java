@@ -25,6 +25,8 @@ public class License  extends BaseEntity implements Serializable {
 
     private LocalDate endDate;
 
+    private LocalDate effectivTime;
+
     private Long userNum;
 
     private String personInCharge;

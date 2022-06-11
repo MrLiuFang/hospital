@@ -66,8 +66,8 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
     @DubboReference
     private TagExposeService tagExposeService;
 
-    private String licensePath = "D:\\license\\";
-//    private String licensePath = "/workspace/澳门医院/license/";
+//    private String licensePath = "D:\\license\\";
+    private String licensePath = "/workspace/澳门医院/license/";
     private String fileName ="";
 
     @PostMapping("/upload")
@@ -111,7 +111,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                     });
                 }
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
 //            interfaceEquipmentOrderList
             try {
@@ -128,6 +128,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                 licenseService.deleteAll();
                 JsonNode jsonNode1 = objectMapper.readTree(order);
                 License license = new License();
+                license.setEffectivTime(LocalDate.parse(jsonNode1.get("effectivTime").asText()));
                 license.setStartDate(LocalDate.parse(jsonNode1.get("startDate").asText()));
                 license.setEndDate(LocalDate.parse(jsonNode1.get("endDate").asText()));
                 license.setMenuList(jsonNode1.get("interfacePermissionMenuList").toString());
@@ -136,7 +137,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                 license.setWorkstationOrderList(jsonNode1.get("interfaceWorkstationOrderLsit").toString());
                 licenseService.save(license);
             } catch (Exception e) {
-
+                e.printStackTrace();
             }
         }
         return ResultData.instance();

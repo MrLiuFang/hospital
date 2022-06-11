@@ -12,9 +12,11 @@ import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.license.License;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.manage.expose.license.LicenseExposeService;
 import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.user.QUser;
 import com.lion.upms.entity.user.User;
@@ -43,6 +45,7 @@ import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import com.lion.core.Optional;
@@ -87,6 +90,9 @@ public class UserController extends BaseControllerImpl implements BaseController
 
     @Autowired
     private JPAQueryFactory jpaQueryFactory;
+
+    @DubboReference
+    private LicenseExposeService licenseExposeService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增用户")
@@ -187,6 +193,11 @@ public class UserController extends BaseControllerImpl implements BaseController
                 currentUserDetailsVo.setRoleName(role.getName());
                 currentUserDetailsVo.setRoleId(role.getId());
                 currentUserDetailsVo.setResources(role.getResources());
+                List<License> list = licenseExposeService.findAll();
+                if (list.size()>0){
+                    currentUserDetailsVo.setIsE(list.get(0).getEffectivTime().isBefore(LocalDate.now()));
+                }
+
             }
             currentUserDetailsVo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
             Department department = departmentUserExposeService.findDepartment(user.getId());

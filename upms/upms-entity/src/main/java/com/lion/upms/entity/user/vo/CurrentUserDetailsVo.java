@@ -33,4 +33,7 @@ public class CurrentUserDetailsVo extends User {
 
     @Schema(description = "权限")
     private String resources;
+
+    @Schema(description = "是否过了激活日期：true提示 license过期")
+    private Boolean isE;
 }
