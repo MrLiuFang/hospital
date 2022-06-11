@@ -29,7 +29,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -96,29 +95,30 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
     @Override
     @Transactional
     public void receiveOrCancel(ReceivePatientDto receivePatientDto) {
-        if (Objects.isNull(receivePatientDto.getId())) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("1000026"));
-        }
+//        if (Objects.isNull(receivePatientDto.getId())) {
+//            BusinessException.throwException(MessageI18nUtil.getMessage("1000026"));
+//        }
         if (!(Objects.equals(receivePatientDto.getState(),TransferState.FINISH) || Objects.equals(receivePatientDto.getState(),TransferState.CANCEL))) {
             BusinessException.throwException(MessageI18nUtil.getMessage("1000046"));
         }
+//        if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH)) {
+//            Patient patient = new Patient();
+//            patient.setId(receivePatientDto.getPatientId());
+//            patientService.update(patient);
+//        }
+        patientTransferDao.update1(receivePatientDto.getPatientId(),receivePatientDto.getState());
+//        List<TransferState> state = new ArrayList<>();
+//        state.add(TransferState.CANCEL);
+//        state.add(TransferState.FINISH);
+//        PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(receivePatientDto.getId(),state);
+//        patientTransfer.setState(receivePatientDto.getState());
         if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH)) {
-            Patient patient = new Patient();
-            BeanUtils.copyProperties(receivePatientDto, patient);
-            patientService.update(patient);
+            patientTransferDao.update2(receivePatientDto.getPatientId(),receivePatientDto.getState(),receivePatientDto.getNewSickbedId());
         }
-        List<TransferState> state = new ArrayList<>();
-        state.add(TransferState.CANCEL);
-        state.add(TransferState.FINISH);
-        PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(receivePatientDto.getId(),state);
-        patientTransfer.setState(receivePatientDto.getState());
-        if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH)) {
-            patientTransfer.setNewSickbedId(receivePatientDto.getSickbedId());
-        }
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        patientTransfer.setReceiveUserId(userId);
-        patientTransfer.setReceiveDateTime(LocalDateTime.now());
-        update(patientTransfer);
+//        Long userId = CurrentUserUtil.getCurrentUserId();
+//        patientTransfer.setReceiveUserId(userId);
+//        patientTransfer.setReceiveDateTime(LocalDateTime.now());
+//        update(patientTransfer);
     }
 
     @Override

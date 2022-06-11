@@ -154,11 +154,14 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             }
             if (Objects.nonNull(patient)  ) { //处理患者数据
                 patientService.patientEvent(deviceDataDto,monitor,star,tag,patient);
-            }else if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
+            }
+            if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
                 temporaryPersonService.temporaryPersonEvent(deviceDataDto,monitor,star,tag,temporaryPerson);
-            }else if ((Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
+            }
+            if ((Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
                 deviceService.deviceEevent(deviceDataDto,monitor,star,tag);
-            }else if (Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
+            }
+            if (Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
                 recyclingBoxService.event(deviceDataDto,monitor,star,tag,patient,temporaryPerson, user);
             }
 

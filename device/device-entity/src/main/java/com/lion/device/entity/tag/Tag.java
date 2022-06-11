@@ -33,7 +33,7 @@ import java.time.LocalDateTime;
 
 @DynamicInsert
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"lastDataTime","deviceState","createDateTime","updateDateTime","createUserId","updateUserId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"lastDataTime","createDateTime","updateDateTime","createUserId","updateUserId"})
 @Schema(description = "标签")
 public class Tag extends BaseEntity implements Serializable {
 

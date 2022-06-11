@@ -8,9 +8,13 @@ import com.lion.common.dto.DeviceDataDto;
 import com.lion.common.dto.RecyclingBoxRecordDto;
 import com.lion.core.Optional;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagUser;
+import com.lion.device.expose.tag.TagExposeService;
+import com.lion.device.expose.tag.TagPatientExposeService;
+import com.lion.device.expose.tag.TagPostdocsExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.event.service.CommonService;
 import com.lion.event.service.RecyclingBoxService;
@@ -57,17 +61,30 @@ public class RecyclingBoxServiceImpl implements RecyclingBoxService {
     @DubboReference
     private UserExposeService userExposeService;
 
+    @DubboReference
+    private TagExposeService  tagExposeService;
+
+    @DubboReference
+    private TagPatientExposeService tagPatientExposeService;
+
+    @DubboReference
+    private TagPostdocsExposeService tagPostdocsExposeService;
+
     @Override
     public void event(DeviceDataDto deviceDataDto, Device monitor, Device star, Tag tag, Patient patient, TemporaryPerson temporaryPerson, User user) throws JsonProcessingException {
         if (Objects.nonNull(patient)) {
             patientExposeService.updateIsWaitLeave(patient.getId(),true);
+            tagPatientExposeService.unbinding(patient.getId(),false);
         }else if (Objects.nonNull(temporaryPerson)){
             temporaryPersonExposeService.updateIsWaitLeave(temporaryPerson.getId(),true);
+            tagPostdocsExposeService.unbinding(temporaryPerson.getId(),false);
         }
         if (Objects.nonNull(user)){
+            tagUserExposeService.unbinding(user.getId(),false);
             user.setTagCode("");
             userExposeService.update(user);
         }
+        tagExposeService.updateDeviceState(tag.getTagCode(), State.NOT_USED);
         CurrentRegionDto currentRegionDto = commonService.currentRegion(monitor,star);
         RecyclingBoxRecordDto recyclingBoxRecordDto = new RecyclingBoxRecordDto();
         recyclingBoxRecordDto.setRi(Objects.nonNull(currentRegionDto)?currentRegionDto.getRegionId():null);

@@ -23,7 +23,7 @@ import java.util.Objects;
  */
 @Data
 @Schema
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"lastDataTime","deviceState","createDateTime","updateDateTime","createUserId","updateUserId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"lastDataTime","createDateTime","updateDateTime","createUserId","updateUserId"})
 public class DetailsTagVo extends Tag {
 
     @Schema(description = "绑定Id")

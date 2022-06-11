@@ -3,6 +3,9 @@ package com.lion.person.dao.person;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.person.entity.enums.TransferState;
 import com.lion.person.entity.person.PatientTransfer;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -50,5 +53,16 @@ public interface PatientTransferDao extends BaseDao<PatientTransfer> {
      * @return
      */
     public int deleteByPatientId(Long patientId);
+
+    @Transactional
+    @Modifying
+    @Query(" update PatientTransfer set state =:state where patientId=:patientId")
+    public int update1(Long patientId, TransferState state);
+
+    @Transactional
+    @Modifying
+    @Query(" update PatientTransfer set state =:state , newSickbedId=:newSickbedId where patientId=:patientId")
+    public int update2(Long patientId, TransferState state,Long newSickbedId);
+
 
 }
