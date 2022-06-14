@@ -33,8 +33,6 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -72,8 +70,8 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/list")
     @ApiOperation(value = "标签列表")
-    public IPageResultData<List<ListTagVo>> list( @ApiParam(value = "部门")Long departmentId,@ApiParam(value = "使用状态")TagUseState useState,@ApiParam(value = "电量(0=正常,1=少於90 天,2=少於30天)")Integer battery, @ApiParam(value = "标签编码") String tagCode, @ApiParam(value = "标签分类") TagType type, @ApiParam(value = "用途") TagPurpose purpose, LionPage lionPage){
-        return tagService.list(departmentId, useState, battery, tagCode, type, purpose, lionPage);
+    public IPageResultData<List<ListTagVo>> list( @ApiParam(value = "是否临时-导入")Boolean isTmp,@ApiParam(value = "部门")Long departmentId,@ApiParam(value = "使用状态")TagUseState useState,@ApiParam(value = "电量(0=正常,1=少於90 天,2=少於30天)")Integer battery, @ApiParam(value = "标签编码") String tagCode, @ApiParam(value = "标签分类") TagType type, @ApiParam(value = "用途") TagPurpose purpose, LionPage lionPage){
+        return tagService.list(isTmp, departmentId, useState, battery, tagCode, type, purpose, lionPage);
     }
 
     @GetMapping("/log/list")

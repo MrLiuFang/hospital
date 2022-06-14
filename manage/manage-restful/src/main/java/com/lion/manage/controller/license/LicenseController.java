@@ -4,12 +4,17 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.annotation.AuthorizationIgnore;
+import com.lion.common.enums.Type;
 import com.lion.core.IResultData;
 import com.lion.core.ResultData;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.device.entity.cctv.Cctv;
+import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.State;
+import com.lion.device.entity.enums.TagType;
+import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
@@ -74,6 +79,12 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
     @AuthorizationIgnore
     @ApiOperation(value = "上传license",notes = "上传license")
     public IResultData upload(@ApiIgnore StandardMultipartHttpServletRequest multipartHttpServletRequest) throws Exception {
+        String osName = System.getProperties().getProperty("os.name");
+        if (osName.toLowerCase().indexOf("linux")>-1) {
+            licensePath = "/workspace/澳门医院/license/";
+        } else {
+            licensePath = "D:\\license\\";
+        }
         fileName = UUID.randomUUID().toString();
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, MultipartFile> files = multipartHttpServletRequest.getFileMap();
@@ -106,8 +117,61 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                 if (interfaceEquipmentOrderList.isArray()){
                     interfaceEquipmentOrderList.forEach(jsonNode1 -> {
                         String equipmentNo = jsonNode1.get("equipmentNo").asText();
-                        deviceExposeService.updateState(equipmentNo, State.ACTIVE);
-                        tagExposeService.updateDeviceState(equipmentNo,State.ACTIVE);
+                        Boolean b = false;
+                        Device device = deviceExposeService.find(equipmentNo);
+                        if (Objects.nonNull(device)) {
+                            deviceExposeService.updateState(equipmentNo, State.ACTIVE);
+                            b = true;
+                        }
+                        Tag tag = tagExposeService.find(equipmentNo);
+                        if (Objects.nonNull(tag)) {
+                            tagExposeService.updateDeviceState(equipmentNo,State.ACTIVE);
+                            b = true;
+                        }
+                        if (!b) {
+//                            {"id":1,"name":"Time Star"},{"id":2,"name":"Standard Star"},{"id":3,"name":"Monitor"},{"id":4,"name":"Virtual Wall"},{"id":5,"name":"Hand Washing"},{"id":6,"name":"LF Exciter"},{"id":7,"name":"回收箱"},{"id":8,"name":"新生兒標籤"},{"id":9,"name":"普通標籤"},{"id":10,"name":"職員標籤"},{"id":11,"name":"溫濕標籤"},{"id":12,"name":"一次性標籤"},{"id":13,"name":"帶按鈕標籤"}
+                            Integer equipmentId = jsonNode1.get("equipmentId").asInt();
+                            List<Integer> deviceList = Arrays.asList(new Integer[]{1,2,3,4,5,6,7});
+                            List<Integer> tagList = Arrays.asList(new Integer[]{1,2,3,4,5,6,7});
+                            if (deviceList.contains(equipmentId)) {
+                                Device entity = new Device();
+                                entity.setDeviceState(State.ACTIVE);
+                                entity.setCode(equipmentNo);
+                                if (Objects.equals(equipmentId,2)){
+                                    entity.setDeviceClassify(DeviceClassify.STAR_AP);
+                                }else if (Objects.equals(equipmentId,3)){
+                                    entity.setDeviceClassify(DeviceClassify.MONITOR);
+                                }else if (Objects.equals(equipmentId,4)){
+                                    entity.setDeviceClassify(DeviceClassify.VIRTUAL_WALL);
+                                }else if (Objects.equals(equipmentId,5)){
+                                    entity.setDeviceClassify(DeviceClassify.HAND_WASHING);
+                                }else if (Objects.equals(equipmentId,6)){
+                                    entity.setDeviceClassify(DeviceClassify.LF_EXCITER);
+                                }else if (Objects.equals(equipmentId,7)){
+                                    entity.setDeviceClassify(DeviceClassify.RECYCLING_BOX);
+                                }
+                                deviceExposeService.save(entity);
+                            }else if (tagList.contains(equipmentId)) {
+//                                {"id":8,"name":"新生兒標籤"},{"id":9,"name":"普通標籤"},{"id":10,"name":"職員標籤"},{"id":11,"name":"溫濕標籤"},{"id":12,"name":"一次性標籤"},{"id":13,"name":"帶按鈕標籤"}
+                                Tag entity1 = new Tag();
+                                entity1.setTagCode(equipmentNo);
+                                entity1.setDeviceState(State.ACTIVE);
+                                if (Objects.equals(equipmentId,8)){
+                                    entity1.setType(TagType.BABY);
+                                }else if (Objects.equals(equipmentId,9)){
+                                    entity1.setType(TagType.ORDINARY);
+                                }else if (Objects.equals(equipmentId,10)){
+                                    entity1.setType(TagType.STAFF);
+                                }else if (Objects.equals(equipmentId,11)){
+                                    entity1.setType(TagType.STAFF);
+                                }else if (Objects.equals(equipmentId,12)){
+                                    entity1.setType(TagType.DISPOSABLE);
+                                }else if (Objects.equals(equipmentId,13)){
+                                    entity1.setType(TagType.BUTTON);
+                                }
+                                tagExposeService.save(entity1);
+                            }
+                        }
                     });
                 }
             } catch (Exception e) {

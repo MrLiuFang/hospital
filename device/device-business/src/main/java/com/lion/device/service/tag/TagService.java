@@ -14,7 +14,6 @@ import com.lion.device.entity.tag.vo.DetailsTagVo;
 import com.lion.device.entity.tag.vo.ListTagVo;
 import com.lion.device.entity.tag.vo.PurposeStatisticsVo;
 
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -45,7 +44,7 @@ public interface TagService extends BaseService<Tag> {
     /**
      * 列表
      *
-     *
+     * @param isTmp
      * @param departmentId
      * @param useState
      * @param battery
@@ -55,7 +54,7 @@ public interface TagService extends BaseService<Tag> {
      * @param lionPage
      * @return
      */
-    IPageResultData<List<ListTagVo>> list(Long departmentId,TagUseState useState,Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage);
+    IPageResultData<List<ListTagVo>> list(Boolean isTmp,Long departmentId,TagUseState useState,Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage);
 
     /**
      * 获取所有数据的id

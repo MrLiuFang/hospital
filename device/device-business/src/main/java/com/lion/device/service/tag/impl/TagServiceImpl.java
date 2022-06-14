@@ -32,7 +32,6 @@ import com.lion.event.expose.service.SystemAlarmExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
@@ -44,7 +43,6 @@ import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -207,8 +205,12 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     }
 
     @Override
-    public IPageResultData<List<ListTagVo>> list(Long departmentId, TagUseState useState, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
+    public IPageResultData<List<ListTagVo>> list(Boolean isTmp, Long departmentId, TagUseState useState, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
+        if (Objects.equals(true,isTmp)){
+            jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_departmentId",null);
+            jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_purpose",null);
+        }
         if (StringUtils.hasText(tagCode)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_tagCode",tagCode);
         }
