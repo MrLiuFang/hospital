@@ -123,7 +123,7 @@ public interface DeviceExposeService extends BaseService<Device> {
      */
     public int count(Long departmentId, List<State> states);
 
-    public long countActive(State state);
+    public long countDeviceClassify(DeviceClassify deviceClassify);
 
     /**
      * 详情
@@ -133,5 +133,7 @@ public interface DeviceExposeService extends BaseService<Device> {
     public DetailsDeviceVo details(Long id);
 
     public void updateState(String code, State state);
+
+
 
 }

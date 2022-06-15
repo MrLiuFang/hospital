@@ -35,7 +35,7 @@ public class AboutVo {
     private int userNum;
 
     @Schema(description = "网络设备")
-    private long cctvNum;
+    private long monitorNum;
 
     @Schema(description = "标签设备")
     private long tagNum;

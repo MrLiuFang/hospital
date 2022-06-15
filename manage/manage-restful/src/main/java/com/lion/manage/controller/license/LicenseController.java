@@ -120,19 +120,23 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                         Boolean b = false;
                         Device device = deviceExposeService.find(equipmentNo);
                         if (Objects.nonNull(device)) {
-                            deviceExposeService.updateState(equipmentNo, State.ACTIVE);
+                            if (Objects.equals(State.NOT_ACTIVE,device.getDeviceState())) {
+                                deviceExposeService.updateState(equipmentNo, State.ACTIVE);
+                            }
                             b = true;
                         }
                         Tag tag = tagExposeService.find(equipmentNo);
                         if (Objects.nonNull(tag)) {
-                            tagExposeService.updateDeviceState(equipmentNo,State.ACTIVE);
+                            if (Objects.equals(State.NOT_ACTIVE,tag.getDeviceState())) {
+                                tagExposeService.updateDeviceState(equipmentNo, State.ACTIVE);
+                            }
                             b = true;
                         }
                         if (!b) {
 //                            {"id":1,"name":"Time Star"},{"id":2,"name":"Standard Star"},{"id":3,"name":"Monitor"},{"id":4,"name":"Virtual Wall"},{"id":5,"name":"Hand Washing"},{"id":6,"name":"LF Exciter"},{"id":7,"name":"回收箱"},{"id":8,"name":"新生兒標籤"},{"id":9,"name":"普通標籤"},{"id":10,"name":"職員標籤"},{"id":11,"name":"溫濕標籤"},{"id":12,"name":"一次性標籤"},{"id":13,"name":"帶按鈕標籤"}
                             Integer equipmentId = jsonNode1.get("equipmentId").asInt();
                             List<Integer> deviceList = Arrays.asList(new Integer[]{1,2,3,4,5,6,7});
-                            List<Integer> tagList = Arrays.asList(new Integer[]{1,2,3,4,5,6,7});
+                            List<Integer> tagList = Arrays.asList(new Integer[]{8,9,10,11,12,13});
                             if (deviceList.contains(equipmentId)) {
                                 Device entity = new Device();
                                 entity.setDeviceState(State.ACTIVE);
@@ -238,8 +242,8 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
             aboutVo.setWorkstations(license.getWorkstationOrderList());
             aboutVo.setWorkstation(jsonNode.size());
             aboutVo.setMenuList(license.getMenuList());
-            aboutVo.setCctvNum(cctvExposeService.count());
-            aboutVo.setTagNum(tagExposeService.countActive());
+            aboutVo.setMonitorNum(deviceExposeService.countDeviceClassify(DeviceClassify.MONITOR));
+            aboutVo.setTagNum(tagExposeService.count());
             return ResultData.instance().setData(aboutVo);
 
         }
