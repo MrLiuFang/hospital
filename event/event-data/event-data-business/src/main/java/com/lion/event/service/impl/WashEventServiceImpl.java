@@ -479,7 +479,7 @@ public class WashEventServiceImpl implements WashEventService {
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getGender())?"":listWashEventVo.getGender().getDesc(), fontChinese));
             table.addCell(new Paragraph(listWashEventVo.getDeviceName(), fontChinese));
             table.addCell(new Paragraph(Objects.isNull(listWashEventVo.getUseDateTime())?"":dateTimeFormatter.format(listWashEventVo.getUseDateTime()), fontChinese));
-            table.addCell(new Paragraph(Objects.equals(listWashEventVo.getIa(),true)?MessageI18nUtil.getMessage("3000012"):MessageI18nUtil.getMessage("3000013"), fontChinese));
+            table.addCell(new Paragraph(Objects.equals(listWashEventVo.getIa(),true)?MessageI18nUtil.getMessage("3000013"):MessageI18nUtil.getMessage("3000012"), fontChinese));
         }
         document.add(table);
         document.close();
@@ -509,7 +509,7 @@ public class WashEventServiceImpl implements WashEventService {
             vo.setRegionId(region.getId());
             com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(region.getDepartmentId());
             vo.setDepartmentName(optionalDepartment.isEmpty()?"":optionalDepartment.get().getName());
-//            vo.setDeviceCount(vo.getDeviceCount()+deviceGroupDeviceExposeService.countDevice(region.getDeviceGroupId()));
+            vo.setDeviceCount(deviceExposeService.findByRegionId(region.getId()).size());
             Document document = washEventDao.eventCount(startDateTime, endDateTime, region.getId());
             if (Objects.nonNull(document)) {
                 vo.setRatio(new BigDecimal(document.getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP));

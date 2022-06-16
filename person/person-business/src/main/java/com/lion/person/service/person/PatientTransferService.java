@@ -1,12 +1,14 @@
 package com.lion.person.service.person;
 
 import com.lion.core.IResultData;
+import com.lion.core.LionPage;
 import com.lion.core.service.BaseService;
 import com.lion.person.entity.person.PatientTransfer;
 import com.lion.person.entity.person.dto.ReceivePatientDto;
 import com.lion.person.entity.person.dto.TransferDto;
 import com.lion.person.entity.person.dto.UpdateTransferDto;
 import com.lion.person.entity.person.vo.ListPatientTransferVo;
+import org.springframework.data.domain.Page;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -34,10 +36,12 @@ public interface PatientTransferService extends BaseService<PatientTransfer> {
 
     /**
      * 转移记录
+     *
      * @param patientId
+     * @param lionPage
      * @return
      */
-    public List<ListPatientTransferVo> list( Long patientId );
+    public Page<ListPatientTransferVo> list(Long patientId , LionPage lionPage);
 
     /**
      * 修改转移状态

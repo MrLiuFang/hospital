@@ -1,6 +1,10 @@
 package com.lion.person.service.person.impl;
 
 import com.lion.common.expose.file.FileExposeService;
+import com.lion.constant.SearchConstant;
+import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
+import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
@@ -25,6 +29,8 @@ import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,15 +128,20 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
     }
 
     @Override
-    public List<ListPatientTransferVo> list(Long patientId) {
-        List<PatientTransfer> list = Collections.EMPTY_LIST;
-        if (Objects.isNull(patientId)){
-            list = this.findAll(Sort.by(Sort.Direction.DESC,"createDateTime"));
-        }else {
-            list = patientTransferDao.findByPatientIdAndStateOrderByCreateDateTimeDesc(patientId,TransferState.FINISH );
+    public Page<ListPatientTransferVo> list(Long patientId, LionPage lionPage) {
+        Page<PatientTransfer> page = null;
+        JpqlParameter jpqlParameter = new JpqlParameter();
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
+        lionPage.setJpqlParameter(jpqlParameter);
+        if (Objects.nonNull(patientId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL.concat("_patientId"), patientId);
         }
+        jpqlParameter.setSearchParameter(SearchConstant.EQUAL.concat("_state"), TransferState.FINISH );
+        lionPage.setJpqlParameter(jpqlParameter);
+        page = this.findNavigator(lionPage);
 
         List<ListPatientTransferVo> returnList = new ArrayList<>();
+        List<PatientTransfer> list = page.getContent();
         list.forEach(patientTransfer -> {
             ListPatientTransferVo vo = new ListPatientTransferVo();
             BeanUtils.copyProperties(patientTransfer,vo);
@@ -156,7 +167,7 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
                 returnList.add(vo);
             }
         });
-        return returnList;
+        return new PageResultData<>(returnList,lionPage,page.getTotalElements());
     }
 
     @Override

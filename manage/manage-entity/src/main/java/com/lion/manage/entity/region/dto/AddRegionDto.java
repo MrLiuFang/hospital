@@ -36,6 +36,9 @@ public class AddRegionDto extends Region {
     @Schema(description = "定位设备id")
     private List<Long> deviceIds;
 
+    @Schema(description = "綁定病房/病床(WARD/SICKBED)")
+    private String bindType;
+
 
 
 }

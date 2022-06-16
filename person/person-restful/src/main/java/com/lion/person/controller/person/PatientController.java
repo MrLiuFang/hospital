@@ -131,10 +131,8 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @GetMapping("/transfer/list")
     @ApiOperation(value = "患者转移记录")
-    public IResultData<List<ListPatientTransferVo>> transferList(@ApiParam(value = "患者id") Long patientId ){
-        ResultData resultData = ResultData.instance();
-        resultData.setData(patientTransferService.list(patientId));
-        return resultData;
+    public IPageResultData<List<ListPatientTransferVo>> transferList(@ApiParam(value = "患者id") Long patientId,LionPage lionPage ){
+       return (IPageResultData<List<ListPatientTransferVo>>) patientTransferService.list(patientId, lionPage);
     }
 
     @PostMapping("/receiveOrCancel")

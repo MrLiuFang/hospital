@@ -101,7 +101,7 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
     }
 
     @Override
-    public void updateRegionId(List<Long> ids, Long regionId) {
+    public void updateRegionId(List<Long> ids, Long regionId, String bindType) {
         wardRoomSickbedDao.updateRegionIdIsNull(regionId);
         if (Objects.nonNull(ids) && ids.size()>0) {
             wardRoomSickbedDao.updateRegionId(regionId, ids);

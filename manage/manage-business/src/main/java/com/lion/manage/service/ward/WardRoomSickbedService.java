@@ -50,8 +50,10 @@ public interface WardRoomSickbedService extends BaseService<WardRoomSickbed> {
 
     /**
      * 修改病床所在区域
+     *
      * @param ids
      * @param regionId
+     * @param bindType
      */
-    public void updateRegionId(List<Long> ids, Long regionId);
+    public void updateRegionId(List<Long> ids, Long regionId,String bindType);
 }

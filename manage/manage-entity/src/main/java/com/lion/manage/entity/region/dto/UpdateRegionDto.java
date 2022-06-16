@@ -33,4 +33,7 @@ public class UpdateRegionDto extends Region {
 
     @Schema(description = "定位设备id-全量先删后增")
     private List<Long> deviceIds;
+
+    @Schema(description = "綁定病房/病床(WARD/SICKBED)")
+    private String bindType;
 }

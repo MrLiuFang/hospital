@@ -528,7 +528,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/event/record")
     @ApiOperation(value = "事件记录列表")
-    public IPageResultData<List<EventRecordVo>> eventRecordList(@ApiParam("时间编号")String code, @ApiParam("创建人姓名")String name,
+    public IPageResultData<List<EventRecordVo>> eventRecordList(@ApiParam("事件编号")String code, @ApiParam("创建人姓名")String name,
                                                            @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                            @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                            LionPage lionPage) {

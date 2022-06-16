@@ -14,7 +14,6 @@ import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.entity.ward.dto.AddWardRoomDto;
 import com.lion.manage.entity.ward.dto.UpdateWardRoomDto;
 import com.lion.manage.entity.ward.vo.ListWardRoomVo;
-import com.lion.manage.entity.work.Work;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardRoomService;
 import com.lion.manage.service.ward.WardRoomSickbedService;
@@ -157,17 +156,19 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
 
     @Override
     @Transactional
-    public void updateRegionId(List<Long> ids, Long regionId) {
+    public void updateRegionId(List<Long> ids, Long regionId, String bindType) {
         if (Objects.nonNull(ids) && ids.size()>0 ) {
             List<WardRoom> list = wardRoomDao.findByIdIn(ids);
-            list.forEach(wardRoom -> {
-                if (!Objects.equals(wardRoom.getRegionId(),regionId)) {
-                    Optional<Region> optional = regionService.findById(regionId);
-                    if (optional.isPresent()){
-                        BusinessException.throwException(wardRoom.getCode().concat("在").concat(optional.get().getName()).concat("已绑定"));
+            if(!Objects.equals("SICKBED",bindType)) {
+                list.forEach(wardRoom -> {
+                    if (!Objects.equals(wardRoom.getRegionId(), regionId)) {
+                        Optional<Region> optional = regionService.findById(regionId);
+                        if (optional.isPresent()) {
+                            BusinessException.throwException(wardRoom.getCode().concat("在").concat(optional.get().getName()).concat("已绑定"));
+                        }
                     }
-                }
-            });
+                });
+            }
         }
         wardRoomDao.updateRegionIdIsNull(regionId);
         if (Objects.nonNull(ids) && ids.size()>0) {

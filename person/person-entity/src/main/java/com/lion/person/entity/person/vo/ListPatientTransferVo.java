@@ -17,6 +17,8 @@ import javax.persistence.Column;
 @Schema
 public class ListPatientTransferVo extends PatientTransfer {
 
+
+
     @Schema(description = "患者信息")
     private PatientDetailsVo patientDetailsVo;
 
