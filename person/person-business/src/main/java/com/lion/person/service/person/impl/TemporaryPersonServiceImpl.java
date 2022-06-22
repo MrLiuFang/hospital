@@ -1,5 +1,6 @@
 package com.lion.person.service.person.impl;
 
+import com.ibm.icu.impl.number.parse.IgnorablesMatcher;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
@@ -224,6 +225,10 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(temporaryPerson.getDepartmentId());
         if (optionalDepartment.isPresent()) {
             temporaryPersonDetailsVo.setDepartmentName(optionalDepartment.get().getName());
+        }
+        Optional<Patient> patientOptional =  patientService.findById(temporaryPersonDetailsVo.getPatientId());
+        if (patientOptional.isPresent()) {
+            temporaryPersonDetailsVo.setPatient(patientOptional.get());
         }
 //        List<RestrictedArea> restrictedAreaList = restrictedAreaService.find(temporaryPerson.getId(), PersonType.TEMPORARY_PERSON);
 //        List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList = new ArrayList<>();

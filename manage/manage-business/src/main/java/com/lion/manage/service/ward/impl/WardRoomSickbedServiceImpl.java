@@ -104,6 +104,7 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
     public void updateRegionId(List<Long> ids, Long regionId, String bindType) {
         wardRoomSickbedDao.updateRegionIdIsNull(regionId);
         if (Objects.nonNull(ids) && ids.size()>0) {
+            wardRoomSickbedDao.updateRegionIdIsNull1(ids);
             wardRoomSickbedDao.updateRegionId(regionId, ids);
         }
     }

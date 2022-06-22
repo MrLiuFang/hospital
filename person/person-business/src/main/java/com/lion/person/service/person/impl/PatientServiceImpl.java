@@ -541,7 +541,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
         TodayStatisticsVo vo = new TodayStatisticsVo();
         vo.setTodayRegisterCount(this.patientDao.countByCreateDateTimeGreaterThanEqual(startDateTime));
         vo.setTodayTemporaryPersonRegisterCount(this.temporaryPersonDao.countByCreateDateTimeGreaterThanEqual(startDateTime));
-        vo.setTodayRegisterCount(vo.getTodayRegisterCount() + vo.getTodayTemporaryPersonRegisterCount());
+        vo.setTodayPatientRegisterCount(vo.getTodayRegisterCount() + vo.getTodayTemporaryPersonRegisterCount());
 
         vo.setPatientNotLeaveCount(this.patientDao.countByIsLeaveIsFalse());
         vo.setTemporaryPersonNotLeaveCount(this.temporaryPersonDao.countByIsLeaveIsFalse());

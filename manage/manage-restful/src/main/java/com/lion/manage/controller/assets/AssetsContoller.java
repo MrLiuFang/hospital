@@ -10,17 +10,11 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagExposeService;
-import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.AssetsType;
 import com.lion.manage.entity.assets.dto.*;
 import com.lion.manage.entity.assets.vo.*;
-import com.lion.manage.entity.build.Build;
-import com.lion.manage.entity.build.BuildFloor;
-import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsFaultState;
 import com.lion.manage.entity.enums.AssetsUseState;
-import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
@@ -29,7 +23,6 @@ import com.lion.manage.service.build.BuildFloorService;
 import com.lion.manage.service.build.BuildService;
 import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
-import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.upms.expose.user.UserExposeService;
 import io.swagger.annotations.Api;
@@ -38,21 +31,15 @@ import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
-import java.util.stream.Collectors;
 
 /**
  * @author Mr.Liu
@@ -126,9 +113,9 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
 
     @GetMapping("/list")
     @ApiOperation(value = "资产列表")
-    public IPageResultData<List<ListAssetsVo>> list(@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code,@ApiParam(value = "科室id")Long departmentId,Boolean isMyDepartment,
+    public IPageResultData<List<ListAssetsVo>> list(@ApiParam(value = "是否借用")Boolean isBorrowed,@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code,@ApiParam(value = "科室id")Long departmentId,Boolean isMyDepartment,
                                                   @ApiParam(value = "资产分类") Long assetsTypeId, @ApiParam(value = "使用状态") AssetsUseState useState, LionPage lionPage){
-        return assetsService.list(name, code, departmentId, isMyDepartment, assetsTypeId, useState, lionPage);
+        return assetsService.list(isBorrowed, name, code, departmentId, isMyDepartment, assetsTypeId, useState, lionPage);
     }
 
     @GetMapping("/export")

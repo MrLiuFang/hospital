@@ -177,7 +177,7 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
 
     @Override
     public IPageResultData<List<ListAssetsBorrowVo>> list(String name, Long borrowUserId, Long assetsTypeId, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage) {
-        List<Long> departmentIds = departmentExposeService.responsibleDepartment(departmentId);
+        List<Long> departmentIds = departmentService.responsibleDepartment(departmentId);
         Page page = assetsDao.list(name, borrowUserId,departmentIds , assetsTypeId, assetsId, startDateTime, endDateTime, isReturn, lionPage);
         List<MoreEntity> list = page.getContent();
         List<ListAssetsBorrowVo> returnList = new ArrayList<>();

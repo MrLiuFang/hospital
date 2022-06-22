@@ -460,7 +460,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         if (StringUtils.hasText(deviceName)) {
             Tag tag = tagDao.findFirstByDeviceName(deviceName);
             if ((Objects.isNull(id) && Objects.nonNull(tag)) || (Objects.nonNull(id) && Objects.nonNull(tag) && !Objects.equals(tag.getId(), id))) {
-                BusinessException.throwException(MessageI18nUtil.getMessage("该设备名称已存在"));
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000049"));
             }
         }
     }

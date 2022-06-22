@@ -95,9 +95,6 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
     @Autowired
     private AssetsBorrowService assetsBorrowService;
 
-    @DubboReference
-    private DepartmentExposeService departmentExposeService;
-
 
     @Override
     @Transactional
@@ -149,7 +146,7 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
     @Override
     public IPageResultData<List<ListAssetsFaultVo>> list(Long departmentId, AssetsFaultState state, Long assetsId, String code, String assetsCode, String keyword, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
-        List<Long> departmentIds = departmentExposeService.responsibleDepartment(departmentId);
+        List<Long> departmentIds = departmentService.responsibleDepartment(departmentId);
         List<Long> ids = new ArrayList<>();
         if (departmentIds.size()>0) {
             List<Assets> list = assetsService.findByDepartmentId(departmentIds);

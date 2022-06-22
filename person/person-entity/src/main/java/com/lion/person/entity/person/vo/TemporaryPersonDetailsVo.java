@@ -2,6 +2,7 @@ package com.lion.person.entity.person.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import io.swagger.v3.oas.annotations.media.Schema;
 
@@ -32,6 +33,9 @@ public class TemporaryPersonDetailsVo extends TemporaryPerson {
 
     @Schema(description = "科室名称（来源于拜访人）")
     private String departmentName;
+
+    @Schema(description = "拜访人-患者")
+    private Patient patient;
 
 //    @Schema(description = "限制区域")
 //    private List<TemporaryPersonDetailsVo.RestrictedAreaVo> restrictedAreaVoList;

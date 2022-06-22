@@ -162,7 +162,7 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
             if(!Objects.equals("SICKBED",bindType)) {
                 list.forEach(wardRoom -> {
                     if (!Objects.equals(wardRoom.getRegionId(), regionId)) {
-                        Optional<Region> optional = regionService.findById(regionId);
+                        Optional<Region> optional = regionService.findById(wardRoom.getRegionId());
                         if (optional.isPresent()) {
                             BusinessException.throwException(wardRoom.getCode().concat("在").concat(optional.get().getName()).concat("已绑定"));
                         }

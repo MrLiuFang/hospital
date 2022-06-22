@@ -73,4 +73,6 @@ public interface DepartmentService extends BaseService<Department> {
     public List<Long> responsibleDepartment(Long departmentId);
 
 
+
+
 }

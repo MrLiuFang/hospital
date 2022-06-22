@@ -76,6 +76,8 @@ public interface AssetsService extends BaseService<Assets> {
 
     /**
      * 列表
+     *
+     * @param isBorrowed
      * @param name
      * @param code
      * @param departmentId
@@ -85,7 +87,7 @@ public interface AssetsService extends BaseService<Assets> {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListAssetsVo>> list(String name, String code, Long departmentId, Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState, LionPage lionPage);
+    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed,String name, String code, Long departmentId, Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState, LionPage lionPage);
 
     /**
      * 导出

@@ -21,6 +21,7 @@ import com.lion.manage.dao.assets.AssetsBorrowDao;
 import com.lion.manage.dao.assets.AssetsDao;
 import com.lion.manage.dao.assets.AssetsFaultDao;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.assets.AssetsBorrow;
 import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.AssetsType;
 import com.lion.manage.entity.assets.dto.AddAssetsDto;
@@ -45,7 +46,6 @@ import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.utils.ExcelColumn;
 import com.lion.manage.utils.ExportExcelUtil;
-import com.lion.upms.entity.user.vo.ListUserVo;
 import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -64,7 +64,6 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -284,8 +283,25 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     }
 
     @Override
-    public IPageResultData<List<ListAssetsVo>> list(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, LionPage lionPage) {
+    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed, String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
+        if (Objects.equals(isBorrowed,true)) {
+            List<AssetsBorrow> list = assetsBorrowDao.findFirstByReturnUserIdIsNull();
+            List<Long> ids = new ArrayList<>();
+            ids.add(Long.MAX_VALUE);
+            list.forEach(assetsBorrow -> {
+                ids.add(assetsBorrow.getAssetsId());
+            });
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
+        }else if (Objects.equals(isBorrowed,false)) {
+            List<AssetsBorrow> list = assetsBorrowDao.findFirstByReturnUserIdIsNull();
+            List<Long> ids = new ArrayList<>();
+            ids.add(Long.MAX_VALUE);
+            list.forEach(assetsBorrow -> {
+                ids.add(assetsBorrow.getAssetsId());
+            });
+            jpqlParameter.setSearchParameter(SearchConstant.NOT_IN+"_id",ids);
+        }
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }
@@ -350,7 +366,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 
     @Override
     public void export(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListAssetsVo>> pageResultData = list(name,code,departmentId,isMyDepartment,assetsTypeId,useState,new LionPage(0,Integer.MAX_VALUE));
+        IPageResultData<List<ListAssetsVo>> pageResultData = list(null, name, code, departmentId, isMyDepartment, assetsTypeId, useState, new LionPage(0,Integer.MAX_VALUE));
         List<ListAssetsVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("name", "name"));

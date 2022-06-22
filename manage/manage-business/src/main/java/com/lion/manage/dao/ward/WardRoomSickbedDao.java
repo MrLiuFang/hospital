@@ -40,6 +40,11 @@ public interface WardRoomSickbedDao extends BaseDao<WardRoomSickbed> ,WardRoomSi
     @Query( " update WardRoomSickbed set regionId = null where regionId = :regionId " )
     public int updateRegionIdIsNull(Long regionId);
 
+    @Modifying
+    @Transactional
+    @Query( " update WardRoomSickbed set regionId = null where id in :ids " )
+    public int updateRegionIdIsNull1(List<Long> ids);
+
     /**
      * 根据区域查询
      * @param regionId

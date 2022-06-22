@@ -5,6 +5,8 @@ import com.lion.core.persistence.curd.BaseDao;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.AssetsBorrow;
 
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -32,6 +34,8 @@ public interface AssetsBorrowDao extends BaseDao<AssetsBorrow> {
      * @return
      */
     public AssetsBorrow findFirstByAssetsIdAndReturnUserIdIsNull(Long assetsId);
+
+    public List<AssetsBorrow> findFirstByReturnUserIdIsNull();
 
     /**
      * 最后的借用
