@@ -172,6 +172,8 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                                     entity1.setType(TagType.DISPOSABLE);
                                 }else if (Objects.equals(equipmentId,13)){
                                     entity1.setType(TagType.BUTTON);
+                                }else if (Objects.equals(equipmentId,14)){
+                                    entity1.setType(TagType.PREVENT_FALLING);
                                 }
                                 tagExposeService.save(entity1);
                             }

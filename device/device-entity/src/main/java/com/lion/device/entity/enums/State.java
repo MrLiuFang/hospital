@@ -21,7 +21,9 @@ public enum State implements IEnum {
     FAULT(5, "故障"),
     REPAIR(6, "维修中"),
     NOT_ACTIVE(7, "未激活"),
-    ACTIVE(8, "已激活");
+    ACTIVE(8, "已激活"),
+    OFF_LINE(9, "离线");
+
 
     private final int key;
 
