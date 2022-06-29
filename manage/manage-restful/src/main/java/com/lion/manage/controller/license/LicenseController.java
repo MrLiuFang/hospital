@@ -167,7 +167,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                                 }else if (Objects.equals(equipmentId,10)){
                                     entity1.setType(TagType.STAFF);
                                 }else if (Objects.equals(equipmentId,11)){
-                                    entity1.setType(TagType.STAFF);
+                                    entity1.setType(TagType.TEMPERATURE_HUMIDITY);
                                 }else if (Objects.equals(equipmentId,12)){
                                     entity1.setType(TagType.DISPOSABLE);
                                 }else if (Objects.equals(equipmentId,13)){

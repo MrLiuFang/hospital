@@ -33,6 +33,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Mr.Liu
@@ -63,6 +64,7 @@ public class TagController extends BaseControllerImpl implements BaseController 
     @PostMapping("/add")
     @ApiOperation(value = "新增标签")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class}) AddTagDto addTagDto){
+        addTagDto.setDeviceState(State.ACTIVE);
         tagService.add(addTagDto);
         return ResultData.instance();
     }
@@ -94,6 +96,9 @@ public class TagController extends BaseControllerImpl implements BaseController 
     @PutMapping("/update")
     @ApiOperation(value = "修改标签")
     public IResultData update(@RequestBody UpdateTagDto updateTagDto){
+        if (Objects.equals(updateTagDto.getDeviceState(),State.NOT_ACTIVE)) {
+            updateTagDto.setDeviceState(null);
+        }
         tagService.update(updateTagDto);
         return ResultData.instance();
     }
