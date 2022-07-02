@@ -4,6 +4,7 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
+import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.enums.TagUseState;
@@ -47,6 +48,7 @@ public interface TagService extends BaseService<Tag> {
      * @param isTmp
      * @param departmentId
      * @param useState
+     * @param state
      * @param battery
      * @param tagCode
      * @param type
@@ -54,7 +56,7 @@ public interface TagService extends BaseService<Tag> {
      * @param lionPage
      * @return
      */
-    IPageResultData<List<ListTagVo>> list(Boolean isTmp,Long departmentId,TagUseState useState,Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage);
+    IPageResultData<List<ListTagVo>> list(Boolean isTmp, Long departmentId,TagUseState useState, State state, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage);
 
     /**
      * 获取所有数据的id

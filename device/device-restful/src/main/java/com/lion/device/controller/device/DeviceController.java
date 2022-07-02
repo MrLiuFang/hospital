@@ -24,6 +24,7 @@ import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceGroupVo;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
+import com.lion.device.entity.enums.State;
 import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.service.device.DeviceGroupService;
 import com.lion.device.service.device.DeviceService;
@@ -82,6 +83,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
     @ApiOperation(value = "新增设备")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class})AddDeviceDto addDeviceDto){
         Device device = new Device();
+        addDeviceDto.setDeviceState(State.ACTIVE);
         BeanUtils.copyProperties(addDeviceDto,device);
         this.deviceService.save(device);
         return ResultData.instance();
@@ -91,6 +93,9 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
     @ApiOperation(value = "修改设备")
     public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateDeviceDto updateDeviceDto){
         Device device = new Device();
+        if (Objects.equals(updateDeviceDto.getDeviceState(),State.NOT_ACTIVE)) {
+            updateDeviceDto.setDeviceState(null);
+        }
         BeanUtils.copyProperties(updateDeviceDto,device);
         this.deviceService.update(device);
         return ResultData.instance();

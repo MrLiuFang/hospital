@@ -10,6 +10,7 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.*;
+import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.enums.TagUseState;
@@ -205,7 +206,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     }
 
     @Override
-    public IPageResultData<List<ListTagVo>> list(Boolean isTmp, Long departmentId, TagUseState useState, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
+    public IPageResultData<List<ListTagVo>> list(Boolean isTmp, Long departmentId, TagUseState useState, State state, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.equals(true,isTmp)){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_departmentId",null);
@@ -229,8 +230,23 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         if (Objects.nonNull(battery)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_battery",battery);
         }
+        if (Objects.nonNull(state)){
+            if (Objects.equals(state,State.NOT_USED)) {
+                List<State> list = new ArrayList<>();
+                list.add(State.ACTIVE);
+                list.add(State.NOT_USED);
+                jpqlParameter.setSearchParameter(SearchConstant.IN + "_deviceState", list);
+            }else {
+                jpqlParameter.setSearchParameter(SearchConstant.EQUAL + "_deviceState", state);
+            }
+        }
         if (Objects.nonNull(useState)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_useState",useState);
+            if (Objects.equals(useState,TagUseState.NOT_USED)) {
+                List<State> list = new ArrayList<>();
+                list.add(State.ACTIVE);
+                list.add(State.NOT_USED);
+                jpqlParameter.setSearchParameter(SearchConstant.IN + "_deviceState", list);
+            }
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);

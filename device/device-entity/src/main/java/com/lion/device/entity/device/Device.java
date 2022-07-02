@@ -33,7 +33,7 @@ import java.time.LocalDateTime;
 
 @DynamicInsert
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"updateDateTime","createUserId","updateUserId"})
 @Schema(description = "设备")
 public class Device extends BaseEntity implements Serializable {
 
