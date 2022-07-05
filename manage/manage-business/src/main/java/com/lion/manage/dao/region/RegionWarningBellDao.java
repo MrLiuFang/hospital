@@ -2,6 +2,7 @@ package com.lion.manage.dao.region;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.region.RegionWarningBell;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,4 +45,7 @@ public interface RegionWarningBellDao extends BaseDao<RegionWarningBell> {
      * @return
      */
     public RegionWarningBell findFirstByWarningBellId(Long warningBellId);
+
+    @Query( " select warningBellId from RegionWarningBell " )
+    public List<Long> findAllBindId();
 }

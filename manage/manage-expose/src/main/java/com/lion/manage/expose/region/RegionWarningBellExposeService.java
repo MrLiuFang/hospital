@@ -1,7 +1,10 @@
 package com.lion.manage.expose.region;
 
+import com.lion.core.LionObjectMapper;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.region.RegionWarningBell;
+
+import java.util.List;
 
 /**
  * @description:
@@ -16,4 +19,6 @@ public interface RegionWarningBellExposeService extends BaseService<RegionWarnin
      * @return
      */
     public RegionWarningBell find(Long warningBellId);
+
+    public List<Long> findAllBindId();
 }

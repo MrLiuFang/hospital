@@ -5,6 +5,7 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.Optional;
 import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
@@ -192,6 +193,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         });
 
         deleteDtoList.forEach(deleteDto -> {
+            Optional<Tag> optional = findById(deleteDto.getId());
             TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             this.deleteById(deleteDto.getId());
             tagAssetsDao.deleteByTagId(deleteDto.getId());
@@ -201,6 +203,14 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             if (Objects.nonNull(tagUser)) {
                 redisTemplate.delete(RedisConstants.USER_TAG + tagUser.getUserId());
                 redisTemplate.delete(RedisConstants.TAG_USER + tagUser.getTagId());
+            }
+            if (optional.isPresent()){
+                Tag tag = optional.get();
+                Tag newTag = new Tag();
+                newTag.setTagCode(tag.getTagCode());
+                newTag.setDeviceState(State.ACTIVE);
+                newTag.setType(tag.getType());
+                save(newTag);
             }
         });
     }

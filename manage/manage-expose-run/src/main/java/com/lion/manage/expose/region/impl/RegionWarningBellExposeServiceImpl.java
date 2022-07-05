@@ -8,6 +8,8 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 /**
  * @description:
  * @author: Mr.Liu
@@ -22,5 +24,10 @@ public class RegionWarningBellExposeServiceImpl extends BaseServiceImpl<RegionWa
     @Override
     public RegionWarningBell find(Long warningBellId) {
         return regionWarningBellDao.findFirstByWarningBellId(warningBellId);
+    }
+
+    @Override
+    public List<Long> findAllBindId() {
+        return regionWarningBellDao.findAllBindId();
     }
 }

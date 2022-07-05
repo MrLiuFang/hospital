@@ -8,14 +8,13 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
-import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.dto.AddWarningBellDto;
 import com.lion.device.entity.device.dto.UpdateWarningBellDto;
+import com.lion.device.entity.device.vo.DetailsWarningBellVo;
 import com.lion.device.entity.device.vo.ListWarningBellVo;
 import com.lion.device.service.device.WarningBellService;
 import com.lion.manage.entity.region.RegionWarningBell;
 import com.lion.manage.expose.region.RegionWarningBellExposeService;
-import com.lion.upms.entity.user.vo.DetailsUserTypeVo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -85,13 +84,13 @@ public class WarningBellController extends BaseControllerImpl implements BaseCon
 
     @GetMapping("/list")
     @ApiOperation(value = "警示铃列表")
-    public IPageResultData<List<ListWarningBellVo>> listUserType(@ApiParam(value = "名称") String name, @ApiParam(value = "设备编码") String code, @ApiParam(value = "设备id") String warningBellId, @ApiParam(value = "所属科室")Long departmentId, LionPage LionPage){
-        return warningBellService.list(name, code, warningBellId, departmentId, LionPage);
+    public IPageResultData<List<ListWarningBellVo>> listUserType(@ApiParam(value = "是否绑定区域")Boolean isBindRegion, @ApiParam(value = "名称") String name, @ApiParam(value = "设备编码") String code, @ApiParam(value = "设备id") String warningBellId, @ApiParam(value = "所属科室")Long departmentId, LionPage LionPage){
+        return warningBellService.list(isBindRegion, name, code, warningBellId, departmentId, LionPage);
     }
 
     @GetMapping("/details")
     @ApiOperation(value = "警示铃详情")
-    public IResultData<DetailsUserTypeVo> detailsUserType(@ApiParam(value = "类型id") @NotNull(message = "{0000000}") Long id){
+    public IResultData<DetailsWarningBellVo> detailsUserType(@ApiParam(value = "类型id") @NotNull(message = "{0000000}") Long id){
         return ResultData.instance().setData(warningBellService.details(id));
     }
 }

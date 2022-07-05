@@ -9,7 +9,6 @@ import com.lion.device.entity.device.dto.AddWarningBellDto;
 import com.lion.device.entity.device.dto.UpdateWarningBellDto;
 import com.lion.device.entity.device.vo.DetailsWarningBellVo;
 import com.lion.device.entity.device.vo.ListWarningBellVo;
-import com.lion.upms.entity.user.vo.ListUserTypeVo;
 
 import java.util.List;
 
@@ -40,13 +39,15 @@ public interface WarningBellService extends BaseService<WarningBell> {
 
     /**
      * 列表
+     *
+     * @param isBindRegion
      * @param name
      * @param warningBellId
      * @param departmentId
      * @param LionPage
      * @return
      */
-    public IPageResultData<List<ListWarningBellVo>> list(String name, String code, String warningBellId, Long departmentId, LionPage LionPage);
+    public IPageResultData<List<ListWarningBellVo>> list(Boolean isBindRegion, String name, String code, String warningBellId, Long departmentId, LionPage LionPage);
 
     /**
      * 详情

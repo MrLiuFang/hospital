@@ -23,9 +23,6 @@ import com.lion.manage.entity.region.RegionWarningBell;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.region.RegionWarningBellExposeService;
-import com.lion.upms.entity.user.QUserType;
-import com.lion.upms.entity.user.UserType;
-import com.lion.upms.entity.user.vo.ListUserTypeVo;
 import com.lion.utils.MessageI18nUtil;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -38,7 +35,6 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -94,10 +90,16 @@ public class WarningBellServiceImpl extends BaseServiceImpl<WarningBell> impleme
     }
 
     @Override
-    public IPageResultData<List<ListWarningBellVo>> list(String name, String code, String warningBellId, Long departmentId, LionPage LionPage) {
+    public IPageResultData<List<ListWarningBellVo>> list(Boolean isBindRegion, String name, String code, String warningBellId, Long departmentId, LionPage LionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)) {
             jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_name", name);
+        }
+        if (Objects.equals(isBindRegion,false)) {
+            List<Long> ids = new ArrayList<>();
+            ids.add(Long.MAX_VALUE);
+            ids.addAll(regionWarningBellExposeService.findAllBindId());
+            jpqlParameter.setSearchParameter(SearchConstant.NOT_IN + "_id", ids);
         }
         LionPage.setJpqlParameter(jpqlParameter);
         Page<WarningBell> page = this.findNavigator(LionPage);
