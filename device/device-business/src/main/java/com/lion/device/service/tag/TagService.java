@@ -38,9 +38,11 @@ public interface TagService extends BaseService<Tag> {
 
     /**
      * 删除标签
+     *
      * @param deleteDtoList
+     * @return
      */
-    public void delete(List<DeleteDto> deleteDtoList);
+    public List<Tag> delete(List<DeleteDto> deleteDtoList);
 
     /**
      * 列表

@@ -118,7 +118,10 @@ public class TagController extends BaseControllerImpl implements BaseController 
     @ApiOperation(value = "删除标签")
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
-        this.tagService.delete(deleteDtoList);
+        List<Tag> list = this.tagService.delete(deleteDtoList);
+        if (list.size()>0) {
+            tagService.saveAll(list);
+        }
         ResultData resultData = ResultData.instance();
         return resultData;
     }

@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
@@ -138,13 +139,14 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 
 
     @Override
-    @Transactional
-    public void delete(List<DeleteDto> deleteDtoList) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<Device> delete(List<DeleteDto> deleteDtoList) {
+        List<Device> list = new ArrayList<>();
         deleteDtoList.forEach(d->{
             com.lion.core.Optional<Device> optional = this.findById(d.getId());
             if (optional.isPresent() ) {
                 Device device = optional.get();
-                deleteById(d.getId());
+                del(d.getId());
                 deviceGroupDeviceService.deleteByDeviceId(d.getId());
                 redisTemplate.delete(RedisConstants.DEVICE+device.getId());
                 redisTemplate.delete(RedisConstants.DEVICE_CODE+device.getCode());
@@ -154,10 +156,25 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
                 newDevice.setDeviceState(State.ACTIVE);
                 newDevice.setCode(device.getCode());
                 newDevice.setDeviceType(device.getDeviceType());
-                save(newDevice);
+//                save(newDevice);
+                list.add(newDevice);
             }
         });
+        return list;
+//        saveNewDevice(list);
     }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void del(Long id) {
+        this.deleteById(id);
+    }
+
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
+//    public void saveNewDevice(List<Device> list) {
+//        list.forEach(device -> {
+//            save(device);
+//        });
+//    }
 
     @Override
     public DeviceStatisticsVo statistics() {
@@ -274,7 +291,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 
     private DeviceStatisticsVo.DeviceStatisticsData count(DeviceClassify classify){
         DeviceStatisticsVo.DeviceStatisticsData data = new DeviceStatisticsVo.DeviceStatisticsData();
-        data.setName(DeviceClassify.HAND_WASHING.getName());
+        data.setName(classify.getDesc());
         data.setCode(classify.getName());
         data.setCount(deviceDao.countByDeviceClassify(classify));
         return data;

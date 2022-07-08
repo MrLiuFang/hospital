@@ -176,7 +176,10 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
     @ApiOperation(value = "删除设备")
     @DeleteMapping("/delete")
     public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
-        deviceService.delete(deleteDtoList);
+        List<Device> list = deviceService.delete(deleteDtoList);
+        if (list.size()>0) {
+            deviceService.saveAll(list);
+        }
         ResultData resultData = ResultData.instance();
         return resultData;
     }

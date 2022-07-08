@@ -51,6 +51,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
@@ -156,9 +157,9 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     }
 
     @Override
-    @Transactional
-    public void delete(List<DeleteDto> deleteDtoList) {
-
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public List<Tag> delete(List<DeleteDto> deleteDtoList) {
+        List<Tag> list = new ArrayList<>();
         deleteDtoList.forEach(deleteDto -> {
             TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
             if (Objects.nonNull(tagUser)) {
@@ -210,10 +211,24 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 newTag.setTagCode(tag.getTagCode());
                 newTag.setDeviceState(State.ACTIVE);
                 newTag.setType(tag.getType());
-                save(newTag);
+                list.add(newTag);
+//                save(newTag);
             }
         });
+//        saveNewTag(list);
+        return list;
     }
+//    @Transactional(propagation = Propagation.REQUIRES_NEW)
+//    public void del(Tag tag) {
+//        this.delete(tag);
+//    }
+
+
+//    public void saveNewTag(List<Tag> list) {
+//        list.forEach(tag -> {
+//            save(tag);
+//        });
+//    }
 
     @Override
     public IPageResultData<List<ListTagVo>> list(Boolean isTmp, Long departmentId, TagUseState useState, State state, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {

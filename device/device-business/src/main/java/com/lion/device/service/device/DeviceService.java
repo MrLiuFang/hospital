@@ -24,7 +24,7 @@ public interface DeviceService extends BaseService<Device> {
      * 删除设备
      * @param deleteDtoList
      */
-   public void delete(List<DeleteDto> deleteDtoList);
+   public List<Device> delete(List<DeleteDto> deleteDtoList);
 
     /**
      * 设备统计

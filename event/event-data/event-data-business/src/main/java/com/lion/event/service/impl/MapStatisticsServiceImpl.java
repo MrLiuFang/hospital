@@ -63,8 +63,10 @@ import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.PatientExposeService;
 import com.lion.person.expose.person.PatientReportExposeService;
 import com.lion.person.expose.person.TemporaryPersonExposeService;
+import com.lion.upms.entity.role.Role;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.UserType;
+import com.lion.upms.expose.role.RoleExposeService;
 import com.lion.upms.expose.user.UserExposeService;
 import com.lion.upms.expose.user.UserTypeExposeService;
 import com.lion.utils.CurrentUserUtil;
@@ -204,6 +206,10 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @DubboReference
     private AssetsTypeExposeService assetsTypeExposeService;
+
+    @DubboReference
+    private RoleExposeService roleExposeService;
+
 
     private final String FONT = "simsun.ttc";
 
@@ -841,11 +847,20 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @Override
     public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, Long tagId, String... sorts) {
         List<Long> departmentIds = new ArrayList<>();
-        if (Objects.equals(isAll,false)) {
-            departmentIds = departmentExposeService.responsibleDepartment(di);
-        }else if (Objects.equals(isAll,true)) {
-            if (Objects.nonNull(di)) {
-                departmentIds.add(di);
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        Role role = roleExposeService.find(userId);
+        if (role.getCode().toLowerCase().indexOf("admin") < 0) {
+            Department department = departmentUserExposeService.findDepartment(userId);
+            if (Objects.nonNull(department)) {
+                departmentIds.add(department.getId());
+            }
+        } else {
+            if (Objects.equals(isAll,false)) {
+                departmentIds = departmentExposeService.responsibleDepartment(di);
+            }else if (Objects.equals(isAll,true)) {
+                if (Objects.nonNull(di)) {
+                    departmentIds.add(di);
+                }
             }
         }
         if (Objects.isNull(startDateTime) ) {
