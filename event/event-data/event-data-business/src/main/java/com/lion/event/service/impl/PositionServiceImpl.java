@@ -6,6 +6,7 @@ import com.lion.common.dto.UpdatePositionLeaveTimeDto;
 import com.lion.common.enums.Type;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.common.utils.BasicDBObjectUtil;
+import com.lion.common.utils.RedisUtil;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
@@ -23,8 +24,11 @@ import com.lion.event.service.PositionService;
 import com.lion.event.utils.ExcelColumn;
 import com.lion.event.utils.ExportExcelUtil;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.build.Build;
+import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.event.vo.EventRecordVo;
+import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.event.EventRecordExposeService;
@@ -71,7 +75,8 @@ public class PositionServiceImpl implements PositionService {
 
     @Autowired
     private PositionDao positionDao;
-
+    @Autowired
+    private RedisUtil redisUtil;
     @Autowired
     private MongoTemplate mongoTemplate;
 
@@ -154,7 +159,26 @@ public class PositionServiceImpl implements PositionService {
 //        long count = mongoTemplate.count(query, DeviceData.class);
 //        PageableExecutionUtils.getPage(items, lionPage, () -> count);
         IPageResultData<List<Position>> pageResultData =new PageResultData<>(items,lionPage,0L);
-        return pageResultData;
+        List<Position> list = pageResultData.getData();
+        list.forEach(position -> {
+            Region region = redisUtil.getRegionById(position.getRi());
+            if (Objects.nonNull(region)) {
+                position.setRn(region.getName());
+                Build build = redisUtil.getBuild(region.getBuildId());
+                if (Objects.nonNull(build)) {
+                    position.setBui(build.getId());
+                    position.setBun(build.getName());
+                }
+                BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
+                if (Objects.nonNull(buildFloor)) {
+                    position.setBfi(buildFloor.getId());
+                    position.setBfn(buildFloor.getName());
+                }
+            }
+        });
+        return new PageResultData<>(list,lionPage,0L);
+
+//        return pageResultData;
     }
 
     public IPageResultData<List<ListPositionVo>> tagPosition(TagPurpose tagPurpose, Long regionId, Long departmentId, String deviceName, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {

@@ -1,5 +1,6 @@
 package com.lion.manage.controller.build;
 
+import com.lion.common.constants.RedisConstants;
 import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.common.dto.DeleteDto;
@@ -29,6 +30,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -37,6 +39,8 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
 import com.lion.core.Optional;
 
 /**
@@ -59,12 +63,16 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
     @Autowired
     private RegionService regionService;
 
+    @Autowired
+    private RedisTemplate redisTemplate;
+
     @PostMapping("/add")
     @ApiOperation(value = "新增建筑")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class}) AddBuildDto addBuildDto){
         Build build = new Build();
         BeanUtils.copyProperties(addBuildDto,build);
-        buildService.save(build);
+        build = buildService.save(build);
+        redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         return ResultData.instance();
     }
 
@@ -112,6 +120,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
         Build build =new Build();
         BeanUtils.copyProperties(updateBuildDto,build);
         buildService.update(build);
+        redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         return ResultData.instance();
     }
 
@@ -130,7 +139,8 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
         BuildFloor buildFloor = new BuildFloor();
         BeanUtils.copyProperties(addBuilidfFloorDto,buildFloor);
         assertBuildExist(buildFloor.getBuildId());
-        buildFloorService.save(buildFloor);
+        buildFloor = buildFloorService.save(buildFloor);
+        redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         return ResultData.instance();
     }
 
@@ -180,6 +190,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
         BeanUtils.copyProperties(updateBuildFloorDto,buildFloor);
         assertBuildExist(buildFloor.getBuildId());
         buildFloorService.update(buildFloor);
+        redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         return ResultData.instance();
     }
 
