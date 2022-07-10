@@ -40,10 +40,10 @@ public class CurrentRegionVo {
     @Schema(description = "科室名称")
     private String departmentName;
 
-    @Schema(description = "科室名称")
+    @Schema(description = "")
     private String x;
 
-    @Schema(description = "科室名称")
+    @Schema(description = "")
     private String y;
 
     @Schema(description = "进入时间")

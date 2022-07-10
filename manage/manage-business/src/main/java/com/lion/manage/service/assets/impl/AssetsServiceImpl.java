@@ -166,7 +166,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         if (Objects.nonNull(tag)) {
             redisTemplate.delete(RedisConstants.TAG_ASSETS + tag.getId());
         }
-        if (Objects.nonNull(updateAssetsDto.getTagCode())) {
+        if (StringUtils.hasText(updateAssetsDto.getTagCode())) {
             tagAssetsExposeService.relation(assets.getId(), updateAssetsDto.getTagCode(), assets.getDepartmentId());
             persistenceRedis(assets,updateAssetsDto.getTagCode());
         }else {

@@ -157,6 +157,68 @@ public class PositionServiceImpl implements PositionService {
         return pageResultData;
     }
 
+    public IPageResultData<List<ListPositionVo>> tagPosition(TagPurpose tagPurpose, Long regionId, Long departmentId, String deviceName, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        Map<String, Object> searchParameter = new HashMap<>();
+        if (Objects.nonNull(tagPurpose)){
+            searchParameter.put(SearchConstant.EQUAL+"_purpose",tagPurpose);
+        }
+        if (StringUtils.hasText(deviceName)){
+            searchParameter.put(SearchConstant.LIKE+"_deviceName",deviceName);
+        }
+        if (StringUtils.hasText(tagCode)){
+            searchParameter.put(SearchConstant.LIKE+"_tagCode",tagCode);
+        }
+        List<Tag> tagList = tagExposeService.find(searchParameter);
+        List<Long> tagIds = new ArrayList<>();
+        tagList.forEach(tag -> {
+            tagIds.add(tag.getId());
+        });
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (tagIds.size()>0) {
+            criteria.and("ti").in(tagIds);
+        }
+
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
+            criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
+        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
+            criteria.and("ddt").gte(startDateTime);
+        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
+            criteria.and("ddt").lte(endDateTime);
+        }
+        if (Objects.nonNull(departmentId)) {
+            criteria.and("di").is(departmentId);
+        }
+        if (Objects.nonNull(regionId)) {
+            criteria.and("ri").is(regionId);
+        }
+        query.addCriteria(criteria);
+        query.with(lionPage);
+        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        List<Position> items = mongoTemplate.find(query,Position.class);
+        List<ListPositionVo> returnList = new ArrayList<>();
+        items.forEach(position -> {
+            ListPositionVo vo = new ListPositionVo();
+            com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(position.getTi());
+            BeanUtils.copyProperties(position,vo);
+            if (optionalTag.isPresent()){
+                Tag tag = optionalTag.get();
+                vo.setDeviceName(tag.getDeviceName());
+                vo.setTagCode(tag.getTagCode());
+                vo.setTagPurpose(tag.getPurpose());
+                com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(tag.getDepartmentId());
+                if (optionalDepartment.isPresent()) {
+                    vo.setDepartmentName(optionalDepartment.get().getName());
+                }
+            }
+            returnList.add(vo);
+        });
+        return new PageResultData(returnList,lionPage,0L);
+    }
+
     @Override
     public IPageResultData<List<ListVisitorVo>> regionVisitor(List<Type> types, Long regionId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Query query = new Query();
@@ -295,70 +357,6 @@ public class PositionServiceImpl implements PositionService {
     public List<String> personAllRegion(Long personId, Long regionId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         return positionDao.personAllRegion(personId,regionId , startDateTime, endDateTime);
     }
-
-    @Override
-    public IPageResultData<List<ListPositionVo>> tagPosition(TagPurpose tagPurpose, Long regionId, Long departmentId, String deviceName, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        Map<String, Object> searchParameter = new HashMap<>();
-        if (Objects.nonNull(tagPurpose)){
-            searchParameter.put(SearchConstant.EQUAL+"_purpose",tagPurpose);
-        }
-        if (StringUtils.hasText(deviceName)){
-            searchParameter.put(SearchConstant.LIKE+"_deviceName",deviceName);
-        }
-        if (StringUtils.hasText(tagCode)){
-            searchParameter.put(SearchConstant.LIKE+"_tagCode",tagCode);
-        }
-        List<Tag> tagList = tagExposeService.find(searchParameter);
-        List<Long> tagIds = new ArrayList<>();
-        tagList.forEach(tag -> {
-            tagIds.add(tag.getId());
-        });
-        Query query = new Query();
-        Criteria criteria = new Criteria();
-        if (tagIds.size()>0) {
-            criteria.and("ti").in(tagIds);
-        }
-
-        if (Objects.isNull(startDateTime)) {
-            startDateTime = LocalDateTime.now().minusDays(30);
-        }
-        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
-            criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
-        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
-            criteria.and("ddt").gte(startDateTime);
-        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
-            criteria.and("ddt").lte(endDateTime);
-        }
-        if (Objects.nonNull(departmentId)) {
-            criteria.and("di").is(departmentId);
-        }
-        if (Objects.nonNull(regionId)) {
-            criteria.and("ri").is(regionId);
-        }
-        query.addCriteria(criteria);
-        query.with(lionPage);
-        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
-        List<Position> items = mongoTemplate.find(query,Position.class);
-        List<ListPositionVo> returnList = new ArrayList<>();
-        items.forEach(position -> {
-            ListPositionVo vo = new ListPositionVo();
-            com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(position.getTi());
-            BeanUtils.copyProperties(position,vo);
-            if (optionalTag.isPresent()){
-                Tag tag = optionalTag.get();
-                vo.setDeviceName(tag.getDeviceName());
-                vo.setTagCode(tag.getTagCode());
-                vo.setTagPurpose(tag.getPurpose());
-                com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(tag.getDepartmentId());
-                if (optionalDepartment.isPresent()) {
-                    vo.setDepartmentName(optionalDepartment.get().getName());
-                }
-            }
-            returnList.add(vo);
-        });
-        return new PageResultData(returnList,lionPage,0L);
-    }
-
     @Override
     public void tagPositionExport(TagPurpose tagPurpose, Long regionId, Long departmentId, String deviceName, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
         IPageResultData<List<ListPositionVo>> pageResultData = tagPosition(tagPurpose,regionId,departmentId,deviceName,tagCode,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));

@@ -5,6 +5,7 @@ import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.vo.RegionStatisticsDetails;
 import com.lion.event.service.CurrentPositionService;
+import org.apache.tomcat.util.http.fileupload.impl.IOFileUploadException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
@@ -13,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import com.lion.core.Optional;
@@ -48,9 +50,16 @@ public class CurrentPositionServiceImpl implements CurrentPositionService {
             criteria.and("ti").is(position.getTi());
         }
         query.addCriteria(criteria);
-        CurrentPosition oldCurrentPosition = mongoTemplate.findOne(query,CurrentPosition.class);
-        if (Objects.nonNull(oldCurrentPosition)){
-            currentPosition.set_id(oldCurrentPosition.get_id());
+        List<CurrentPosition> list = mongoTemplate.find(query,CurrentPosition.class);
+        if (list.size()>1) {
+            list.forEach(currentPosition1 -> {
+                mongoTemplate.remove(currentPosition1);
+            });
+        }else {
+            CurrentPosition oldCurrentPosition = list.get(0);
+            if (Objects.nonNull(oldCurrentPosition)){
+                currentPosition.set_id(oldCurrentPosition.get_id());
+            }
         }
         currentPositionDao.save(currentPosition);
     }

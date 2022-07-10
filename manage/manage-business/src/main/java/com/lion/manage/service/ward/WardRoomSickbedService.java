@@ -39,6 +39,7 @@ public interface WardRoomSickbedService extends BaseService<WardRoomSickbed> {
     /**
      * 列表
      *
+     * @param isUse
      * @param bedCode
      * @param departmentId
      * @param wardId
@@ -46,7 +47,7 @@ public interface WardRoomSickbedService extends BaseService<WardRoomSickbed> {
      * @param lionPage
      * @return
      */
-    public Page<ListWardRoomSickbedVo> list(String bedCode, Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage);
+    public Page<ListWardRoomSickbedVo> list(Boolean isUse,String bedCode, Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage);
 
     /**
      * 修改病床所在区域

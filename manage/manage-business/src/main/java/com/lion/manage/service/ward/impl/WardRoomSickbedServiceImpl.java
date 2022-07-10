@@ -85,7 +85,7 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
     }
 
     @Override
-    public Page<ListWardRoomSickbedVo> list(String bedCode, Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage) {
+    public Page<ListWardRoomSickbedVo> list(Boolean isUse, String bedCode, Long departmentId, Long wardId, Long wardRoomId, LionPage lionPage) {
         Page<WardRoomSickbed> page = wardRoomSickbedDao.list(bedCode, departmentId, wardId, wardRoomId, lionPage);
         List<WardRoomSickbed> list = page.getContent();
         List<ListWardRoomSickbedVo> returnList = new ArrayList<>();

@@ -2,6 +2,7 @@ package com.lion.device.dao.tag;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.tag.TagAssets;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @author Mr.Liu
@@ -15,6 +16,7 @@ public interface TagAssetsDao extends BaseDao<TagAssets> {
      * @param tagId
      * @return
      */
+    @Transactional
     public int deleteByTagId(Long tagId);
 
 
@@ -23,6 +25,7 @@ public interface TagAssetsDao extends BaseDao<TagAssets> {
      * @param assetsId
      * @return
      */
+    @Transactional
     public int deleteByAssetsId(Long assetsId);
 
     /**

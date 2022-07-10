@@ -40,7 +40,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -175,14 +174,14 @@ public class WardController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/sickbed/list")
     @ApiOperation(value = "病床列表")
-    public IPageResultData<List<ListWardRoomSickbedVo>> sickbedList(@ApiParam(value = "床位编码")String bedCode, @ApiParam("是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室")Long departmentId, @ApiParam(value = "病房")Long wardId, @ApiParam(value = "病房房间")Long wardRoomId, LionPage lionPage) {
+    public IPageResultData<List<ListWardRoomSickbedVo>> sickbedList(@ApiParam(value = "是否被使用")Boolean isUse,@ApiParam(value = "床位编码")String bedCode, @ApiParam("是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室")Long departmentId, @ApiParam(value = "病房")Long wardId, @ApiParam(value = "病房房间")Long wardRoomId, LionPage lionPage) {
         if (Objects.equals(isMyDepartment,true)) {
             Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
             if (Objects.nonNull(department)) {
                 departmentId = department.getId();
             }
         }
-        return (IPageResultData<List<ListWardRoomSickbedVo>>) wardRoomSickbedService.list(bedCode, departmentId, wardId, wardRoomId, lionPage);
+        return (IPageResultData<List<ListWardRoomSickbedVo>>) wardRoomSickbedService.list(isUse, bedCode, departmentId, wardId, wardRoomId, lionPage);
     }
 
     @GetMapping("/region")
