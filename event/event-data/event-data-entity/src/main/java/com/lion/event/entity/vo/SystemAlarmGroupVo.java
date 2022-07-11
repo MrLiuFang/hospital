@@ -4,6 +4,9 @@ import com.lion.device.entity.enums.TagType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 /**
  * @author Mr.Liu
  * @classname SystemAlarmGroupVo
@@ -37,5 +40,7 @@ public class SystemAlarmGroupVo {
     @Schema(description = "告警内容")
     private SystemAlarmVo systemAlarm;
 
+    @Schema(description = "告警时间")
+    private LocalDateTime dateTime;
 
 }

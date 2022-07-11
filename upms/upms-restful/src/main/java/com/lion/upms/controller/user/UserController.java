@@ -48,7 +48,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -104,14 +103,14 @@ public class UserController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/list")
     @ApiOperation(value = "用户列表")
-    public IPageResultData<List<ListUserVo>> list(@ApiParam(value = "是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户类型") Long userTypeId,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId, LionPage lionPage){
+    public IPageResultData<List<ListUserVo>> list(@ApiParam(value = "是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户类型") Long userTypeId,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId, @ApiParam(value = "是否管理员") Boolean isAdmin, LionPage lionPage){
         if (Objects.equals(isMyDepartment,true)) {
             Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
             if (Objects.nonNull(department)) {
                 departmentId = department.getId();
             }
         }
-        return userService.list(departmentId, userTypeId, number, name, roleId, lionPage);
+        return userService.list(departmentId, userTypeId, number, name, roleId,isAdmin , lionPage);
     }
 
 

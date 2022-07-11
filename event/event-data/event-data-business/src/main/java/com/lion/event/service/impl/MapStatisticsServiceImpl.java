@@ -1,6 +1,5 @@
 package com.lion.event.service.impl;
 
-import ch.qos.logback.classic.turbo.TurboFilter;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
@@ -876,13 +875,24 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @Override
     public List<SystemAlarmGroupVo> systemAlarmGroupList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, String... sorts) {
         List<Long> departmentIds = new ArrayList<>();
-        if (Objects.equals(isAll,false)) {
-            departmentIds = departmentExposeService.responsibleDepartment(di);
-        }else if (Objects.equals(isAll,true)) {
-            if (Objects.nonNull(di)) {
-                departmentIds.add(di);
+
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        Role role = roleExposeService.find(userId);
+        if (role.getCode().toLowerCase().indexOf("admin") < 0) {
+            Department department = departmentUserExposeService.findDepartment(userId);
+            if (Objects.nonNull(department)) {
+                departmentIds.add(department.getId());
+            }
+        } else {
+            if (Objects.equals(isAll,false)) {
+                departmentIds = departmentExposeService.responsibleDepartment(di);
+            }else if (Objects.equals(isAll,true)) {
+                if (Objects.nonNull(di)) {
+                    departmentIds.add(di);
+                }
             }
         }
+
         if (Objects.isNull(startDateTime)) {
             startDateTime = LocalDateTime.now().minusDays(3);
         }
@@ -924,9 +934,16 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     List<SystemAlarmVo> list1 = listIPageResultData.getData();
                     if (Objects.nonNull(list1) && list1.size()>0) {
                         vo.setSystemAlarm(list1.get(0));
+                        vo.setDateTime(list1.get(0).getDeviceDateTime());
                     }
                     returnList.add(vo);
                 }
+            }
+        });
+        Collections.sort(returnList,new Comparator<SystemAlarmGroupVo>(){
+            @Override
+            public int compare(SystemAlarmGroupVo o1, SystemAlarmGroupVo o2) {
+                return o2.getDateTime().compareTo(o1.getDateTime());
             }
         });
         return returnList;
@@ -934,7 +951,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Override
     public void systemAlarmListExport(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
-        IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage, null);
+        IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage, null,"dt");
         List<SystemAlarmVo> list = pageResultData.getData();
         BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
         Font fontChinese = new Font(bfChinese);
@@ -1073,4 +1090,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
        returnList.add(Long.MAX_VALUE);
        return returnList;
     }
+
+
+
 }

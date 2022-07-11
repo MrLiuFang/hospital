@@ -97,6 +97,11 @@ public class RoleServiceImpl extends BaseServiceImpl<Role> implements RoleServic
         });
     }
 
+    @Override
+    public List<Role> find(String... code) {
+        return roleDao.findByCodeIn(code);
+    }
+
     private List<PageRoleVo> convertVo(List<Role> list){
         List<PageRoleVo> returnList = new ArrayList<PageRoleVo>();
         list.forEach(role -> {

@@ -44,16 +44,16 @@ public interface UserService extends BaseService<User> {
     /**
      * 列表
      *
-     *
      * @param departmentId
      * @param userTypeIds
      * @param number
      * @param name
      * @param roleId
+     * @param isAdmin
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, LionPage lionPage);
+    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId,Boolean isAdmin, LionPage lionPage);
 
     /**
      * 导出

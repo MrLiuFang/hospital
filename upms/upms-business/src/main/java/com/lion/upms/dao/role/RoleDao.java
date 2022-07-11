@@ -4,6 +4,8 @@ import com.lion.core.persistence.curd.BaseDao;
 import com.lion.upms.entity.role.Role;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -32,4 +34,6 @@ public interface RoleDao extends BaseDao<Role> {
      */
     @Query(" select r from  Role r join RoleUser ru on r.id = ru.roleId where ru.userId = :userId ")
     public Role findByUserId(Long userId);
+
+    public List<Role> findByCodeIn(String... code);
 }

@@ -15,7 +15,6 @@ import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagLogExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
-import com.lion.event.entity.Position;
 import com.lion.event.entity.SystemAlarm;
 import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.event.expose.service.SystemAlarmExposeService;
@@ -48,12 +47,9 @@ import com.lion.upms.utils.ImportExcelUtil;
 import com.lion.utils.MapToBeanUtil;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -193,7 +189,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
-    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, LionPage lionPage) {
+    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, Boolean isAdmin, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.nonNull(departmentId)){
             List<Long> userList = departmentUserExposeService.findAllUser(departmentId);
@@ -222,6 +218,20 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             }
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",userList);
         }
+        if (Objects.equals(isAdmin,true)){
+            List<Role> roleList = roleService.find("admin","super_admin");
+            List<Long> userList = new ArrayList<>();
+            roleList.forEach(role -> {
+                List<RoleUser> list = roleUserService.find(role.getId());
+                list.forEach(roleUser -> {
+                    userList.add(roleUser.getUserId());
+                });
+            });
+            if (userList.size()<=0){
+                userList.add(Long.MAX_VALUE);
+            }
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",userList);
+        }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<User> page = this.findNavigator(lionPage);
@@ -231,7 +241,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     @Override
     public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId,new LionPage(0,Integer.MAX_VALUE));
+        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null, new LionPage(0,Integer.MAX_VALUE));
         List<ListUserVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000026"), "name"));

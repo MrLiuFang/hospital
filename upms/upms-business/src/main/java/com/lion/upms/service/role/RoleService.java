@@ -52,5 +52,6 @@ public interface RoleService extends BaseService<Role> {
      */
     public void delete( List<DeleteDto> deleteDtoList);
 
+    public List<Role> find(String... code);
 
 }
