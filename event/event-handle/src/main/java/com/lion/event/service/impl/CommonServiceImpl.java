@@ -198,13 +198,21 @@ public class CommonServiceImpl implements CommonService {
                 }
             }
             Patient patient = redisUtil.getPatient(pi);
-            if (Objects.nonNull(patient) || Objects.isNull(patient.getActionMode())) {
+            if (Objects.isNull(patient) || Objects.isNull(patient.getActionMode())) {
                 return;
             }
             patientRegion = redisUtil.getPatientRegion(pi);
-            if (Objects.equals(patient.getActionMode(), ActionMode.NO_LIMIT) || Objects.equals(patient.getActionMode(), ActionMode.LIMIT)) {
+            if (Objects.isNull(patientRegion)) {
+                return;
+            }
+            if (Objects.equals(patient.getActionMode(), ActionMode.NO_LIMIT)) {
                 return;
             }else if (Objects.equals(patient.getActionMode(), ActionMode.NO_WALK)) {
+                if (!Objects.equals(patientRegion.getId(),region.getId())) {
+                    sendAlarm(type,pi,ri,ti);
+                    patientExposeService.updatePatientState(patient.getId(), PatientState.ABNORMAL_DEPARTURE);
+                }
+            }else if (Objects.equals(patient.getActionMode(), ActionMode.LIMIT)) {
                 if (StringUtils.hasText(patient.getTimeQuantum())) {
                     if (!isCanWalk(patient.getTimeQuantum())) {
                         if (!Objects.equals(patientRegion.getId(),region.getId())) {

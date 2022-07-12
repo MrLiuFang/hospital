@@ -2,6 +2,7 @@ package com.lion.event.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.dto.UpdatePositionLeaveTimeDto;
 import com.lion.common.enums.Type;
 import com.lion.common.expose.file.FileExposeService;
@@ -10,6 +11,7 @@ import com.lion.common.utils.RedisUtil;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.Optional;
 import com.lion.core.PageResultData;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.tag.Tag;
@@ -32,6 +34,7 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.assets.AssetsExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.event.EventRecordExposeService;
+import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.PatientExposeService;
@@ -52,6 +55,7 @@ import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -63,6 +67,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -107,8 +112,14 @@ public class PositionServiceImpl implements PositionService {
     @DubboReference
     private TemporaryPersonExposeService temporaryPersonExposeService;
 
+    @DubboReference
+    private RegionExposeService regionExposeService;
+
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @Autowired
     private HttpServletResponse response;
@@ -238,8 +249,28 @@ public class PositionServiceImpl implements PositionService {
                     vo.setDepartmentName(optionalDepartment.get().getName());
                 }
             }
+            Optional<Region> regionOptional = regionExposeService.findById(vo.getRi());
+            if (regionOptional.isPresent()) {
+                Region region = regionOptional.get();
+                redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                if (Objects.nonNull(region)) {
+                    vo.setRn(region.getName());
+                    Build build = redisUtil.getBuild(region.getBuildId());
+                    if (Objects.nonNull(build)) {
+                        vo.setBui(build.getId());
+                        vo.setBun(build.getName());
+                    }
+                    BuildFloor buildFloor = redisUtil.getBuildFloor(region.getBuildFloorId());
+                    if (Objects.nonNull(buildFloor)) {
+                        vo.setBfi(buildFloor.getId());
+                        vo.setBfn(buildFloor.getName());
+                    }
+                }
+            }
             returnList.add(vo);
         });
+
+
         return new PageResultData(returnList,lionPage,0L);
     }
 

@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -74,6 +75,9 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
     private String licensePath = "D:\\license\\";
 //    private String licensePath = "/workspace/澳门医院/license/";
     private String fileName ="";
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @PostMapping("/upload")
     @AuthorizationIgnore
@@ -205,7 +209,8 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                 license.setUserNum(jsonNode1.get("userNum").asLong());
                 license.setPersonInCharge(jsonNode1.get("personInCharge").asText());
                 license.setWorkstationOrderList(jsonNode1.get("interfaceWorkstationOrderLsit").toString());
-                licenseService.save(license);
+                license = licenseService.save(license);
+                redisTemplate.opsForValue().set("license",license);
             } catch (Exception e) {
                 e.printStackTrace();
             }

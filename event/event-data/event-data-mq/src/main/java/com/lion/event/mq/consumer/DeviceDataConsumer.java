@@ -17,7 +17,9 @@ import com.lion.event.service.DeviceDataService;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
+import com.lion.manage.entity.license.License;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.license.LicenseExposeService;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
@@ -33,6 +35,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -64,6 +67,9 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private LicenseExposeService licenseExposeService;
 
     @Override
     public void onMessage(MessageExt messageExt) {

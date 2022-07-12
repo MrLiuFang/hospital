@@ -15,6 +15,7 @@ import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.service.*;
 import com.lion.manage.entity.assets.Assets;
+import com.lion.manage.entity.license.License;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.upms.entity.user.User;
@@ -86,6 +87,12 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
 
     @Override
     public void onMessage(MessageExt messageExt) {
+        License license = redisUtil.getLicense();
+        if (Objects.isNull(license)){
+            return;
+        }
+        String menu = license.getMenuList();
+
         try {
             byte[] body = messageExt.getBody();
             String msg = new String(body);
@@ -130,7 +137,7 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 return;
             }
 
-            if (Objects.nonNull(user)){
+            if (Objects.nonNull(user) && menu.indexOf("員工告警")>-1){
                 if ((Objects.nonNull(monitor) && !Objects.equals(monitor.getDeviceClassify(), DeviceClassify.HAND_WASHING)) || Objects.isNull(monitor)){
                     //记录洗手时长
                     UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
@@ -152,13 +159,13 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                     userButtonService.tagButtonEvent(deviceDataDto,monitor,star,tag,user);
                 }
             }
-            if (Objects.nonNull(patient)  ) { //处理患者数据
+            if (Objects.nonNull(patient) && menu.indexOf("病人追蹤")>-1 ) { //处理患者数据
                 patientService.patientEvent(deviceDataDto,monitor,star,tag,patient);
             }
             if (Objects.nonNull(temporaryPerson)) { //处理流动人员数据
                 temporaryPersonService.temporaryPersonEvent(deviceDataDto,monitor,star,tag,temporaryPerson);
             }
-            if ((Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) || Objects.equals(tag.getPurpose(), TagPurpose.ASSETS) )){ //处理设备(资产,温湿仪等)数据
+            if (((Objects.equals(tag.getPurpose(), TagPurpose.THERMOHYGROGRAPH) && menu.indexOf("標籤告警")>-1)|| (Objects.equals(tag.getPurpose(), TagPurpose.ASSETS)&& menu.indexOf("資產告警")>-1))){ //处理设备(资产,温湿仪等)数据
                 deviceService.deviceEevent(deviceDataDto,monitor,star,tag);
             }
             if (Objects.equals(monitor.getDeviceClassify(),DeviceClassify.RECYCLING_BOX)) {
@@ -172,13 +179,13 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             if (Objects.equals(deviceDataDto.getTagBattery(),2) && Objects.nonNull(tag)){
                 if (Objects.nonNull(user)) {
                     batteryAlarmService.userLowBatteryAlarm(user,deviceDataDto,tag);
-                }else if (Objects.nonNull(assets)) {
+                }else if (Objects.nonNull(assets) && menu.indexOf("資產告警")>-1) {
                     batteryAlarmService.assetsLowBatteryAlarm(assets,deviceDataDto,tag);
-                }else if (Objects.nonNull(patient)) {
+                }else if (Objects.nonNull(patient)&& menu.indexOf("病人追蹤")>-1) {
                     batteryAlarmService.patientLowBatteryAlarm(patient,deviceDataDto,tag);
                 }else if (Objects.nonNull(temporaryPerson)) {
                     batteryAlarmService.temporaryPersonLowBatteryAlarm(temporaryPerson,deviceDataDto,tag);
-                }else if (Objects.equals(tag.getPurpose(),TagPurpose.THERMOHYGROGRAPH)) {
+                }else if (Objects.equals(tag.getPurpose(),TagPurpose.THERMOHYGROGRAPH) && menu.indexOf("標籤告警")>-1) {
                     batteryAlarmService.tagLowBatteryAlarm(deviceDataDto,tag);
                 }
             }

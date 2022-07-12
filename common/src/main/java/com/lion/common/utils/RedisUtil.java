@@ -14,6 +14,7 @@ import com.lion.manage.entity.department.DepartmentAlarm;
 import com.lion.manage.entity.enums.AlarmClassify;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.enums.WashDeviceType;
+import com.lion.manage.entity.license.License;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.entity.rule.WashTemplate;
@@ -28,6 +29,7 @@ import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentAlarmExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
+import com.lion.manage.expose.license.LicenseExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.rule.AlarmExposeService;
 import com.lion.manage.expose.rule.WashDeviceTypeExposeService;
@@ -144,6 +146,9 @@ public class RedisUtil {
 
     @DubboReference
     private DepartmentAlarmExposeService departmentAlarmExposeService;
+
+    @DubboReference
+    private LicenseExposeService licenseExposeService;
 
     public TemporaryPerson getTemporaryPerson(Long temporaryPersonId) {
         if (Objects.isNull(temporaryPersonId)){
@@ -1127,6 +1132,27 @@ public class RedisUtil {
             }
         }
         return null;
+    }
+
+    public License getLicense(){
+        Object obj = redisTemplate.opsForValue().get("license");
+        License license = null;
+        if (Objects.nonNull(obj) && !(obj instanceof License)){
+            redisTemplate.delete("license");
+            obj = null;
+        }
+        if (Objects.nonNull(obj)) {
+            license = (License) obj;
+        }
+
+        if (Objects.isNull(license)){
+            List<License> list = licenseExposeService.findAll();
+            if (list.size()>0){
+                license = list.get(0);
+                redisTemplate.opsForValue().set("license",license, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            }
+        }
+        return license;
     }
 
 
