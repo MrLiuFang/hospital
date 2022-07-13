@@ -338,7 +338,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
         DepartmentStaffStatisticsDetailsVo departmentStaffStatisticsDetailsVo = new DepartmentStaffStatisticsDetailsVo();
         List<DepartmentStaffStatisticsDetailsVo.DepartmentVo> departmentVos = new ArrayList<>();
-        departmentStaffStatisticsDetailsVo.setDepartmentVos(departmentVos);
+
         List<Region> regionList = new ArrayList<>();
         list.forEach(id -> {
             regionList.addAll(regionExposeService.findByDepartmentId(id));
@@ -403,6 +403,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             vo.setDepartmentStaffVos(listStaff);
             departmentVos.add(vo);
         });
+        departmentStaffStatisticsDetailsVo.setDepartmentVos(departmentVos);
         return departmentStaffStatisticsDetailsVo;
     }
 
