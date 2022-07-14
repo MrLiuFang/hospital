@@ -21,6 +21,7 @@ import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoom;
 import com.lion.manage.service.department.DepartmentResponsibleUserService;
 import com.lion.manage.service.department.DepartmentService;
+import com.lion.manage.service.department.DepartmentUserService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.service.ward.WardService;
 import com.lion.upms.entity.role.Role;
@@ -72,6 +73,9 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
 
     @DubboReference
     private RoleExposeService roleExposeService;
+
+    @Autowired
+    private DepartmentUserService departmentUserService;
 
 
     @Override
@@ -172,14 +176,24 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
 
     @Override
     public List<Department> ownerDepartment() {
-        List<Long> listIds = responsibleDepartment(null);
-        DepartmentUser departmentUser = departmentUserDao.findFirstByUserId(CurrentUserUtil.getCurrentUserId());
-        if (Objects.nonNull(departmentUser)) {
-            com.lion.core.Optional<Department> optional = findById(departmentUser.getDepartmentId());
-            if (optional.isPresent()) {
-                listIds.add(optional.get().getId());
+        List<Long> listIds = new ArrayList<>();
+        Long userId = CurrentUserUtil.getCurrentUserId();
+        Role role = roleExposeService.find(userId);
+        if (role.getCode().toLowerCase().indexOf("admin") < 0) {
+            Department department = departmentUserService.findDepartment(userId);
+            if (Objects.nonNull(department)) {
+                listIds.add(department.getId());
             }
+        } else {
+            listIds = responsibleDepartment(null);
         }
+//        DepartmentUser departmentUser = departmentUserDao.findFirstByUserId(CurrentUserUtil.getCurrentUserId());
+//        if (Objects.nonNull(departmentUser)) {
+//            com.lion.core.Optional<Department> optional = findById(departmentUser.getDepartmentId());
+//            if (optional.isPresent()) {
+//                listIds.add(optional.get().getId());
+//            }
+//        }
         return departmentDao.findByIdIn(listIds);
     }
 

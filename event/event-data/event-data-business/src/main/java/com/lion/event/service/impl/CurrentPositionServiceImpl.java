@@ -51,12 +51,14 @@ public class CurrentPositionServiceImpl implements CurrentPositionService {
         }
         query.addCriteria(criteria);
         List<CurrentPosition> list = mongoTemplate.find(query,CurrentPosition.class);
+        CurrentPosition oldCurrentPosition = null;
         if (list.size()>1) {
             list.forEach(currentPosition1 -> {
                 mongoTemplate.remove(currentPosition1);
             });
-        }else {
-            CurrentPosition oldCurrentPosition = list.get(0);
+        }
+        if (list.size()==1) {
+            oldCurrentPosition = list.get(0);
             if (Objects.nonNull(oldCurrentPosition)){
                 currentPosition.set_id(oldCurrentPosition.get_id());
             }
