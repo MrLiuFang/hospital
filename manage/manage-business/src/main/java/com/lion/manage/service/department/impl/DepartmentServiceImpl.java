@@ -176,16 +176,13 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
 
     @Override
     public List<Department> ownerDepartment() {
-        List<Long> listIds = new ArrayList<>();
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        Role role = roleExposeService.find(userId);
-        if (role.getCode().toLowerCase().indexOf("admin") < 0) {
-            Department department = departmentUserService.findDepartment(userId);
-            if (Objects.nonNull(department)) {
-                listIds.add(department.getId());
+        List<Long> listIds = responsibleDepartment(null);
+        DepartmentUser departmentUser = departmentUserDao.findFirstByUserId(CurrentUserUtil.getCurrentUserId());
+        if (Objects.nonNull(departmentUser)) {
+            com.lion.core.Optional<Department> optional = findById(departmentUser.getDepartmentId());
+            if (optional.isPresent()) {
+                listIds.add(optional.get().getId());
             }
-        } else {
-            listIds = responsibleDepartment(null);
         }
 //        DepartmentUser departmentUser = departmentUserDao.findFirstByUserId(CurrentUserUtil.getCurrentUserId());
 //        if (Objects.nonNull(departmentUser)) {

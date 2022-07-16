@@ -876,21 +876,11 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @Override
     public List<SystemAlarmGroupVo> systemAlarmGroupList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, String... sorts) {
         List<Long> departmentIds = new ArrayList<>();
-
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        Role role = roleExposeService.find(userId);
-        if (role.getCode().toLowerCase().indexOf("admin") < 0) {
-            Department department = departmentUserExposeService.findDepartment(userId);
-            if (Objects.nonNull(department)) {
-                departmentIds.add(department.getId());
-            }
-        } else {
-            if (Objects.equals(isAll,false)) {
-                departmentIds = departmentExposeService.responsibleDepartment(di);
-            }else if (Objects.equals(isAll,true)) {
-                if (Objects.nonNull(di)) {
-                    departmentIds.add(di);
-                }
+        if (Objects.equals(isAll,false)) {
+            departmentIds = departmentExposeService.responsibleDepartment(di);
+        }else if (Objects.equals(isAll,true)) {
+            if (Objects.nonNull(di)) {
+                departmentIds.add(di);
             }
         }
 
