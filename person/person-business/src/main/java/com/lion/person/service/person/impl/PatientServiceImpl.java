@@ -515,7 +515,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     public IPageResultData<List<ListMergeVo>> listMerge(Integer type, String name, String cardNumber, String tagCode, String medicalRecordNo, String sort, LionPage lionPage) {
-        Page<Map<String, Object>> page = this.patientDao.listMerge(type, name, cardNumber, tagCode, medicalRecordNo, sort, lionPage);
+        List<Long> departmentIds = new ArrayList<>();
+        departmentIds = departmentExposeService.responsibleDepartment(null);
+        Page<Map<String, Object>> page = this.patientDao.listMerge(type, name, cardNumber, tagCode, medicalRecordNo, sort,departmentIds , lionPage);
         List<Map<String, Object>> list = page.getContent();
         List<ListMergeVo> returnList = new ArrayList();
         list.forEach((map) -> {
@@ -537,14 +539,16 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     public TodayStatisticsVo todayStatistics() {
+        List<Long> departmentIds = new ArrayList<>();
+        departmentIds = departmentExposeService.responsibleDepartment(null);
         LocalDateTime startDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         TodayStatisticsVo vo = new TodayStatisticsVo();
-        vo.setTodayTemporaryPersonRegisterCount(this.temporaryPersonDao.countByCreateDateTimeGreaterThanEqual(startDateTime));
-        vo.setTodayPatientRegisterCount(this.patientDao.countByCreateDateTimeGreaterThanEqual(startDateTime));
-        vo.setTodayRegisterCount(vo.getTodayRegisterCount() + vo.getTodayTemporaryPersonRegisterCount());
+        vo.setTodayTemporaryPersonRegisterCount(this.temporaryPersonDao.countByCreateDateTimeGreaterThanEqualAndDepartmentIdIn(startDateTime,departmentIds ));
+        vo.setTodayPatientRegisterCount(this.patientDao.countByCreateDateTimeGreaterThanEqualAndDepartmentIdIn(startDateTime,departmentIds));
+        vo.setTodayRegisterCount(vo.getTodayPatientRegisterCount() + vo.getTodayTemporaryPersonRegisterCount());
 
-        vo.setPatientNotLeaveCount(this.patientDao.countByIsLeaveIsFalse());
-        vo.setTemporaryPersonNotLeaveCount(this.temporaryPersonDao.countByIsLeaveIsFalse());
+        vo.setPatientNotLeaveCount(this.patientDao.countByIsLeaveIsFalseAndDepartmentIdIn(departmentIds));
+        vo.setTemporaryPersonNotLeaveCount(this.temporaryPersonDao.countByIsLeaveIsFalseAndDepartmentIdIn(departmentIds));
         vo.setNotLeaveCount(vo.getPatientNotLeaveCount() + vo.getTemporaryPersonNotLeaveCount());
         return vo;
     }

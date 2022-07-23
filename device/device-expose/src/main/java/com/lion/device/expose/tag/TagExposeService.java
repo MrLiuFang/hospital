@@ -1,6 +1,7 @@
 package com.lion.device.expose.tag;
 
 import com.lion.core.service.BaseService;
+import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
@@ -116,5 +117,7 @@ public interface TagExposeService extends BaseService<Tag> {
     public List<Long> find(TagType tagType,String tagCode);
 
     public long countActive();
+
+    public void updateRssi(String tagId, String rssi);
 
 }

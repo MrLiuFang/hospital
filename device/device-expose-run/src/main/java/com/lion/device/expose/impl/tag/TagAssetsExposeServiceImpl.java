@@ -87,7 +87,7 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
         newTagAssets.setBindingTime(LocalDateTime.now());
         tagAssetsService.save(newTagAssets);
         tagLogService.add( TagLogContent.binding,tag.getId());
-        tag.setUseState(TagUseState.USEING);
+        tag.setDeviceState(State.USED);
         tagService.update(tag);
         redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
         redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.ASSET, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
@@ -103,7 +103,7 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
             com.lion.core.Optional<Tag> optional = tagService.findById(tagAssets.getTagId());
             if (optional.isPresent()){
                 Tag tag = optional.get();
-                tag.setUseState(TagUseState.NOT_USED);
+                tag.setDeviceState(State.NOT_USED);
                 tagService.update(tag);
                 tagLogService.add( TagLogContent.unbinding,tagAssets.getTagId());
                 redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());

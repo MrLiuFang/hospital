@@ -133,9 +133,9 @@ public interface PatientDao extends BaseDao<Patient>, PatientDaoEx {
 
     public List<Patient> findByDepartmentIdAndIsLeaveAndIdIn(Long departmentId, Boolean isLeave,List<Long> ids);
 
-    int countByCreateDateTimeGreaterThanEqual(LocalDateTime startDateTime);
+    int countByCreateDateTimeGreaterThanEqualAndDepartmentIdIn(LocalDateTime startDateTime,List<Long> departmentIds);
 
-    int countByIsLeaveIsFalse();
+    int countByIsLeaveIsFalseAndDepartmentIdIn(List<Long> departmentIds);
 
     Optional<Patient> findFirstByCardNumberOrderByCreateDateTimeDesc(String cardNumber);
 

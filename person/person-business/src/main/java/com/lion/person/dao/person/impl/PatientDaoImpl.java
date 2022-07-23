@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -16,7 +17,7 @@ public class PatientDaoImpl implements PatientDaoEx {
     @Autowired
     private BaseDao<Patient> baseDao;
 
-    public Page<Map<String, Object>> listMerge(Integer type, String name, String cardNumber, String tagCode, String medicalRecordNo, String sort, LionPage lionPage) {
+    public Page<Map<String, Object>> listMerge(Integer type, String name, String cardNumber, String tagCode, String medicalRecordNo, String sort, List<Long> departmentIds, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
         sb.append(" select t.* from ( ");
         Map<String, Object> searchParameter = new HashMap();
@@ -47,6 +48,11 @@ public class PatientDaoImpl implements PatientDaoEx {
                 searchParameter.put("medicalRecordNo", "%" + medicalRecordNo + "%");
             }
 
+            if (departmentIds.size()>0){
+                sb.append(" and department_id in :departmentIds ");
+                searchParameter.put("departmentIds", departmentIds);
+            }
+
         }
         if (!StringUtils.hasText(cardNumber) && !StringUtils.hasText(medicalRecordNo) && (Objects.nonNull(type) && Objects.equals(type,2) ||  Objects.isNull(type) )) {
             if (Objects.isNull(type)) {
@@ -59,6 +65,11 @@ public class PatientDaoImpl implements PatientDaoEx {
 
             if (StringUtils.hasText(tagCode)) {
                 sb.append(" and tag_code like :tagCode ");
+            }
+
+            if (departmentIds.size()>0){
+                sb.append(" and department_id in :departmentIds ");
+                searchParameter.put("departmentIds", departmentIds);
             }
         }
 

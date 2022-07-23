@@ -1,6 +1,7 @@
 package com.lion.device.entity.tag.dto;
 
 import com.lion.core.persistence.Validator;
+import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagState;
 import com.lion.device.entity.tag.Tag;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,5 +25,5 @@ public class UpdateTagStateDto {
 
     @Schema(description = "状态")
     @NotNull(message = "{1000030}",groups = {Validator.Update.class})
-    private TagState state;
+    private State state;
 }

@@ -109,7 +109,7 @@ public class TagController extends BaseControllerImpl implements BaseController 
         com.lion.core.Optional<Tag> optional = tagService.findById(updateTagStateDto.getId());
         if (optional.isPresent()){
             Tag tag=optional.get();
-            tag.setState(updateTagStateDto.getState());
+            tag.setDeviceState(updateTagStateDto.getState());
             tagService.update(tag);
         }
         return ResultData.instance();

@@ -60,9 +60,9 @@ public class TagPostdocsExposeServiceImpl extends BaseServiceImpl<TagPostdocs> i
         if (Objects.equals(tag.getDeviceState(), State.NOT_ACTIVE)) {
             BusinessException.throwException(tag.getTagCode() +"未激活不能使用");
         }
-        if (Objects.equals(tag.getState(), TagState.DISABLE)) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
-        }
+//        if (Objects.equals(tag.getState(), TagState.DISABLE)) {
+//            BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
+//        }
         if (!Objects.equals(tag.getPurpose(), TagPurpose.POSTDOCS)){
             BusinessException.throwException(MessageI18nUtil.getMessage("4000029"));
         }
@@ -79,7 +79,7 @@ public class TagPostdocsExposeServiceImpl extends BaseServiceImpl<TagPostdocs> i
         newTagPostdocs.setPostdocsId(postdocsId);
         save(newTagPostdocs);
         tagLogService.add( TagLogContent.binding,tag.getId());
-        tag.setUseState(TagUseState.USEING);
+        tag.setDeviceState(State.USED);
         tagService.update(tag);
         redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
         redisTemplate.opsForValue().set(RedisConstants.TAG_TEMPORARY_PERSON+tag.getId(),postdocsId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
@@ -100,7 +100,7 @@ public class TagPostdocsExposeServiceImpl extends BaseServiceImpl<TagPostdocs> i
             com.lion.core.Optional<Tag> optional = tagService.findById(tagPostdocs.getTagId());
             if (optional.isPresent()) {
                 Tag tag = optional.get();
-                tag.setUseState(TagUseState.NOT_USED);
+                tag.setDeviceState(State.NOT_USED);
                 tagService.update(tag);
             }
             redisTemplate.delete(RedisConstants.TAG_TEMPORARY_PERSON + tagPostdocs.getTagId());

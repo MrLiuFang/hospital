@@ -70,9 +70,9 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         if (Objects.nonNull(tagUser) && !Objects.equals(tag.getId(),tagUser.getTagId())) {
             unbinding(userId,false);
         }
-        if (Objects.equals(tag.getState(), TagState.DISABLE)) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
-        }
+//        if (Objects.equals(tag.getDeviceState(), State.)) {
+//            BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
+//        }
         if (!Objects.equals(tag.getPurpose(),TagPurpose.STAFF)) {
             BusinessException.throwException(MessageI18nUtil.getMessage("4000031"));
         }
@@ -92,7 +92,7 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         newTagUser.setUserId(userId);
         save(newTagUser);
         tagLogService.add( TagLogContent.binding,tag.getId());
-        tag.setUseState(TagUseState.USEING);
+        tag.setDeviceState(State.USED);
         tagService.update(tag);
         redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
         redisTemplate.opsForValue().set(RedisConstants.TAG_USER+tag.getId(),userId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
@@ -118,7 +118,7 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
             com.lion.core.Optional<Tag> optional = tagService.findById(tagUser.getTagId());
             if (optional.isPresent()) {
                 Tag tag = optional.get();
-                tag.setUseState(TagUseState.NOT_USED);
+                tag.setDeviceState(State.NOT_USED);
                 tagService.update(tag);
                 redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
             }

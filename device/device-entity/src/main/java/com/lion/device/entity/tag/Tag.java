@@ -88,14 +88,14 @@ public class Tag extends BaseEntity implements Serializable {
     @Column(name = "battery")
     private Integer battery;
 
-    @Schema(description = "使用使用状态")
-    @Column(name = "use_state")
-    private TagUseState useState = TagUseState.NOT_USED;
+//    @Schema(description = "使用使用状态")
+//    @Column(name = "use_state")
+//    private TagUseState useState = TagUseState.NOT_USED;
 
-    @Schema(description = "状态")
-    @Column(name = "state")
-    @Convert(converter = TagState.TagStateConverter.class)
-    private TagState state = TagState.NORMAL;
+//    @Schema(description = "状态")
+//    @Column(name = "state")
+//    @Convert(converter = TagState.TagStateConverter.class)
+//    private TagState state = TagState.NORMAL;
 
     @Schema(description = "设备状态")
     @Column(name = "device_state")
@@ -106,5 +106,8 @@ public class Tag extends BaseEntity implements Serializable {
     @Column(name = "last_data_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime lastDataTime;
+
+    @Schema(description = "tagRssi")
+    private String tagRssi;
 
 }

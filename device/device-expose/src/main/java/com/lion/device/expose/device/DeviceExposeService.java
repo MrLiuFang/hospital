@@ -134,6 +134,8 @@ public interface DeviceExposeService extends BaseService<Device> {
 
     public void updateState(String code, State state);
 
+    public void updateRssi(String monitorId, String rssi);
+
 
 
 }

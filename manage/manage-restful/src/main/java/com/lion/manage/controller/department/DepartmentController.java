@@ -20,6 +20,7 @@ import com.lion.manage.entity.department.vo.DetailsDepartmentVo;
 import com.lion.manage.entity.department.vo.ListDepartmentVo;
 import com.lion.manage.entity.department.vo.TreeDepartmentVo;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.service.department.DepartmentAlarmService;
 import com.lion.manage.service.department.DepartmentResponsibleUserService;
 import com.lion.manage.service.department.DepartmentService;
@@ -75,6 +76,9 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private DepartmentExposeService departmentExposeService;
+
     @PostMapping("/add")
     @ApiOperation(value = "新增科室")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class}) AddDepartmentDto addDepartmentDto){
@@ -97,6 +101,11 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
+        }
+        List<Long> departmentIds = new ArrayList<>();
+        departmentIds = departmentExposeService.responsibleDepartment(null);
+        if (departmentIds.size()>0) {
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",departmentIds);
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);

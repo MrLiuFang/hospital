@@ -53,6 +53,8 @@ public class DeviceDataDto implements Serializable {
 
     private String monitorRssi;
 
+    private String tagRssi;
+
     //時間
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;

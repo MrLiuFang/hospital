@@ -200,4 +200,13 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
         }
     }
 
+    @Override
+    public void updateRssi(String monitorId, String rssi) {
+        Device device = deviceDao.findFirstByCode(monitorId);
+        if (Objects.nonNull(device)) {
+            device.setMonitorRssi(rssi);
+            update(device);
+        }
+    }
+
 }

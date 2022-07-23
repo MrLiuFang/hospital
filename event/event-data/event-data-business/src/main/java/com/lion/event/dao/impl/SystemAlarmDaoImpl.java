@@ -1,6 +1,8 @@
 package com.lion.event.dao.impl;
 
 import cn.hutool.core.util.NumberUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.enums.SystemAlarmState;
 import com.lion.common.enums.Type;
@@ -47,6 +49,7 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -475,12 +478,14 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         if (Objects.isNull(endDateTime)) {
             endDateTime = now;
         }
-        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte", startDateTime).append("$lte",endDateTime));
+
+        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte", Date.from( startDateTime.atZone( ZoneId.systemDefault()).toInstant())).append("$lte",Date.from( endDateTime.atZone( ZoneId.systemDefault()).toInstant())));
         pipeline.add(match);
         BasicDBObject group = new BasicDBObject();
         group = BasicDBObjectUtil.put(group,"$group","_id","$ti");
         group = BasicDBObjectUtil.put(group,"$group","count",new BasicDBObject("$sum",1));
         pipeline.add(group);
+        System.out.println(pipeline);
         AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("system_alarm").aggregate(pipeline);
         List<Document> list = new ArrayList<>();
         aggregateIterable.forEach(document -> {

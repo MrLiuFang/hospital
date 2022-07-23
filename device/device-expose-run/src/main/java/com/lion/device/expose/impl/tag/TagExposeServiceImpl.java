@@ -144,4 +144,13 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     public long countActive() {
         return count()-tagDao.countByDeviceState(State.NOT_ACTIVE);
     }
+
+    @Override
+    public void updateRssi(String tagId, String rssi) {
+        Tag tag = tagDao.findFirstByTagCode(tagId);
+        if (Objects.nonNull(tag)) {
+            tag.setTagRssi(rssi);
+            update(tag);
+        }
+    }
 }

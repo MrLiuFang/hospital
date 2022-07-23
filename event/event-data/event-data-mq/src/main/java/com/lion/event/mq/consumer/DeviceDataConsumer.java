@@ -86,7 +86,8 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             DeviceData deviceData = new DeviceData();
             deviceData.setDdt(deviceDataDto.getTime());
             deviceData.setSdt(deviceDataDto.getSystemDateTime());
-            deviceData.setR(deviceDataDto.getMonitorRssi());
+            deviceData.setMr(deviceDataDto.getMonitorRssi());
+            deviceData.setTr(deviceDataDto.getTagRssi());
             if (Objects.nonNull(deviceDataDto.getMonitorId())) {
                 monitor = redisUtil.getDevice(deviceDataDto.getMonitorId());
                 if (Objects.nonNull(monitor) && Objects.nonNull(monitor.getId())) {
@@ -119,7 +120,8 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                 deviceData.setE(type.getDesc());
             }
             deviceDataService.save(deviceData);
-
+            deviceExposeService.updateRssi(deviceDataDto.getMonitorId(),deviceDataDto.getMonitorRssi());
+            tagExposeService.updateRssi(deviceDataDto.getTagId(),deviceDataDto.getTagRssi());
         }catch (Exception exception){
             exception.printStackTrace();
         }

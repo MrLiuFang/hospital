@@ -95,7 +95,11 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
             List<Long> sickbedIds = new ArrayList<>();
             sickbedIds.add(wardRoomSickbed.getId());
             vo.setIsUse(patientExposeService.countUseSickbed(sickbedIds)>0);
-            if (Objects.equals(false,isUse) && !vo.getIsUse()) {
+            if (Objects.equals(false,isUse)  ) {
+                if (!vo.getIsUse()) {
+                    returnList.add(vo);
+                }
+            }else {
                 returnList.add(vo);
             }
         });

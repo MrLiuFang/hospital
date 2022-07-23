@@ -338,10 +338,10 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 }
             }
             if (Objects.nonNull(vo.getBindingId())) {
-                if (!Objects.equals(tag.getUseState(),TagUseState.USEING)) {
-                    tag.setUseState(TagUseState.USEING);
+                if (!Objects.equals(tag.getDeviceState(),State.USED)) {
+                    tag.setDeviceState(State.USED);
                     update(tag);
-                    vo.setUseState(TagUseState.USEING);
+                    vo.setDeviceState(State.USED);
                 }
             }
             returnList.add(vo);

@@ -69,9 +69,9 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
         if (Objects.equals(tag.getDeviceState(), State.NOT_ACTIVE)) {
             BusinessException.throwException(tag.getTagCode() +"未激活不能使用");
         }
-        if (Objects.equals(tag.getState(), TagState.DISABLE)) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
-        }
+//        if (Objects.equals(tag.getState(), TagState.DISABLE)) {
+//            BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
+//        }
         if (!Objects.equals(departmentId,tag.getDepartmentId())) {
             com.lion.core.Optional<Department> optionalTagDepartment = departmentExposeService.findById(tag.getDepartmentId());
             com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(departmentId);
@@ -95,7 +95,7 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
         newTagPatient.setPatientId(patientId);
         save(newTagPatient);
         tagLogService.add( TagLogContent.binding,tag.getId());
-        tag.setUseState(TagUseState.USEING);
+        tag.setDeviceState(State.USED);
         tagService.update(tag);
         redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
         redisTemplate.opsForValue().set(RedisConstants.TAG_PATIENT+tag.getId(),patientId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
@@ -119,7 +119,7 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
             com.lion.core.Optional<Tag> optional = tagService.findById(tagPatient.getTagId());
             if (optional.isPresent()) {
                 Tag tag = optional.get();
-                tag.setUseState(TagUseState.NOT_USED);
+                tag.setDeviceState(State.USED);
                 tagService.update(tag);
                 redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
             }
