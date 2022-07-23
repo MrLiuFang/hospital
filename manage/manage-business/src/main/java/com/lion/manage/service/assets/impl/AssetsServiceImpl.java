@@ -283,7 +283,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     }
 
     @Override
-    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed, String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, LionPage lionPage) {
+    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed, String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, String tagCode, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.equals(isBorrowed,true)) {
             List<AssetsBorrow> list = assetsBorrowDao.findFirstByReturnUserIdIsNull();
@@ -313,6 +313,12 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         }
         if (Objects.nonNull(useState)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_useState",useState);
+        }
+        if (StringUtils.hasText(tagCode)) {
+            TagAssets tagAssets =  tagAssetsExposeService.findByTagCode(tagCode);
+            if (Objects.nonNull(tagAssets)) {
+                jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_id",tagAssets.getAssetsId());
+            }
         }
         if (Objects.equals(isMyDepartment,true)) {
             Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
@@ -366,7 +372,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 
     @Override
     public void export(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListAssetsVo>> pageResultData = list(null, name, code, departmentId, isMyDepartment, assetsTypeId, useState, new LionPage(0,Integer.MAX_VALUE));
+        IPageResultData<List<ListAssetsVo>> pageResultData = list(null, name, code, departmentId, isMyDepartment, assetsTypeId, useState,null , new LionPage(0,Integer.MAX_VALUE));
         List<ListAssetsVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("name", "name"));

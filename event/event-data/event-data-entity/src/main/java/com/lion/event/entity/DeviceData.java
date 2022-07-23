@@ -55,6 +55,9 @@ public class DeviceData implements Serializable {
     @Schema(description = "事件")
     private String e;
 
+    @Schema(description = "monitorRssi")
+    private String r;
+
     @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
     @Schema(description = "设备产生時間")
     private LocalDateTime ddt;

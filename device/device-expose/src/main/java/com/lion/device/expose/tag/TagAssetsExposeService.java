@@ -3,6 +3,8 @@ package com.lion.device.expose.tag;
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.tag.TagAssets;
 
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -46,5 +48,12 @@ public interface TagAssetsExposeService extends BaseService<TagAssets> {
      * @return
      */
     public TagAssets findByTagId(Long tagId);
+
+    /**
+     * 根据tagCode查询绑定的资产
+     * @param tagCode
+     * @return
+     */
+    public TagAssets findByTagCode(String tagCode);
 
 }

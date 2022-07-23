@@ -346,6 +346,10 @@ public class PositionServiceImpl implements PositionService {
                 vo.setImg(img);
                 vo.setImgUrl(fileExposeService.getUrl(img));
             }
+            Optional<Tag> tagOptional = tagExposeService.findById(position.getTi());
+            if (tagOptional.isPresent()) {
+                vo.setTagCode(tagOptional.get().getTagCode());
+            }
             returnList.add(vo);
         });
         IPageResultData<List<ListVisitorVo>> pageResultData =new PageResultData<>(returnList,lionPage,0L);

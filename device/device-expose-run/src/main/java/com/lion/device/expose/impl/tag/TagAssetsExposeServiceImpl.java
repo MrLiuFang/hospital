@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
@@ -128,5 +129,17 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
     @Override
     public TagAssets findByTagId(Long tagId) {
         return tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(tagId);
+    }
+
+    @Override
+    public TagAssets findByTagCode(String tagCode) {
+        Tag tag = tagDao.findFirstByTagCode(tagCode);
+        if (Objects.nonNull(tag)) {
+            TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
+            if (Objects.nonNull(tagAssets)) {
+                return tagAssets;
+            }
+        }
+        return null;
     }
 }
