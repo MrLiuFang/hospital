@@ -69,8 +69,8 @@ public class TagLoseAlarm {
                 LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(tag.getId()));
                 if (Objects.nonNull(dateTime)) {
                     Duration duration = Duration.between(dateTime, LocalDateTime.now());
-                    long millis = duration.toMillis();
-                    if (millis >= patient.getLoseTime() * 1000) {
+                    long seconds = duration.toSeconds();
+                    if (seconds >= patient.getLoseTime()) {
                         alarm(tag.getId(),patient);
                     }
                 }else {

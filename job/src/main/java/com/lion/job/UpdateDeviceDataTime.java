@@ -64,7 +64,7 @@ public class UpdateDeviceDataTime {
                     LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
                     if (Objects.nonNull(dateTime)) {
                         userExposeService.updateDeviceDataTime(id, dateTime);
-                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
+//                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
                     }
                 });
                 userId.clear();
@@ -78,7 +78,7 @@ public class UpdateDeviceDataTime {
                     LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
                     if (Objects.nonNull(dateTime)) {
                         assetsExposeService.updateDeviceDataTime(id, dateTime);
-                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
+//                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
                     }
                 });
                 assetsId.clear();
@@ -93,7 +93,7 @@ public class UpdateDeviceDataTime {
                     LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
                     if (Objects.nonNull(dateTime)) {
                         deviceExposeService.updateDeviceDataTime(id, dateTime);
-                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
+//                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
 
                     } else {
                         com.lion.core.Optional<Device> optional = deviceExposeService.findById(id);
@@ -130,7 +130,7 @@ public class UpdateDeviceDataTime {
                     LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
                     if (Objects.nonNull(dateTime)) {
                         tagExposeService.updateDeviceDataTime(id, dateTime);
-                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
+//                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
                     }
                 });
                 tagId.clear();

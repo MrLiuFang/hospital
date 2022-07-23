@@ -1115,7 +1115,7 @@ public class RedisUtil {
             return null;
         }
         if (Objects.nonNull(wardRoomSickbed.getRegionId())) {
-            Region region = this.getRegion(wardRoomSickbed.getRegionId());
+            Region region = this.getRegionById(wardRoomSickbed.getRegionId());
             if (Objects.nonNull(region)) {
                 return region;
             }
@@ -1126,7 +1126,7 @@ public class RedisUtil {
             return null;
         }
         if (Objects.nonNull(wardRoom.getRegionId())) {
-            Region region = this.getRegion(wardRoom.getRegionId());
+            Region region = this.getRegionById(wardRoom.getRegionId());
             if (Objects.nonNull(region)) {
                 return region;
             }
