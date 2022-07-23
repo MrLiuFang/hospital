@@ -119,7 +119,7 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
             com.lion.core.Optional<Tag> optional = tagService.findById(tagPatient.getTagId());
             if (optional.isPresent()) {
                 Tag tag = optional.get();
-                tag.setDeviceState(State.USED);
+                tag.setDeviceState(State.NOT_USED);
                 tagService.update(tag);
                 redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
             }

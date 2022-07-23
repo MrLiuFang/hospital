@@ -164,6 +164,7 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
         });
         deviceDao.updateRegionIdIsNull(regionId);
         deviceDao.updateRegion(regionId, new_ids);
+        redisTemplate.delete(RedisConstants.REGION+regionId);
     }
 
     @Override
