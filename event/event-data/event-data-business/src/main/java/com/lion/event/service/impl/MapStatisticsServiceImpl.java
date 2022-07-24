@@ -1,10 +1,7 @@
 package com.lion.event.service.impl;
 
 import com.itextpdf.text.*;
-import com.itextpdf.text.pdf.BaseFont;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.PdfWriter;
+import com.itextpdf.text.pdf.*;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.dto.CurrentRegionDto;
 import com.lion.common.enums.Type;
@@ -74,6 +71,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -895,7 +893,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         List<SystemAlarmGroupVo> returnList = new ArrayList<>();
         LocalDateTime finalStartDateTime = startDateTime;
         list.forEach(document -> {
-            if (document.containsKey("_id")) {
+            if (document.containsKey("_id") && Objects.nonNull(document.get("_id"))) {
                 SystemAlarmGroupVo vo = new SystemAlarmGroupVo();
                 Optional<Tag > optional = tagExposeService.findById(Long.valueOf(String.valueOf(document.get("_id"))));
                 if (optional.isPresent()) {
