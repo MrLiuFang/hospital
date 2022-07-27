@@ -58,8 +58,12 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
     public List<Assets> findByDepartmentId(Long departmentId, String name, String code, List<Long> ids) {
         if (StringUtils.hasText(name) && StringUtils.hasText(code) && (Objects.isNull(ids) || ids.size()<=0)) {
             return assetsDao.findByDepartmentIdOrNameLikeOrCodeLike(departmentId, "%"+name+"%", "%"+code+"%");
-        }else if (StringUtils.hasText(name) && StringUtils.hasText(code) && (Objects.nonNull(ids) || ids.size()>0)) {
+        }else if (StringUtils.hasText(name) && StringUtils.hasText(code) && (Objects.nonNull(ids) && ids.size()>0)) {
             return assetsDao.findByDepartmentIdOrNameLikeOrCodeLikeAndIdIn(departmentId, "%"+name+"%", "%"+code+"%",ids);
+        }else if (!StringUtils.hasText(name) && !StringUtils.hasText(code) && (Objects.nonNull(ids) && ids.size()>0)) {
+            return assetsDao.findByDepartmentIdAndIdIn(departmentId, ids);
+        }else if (!StringUtils.hasText(name) && !StringUtils.hasText(code) && (Objects.isNull(ids) || ids.size()<=0)) {
+            return assetsDao.findByDepartmentId(departmentId);
         }
         return assetsDao.findByDepartmentId(departmentId);
     }

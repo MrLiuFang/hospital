@@ -74,6 +74,8 @@ public interface TagDao extends BaseDao<Tag> {
      */
     public List<Tag> findByDepartmentIdAndPurpose(Long departmentId,TagPurpose purpose);
 
+    public List<Tag> findByDepartmentIdAndPurposeAndIdIn(Long departmentId,TagPurpose purpose,List<Long> listIds);
+
     /**
      * 根据科室查询标签
      * @param departmentId
@@ -83,6 +85,8 @@ public interface TagDao extends BaseDao<Tag> {
      */
     public List<Tag> findByDepartmentIdAndPurposeAndTagCodeLike(Long departmentId,TagPurpose purpose,String tagCode);
 
+    public List<Tag> findByDepartmentIdAndPurposeAndTagCodeLikeAndIdIn(Long departmentId,TagPurpose purpose,String tagCode,List<Long> listIds);
+
     /**
      * 根据科室内标签数量
      * @param departmentId
@@ -90,6 +94,8 @@ public interface TagDao extends BaseDao<Tag> {
      * @return
      */
     public Integer countByDepartmentIdAndPurpose(Long departmentId, TagPurpose purpose);
+
+    public Integer countByDepartmentIdAndPurposeAndIdIn(Long departmentId, TagPurpose purpose,List<Long> listIds);
 
     /**
      *

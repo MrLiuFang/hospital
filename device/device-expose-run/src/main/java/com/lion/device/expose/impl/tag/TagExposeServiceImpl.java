@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -67,10 +66,19 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     }
 
     @Override
-    public List<Tag> find(Long departmentId,TagPurpose purpose, String tagCode) {
-        if (StringUtils.hasText(tagCode)) {
+    public List<Tag> find(Long departmentId, TagPurpose purpose, String tagCode, List<Long> listIds) {
+        if (StringUtils.hasText(tagCode) && listIds.size()==0) {
             return tagDao.findByDepartmentIdAndPurposeAndTagCodeLike(departmentId, purpose, "%"+tagCode+"%");
+        }else if (StringUtils.hasText(tagCode) && listIds.size()>0){
+            return tagDao.findByDepartmentIdAndPurposeAndTagCodeLikeAndIdIn(departmentId, purpose, "%"+tagCode+"%",listIds);
         }
+
+        if (!StringUtils.hasText(tagCode) && listIds.size()==0) {
+            return tagDao.findByDepartmentIdAndPurpose(departmentId, purpose);
+        }else if (!StringUtils.hasText(tagCode) && listIds.size()>0) {
+            return tagDao.findByDepartmentIdAndPurposeAndIdIn(departmentId, purpose,listIds);
+        }
+
         return tagDao.findByDepartmentIdAndPurpose(departmentId, purpose);
     }
 

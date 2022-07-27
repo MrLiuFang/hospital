@@ -174,6 +174,15 @@ public class RedisUtil {
         return temporaryPerson;
     }
 
+    public Region getTemporaryPersonRegion(Long temporaryPersonId) {
+        TemporaryPerson temporaryPerson = this.getTemporaryPerson(temporaryPersonId);
+        if (Objects.isNull(temporaryPerson)) {
+            return null;
+        }
+        Region region = this.getPatientRegion(temporaryPerson.getPatientId());
+        return region;
+    }
+
     public Type getTagBindType(Long tagId) {
         Type type = (Type) redisTemplate.opsForValue().get(RedisConstants.TAG_BIND_TYPE+tagId);
         if (Objects.isNull(type)) {

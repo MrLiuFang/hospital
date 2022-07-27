@@ -32,8 +32,10 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -184,19 +186,19 @@ public class CommonServiceImpl implements CommonService {
 //                }
 //                return;
 //            }
-            List<TempLeave> tempLeaves =tempLeaveExposeService.find(pi);
-            if (Objects.nonNull(tempLeaves) && tempLeaves.size()>0 ) {
-                for (TempLeave tempLeave :tempLeaves) {
-                    LocalDateTime now = LocalDateTime.now();
-                    if ( now.isAfter(tempLeave.getStartDateTime()) && now.isBefore(tempLeave.getEndDateTime()) ){
-                        TempLeaveMonitorDto tempLeaveMonitorDto = new TempLeaveMonitorDto();
-                        tempLeaveMonitorDto.setPatientId(pi);
-                        tempLeaveMonitorDto.setDelayDateTime(tempLeave.getEndDateTime());
-                        rocketMQTemplate.syncSend(TopicConstants.TEMP_LEAVE_MONITOR, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(tempLeaveMonitorDto)).build());
-                        return;
-                    }
-                }
-            }
+//            List<TempLeave> tempLeaves =tempLeaveExposeService.find(pi);
+//            if (Objects.nonNull(tempLeaves) && tempLeaves.size()>0 ) {
+//                for (TempLeave tempLeave :tempLeaves) {
+//                    LocalDateTime now = LocalDateTime.now();
+//                    if ( now.isAfter(tempLeave.getStartDateTime()) && now.isBefore(tempLeave.getEndDateTime()) ){
+//                        TempLeaveMonitorDto tempLeaveMonitorDto = new TempLeaveMonitorDto();
+//                        tempLeaveMonitorDto.setPatientId(pi);
+//                        tempLeaveMonitorDto.setDelayDateTime(tempLeave.getEndDateTime());
+//                        rocketMQTemplate.syncSend(TopicConstants.TEMP_LEAVE_MONITOR, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(tempLeaveMonitorDto)).build());
+//                        return;
+//                    }
+//                }
+//            }
             Patient patient = redisUtil.getPatient(pi);
             if (Objects.isNull(patient) || Objects.isNull(patient.getActionMode())) {
                 return;
@@ -239,13 +241,24 @@ public class CommonServiceImpl implements CommonService {
             }
         }else if (Objects.equals(type,Type.MIGRANT)) {
             TemporaryPerson temporaryPerson = redisUtil.getTemporaryPerson(pi);
-            if (!Objects.equals(temporaryPerson.getActionMode().getKey(),region.getTrafficLevel())) {
-                sendAlarm(type,pi,ri,ti);
-            }else {
+            if (Objects.isNull(temporaryPerson)) {
+                return;
+            }
+            Region temporaryPersonRegion = redisUtil.getTemporaryPersonRegion(temporaryPerson.getId());
+            if (StringUtils.hasText(temporaryPerson.getTimeQuantum())) {
                 if (!isCanWalk(temporaryPerson.getTimeQuantum())) {
-                    sendAlarm(type,pi,ri,ti);
+                    if (!Objects.equals(temporaryPersonRegion.getId(),region.getId())) {
+                        sendAlarm(type,pi,ri,ti);
+                    }
                 }
             }
+//            if (!Objects.equals(temporaryPerson.getActionMode().getKey(),region.getTrafficLevel())) {
+//                sendAlarm(type,pi,ri,ti);
+//            }else {
+//                if (!isCanWalk(temporaryPerson.getTimeQuantum())) {
+//                    sendAlarm(type,pi,ri,ti);
+//                }
+//            }
         }
 //        if (Objects.equals(region.isPublic,true)) {
 //            List<ExposeObject> exposeObjects = redisTemplate.opsForList().range(RedisConstants.REGION_EXPOSE_OBJECT+region.getId(),0,-1);
@@ -292,8 +305,9 @@ public class CommonServiceImpl implements CommonService {
         AtomicReference<Boolean> isCanWalk = new AtomicReference<>(false);
         list.forEach(obj->{
             List<String> list1 = (List<String>) obj;
-            LocalTime startTime = LocalTime.parse(list1.get(0)+"00");
-            LocalTime endTime = LocalTime.parse(list1.get(1)+"59");
+//            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            LocalTime startTime = LocalTime.parse(list1.get(0)+":00");
+            LocalTime endTime = LocalTime.parse(list1.get(1)+":59");
             LocalTime now = LocalTime.now();
             if (now.isBefore(startTime) && now.isAfter(endTime)) {
                 isCanWalk.set(true);

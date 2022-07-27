@@ -125,6 +125,9 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
     @Query( " select a from Assets a where a.departmentId =:departmentId and ( a.name like :name or a.code like :code) and a.id in :ids")
     public List<Assets> findByDepartmentIdOrNameLikeOrCodeLikeAndIdIn(Long departmentId,String name,String code,List<Long> ids);
 
+    @Query( " select a from Assets a where a.departmentId =:departmentId and a.id in :ids")
+    public List<Assets> findByDepartmentIdAndIdIn(Long departmentId,List<Long> ids);
+
     @Query( " select a.id from Assets a ")
     public List<Long> allId();
 

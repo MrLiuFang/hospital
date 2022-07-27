@@ -1,7 +1,6 @@
 package com.lion.device.expose.tag;
 
 import com.lion.core.service.BaseService;
-import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
@@ -9,7 +8,6 @@ import com.lion.device.entity.tag.Tag;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Mr.Liu
@@ -49,12 +47,14 @@ public interface TagExposeService extends BaseService<Tag> {
 
     /**
      * 根据科室和标签编码查询
+     *
      * @param departmentId
      * @param purpose
      * @param tagCode
+     * @param listIds
      * @return
      */
-    public List<Tag> find(Long departmentId, TagPurpose purpose, String tagCode );
+    public List<Tag> find(Long departmentId, TagPurpose purpose, String tagCode ,List<Long> listIds);
 
 
     /**

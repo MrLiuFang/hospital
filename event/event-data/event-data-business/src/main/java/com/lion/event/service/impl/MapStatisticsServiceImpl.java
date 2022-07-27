@@ -71,7 +71,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
@@ -457,13 +456,20 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         });
         return departmentAssetsStatisticsDetailsVo;
     }
-
+//    http://219.131.241.227:9503/api/event-data-restful/department/tag/statistics/details?departmentId=992390272140705792&pageSize=10&pageNumber=1&keyword=
+//    http://219.131.241.227:9503/api/event-data-restful/department/device/statistics/details?regionId=993492491678253056&pageSize=10&pageNumber=1&keyword=
     @Override
     public DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetails(String keyword, Long regionId, Long departmentId) {
         List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
         DepartmentTagStatisticsDetailsVo departmentTagStatisticsDetailsVo = new DepartmentTagStatisticsDetailsVo();
         List<DepartmentTagStatisticsDetailsVo.TagDepartmentVo> tagDepartmentVos = new ArrayList<>();
         departmentTagStatisticsDetailsVo.setTagDepartmentVos(tagDepartmentVos);
+        List<Long> listIds = new ArrayList<>();
+        if (Objects.nonNull(regionId)) {
+            listIds = this.find(Type.HUMIDITY, regionId);
+            listIds = this.find(Type.TEMPERATURE, regionId);
+        }
+        List<Long> finalListIds = listIds;
         list.forEach(id -> {
             com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(id);
             if (optionalDepartment.isPresent()) {
@@ -474,7 +480,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 departmentTagStatisticsDetailsVo.setTagCount(departmentTagStatisticsDetailsVo.getTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, null));
                 departmentTagStatisticsDetailsVo.setNormalTagCount(departmentTagStatisticsDetailsVo.getNormalTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.NORMAL));
                 departmentTagStatisticsDetailsVo.setAbnormalTagCount(departmentTagStatisticsDetailsVo.getAbnormalTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.ALARM));
-                List<Tag> tagList = tagExposeService.find(department.getId(), TagPurpose.THERMOHYGROGRAPH, keyword);
+
+                List<Tag> tagList = tagExposeService.find(department.getId(), TagPurpose.THERMOHYGROGRAPH, keyword, finalListIds);
                 List<DepartmentTagStatisticsDetailsVo.TagVo> tagVos = new ArrayList<>();
                 tagList.forEach(tag -> {
                     DepartmentTagStatisticsDetailsVo.TagVo vo = new DepartmentTagStatisticsDetailsVo.TagVo();
@@ -554,14 +561,13 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         List<Long> list = departmentExposeService.responsibleDepartment(departmentId);
         DepartmentTemporaryPersonStatisticsDetailsVo departmentTemporaryPersonStatisticsDetailsVo = new DepartmentTemporaryPersonStatisticsDetailsVo();
         List<DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo> temporaryPersonDepartmentVos = new ArrayList<>();
-        departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonDepartmentVos(temporaryPersonDepartmentVos);
         List<Long> listIds = new ArrayList<>();
         if (Objects.nonNull(regionId)) {
             listIds = this.find(Type.MIGRANT, regionId);
         }
         List<Long> finalListIds = listIds;
         list.forEach(id -> {
-            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(departmentId);
+            com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(id);
             if (optionalDepartment.isPresent()) {
                 Department department = optionalDepartment.get();
                 DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo temporaryPersonDepartmentVo = new DepartmentTemporaryPersonStatisticsDetailsVo.TemporaryPersonDepartmentVo();
@@ -590,6 +596,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 temporaryPersonDepartmentVos.add(temporaryPersonDepartmentVo);
             }
         });
+        departmentTemporaryPersonStatisticsDetailsVo.setTemporaryPersonDepartmentVos(temporaryPersonDepartmentVos);
         return departmentTemporaryPersonStatisticsDetailsVo;
     }
 
@@ -1075,6 +1082,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
        list.forEach(currentPosition -> {
            if (Objects.equals(type,Type.STAFF) || Objects.equals(type,Type.MIGRANT)  || Objects.equals(type,Type.PATIENT)) {
                returnList.add(currentPosition.getPi());
+           }else if (Objects.equals(type,Type.HUMIDITY) || Objects.equals(type,Type.TEMPERATURE)) {
+               returnList.add(currentPosition.getTi());
            }else if (Objects.equals(type,Type.ASSET)) {
                returnList.add(currentPosition.getAdi());
            }
