@@ -309,7 +309,7 @@ public class CommonServiceImpl implements CommonService {
             LocalTime startTime = LocalTime.parse(list1.get(0)+":00");
             LocalTime endTime = LocalTime.parse(list1.get(1)+":59");
             LocalTime now = LocalTime.now();
-            if (now.isBefore(startTime) && now.isAfter(endTime)) {
+            if (now.isAfter(startTime) && now.isBefore(endTime)) {
                 isCanWalk.set(true);
             }
         });
@@ -317,8 +317,14 @@ public class CommonServiceImpl implements CommonService {
     }
 
     public static void main(String agr[]) throws JsonProcessingException {
-        String str = "[[\"09:00\",\"12:00\"],[\"13:00\",\"16:00\"]]";
+        String str = "[[\"09:00:00\",\"12:00:00\"]]";
         List list = new ObjectMapper().readValue(str,List.class);
+        LocalTime startTime = LocalTime.parse("15:00:00");
+        LocalTime endTime = LocalTime.parse("02:20:00");
+        LocalTime now = LocalTime.now();
+        if (now.isAfter(startTime) && now.isBefore(endTime)) {
+            System.out.println(true);
+        }
         list.forEach(obj->{
             List<String> list1 = (List<String>) obj;
             list1.forEach(s -> {
