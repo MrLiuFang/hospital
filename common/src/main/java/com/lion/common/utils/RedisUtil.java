@@ -500,8 +500,9 @@ public class RedisUtil {
 //        if (Objects.nonNull(regionId)){
 //            region = (Region) redisTemplate.opsForValue().get(RedisConstants.REGION+regionId);
 //            if (Objects.isNull(region)){
-//                region = regionExposeService.findById(regionId);
-//                if (Objects.nonNull(region)){
+//                Optional<Region> optional = regionExposeService.findById(regionId);
+//                if (optional.isPresent()){
+//                    region = optional.get();
 //                    redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
 //                }
 //            }

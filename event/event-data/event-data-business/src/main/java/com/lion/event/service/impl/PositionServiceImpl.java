@@ -479,9 +479,12 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public int count(Type type, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public int count(Type type, Long ri, Long buildFloorId, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<Bson> pipeline = new ArrayList<Bson>();
         BasicDBObject match = new BasicDBObject();
+        if (Objects.nonNull(buildFloorId)) {
+            match = BasicDBObjectUtil.put(match, "$match", "bfi", new BasicDBObject("$eq", buildFloorId));
+        }
         match = BasicDBObjectUtil.put(match,"$match","ddt", new BasicDBObject("$gte",startDateTime).append("$lte",endDateTime));
         match = BasicDBObjectUtil.put(match,"$match","ri",new BasicDBObject("$eq",ri) );
         match = BasicDBObjectUtil.put(match,"$match","typ",new BasicDBObject("$eq",type.getKey()) );

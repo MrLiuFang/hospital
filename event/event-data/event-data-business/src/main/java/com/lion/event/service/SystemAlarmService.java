@@ -83,6 +83,7 @@ public interface SystemAlarmService {
 
     /**
      * 警告列表
+     *
      * @param lionPage
      * @param departmentIds
      * @param ua
@@ -92,11 +93,13 @@ public interface SystemAlarmService {
      * @param startDateTime
      * @param endDateTime
      * @param tagId
+     * @param assetsId
+     * @param deviceId
      * @param sorts
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds,  LocalDateTime startDateTime,LocalDateTime endDateTime,Long tagId,String... sorts);
-    public List<Document> listGroup(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds,  LocalDateTime startDateTime,LocalDateTime endDateTime,Long tagId,Long assetsId,Long deviceId,String... sorts);
+    public List<Document> listGroup(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds,List<Long> deviceIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
     /**
      * 查询未处理的告警
      * @param pi

@@ -90,7 +90,6 @@ public interface SystemAlarmDaoEx {
     public SystemAlarm findLast(Long pi);
 
     /**
-     *
      * @param lionPage
      * @param departmentIds
      * @param ua
@@ -100,12 +99,14 @@ public interface SystemAlarmDaoEx {
      * @param startDateTime
      * @param endDateTime
      * @param tagId
+     * @param assetsId
+     * @param deviceId
      * @param sorts
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime,Long tagId,String... sorts);
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime,Long tagId,Long assetsId, Long deviceId,String... sorts);
 
-    public List<Document> listGroup(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
+    public List<Document> listGroup(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds,List<Long> deviceIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
     /**
      * 7天警告数量统计
      * @param departmentId

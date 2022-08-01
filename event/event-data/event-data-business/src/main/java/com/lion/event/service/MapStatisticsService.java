@@ -133,7 +133,6 @@ public interface MapStatisticsService {
     /**
      * 获取警告列表
      *
-     *
      * @param isAll
      * @param isUa
      * @param ri
@@ -145,10 +144,12 @@ public interface MapStatisticsService {
      * @param endDateTime
      * @param lionPage
      * @param tagId
+     * @param assetsId
+     * @param deviceId
      * @param sorts
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di, Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage,Long tagId,String... sorts);
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di, Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage,Long tagId,Long assetsId,Long deviceId,String... sorts);
 
     public List<SystemAlarmGroupVo> systemAlarmGroupList(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di, Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage,String... sorts);
 

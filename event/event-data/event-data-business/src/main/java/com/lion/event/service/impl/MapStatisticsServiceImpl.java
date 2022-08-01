@@ -1,5 +1,6 @@
 package com.lion.event.service.impl;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
 import com.lion.common.constants.RedisConstants;
@@ -179,6 +180,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     @Autowired
     private UserTagButtonRecordService userTagButtonRecordService;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
 //    @DubboReference
 //    private RestrictedAreaExposeServiceService restrictedAreaExposeServiceService;
 
@@ -240,10 +244,10 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         returnList.forEach(regionStatisticsDetails -> {
             Long regionId = regionStatisticsDetails.getRegionId();
             regionStatisticsDetails.setCctvCount(regionCctvExposeService.count(regionId));
-            regionStatisticsDetails.setTodayAssetsCount(positionService.count(Type.ASSET,regionId,startDateTime,endDateTime));
-            regionStatisticsDetails.setTodayMigrantCount(positionService.count(Type.MIGRANT,regionId,startDateTime,endDateTime));
-            regionStatisticsDetails.setTodayStaffCount(positionService.count(Type.STAFF,regionId,startDateTime,endDateTime));
-            regionStatisticsDetails.setTodayPatientCount(positionService.count(Type.PATIENT,regionId,startDateTime,endDateTime));
+            regionStatisticsDetails.setTodayAssetsCount(positionService.count(Type.ASSET,regionId,buildFloorId , startDateTime, endDateTime));
+            regionStatisticsDetails.setTodayMigrantCount(positionService.count(Type.MIGRANT,regionId,buildFloorId , startDateTime, endDateTime));
+            regionStatisticsDetails.setTodayStaffCount(positionService.count(Type.STAFF,regionId, buildFloorId, startDateTime, endDateTime));
+            regionStatisticsDetails.setTodayPatientCount(positionService.count(Type.PATIENT,regionId,buildFloorId , startDateTime, endDateTime));
         });
         return returnList;
     }
@@ -323,10 +327,10 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         vo.setCctvCount(regionCctvExposeService.count(regionId));
         LocalDateTime startDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MIN);
         LocalDateTime endDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.MAX);
-        vo.setTodayAssetsCount(positionService.count(Type.ASSET,regionId,startDateTime,endDateTime));
-        vo.setTodayMigrantCount(positionService.count(Type.MIGRANT,regionId,startDateTime,endDateTime));
-        vo.setTodayStaffCount(positionService.count(Type.STAFF,regionId,startDateTime,endDateTime));
-        vo.setTodayPatientCount(positionService.count(Type.PATIENT,regionId,startDateTime,endDateTime));
+        vo.setTodayAssetsCount(positionService.count(Type.ASSET,regionId, null, startDateTime, endDateTime));
+        vo.setTodayMigrantCount(positionService.count(Type.MIGRANT,regionId,null , startDateTime, endDateTime));
+        vo.setTodayStaffCount(positionService.count(Type.STAFF,regionId,null , startDateTime, endDateTime));
+        vo.setTodayPatientCount(positionService.count(Type.PATIENT,regionId,null , startDateTime, endDateTime));
         return vo;
     }
 
@@ -850,7 +854,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, Long tagId, String... sorts) {
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, Long tagId,Long assetsId,Long deviceId, String... sorts) {
         List<Long> departmentIds = new ArrayList<>();
         Long userId = CurrentUserUtil.getCurrentUserId();
         Role role = roleExposeService.find(userId);
@@ -875,7 +879,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             startDateTime = endDateTime.minusDays(3);
         }
         List<Long> tagIds = tagExposeService.find(tagType,tagCode);
-        return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType, tagIds, startDateTime, endDateTime,tagId , sorts);
+        return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType, tagIds, startDateTime, endDateTime, tagId, assetsId ,deviceId , sorts);
     }
 
     @Override
@@ -895,44 +899,108 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         if (Objects.nonNull(endDateTime)) {
             startDateTime = endDateTime.minusDays(3);
         }
-        List<Long> tagIds = tagExposeService.find(tagType,tagCode);
-        List<org.bson.Document> list = systemAlarmService.listGroup(lionPage,departmentIds,isUa,ri,alarmType,tagIds,startDateTime,endDateTime);
+//        List<Long> tagIds = tagExposeService.find(tagType,tagCode);
+//        List<Long> deviceIds = new ArrayList<>();
+//        deviceExposeService.findAll().forEach(device -> {
+//            deviceIds.add(device.getId());
+//        });
+        List<org.bson.Document> list = systemAlarmService.listGroup(lionPage,departmentIds,isUa,ri,alarmType,null,null , startDateTime, endDateTime);
         List<SystemAlarmGroupVo> returnList = new ArrayList<>();
         LocalDateTime finalStartDateTime = startDateTime;
         list.forEach(document -> {
             if (document.containsKey("_id") && Objects.nonNull(document.get("_id"))) {
                 SystemAlarmGroupVo vo = new SystemAlarmGroupVo();
-                Optional<Tag > optional = tagExposeService.findById(Long.valueOf(String.valueOf(document.get("_id"))));
-                if (optional.isPresent()) {
-                    Tag tag = optional.get();
-                    vo.setTagId(tag.getId());
-                    vo.setTagCode(tag.getTagCode());
-                    User user = redisUtil.getUser(tag.getId());
-                    Patient patient = redisUtil.getPatientByTagId(tag.getId());
-                    TemporaryPerson temporaryPerson = redisUtil.getTemporaryPersonByTagId(tag.getId());
-                    if (Objects.nonNull(user)) {
-                        vo.setTitle(user.getName());
-                        vo.setImgId(user.getHeadPortrait());
-                        vo.setImgUrl(fileExposeService.getUrl(user.getHeadPortrait()));
-                    } else if (Objects.nonNull(patient)) {
-                        vo.setTitle(patient.getName());
-                        vo.setImgId(patient.getHeadPortrait());
-                        vo.setImgUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
-                    } else if (Objects.nonNull(temporaryPerson)) {
-                        vo.setTitle(temporaryPerson.getName());
-                        vo.setImgId(temporaryPerson.getHeadPortrait());
-                        vo.setImgUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
+                Long deviceId = null;
+                Long tagId = null;
+                Long assetsId = null;
+                if (Objects.nonNull(((org.bson.Document) document.get("_id")).get("ti"))) {
+                    tagId = Long.valueOf(String.valueOf(((org.bson.Document) document.get("_id")).get("ti")));
+                }else if (Objects.nonNull(((org.bson.Document) document.get("_id")).get("ai"))) {
+                    assetsId = Long.valueOf(String.valueOf(((org.bson.Document) document.get("_id")).get("ai")));
+                }else if (Objects.nonNull(((org.bson.Document) document.get("_id")).get("dvi"))) {
+                    deviceId = Long.valueOf(String.valueOf(((org.bson.Document) document.get("_id")).get("dvi")));
+                }
+                if (Objects.nonNull(assetsId)) {
+                    Optional<Assets> assetsOptional = assetsExposeService.findById(assetsId);
+                    if (assetsOptional.isPresent()) {
+                        Assets assets = assetsOptional.get();
+                        vo.setIsAssets(true);
+                        vo.setAssetsCode(assets.getCode());
+                        vo.setAssetsId(assets.getId());
+                        Optional<AssetsType> assetsTypeOptional = assetsTypeExposeService.findById(assets.getAssetsTypeId());
+                        if (assetsTypeOptional.isPresent()) {
+                            vo.setAssetsType(assetsTypeOptional.get());
+                        }
+                        vo.setTitle(assets.getName());
+                        vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
+                        vo.setImgId(assets.getImg());
+                        vo.setCount(Integer.valueOf(String.valueOf(document.get("count"))));
+                        IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false, null, null, null, null, null, finalStartDateTime, null, new LionPage(0, 1), null,assets.getId(),null ,"dt");
+                        List<SystemAlarmVo> list1 = listIPageResultData.getData();
+                        if (Objects.nonNull(list1) && list1.size() > 0) {
+                            vo.setSystemAlarm(list1.get(0));
+                            vo.setDateTime(list1.get(0).getDeviceDateTime());
+                        }
+                        returnList.add(vo);
+
                     }
-                    vo.setTagType(tag.getType());
-                    vo.setCount(Integer.valueOf(String.valueOf(document.get("count"))));
-                    LionPage lionPage1 = new LionPage(0,1);
-                    IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false,null,null,null,null,null, finalStartDateTime,null,lionPage1,tag.getId(),"dt");
-                    List<SystemAlarmVo> list1 = listIPageResultData.getData();
-                    if (Objects.nonNull(list1) && list1.size()>0) {
-                        vo.setSystemAlarm(list1.get(0));
-                        vo.setDateTime(list1.get(0).getDeviceDateTime());
+                }
+                if (Objects.nonNull(deviceId)) {
+                    Optional<Device> deviceOptional = deviceExposeService.findById(deviceId);
+                    if (deviceOptional.isPresent()) {
+                        Device device = deviceOptional.get();
+                        vo.setIsDevice(true);
+                        vo.setDeviceId(device.getId());
+                        vo.setDeviceCode(device.getCode());
+                        vo.setDeviceType(device.getDeviceType());
+                        vo.setTitle(device.getName());
+                        vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
+                        vo.setImgId(device.getImg());
+                        vo.setCount(Integer.valueOf(String.valueOf(document.get("count"))));
+                        IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false, null, null, null, null, null, finalStartDateTime, null, new LionPage(0, 1), null,device.getId(),null ,"dt");
+                        List<SystemAlarmVo> list1 = listIPageResultData.getData();
+                        if (Objects.nonNull(list1) && list1.size() > 0) {
+                            vo.setSystemAlarm(list1.get(0));
+                            vo.setDateTime(list1.get(0).getDeviceDateTime());
+                        }
+                        returnList.add(vo);
+
                     }
-                    returnList.add(vo);
+                }
+                if (Objects.nonNull(tagId)) {
+                    Optional<Tag> optional = tagExposeService.findById(tagId);
+                    if (optional.isPresent()) {
+                        Tag tag = optional.get();
+                        vo.setIsTag(true);
+                        vo.setTagId(tag.getId());
+                        vo.setTagCode(tag.getTagCode());
+                        User user = redisUtil.getUser(tag.getId());
+                        Patient patient = redisUtil.getPatientByTagId(tag.getId());
+                        TemporaryPerson temporaryPerson = redisUtil.getTemporaryPersonByTagId(tag.getId());
+                        if (Objects.nonNull(user)) {
+                            vo.setTitle(user.getName());
+                            vo.setImgId(user.getHeadPortrait());
+                            vo.setImgUrl(fileExposeService.getUrl(user.getHeadPortrait()));
+                        } else if (Objects.nonNull(patient)) {
+                            vo.setTitle(patient.getName());
+                            vo.setImgId(patient.getHeadPortrait());
+                            vo.setImgUrl(fileExposeService.getUrl(patient.getHeadPortrait()));
+                        } else if (Objects.nonNull(temporaryPerson)) {
+                            vo.setTitle(temporaryPerson.getName());
+                            vo.setImgId(temporaryPerson.getHeadPortrait());
+                            vo.setImgUrl(fileExposeService.getUrl(temporaryPerson.getHeadPortrait()));
+                        }
+                        vo.setTagType(tag.getType());
+                        vo.setCount(Integer.valueOf(String.valueOf(document.get("count"))));
+                        LionPage lionPage1 = new LionPage(0, 1);
+                        IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false, null, null, null, null, null, finalStartDateTime, null, lionPage1, tag.getId(),null ,null, "dt");
+                        List<SystemAlarmVo> list1 = listIPageResultData.getData();
+                        if (Objects.nonNull(list1) && list1.size() > 0) {
+                            vo.setSystemAlarm(list1.get(0));
+                            vo.setDateTime(list1.get(0).getDeviceDateTime());
+                        }
+                        returnList.add(vo);
+                    }
                 }
             }
         });
@@ -950,7 +1018,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 
     @Override
     public void systemAlarmListExport(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
-        IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage, null,"dt");
+        IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage, null, null,null, "dt");
         List<SystemAlarmVo> list = pageResultData.getData();
         BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
         Font fontChinese = new Font(bfChinese);

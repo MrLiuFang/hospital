@@ -318,6 +318,8 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             TagAssets tagAssets =  tagAssetsExposeService.findByTagCode(tagCode);
             if (Objects.nonNull(tagAssets)) {
                 jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_id",tagAssets.getAssetsId());
+            }else {
+                jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_id",Long.MAX_VALUE);
             }
         }
         if (Objects.equals(isMyDepartment,true)) {

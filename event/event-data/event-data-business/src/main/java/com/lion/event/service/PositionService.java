@@ -157,11 +157,13 @@ public interface PositionService {
 
     /**
      * 统计数量
+     *
      * @param type
      * @param ri
+     * @param buildFloorId
      * @param startDateTime
      * @param endDateTime
      * @return
      */
-    public int count( Type type,Long ri, LocalDateTime startDateTime,LocalDateTime endDateTime);
+    public int count( Type type,Long ri,Long buildFloorId, LocalDateTime startDateTime,LocalDateTime endDateTime);
 }

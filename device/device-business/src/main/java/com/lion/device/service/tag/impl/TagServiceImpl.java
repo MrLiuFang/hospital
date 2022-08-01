@@ -209,7 +209,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 Tag tag = optional.get();
                 Tag newTag = new Tag();
                 newTag.setTagCode(tag.getTagCode());
-                newTag.setDeviceState(State.ACTIVE);
+                newTag.setDeviceState(State.NOT_ACTIVE);
                 newTag.setType(tag.getType());
                 list.add(newTag);
 //                save(newTag);
@@ -248,7 +248,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 //        if (Objects.nonNull(departmentId)){
 //            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
 //        }
-        if (departmentIds.size()>0) {
+        if (departmentIds.size()>0 && !Objects.equals(true,isTmp)) {
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         }
         if (Objects.nonNull(type)){

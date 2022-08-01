@@ -35,7 +35,7 @@ public class CurrentPositionDaoImpl implements CurrentPositionDaoEx {
         match = BasicDBObjectUtil.put(match,"$match","bfi",new BasicDBObject("$eq",buildFloorId) );
         pipeline.add(match);
         BasicDBObject group = new BasicDBObject();
-        group = BasicDBObjectUtil.put(group,"$group","_id",new BasicDBObject[]{new BasicDBObject("type","$typ"),new BasicDBObject("regionId","$ri")});
+        group = BasicDBObjectUtil.put(group,"$group","_id",new BasicDBObject("type","$typ").append("regionId","$ri"));
         group = BasicDBObjectUtil.put(group,"$group","count",new BasicDBObject("$sum",1));
         pipeline.add(group);
         AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("current_position").aggregate(pipeline);
@@ -43,18 +43,9 @@ public class CurrentPositionDaoImpl implements CurrentPositionDaoEx {
         List<RegionStatisticsDetails> list = new ArrayList<RegionStatisticsDetails>();
         aggregateIterable.forEach(document -> {
             if (document.containsKey("_id")) {
-                List<Document> _id = document.getList("_id",Document.class);
-                Long regionId = null;
-                Type type = null;
+                Long regionId = ((Document)document.get("_id")).getLong("regionId");
+                Type type = Type.instance(((Document)document.get("_id")).getInteger("type"));
                 Integer count =NumberUtil.isInteger(String.valueOf(document.get("count")))?document.getInteger("count"):0;
-                for (Document d :_id){
-                    if (d.containsKey("type")) {
-                        type = Type.instance(d.getInteger("type"));
-                    }
-                    if (d.containsKey("regionId")) {
-                        regionId = d.getLong("regionId");
-                    }
-                };
                 if (Objects.nonNull(regionId) && Objects.nonNull(type) && Objects.nonNull(count)) {
                     if (map.containsKey(regionId)){
                         RegionStatisticsDetails regionStatisticsDetails = map.get(regionId);
@@ -62,11 +53,9 @@ public class CurrentPositionDaoImpl implements CurrentPositionDaoEx {
                             regionStatisticsDetails.setTagCount((Objects.nonNull(regionStatisticsDetails.getTagCount())?regionStatisticsDetails.getTagCount():0)+count);
                         }else if (Objects.equals(type,Type.STAFF) ){
                             regionStatisticsDetails.setStaffCount(count);
-                        }
-//                        else if (Objects.equals(type,Type.ASSET) ){
-//                            regionStatisticsDetails.setAssetsCount(count);
-//                        }
-                        else if (Objects.equals(type,Type.PATIENT) ){
+                        }else if (Objects.equals(type,Type.ASSET) ){
+                            regionStatisticsDetails.setAssetsCount(count);
+                        }else if (Objects.equals(type,Type.PATIENT) ){
                             regionStatisticsDetails.setPatientCount(count);
                         }else if (Objects.equals(type,Type.MIGRANT) ){
                             regionStatisticsDetails.setMigrantCount(count);

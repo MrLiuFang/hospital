@@ -1,8 +1,6 @@
 package com.lion.event.dao.impl;
 
 import cn.hutool.core.util.NumberUtil;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.enums.SystemAlarmState;
 import com.lion.common.enums.Type;
@@ -224,11 +222,14 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
 
     @Override
     public SystemAlarm findLast(Long pi) {
-        return findLast(pi,null,null);
+        List<Integer> list = new ArrayList<>();
+        list.add(SystemAlarmState.UNTREATED.getKey());
+        list.add(SystemAlarmState.CALL.getKey());
+        return findLast(pi,null,null,list );
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime, Long tagId, String... sorts) {
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime, Long tagId, Long assetsId, Long deviceId, String... sorts) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
@@ -249,6 +250,13 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
             criteria.and("ti").is(tagId);
         }else if (Objects.nonNull(tagIds) && tagIds.size()>0) {
             criteria.and("ti").in(tagIds);
+        }
+
+        if (Objects.nonNull(deviceId) ) {
+            criteria.and("dvi").is(deviceId);
+        }
+        if (Objects.nonNull(assetsId) ) {
+            criteria.and("ai").is(assetsId);
         }
 
         if (Objects.isNull(startDateTime)) {
@@ -457,7 +465,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
-    public List<Document> listGroup(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public List<Document> listGroup(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds,List<Long> deviceIds, LocalDateTime startDateTime, LocalDateTime endDateTime) {
         List<Bson> pipeline = new ArrayList<Bson>();
         BasicDBObject match = new BasicDBObject();
         LocalDateTime now = LocalDateTime.now();
@@ -467,6 +475,11 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         if (Objects.nonNull(tagIds) && tagIds.size()>0) {
             match = BasicDBObjectUtil.put(match, "$match", "ti", new BasicDBObject("$in", tagIds));
         }
+
+        if (Objects.nonNull(tagIds) && tagIds.size()>0) {
+            match = BasicDBObjectUtil.put(match, "$match", "dvi", new BasicDBObject("$in", deviceIds));
+        }
+
         List<Integer> uaList= new ArrayList<>();
         uaList.add(SystemAlarmState.UNTREATED.getKey());
         uaList.add(SystemAlarmState.CALL.getKey());
@@ -482,10 +495,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte", Date.from( startDateTime.atZone( ZoneId.systemDefault()).toInstant())).append("$lte",Date.from( endDateTime.atZone( ZoneId.systemDefault()).toInstant())));
         pipeline.add(match);
         BasicDBObject group = new BasicDBObject();
-        group = BasicDBObjectUtil.put(group,"$group","_id","$ti");
+        group = BasicDBObjectUtil.put(group,"$group","_id",new BasicDBObject("ti", "$ti").append("dvi","$dvi").append("ai","$ai"));
         group = BasicDBObjectUtil.put(group,"$group","count",new BasicDBObject("$sum",1));
         pipeline.add(group);
-        System.out.println(pipeline);
         AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("system_alarm").aggregate(pipeline);
         List<Document> list = new ArrayList<>();
         aggregateIterable.forEach(document -> {
@@ -572,12 +584,18 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
 
     @Override
     public SystemAlarm findLastByAssetsId(Long assetsId) {
-        return findLast(null,assetsId,null);
+        List<Integer> list = new ArrayList<>();
+        list.add(SystemAlarmState.UNTREATED.getKey());
+        list.add(SystemAlarmState.CALL.getKey());
+        return findLast(null,assetsId,null, list);
     }
 
     @Override
     public SystemAlarm findLastByTagId(Long tagId) {
-        return findLast(null,null,tagId);
+        List<Integer> list = new ArrayList<>();
+        list.add(SystemAlarmState.UNTREATED.getKey());
+        list.add(SystemAlarmState.CALL.getKey());
+        return findLast(null,null,tagId,list );
     }
 
     @Override
@@ -600,7 +618,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         return systemAlarm;
     }
 
-    private SystemAlarm findLast(Long pi,Long ai,Long ti) {
+    private SystemAlarm findLast(Long pi,Long ai,Long ti,List<Integer> ua) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.isNull(pi) && Objects.isNull(ai) && Objects.isNull(ti)) {
@@ -614,6 +632,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         }
         if (Objects.nonNull(ti)) {
             criteria.and("ti").is(ti);
+        }
+        if (Objects.nonNull(ua) && ua.size()>0) {
+            criteria.and("ua").in(ua);
         }
         criteria.and("dt").gte(LocalDateTime.now().minusDays(90));
         query.addCriteria(criteria);

@@ -19,6 +19,7 @@ public class PatientDaoImpl implements PatientDaoEx {
 
     public Page<Map<String, Object>> listMerge(Integer type, String name, String cardNumber, String tagCode, String medicalRecordNo, String sort, List<Long> departmentIds, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
+        System.out.println(departmentIds);
         sb.append(" select t.* from ( ");
         Map<String, Object> searchParameter = new HashMap();
         if (StringUtils.hasText(name)) {
