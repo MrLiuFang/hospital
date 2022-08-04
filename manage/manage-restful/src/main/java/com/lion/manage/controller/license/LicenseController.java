@@ -12,6 +12,7 @@ import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagType;
 import com.lion.device.entity.tag.Tag;
@@ -145,8 +146,12 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                                 Device entity = new Device();
                                 entity.setDeviceState(State.ACTIVE);
                                 entity.setCode(equipmentNo);
-                                if (Objects.equals(equipmentId,2)){
+                                if (Objects.equals(equipmentId,1)){
                                     entity.setDeviceClassify(DeviceClassify.STAR_AP);
+                                    entity.setDeviceType(DeviceType.TIME_STAR);
+                                }else if (Objects.equals(equipmentId,2)){
+                                    entity.setDeviceClassify(DeviceClassify.STAR_AP);
+                                    entity.setDeviceType(DeviceType.STANDARD_STAR);
                                 }else if (Objects.equals(equipmentId,3)){
                                     entity.setDeviceClassify(DeviceClassify.MONITOR);
                                 }else if (Objects.equals(equipmentId,4)){

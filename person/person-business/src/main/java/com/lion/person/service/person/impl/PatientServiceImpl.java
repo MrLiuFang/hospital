@@ -5,6 +5,7 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.Optional;
 import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
@@ -534,6 +535,15 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             if (Objects.nonNull(map.get("gender"))) {
                 vo.setGender(Gender.instance(Integer.valueOf(String.valueOf(map.get("gender")))));
             }
+            if (Objects.nonNull(map.get("departmentId"))) {
+                Long departmentId = Long.valueOf(map.get("departmentId").toString());
+                vo.setDepartmentId(departmentId);
+                Optional<Department> optional = departmentExposeService.findById(departmentId);
+                if (optional.isPresent()) {
+                    vo.setDepartmentName(optional.get().getName());
+                }
+            }
+
             returnList.add(vo);
         });
         return new PageResultData(returnList, lionPage, page.getTotalElements());

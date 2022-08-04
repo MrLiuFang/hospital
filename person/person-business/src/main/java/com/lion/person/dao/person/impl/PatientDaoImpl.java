@@ -30,7 +30,7 @@ public class PatientDaoImpl implements PatientDaoEx {
         }
 
         if ((Objects.nonNull(type) && Objects.equals(type,1)) ||  Objects.isNull(type)) {
-            sb.append(" select  id, 1 as 'type', head_portrait as 'headPortrait' , name,tag_code as 'tagCode', create_date_time as 'createDateTime' ,gender from t_patient where is_leave  <> 1  ");
+            sb.append(" select  id, 1 as 'type', head_portrait as 'headPortrait' , name,tag_code as 'tagCode', create_date_time as 'createDateTime' ,gender ,department_id as 'departmentId' from t_patient where is_leave  <> 1  ");
             if (StringUtils.hasText(name)) {
                 sb.append(" and name like :name ");
             }
@@ -59,7 +59,7 @@ public class PatientDaoImpl implements PatientDaoEx {
             if (Objects.isNull(type)) {
                 sb.append(" union ");
             }
-            sb.append("  select id, 2 as 'type' , head_portrait as 'headPortrait' , name,tag_code as 'tagCode', create_date_time as 'createDateTime' ,gender from t_temporary_person where is_leave <> 1 ");
+            sb.append("  select id, 2 as 'type' , head_portrait as 'headPortrait' , name,tag_code as 'tagCode', create_date_time as 'createDateTime' ,gender ,department_id as 'departmentId' from t_temporary_person where is_leave <> 1 ");
             if (StringUtils.hasText(name)) {
                 sb.append(" and name like :name ");
             }

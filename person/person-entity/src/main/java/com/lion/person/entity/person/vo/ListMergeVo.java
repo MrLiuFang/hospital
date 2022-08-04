@@ -44,4 +44,14 @@ public class ListMergeVo {
 
     @Schema(description = "性别")
     private Gender gender;
+
+    @Schema(
+            description = "科室ID"
+    )
+    private Long departmentId;
+
+    @Schema(
+            description = "科室名称"
+    )
+    private String departmentName;
 }

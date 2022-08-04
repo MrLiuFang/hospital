@@ -135,14 +135,17 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
 
     /**
      * 关联区域
+     *
      * @param regionId
+     * @param buildId
+     * @param buildFloorId
      * @param ids
      * @return
      */
     @Modifying
     @Transactional
-    @Query(" update Device set regionId =:regionId, deviceState=3, version=version+1 where id in :ids ")
-    public int updateRegion(@Param("regionId")Long regionId,@Param("ids")List<Long> ids);
+    @Query(" update Device set regionId =:regionId, buildId = :buildId, buildFloorId = :buildFloorId, deviceState=3, version=version+1 where id in :ids ")
+    public int updateRegion(@Param("regionId")Long regionId,@Param("buildId")Long buildId,@Param("buildFloorId")Long buildFloorId,@Param("ids")List<Long> ids);
 
 
     /**

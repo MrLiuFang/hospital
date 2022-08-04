@@ -2,6 +2,7 @@ package com.lion.device.expose.impl.device;
 
 import com.lion.common.constants.RedisConstants;
 import com.lion.constant.SearchConstant;
+import com.lion.core.Optional;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.entity.device.Device;
@@ -163,7 +164,12 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
             }
         });
         deviceDao.updateRegionIdIsNull(regionId);
-        deviceDao.updateRegion(regionId, new_ids);
+        Optional<Region> optional = regionExposeService.findById(regionId);
+        if (optional.isPresent()){
+            Region region = optional.get();
+            deviceDao.updateRegion(regionId,region.getBuildId() ,region.getBuildFloorId(), new_ids);
+        }
+
         redisTemplate.delete(RedisConstants.REGION+regionId);
     }
 
