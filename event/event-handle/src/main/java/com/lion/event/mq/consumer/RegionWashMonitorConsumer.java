@@ -90,6 +90,12 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                         washEventDto.setWi(washTemplateItemVo.getId());
                         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
                         if ( Objects.nonNull(washTemplateItemVo.getBeforeTime()) && washTemplateItemVo.getBeforeTime() >0){
+                            if (Objects.nonNull(washTemplateItemVo.getNoCheckTime())) {
+                                Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
+                                if (duration.getSeconds() <= washTemplateItemVo.getNoCheckTime() ) {
+                                    return;
+                                }
+                            }
                             String before = (String) redisTemplate.opsForValue().get(RedisConstants.BEFORE_UUID+uuid);
                             redisTemplate.opsForValue().set(RedisConstants.BEFORE_UUID+uuid,uuid,24, TimeUnit.DAYS);
                             if (Objects.isNull(before)) {

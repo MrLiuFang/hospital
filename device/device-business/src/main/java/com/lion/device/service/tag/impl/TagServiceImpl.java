@@ -138,8 +138,8 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         assertTagCodeExist(tag.getTagCode(),null);
         assertTagPurpose(tag);
         tag = save(tag);
-        redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag,5, TimeUnit.MINUTES);
     }
 
     @Override
@@ -152,8 +152,8 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         assertTagCodeExist(tag.getTagCode(),tag.getId());
         assertTagPurpose(tag);
         update(tag);
-        redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, 5, TimeUnit.MINUTES);
     }
 
     @Override

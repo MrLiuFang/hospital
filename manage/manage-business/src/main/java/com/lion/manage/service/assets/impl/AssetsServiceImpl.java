@@ -446,9 +446,9 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         if (Objects.nonNull(tagCode)){
             tag = tagExposeService.find(tagCode);
         }
-        redisTemplate.opsForValue().set(RedisConstants.ASSETS+assets.getId(),assets,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.ASSETS+assets.getId(),assets,5, TimeUnit.MINUTES);
         if (Objects.nonNull(tag)) {
-            redisTemplate.opsForValue().set(RedisConstants.TAG_ASSETS + tag.getId(), assets.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.TAG_ASSETS + tag.getId(), assets.getId(), 5, TimeUnit.MINUTES);
         }
 
     }

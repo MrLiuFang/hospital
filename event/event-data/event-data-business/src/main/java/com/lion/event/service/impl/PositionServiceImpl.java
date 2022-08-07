@@ -252,7 +252,7 @@ public class PositionServiceImpl implements PositionService {
             Optional<Region> regionOptional = regionExposeService.findById(vo.getRi());
             if (regionOptional.isPresent()) {
                 Region region = regionOptional.get();
-                redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region,5, TimeUnit.MINUTES);
                 if (Objects.nonNull(region)) {
                     vo.setRn(region.getName());
                     Build build = redisUtil.getBuild(region.getBuildId());

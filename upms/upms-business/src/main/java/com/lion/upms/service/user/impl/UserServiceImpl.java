@@ -185,7 +185,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         if (StringUtils.hasText(user.getTagCode())) {
             tagUserExposeService.binding(user.getId(), user.getTagCode(), addUserDto.getDepartmentId());
         }
-        redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, 5, TimeUnit.MINUTES);
     }
 
     @Override
@@ -404,7 +404,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         departmentUserExposeService.relationDepartment(user.getId(),updateUserDto.getDepartmentId());
         departmentResponsibleUserExposeService.relationDepartment(user.getId(),updateUserDto.getResponsibleDepartmentIds());
         tagUserExposeService.binding(user.getId(),user.getTagCode(), updateUserDto.getDepartmentId());
-        redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user, 5, TimeUnit.MINUTES);
         Tag tag = tagExposeService.find(user.getTagCode());
         if (Objects.nonNull(tag)) {
             redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());

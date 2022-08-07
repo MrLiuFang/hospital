@@ -56,7 +56,7 @@ public class WardRoomSickbedServiceImpl extends BaseServiceImpl<WardRoomSickbed>
                 BeanUtils.copyProperties(dto,wardRoomSickbed);
                 wardRoomSickbed.setWardRoomId(wardRoomId);
                 save(wardRoomSickbed);
-                redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM_SICKBED+wardRoomSickbed.getId(),wardRoomSickbed,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM_SICKBED+wardRoomSickbed.getId(),wardRoomSickbed,5, TimeUnit.MINUTES);
             }
         });
 

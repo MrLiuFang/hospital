@@ -168,7 +168,7 @@ public class RedisUtil {
             com.lion.core.Optional<TemporaryPerson> optionalTemporaryPerson = temporaryPersonExposeService.findById(temporaryPersonId);
             if (optionalTemporaryPerson.isPresent()){
                 temporaryPerson = optionalTemporaryPerson.get();
-                redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON+temporaryPerson.getId(),temporaryPerson,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON+temporaryPerson.getId(),temporaryPerson,5,TimeUnit.MINUTES);
             }
         }
         return temporaryPerson;
@@ -197,7 +197,7 @@ public class RedisUtil {
             }
         }
         if (Objects.nonNull(type)) {
-            redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, type, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, type, 5, TimeUnit.MINUTES);
         }
         return type;
     }
@@ -233,7 +233,7 @@ public class RedisUtil {
                 com.lion.core.Optional<TemporaryPerson> optional = temporaryPersonExposeService.findById(temporaryPersonId);
                 if (optional.isPresent()){
                     temporaryPerson =  optional.get();
-                    redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON+temporaryPersonId,temporaryPerson, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON+temporaryPersonId,temporaryPerson, 5, TimeUnit.MINUTES);
                 }
             }
         }
@@ -244,10 +244,10 @@ public class RedisUtil {
                 com.lion.core.Optional<TemporaryPerson> optional = temporaryPersonExposeService.findById(tagPostdocs.getPostdocsId());
                 if (optional.isPresent()) {
                     temporaryPerson = optional.get();
-                    redisTemplate.opsForValue().set(RedisConstants.TAG_TEMPORARY_PERSON + tagId, temporaryPerson.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                    redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON_TAG + temporaryPerson.getId(), tagId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                    redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON + temporaryPerson.getId(), temporaryPerson, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                    redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.MIGRANT, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_TEMPORARY_PERSON + tagId, temporaryPerson.getId(), 5, TimeUnit.MINUTES);
+                    redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON_TAG + temporaryPerson.getId(), tagId, 5, TimeUnit.MINUTES);
+                    redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON + temporaryPerson.getId(), temporaryPerson, 5, TimeUnit.MINUTES);
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.MIGRANT, 5, TimeUnit.MINUTES);
                 }else {
                     redisTemplate.delete(RedisConstants.TAG_TEMPORARY_PERSON + tagId);
                     redisTemplate.delete(RedisConstants.TEMPORARY_PERSON_TAG +  tagPostdocs.getPostdocsId());
@@ -290,7 +290,7 @@ public class RedisUtil {
                 com.lion.core.Optional<Patient> optional = patientExposeService.findById(patientId);
                 if (optional.isPresent()){
                     patient = optional.get();
-                    redisTemplate.opsForValue().set(RedisConstants.PATIENT+patientId,patient, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.PATIENT+patientId,patient, 5, TimeUnit.MINUTES);
                 }
             }
         }
@@ -301,10 +301,10 @@ public class RedisUtil {
                 com.lion.core.Optional<Patient> optional = patientExposeService.findById(tagPatient.getPatientId());
                 if (optional.isPresent()) {
                     patient = optional.get();
-                    redisTemplate.opsForValue().set(RedisConstants.TAG_PATIENT + tagId, patient.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                    redisTemplate.opsForValue().set(RedisConstants.PATIENT_TAG + patient.getId(), tagId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                    redisTemplate.opsForValue().set(RedisConstants.PATIENT + patient.getId(), patient, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                    redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.PATIENT, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_PATIENT + tagId, patient.getId(), 5, TimeUnit.MINUTES);
+                    redisTemplate.opsForValue().set(RedisConstants.PATIENT_TAG + patient.getId(), tagId, 5, TimeUnit.MINUTES);
+                    redisTemplate.opsForValue().set(RedisConstants.PATIENT + patient.getId(), patient, 5, TimeUnit.MINUTES);
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.PATIENT, 5, TimeUnit.MINUTES);
                 }else {
                     redisTemplate.delete(RedisConstants.TAG_PATIENT + tagId);
                     redisTemplate.delete(RedisConstants.PATIENT_TAG +  tagPatient.getPatientId());
@@ -334,7 +334,7 @@ public class RedisUtil {
             com.lion.core.Optional<Patient> optional = patientExposeService.findById(id);
             if (optional.isPresent()){
                 patient = optional.get();
-                redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,5,TimeUnit.MINUTES);
             }
         }
         return patient;
@@ -378,8 +378,8 @@ public class RedisUtil {
         if (Objects.isNull(department)){
             department = departmentUserExposeService.findDepartment(userId);
             if (Objects.nonNull(department)){
-                redisTemplate.opsForValue().set(RedisConstants.USER_DEPARTMENT+userId,department.getId(),RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
-                redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT+department.getId(),department,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.USER_DEPARTMENT+userId,department.getId(),5,TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT+department.getId(),department,5,TimeUnit.MINUTES);
             }
         }
         return department;
@@ -403,7 +403,7 @@ public class RedisUtil {
             com.lion.core.Optional<Department> optional = departmentExposeService.findById(departmentId);
             if (optional.isPresent()){
                 department = optional.get();
-                redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT+department.getId(),department,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT+department.getId(),department,5,TimeUnit.MINUTES);
             }
         }
         return department;
@@ -427,7 +427,7 @@ public class RedisUtil {
             com.lion.core.Optional<BuildFloor> optional = buildFloorExposeService.findById(buildFloorId);
             if (optional.isPresent()){
                 buildFloor = optional.get();
-                redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,5,TimeUnit.MINUTES);
             }
         }
         return buildFloor;
@@ -451,7 +451,7 @@ public class RedisUtil {
             com.lion.core.Optional<Build> optional = buildExposeService.findById(buildId);
             if (optional.isPresent()){
                 build = optional.get();
-                redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,5,TimeUnit.MINUTES);
             }
         }
         return build;
@@ -475,7 +475,7 @@ public class RedisUtil {
             com.lion.core.Optional<Region> optional = regionExposeService.findById(regionId);
             if (optional.isPresent()){
                 region = optional.get();
-                redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region,5,TimeUnit.MINUTES);
             }
         }
         return region;
@@ -503,7 +503,7 @@ public class RedisUtil {
 //                Optional<Region> optional = regionExposeService.findById(regionId);
 //                if (optional.isPresent()){
 //                    region = optional.get();
-//                    redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                    redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, 5, TimeUnit.MINUTES);
 //                }
 //            }
 //        }
@@ -512,8 +512,8 @@ public class RedisUtil {
 //            if (Objects.nonNull(regionDevice)){
 //                region = regionExposeService.find(regionDevice.getRegionId());
 //                if (Objects.nonNull(region)){
-//                    redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION+deviceId,region.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-//                    redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                    redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION+deviceId,region.getId(), 5, TimeUnit.MINUTES);
+//                    redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, 5, TimeUnit.MINUTES);
 //                }else {
 //                    redisTemplate.delete(RedisConstants.DEVICE_REGION+deviceId);
 //                    redisTemplate.delete(RedisConstants.REGION+regionId);
@@ -550,7 +550,7 @@ public class RedisUtil {
             com.lion.core.Optional<User> optional = userExposeService.findById(userId);
             if (optional.isPresent()){
                 user = optional.get();
-                redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.USER+user.getId(),user,5,TimeUnit.MINUTES);
             }
         }
         return user;
@@ -585,7 +585,7 @@ public class RedisUtil {
                 com.lion.core.Optional<User> optional = userExposeService.findById(userId);
                 if (optional.isPresent()){
                     user = optional.get();
-                    redisTemplate.opsForValue().set(RedisConstants.USER+userId,user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.USER+userId,user, 5, TimeUnit.MINUTES);
                 }
             }
         }
@@ -596,10 +596,10 @@ public class RedisUtil {
                 com.lion.core.Optional<User> optional = userExposeService.findById(tagUser.getUserId());
                 if (optional.isPresent()) {
                     user = optional.get();
-                    redisTemplate.opsForValue().set(RedisConstants.TAG_USER + tagId, user.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                    redisTemplate.opsForValue().set(RedisConstants.USER_TAG + user.getId(), tagId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                    redisTemplate.opsForValue().set(RedisConstants.USER + user.getId(), user, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                    redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.ASSET, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_USER + tagId, user.getId(), 5, TimeUnit.MINUTES);
+                    redisTemplate.opsForValue().set(RedisConstants.USER_TAG + user.getId(), tagId, 5, TimeUnit.MINUTES);
+                    redisTemplate.opsForValue().set(RedisConstants.USER + user.getId(), user, 5, TimeUnit.MINUTES);
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.ASSET, 5, TimeUnit.MINUTES);
                 }else {
                     redisTemplate.delete(RedisConstants.TAG_USER + tagId);
                     redisTemplate.delete(RedisConstants.USER_TAG + userId);
@@ -630,7 +630,7 @@ public class RedisUtil {
             com.lion.core.Optional<Device> optional = deviceExposeService.findById(id);
             if (optional.isPresent()){
                 device = optional.get();
-                redisTemplate.opsForValue().set(RedisConstants.DEVICE+id,device, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.DEVICE+id,device, 5, TimeUnit.MINUTES);
             }
         }
         return device;
@@ -653,7 +653,7 @@ public class RedisUtil {
         if (Objects.isNull(device)){
             device = deviceExposeService.find(code);
             if (Objects.nonNull(device)){
-                redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+code,device, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+code,device, 5, TimeUnit.MINUTES);
             }
         }
         return device;
@@ -678,7 +678,7 @@ public class RedisUtil {
             com.lion.core.Optional<Tag> optional = tagExposeService.findById(id);
             if (optional.isPresent()){
                 tag = optional.get();
-                redisTemplate.opsForValue().set(RedisConstants.TAG+id,tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.TAG+id,tag, 5, TimeUnit.MINUTES);
             }
         }
         return tag;
@@ -702,7 +702,7 @@ public class RedisUtil {
         if (Objects.isNull(tag)){
             tag = tagExposeService.find(tagCode);
             if (Objects.nonNull(tag)) {
-                redisTemplate.opsForValue().set(RedisConstants.TAG_CODE + tagCode, tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.TAG_CODE + tagCode, tag, 5, TimeUnit.MINUTES);
             }
         }
         return tag;
@@ -721,7 +721,7 @@ public class RedisUtil {
             if (Objects.nonNull(washDeviceTypes) && washDeviceTypes.size()>0) {
                 redisTemplate.delete(RedisConstants.WASH_DEVICE_TYPE+washId);
                 redisTemplate.opsForList().leftPushAll(RedisConstants.WASH_DEVICE_TYPE+washId,washDeviceTypes);
-                redisTemplate.expire(RedisConstants.WASH_DEVICE_TYPE+washId,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+                redisTemplate.expire(RedisConstants.WASH_DEVICE_TYPE+washId,5,TimeUnit.MINUTES);
             }
         }
         return washDeviceTypes;
@@ -752,7 +752,7 @@ public class RedisUtil {
 //            }
 //            if (washDeviceId.size()>0) {
 //                redisTemplate.opsForList().leftPushAll(RedisConstants.WASH_DEVICE+washId,washDeviceId);
-//                redisTemplate.expire(RedisConstants.WASH_DEVICE+washId,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+//                redisTemplate.expire(RedisConstants.WASH_DEVICE+washId,5,TimeUnit.MINUTES);
 //            }
 //        }
 //        washDeviceId.forEach(id->{
@@ -789,7 +789,7 @@ public class RedisUtil {
 //            washList = washExposeService.findLoopWash(true);
 //            washList.forEach(wash -> {
 //                list.add(wash.getId());
-//                redisTemplate.opsForValue().set(RedisConstants.WASH + wash.getId(), wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                redisTemplate.opsForValue().set(RedisConstants.WASH + wash.getId(), wash, 5, TimeUnit.MINUTES);
 //            });
 //            if (Objects.nonNull(list) && list.size()>0) {
 //                redisTemplate.opsForList().leftPushAll(RedisConstants.ALL_USER_LOOP_WASH, list);
@@ -812,7 +812,7 @@ public class RedisUtil {
 //        if (Objects.isNull(wash)) {
 //            wash = washExposeService.findById(washId);
 //            if (Objects.nonNull(wash)) {
-//                redisTemplate.opsForValue().set(RedisConstants.WASH + washId, wash, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                redisTemplate.opsForValue().set(RedisConstants.WASH + washId, wash, 5, TimeUnit.MINUTES);
 //            }
 //        }
 //        return wash;
@@ -842,7 +842,7 @@ public class RedisUtil {
 //        if (washList.size()<=0){
 //            washList= washExposeService.findLoopWash(userId);
 //            washList.forEach(wash -> {
-//                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,5, TimeUnit.MINUTES);
 //                list.add(wash.getId());
 //            });
 //            if (list.size()>0){
@@ -899,7 +899,7 @@ public class RedisUtil {
                 washTemplateItemVo.set(listWashTemplateItemVo);
             }
         });
-        redisTemplate.opsForValue().set(RedisConstants.WASH_TEMPLATE+washTemplateId,detailsWashTemplateVo,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.WASH_TEMPLATE+washTemplateId,detailsWashTemplateVo,5,TimeUnit.MINUTES);
         return washTemplateItemVo.get();
     }
 
@@ -930,7 +930,7 @@ public class RedisUtil {
 //        if (washList.size()<=0){
 //            washList = washExposeService.find(regionId);
 //            washList.forEach(wash -> {
-//                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,5, TimeUnit.MINUTES);
 //                list.add(wash.getId());
 //            });
 //            if (list.size()>0){
@@ -962,8 +962,8 @@ public class RedisUtil {
 //        if (Objects.isNull(wash)){
 //            wash = washExposeService.find(regionId,userId);
 //            if (Objects.nonNull(wash)) {
-//                redisTemplate.opsForValue().set(RedisConstants.REGION_USER_WASH+regionId+userId,wash.getId(),RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-//                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+//                redisTemplate.opsForValue().set(RedisConstants.REGION_USER_WASH+regionId+userId,wash.getId(),5, TimeUnit.MINUTES);
+//                redisTemplate.opsForValue().set(RedisConstants.WASH+wash.getId(),wash,5, TimeUnit.MINUTES);
 //            }
 //        }
 //        return wash;
@@ -997,11 +997,11 @@ public class RedisUtil {
         if (Objects.isNull(alarm)){
             alarm = alarmExposeService.find(alarmClassify, code);
             if (Objects.nonNull(alarm)){
-                redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, 5, TimeUnit.MINUTES);
                 if (Objects.isNull(alarm.getLevel())){
-                    redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey(),alarm.getId(), 5, TimeUnit.MINUTES);
                 }else {
-                    redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey()+alarm.getLevel(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                    redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey()+alarm.getLevel(),alarm.getId(), 5, TimeUnit.MINUTES);
                 }
             }
         }
@@ -1039,9 +1039,9 @@ public class RedisUtil {
         if (Objects.isNull(assets)){
             assets = assetsExposeService.find(tagId);
             if (Objects.nonNull(assets)) {
-                redisTemplate.opsForValue().set(RedisConstants.TAG_ASSETS + tagId, assets.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                redisTemplate.opsForValue().set(RedisConstants.ASSETS + assets.getId(), assets, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.ASSET, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.TAG_ASSETS + tagId, assets.getId(), 5, TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set(RedisConstants.ASSETS + assets.getId(), assets, 5, TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.ASSET, 5, TimeUnit.MINUTES);
             }
         }
         return assets;
@@ -1067,8 +1067,8 @@ public class RedisUtil {
         if (Objects.isNull(tagRule)){
             tagRule = tagRuleExposeService.find(userId);
             if (Objects.nonNull(tagRule)) {
-                redisTemplate.opsForValue().set(RedisConstants.USER_TAG_RULE + userId, tagRule.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-                redisTemplate.opsForValue().set(RedisConstants.TAG_RULE + tagRule.getId(), tagRule, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.USER_TAG_RULE + userId, tagRule.getId(), 5, TimeUnit.MINUTES);
+                redisTemplate.opsForValue().set(RedisConstants.TAG_RULE + tagRule.getId(), tagRule, 5, TimeUnit.MINUTES);
             }
         }
         return tagRule;
@@ -1087,7 +1087,7 @@ public class RedisUtil {
         WardRoomSickbed wardRoomSickbed = null;
         if (optional.isPresent()) {
             wardRoomSickbed = optional.get();
-            redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM_SICKBED+id,wardRoomSickbed,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM_SICKBED+id,wardRoomSickbed,5,TimeUnit.MINUTES);
         }
         return wardRoomSickbed;
     }
@@ -1105,7 +1105,7 @@ public class RedisUtil {
         WardRoom wardRoom = null;
         if (optional.isPresent()) {
             wardRoom = optional.get();
-            redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM+id,wardRoom,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM+id,wardRoom,5,TimeUnit.MINUTES);
         }
         return wardRoom;
     }
@@ -1159,7 +1159,7 @@ public class RedisUtil {
             List<License> list = licenseExposeService.findAll();
             if (list.size()>0){
                 license = list.get(0);
-                redisTemplate.opsForValue().set("license",license, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set("license",license, 5, TimeUnit.MINUTES);
             }
         }
         return license;
@@ -1176,7 +1176,7 @@ public class RedisUtil {
         }
         if (Objects.isNull(departmentAlarm)) {
             departmentAlarm = departmentAlarmExposeService.find(departmentId);
-            redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT_ALARM+departmentId,departmentAlarm,RedisConstants.EXPIRE_TIME,TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT_ALARM+departmentId,departmentAlarm,5,TimeUnit.MINUTES);
         }
         return departmentAlarm;
     }

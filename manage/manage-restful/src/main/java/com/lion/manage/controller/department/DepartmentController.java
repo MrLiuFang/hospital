@@ -214,6 +214,6 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
     }
 
     private void persistenceRedis(DepartmentAlarm departmentAlarm){
-        redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT_ALARM+departmentAlarm.getDepartmentId(),departmentAlarm,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT_ALARM+departmentAlarm.getDepartmentId(),departmentAlarm,5, TimeUnit.MINUTES);
     }
 }

@@ -249,7 +249,7 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
 
 
     private void persistenceRedis(Department department){
-        redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT+department.getId(),department,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.DEPARTMENT+department.getId(),department,5, TimeUnit.MINUTES);
     }
 
 

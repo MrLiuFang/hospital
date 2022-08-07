@@ -96,6 +96,6 @@ public class BuildFloorServiceImpl extends BaseServiceImpl<BuildFloor> implement
     }
 
     private void persistenceRedis(BuildFloor buildFloor){
-        redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,5, TimeUnit.MINUTES);
     }
 }

@@ -166,7 +166,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             tagPatientExposeService.binding(patient.getId(),patient.getTagCode(),patient.getDepartmentId());
         }
         patientLogService.add("", LogType.ADD, CurrentUserUtil.getCurrentUserId(), patient.getId());
-        redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,5, TimeUnit.MINUTES);
     }
 
     @Override
@@ -251,7 +251,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             }
         }
 
-        redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.PATIENT+patient.getId(),patient,5, TimeUnit.MINUTES);
     }
 
     @Override

@@ -46,7 +46,7 @@ public class DepartmentUserServiceImpl extends BaseServiceImpl<DepartmentUser> i
             DepartmentUser departmentUser = new DepartmentUser();
             departmentUser.setUserId(userId);
             departmentUser.setDepartmentId(departmentId);
-            redisTemplate.opsForValue().set(RedisConstants.USER_DEPARTMENT+userId,departmentId,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.USER_DEPARTMENT+userId,departmentId,5, TimeUnit.MINUTES);
             this.save(departmentUser);
         }
     }

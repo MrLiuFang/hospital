@@ -167,11 +167,11 @@ public class AlarmServiceImpl extends BaseServiceImpl<Alarm> implements AlarmSer
                 redisTemplate.delete(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey()+alarm.getLevel());
             }
         }else {
-            redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.ALARM+alarm.getId(),alarm, 5, TimeUnit.MINUTES);
             if (Objects.isNull(alarm.getLevel())){
-                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey(),alarm.getId(), 5, TimeUnit.MINUTES);
             }else {
-                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey()+alarm.getLevel(),alarm.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.ALARM_CLASSIFY_CODE+alarm.getClassify().toString()+alarm.getCode().getKey()+alarm.getLevel(),alarm.getId(), 5, TimeUnit.MINUTES);
             }
         }
     }

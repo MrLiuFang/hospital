@@ -55,8 +55,8 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
             Tag tag = optional.get();
             tag.setBattery(battery);
             update(tag);
-            redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-            redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.TAG_CODE+tag.getTagCode(),tag, 5, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(RedisConstants.TAG+tag.getId(),tag, 5, TimeUnit.MINUTES);
         }
     }
 

@@ -64,8 +64,8 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
             Device device = optional.get();
             device.setBattery(battery);
             update(device);
-            redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+device.getCode(),device, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-            redisTemplate.opsForValue().set(RedisConstants.DEVICE+device.getId(),device, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+device.getCode(),device, 5, TimeUnit.MINUTES);
+            redisTemplate.opsForValue().set(RedisConstants.DEVICE+device.getId(),device, 5, TimeUnit.MINUTES);
         }
     }
 

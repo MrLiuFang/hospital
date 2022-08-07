@@ -230,7 +230,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
             Region region = optional.get();
             region.setCoordinates(updateRegionCoordinatesDto.getCoordinates());
             update(region);
-            redisTemplate.opsForValue().set(RedisConstants.REGION + region.getId(), region, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+            redisTemplate.opsForValue().set(RedisConstants.REGION + region.getId(), region, 5, TimeUnit.MINUTES);
         }
     }
 

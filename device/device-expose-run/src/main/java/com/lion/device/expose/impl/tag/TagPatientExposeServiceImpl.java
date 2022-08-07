@@ -98,9 +98,9 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
         tag.setDeviceState(State.USED);
         tagService.update(tag);
         redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
-        redisTemplate.opsForValue().set(RedisConstants.TAG_PATIENT+tag.getId(),patientId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.PATIENT_TAG+patientId,tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.PATIENT, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_PATIENT+tag.getId(),patientId, 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(RedisConstants.PATIENT_TAG+patientId,tag.getId(), 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.PATIENT, 5, TimeUnit.MINUTES);
     }
 
     @Override

@@ -90,7 +90,7 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
         tag.setDeviceState(State.USED);
         tagService.update(tag);
         redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
-        redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.ASSET, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.ASSET, 5, TimeUnit.MINUTES);
         return true;
     }
 

@@ -96,7 +96,7 @@ public class WardRoomServiceImpl extends BaseServiceImpl<WardRoom> implements Wa
                 } else if ((dto instanceof UpdateWardRoomDto)) {
                     wardRoomSickbedService.save(((UpdateWardRoomDto) dto).getWardRoomSickbed(), wardRoom.getId());
                 }
-                redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM+wardRoom.getId(),wardRoom, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.WARD_ROOM+wardRoom.getId(),wardRoom, 5, TimeUnit.MINUTES);
             });
         }
 

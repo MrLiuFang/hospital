@@ -101,8 +101,8 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         assertNameExist(entity.getName(),entity.getId());
         assertCodeExist(entity.getCode(),entity.getId());
         super.update(entity);
-        redisTemplate.opsForValue().set(RedisConstants.DEVICE+entity.getId(),entity, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+entity.getCode(),entity, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.DEVICE+entity.getId(),entity, 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+entity.getCode(),entity, 5, TimeUnit.MINUTES);
     }
 
     @Override
@@ -111,8 +111,8 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         assertNameExist(entity.getName(),null);
         assertCodeExist(entity.getCode(),null);
         entity = super.save(entity);
-        redisTemplate.opsForValue().set(RedisConstants.DEVICE+entity.getId(),entity, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+entity.getCode(),entity, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.DEVICE+entity.getId(),entity, 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(RedisConstants.DEVICE_CODE+entity.getCode(),entity, 5, TimeUnit.MINUTES);
         return entity;
     }
 

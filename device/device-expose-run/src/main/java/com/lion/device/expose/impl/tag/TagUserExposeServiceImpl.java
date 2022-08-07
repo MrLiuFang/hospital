@@ -95,9 +95,9 @@ public class TagUserExposeServiceImpl extends BaseServiceImpl<TagUser> implement
         tag.setDeviceState(State.USED);
         tagService.update(tag);
         redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
-        redisTemplate.opsForValue().set(RedisConstants.TAG_USER+tag.getId(),userId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.USER_TAG+userId,tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.STAFF, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_USER+tag.getId(),userId, 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(RedisConstants.USER_TAG+userId,tag.getId(), 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.STAFF, 5, TimeUnit.MINUTES);
     }
 
     @Override

@@ -82,9 +82,9 @@ public class TagPostdocsExposeServiceImpl extends BaseServiceImpl<TagPostdocs> i
         tag.setDeviceState(State.USED);
         tagService.update(tag);
         redisTemplate.delete(RedisConstants.TAG_BIND_TYPE + tag.getId());
-        redisTemplate.opsForValue().set(RedisConstants.TAG_TEMPORARY_PERSON+tag.getId(),postdocsId, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON_TAG+postdocsId,tag.getId(), RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
-        redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.MIGRANT, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_TEMPORARY_PERSON+tag.getId(),postdocsId, 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(RedisConstants.TEMPORARY_PERSON_TAG+postdocsId,tag.getId(), 5, TimeUnit.MINUTES);
+        redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tag.getId(), Type.MIGRANT, 5, TimeUnit.MINUTES);
     }
 
     @Override

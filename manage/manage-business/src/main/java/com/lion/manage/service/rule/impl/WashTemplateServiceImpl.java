@@ -171,7 +171,7 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
             redisTemplate.delete(id);
             return;
         }
-        redisTemplate.opsForValue().set(RedisConstants.WASH_TEMPLATE+ id,detailsWashTemplateVo,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.WASH_TEMPLATE+ id,detailsWashTemplateVo,5, TimeUnit.MINUTES);
     }
 
     private void assertNameExist(String name, Long id) {

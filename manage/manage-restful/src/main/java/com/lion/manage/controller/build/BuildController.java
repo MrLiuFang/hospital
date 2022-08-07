@@ -72,7 +72,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
         Build build = new Build();
         BeanUtils.copyProperties(addBuildDto,build);
         build = buildService.save(build);
-        redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,5, TimeUnit.MINUTES);
         return ResultData.instance();
     }
 
@@ -120,7 +120,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
         Build build =new Build();
         BeanUtils.copyProperties(updateBuildDto,build);
         buildService.update(build);
-        redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,5, TimeUnit.MINUTES);
         return ResultData.instance();
     }
 
@@ -140,7 +140,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
         BeanUtils.copyProperties(addBuilidfFloorDto,buildFloor);
         assertBuildExist(buildFloor.getBuildId());
         buildFloor = buildFloorService.save(buildFloor);
-        redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,5, TimeUnit.MINUTES);
         return ResultData.instance();
     }
 
@@ -190,7 +190,7 @@ public class BuildController extends BaseControllerImpl implements BaseControlle
         BeanUtils.copyProperties(updateBuildFloorDto,buildFloor);
         assertBuildExist(buildFloor.getBuildId());
         buildFloorService.update(buildFloor);
-        redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.BUILD_FLOOR+buildFloor.getId(),buildFloor,5, TimeUnit.MINUTES);
         return ResultData.instance();
     }
 

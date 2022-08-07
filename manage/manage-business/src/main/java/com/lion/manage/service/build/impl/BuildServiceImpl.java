@@ -88,7 +88,7 @@ public class BuildServiceImpl extends BaseServiceImpl<Build> implements BuildSer
     }
 
     private void persistenceRedis(Build build){
-        redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+        redisTemplate.opsForValue().set(RedisConstants.BUILD+build.getId(),build,5, TimeUnit.MINUTES);
     }
 
 }

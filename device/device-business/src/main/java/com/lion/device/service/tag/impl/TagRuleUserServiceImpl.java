@@ -127,7 +127,7 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                 }else if (Objects.nonNull(list) && !list.contains(id)) {
                     tagRuleLogService.add(tagRuleId,(optionalUser.isPresent()?optionalUser.get().getName():"")+"添加到规则("+(optionalTagRule.isPresent()?optionalTagRule.get().getName():"")+")中", TagRuleLogType.ADD_USER);
                 }
-                redisTemplate.opsForValue().set(RedisConstants.USER_TAG_RULE+id,tagRuleId,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
+                redisTemplate.opsForValue().set(RedisConstants.USER_TAG_RULE+id,tagRuleId,5, TimeUnit.MINUTES);
             });
         }
     }
