@@ -89,13 +89,13 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                         BeanUtils.copyProperties(washRecordDto,washEventDto);
                         washEventDto.setWi(washTemplateItemVo.getId());
                         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
-                        if ( Objects.nonNull(washTemplateItemVo.getBeforeTime()) && washTemplateItemVo.getBeforeTime() >0){
-                            if (Objects.nonNull(washTemplateItemVo.getNoCheckTime())) {
-                                Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
-                                if (duration.getSeconds() <= washTemplateItemVo.getNoCheckTime() ) {
-                                    return;
-                                }
+                        if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(userLastWashDto) && Objects.nonNull(washTemplateItemVo.getNoCheckTime()) && washTemplateItemVo.getNoCheckTime()>0) {
+                            Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
+                            if (duration.getSeconds() <= washTemplateItemVo.getNoCheckTime() * 60 ) {
+                                return;
                             }
+                        }
+                        if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(washTemplateItemVo.getBeforeTime()) && washTemplateItemVo.getBeforeTime() >0){
                             String before = (String) redisTemplate.opsForValue().get(RedisConstants.BEFORE_UUID+uuid);
                             redisTemplate.opsForValue().set(RedisConstants.BEFORE_UUID+uuid,uuid,24, TimeUnit.DAYS);
                             if (Objects.isNull(before)) {
@@ -115,7 +115,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                 }
                             }
                         }
-                        if (Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime() >0){
+                        if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime() >0){
                             if (Objects.isNull(userLastWashDto)) {
                                 alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,null,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
                                 return;

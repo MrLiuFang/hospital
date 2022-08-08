@@ -195,9 +195,9 @@ public class RedisUtil {
             }else if (Objects.nonNull(getAssets(tagId))) {
                 type = Type.ASSET;
             }
-        }
-        if (Objects.nonNull(type)) {
-            redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, type, 5, TimeUnit.MINUTES);
+            if (Objects.nonNull(type)) {
+                redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, type, 5, TimeUnit.MINUTES);
+            }
         }
         return type;
     }
@@ -599,7 +599,7 @@ public class RedisUtil {
                     redisTemplate.opsForValue().set(RedisConstants.TAG_USER + tagId, user.getId(), 5, TimeUnit.MINUTES);
                     redisTemplate.opsForValue().set(RedisConstants.USER_TAG + user.getId(), tagId, 5, TimeUnit.MINUTES);
                     redisTemplate.opsForValue().set(RedisConstants.USER + user.getId(), user, 5, TimeUnit.MINUTES);
-                    redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.ASSET, 5, TimeUnit.MINUTES);
+                    redisTemplate.opsForValue().set(RedisConstants.TAG_BIND_TYPE+tagId, Type.STAFF, 5, TimeUnit.MINUTES);
                 }else {
                     redisTemplate.delete(RedisConstants.TAG_USER + tagId);
                     redisTemplate.delete(RedisConstants.USER_TAG + userId);

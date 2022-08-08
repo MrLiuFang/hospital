@@ -213,7 +213,7 @@ public class UserWashServiceImpl implements UserWashService {
 
             Region region = redisUtil.getRegionById(userCurrentRegionDto.getRegionId());
             ListWashTemplateItemVo washTemplateItemVo = redisUtil.getWashTemplate(region.getWashTemplateId());
-            if (Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime()>0) {
+            if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime()>0) {
                 String str = (String) redisTemplate.opsForValue().get(RedisConstants.WASH_MONITOR +user.getId());
                 if (Objects.isNull(str)) {
                     return;
