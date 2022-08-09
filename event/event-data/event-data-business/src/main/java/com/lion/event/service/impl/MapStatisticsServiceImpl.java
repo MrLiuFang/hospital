@@ -952,12 +952,13 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                         vo.setIsDevice(true);
                         vo.setDeviceId(device.getId());
                         vo.setDeviceCode(device.getCode());
+                        vo.setDeviceClassify(device.getDeviceClassify());
                         vo.setDeviceType(device.getDeviceType());
                         vo.setTitle(device.getName());
                         vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
                         vo.setImgId(device.getImg());
                         vo.setCount(Integer.valueOf(String.valueOf(document.get("count"))));
-                        IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false, null, null, null, null, null, finalStartDateTime, null, new LionPage(0, 1), null,device.getId(),null ,"dt");
+                        IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false, null, null, null, null, null, finalStartDateTime, null, new LionPage(0, 1), null,null,device.getId() ,"dt");
                         List<SystemAlarmVo> list1 = listIPageResultData.getData();
                         if (Objects.nonNull(list1) && list1.size() > 0) {
                             vo.setSystemAlarm(list1.get(0));

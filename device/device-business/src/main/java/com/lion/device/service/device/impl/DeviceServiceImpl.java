@@ -14,6 +14,7 @@ import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
 import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.enums.State;
 import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.device.DeviceGroupExposeService;
@@ -45,7 +46,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -212,8 +212,8 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     }
 
     @Override
-    public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, String name, LionPage lionPage) {
-        Page<Device> page = deviceDao.deviceMonitorList(buildId, buildFloorId, deviceState,name , lionPage);
+    public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, DeviceClassify deviceClassify, DeviceType deviceType, State deviceState, String name, LionPage lionPage) {
+        Page<Device> page = deviceDao.deviceMonitorList(buildId, buildFloorId,deviceClassify ,deviceType , deviceState, name, lionPage);
         List<ListDeviceMonitorVo> returnList = new ArrayList<>();
         List<Device> list = page.getContent();
         list.forEach(device -> {

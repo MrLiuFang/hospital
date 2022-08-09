@@ -40,6 +40,12 @@ public class DeviceData implements Serializable {
     @Schema(description = "monitor code")
     private String mc;
 
+    @Schema(description = "device id")
+    private String di;
+
+    @Schema(description = "device code")
+    private String dc;
+
     @Schema(description = "monitor name")
     private String mn;
 

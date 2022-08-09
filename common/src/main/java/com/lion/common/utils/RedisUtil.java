@@ -482,53 +482,9 @@ public class RedisUtil {
     }
 
     public Region getRegion(Long deviceId){
-        if (Objects.isNull(deviceId)){
-            return null;
-        }
-//        Object obj = redisTemplate.opsForValue().get(RedisConstants.DEVICE_REGION+deviceId);
-//        Long regionId = null;
-//        Region region =null;
-//
-//        if (Objects.nonNull(obj) && !(obj instanceof Long)){
-//            redisTemplate.delete(RedisConstants.DEVICE_REGION + deviceId);
-//            obj = null;
-//        }
-//        if (Objects.nonNull(obj)){
-//            regionId= (Long) obj;
-//        }
-//
-//        if (Objects.nonNull(regionId)){
-//            region = (Region) redisTemplate.opsForValue().get(RedisConstants.REGION+regionId);
-//            if (Objects.isNull(region)){
-//                Optional<Region> optional = regionExposeService.findById(regionId);
-//                if (optional.isPresent()){
-//                    region = optional.get();
-//                    redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, 5, TimeUnit.MINUTES);
-//                }
-//            }
-//        }
-//        if (Objects.isNull(region)){
-//            RegionDevice regionDevice = regionDeviceExposeService.find(deviceId);
-//            if (Objects.nonNull(regionDevice)){
-//                region = regionExposeService.find(regionDevice.getRegionId());
-//                if (Objects.nonNull(region)){
-//                    redisTemplate.opsForValue().set(RedisConstants.DEVICE_REGION+deviceId,region.getId(), 5, TimeUnit.MINUTES);
-//                    redisTemplate.opsForValue().set(RedisConstants.REGION+region.getId(),region, 5, TimeUnit.MINUTES);
-//                }else {
-//                    redisTemplate.delete(RedisConstants.DEVICE_REGION+deviceId);
-//                    redisTemplate.delete(RedisConstants.REGION+regionId);
-//                }
-//            }
-//        }
-        Device device = this.getDevice(deviceId);
-        if (Objects.isNull(device)) {
-            return null;
-        }
-        if (Objects.nonNull(device.getRegionId())) {
-                Region region = this.getRegionById(device.getRegionId());
-                if (Objects.nonNull(region)) {
-                    return region;
-                }
+        Device device = getDevice(deviceId);
+        if (Objects.nonNull(device)) {
+            return getRegionById(device.getRegionId());
         }
         return null;
     }

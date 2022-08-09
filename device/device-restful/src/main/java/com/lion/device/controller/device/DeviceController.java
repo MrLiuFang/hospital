@@ -126,7 +126,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.equals(true,isTmp)){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_name",null);
-        }else {
+        }else if(Objects.equals(false,isTmp)){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_name",null);
         }
         if (StringUtils.hasText(name)){

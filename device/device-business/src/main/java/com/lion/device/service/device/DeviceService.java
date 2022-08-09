@@ -8,6 +8,8 @@ import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
+import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.enums.State;
 import org.springframework.data.domain.Page;
 
@@ -45,7 +47,7 @@ public interface DeviceService extends BaseService<Device> {
      */
    public List<Long> allId();
 
-   public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, State deviceState,String name, LionPage lionPage);
+   public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, DeviceClassify deviceClassify, DeviceType deviceType,State deviceState, String name, LionPage lionPage);
 
     /**
      * 详情

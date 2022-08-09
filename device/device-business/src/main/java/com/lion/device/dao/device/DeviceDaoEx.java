@@ -2,6 +2,8 @@ package com.lion.device.dao.device;
 
 import com.lion.core.LionPage;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.enums.State;
 import org.springframework.data.domain.Page;
 
@@ -16,14 +18,17 @@ public interface DeviceDaoEx {
 
     /**
      * 设备监控列表
+     *
      * @param buildId
      * @param buildFloorId
+     * @param deviceClassify
+     * @param deviceType
      * @param deviceState
      * @param name
      * @param lionPage
      * @return
      */
-    Page deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, String name,LionPage lionPage);
+    Page deviceMonitorList(Long buildId, Long buildFloorId, DeviceClassify deviceClassify, DeviceType deviceType, State deviceState, String name, LionPage lionPage);
 
     /**
      * 设备状态

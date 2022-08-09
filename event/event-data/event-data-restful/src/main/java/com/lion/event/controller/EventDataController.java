@@ -141,11 +141,11 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/device/data/list")
     @ApiOperation(value = "设备事件记录(不返回总行数)")
-    public IPageResultData<List<DeviceData>> starList(@ApiParam(value = "starId")  Long starId,@ApiParam(value = "monitorId")  Long monitorId,
+    public IPageResultData<List<DeviceData>> starList(@ApiParam(value = "device id")  Long deviceId,@ApiParam(value = "starId")  Long starId,@ApiParam(value = "monitorId")  Long monitorId,
                                                       @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                       @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                       LionPage lionPage) {
-        return deviceDataService.list(starId, monitorId, startDateTime, endDateTime, lionPage);
+        return deviceDataService.list(deviceId, starId, monitorId, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/wash/ratio")

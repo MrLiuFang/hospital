@@ -4,6 +4,8 @@ import com.lion.core.LionPage;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.dao.device.DeviceDaoEx;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.enums.State;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,7 +24,7 @@ public class DeviceDaoImpl implements DeviceDaoEx {
     private BaseDao<Device> baseDao;
 
     @Override
-    public Page deviceMonitorList(Long buildId, Long buildFloorId, State deviceState, String name, LionPage lionPage) {
+    public Page deviceMonitorList(Long buildId, Long buildFloorId, DeviceClassify deviceClassify, DeviceType deviceType, State deviceState, String name, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> searchParameter = new HashMap<>();
         sb.append(" select d from Device d where 1=1 ");
@@ -37,9 +39,18 @@ public class DeviceDaoImpl implements DeviceDaoEx {
         if (Objects.nonNull(buildFloorId)){
             sb.append(" and d.buildFloorId =:buildFloorId ");
             searchParameter.put("buildFloorId",buildFloorId);
-        }if (Objects.nonNull(deviceState)){
+        }
+        if (Objects.nonNull(deviceState)){
             sb.append(" and d.deviceState =:deviceState ");
             searchParameter.put("deviceState", deviceState);
+        }
+        if (Objects.nonNull(deviceClassify)) {
+            sb.append(" and d.deviceClassify =:deviceClassify ");
+            searchParameter.put("deviceClassify", deviceClassify);
+        }
+        if (Objects.nonNull(deviceType)) {
+            sb.append(" and d.deviceType =:deviceType ");
+            searchParameter.put("deviceType", deviceType);
         }
         sb.append(" order by d.createDateTime ");
         return baseDao.findNavigator(lionPage,sb.toString(),searchParameter);

@@ -2,8 +2,6 @@ package com.lion.event.service.impl;
 
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
-import com.lion.core.PageResultData;
-import com.lion.device.entity.device.Device;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.event.dao.DeviceDataDao;
 import com.lion.event.entity.DeviceData;
@@ -36,10 +34,10 @@ public class DeviceDataServiceImpl implements DeviceDataService {
     }
 
     @Override
-    public IPageResultData<List<DeviceData>> list(Long starId, Long monitorId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<DeviceData>> list(Long deviceId, Long starId, Long monitorId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         if (Objects.isNull(startDateTime)) {
             startDateTime = LocalDateTime.now().minusDays(30);
         }
-        return deviceDataDao.list(starId, monitorId , startDateTime, endDateTime, lionPage);
+        return deviceDataDao.list(deviceId, starId, monitorId, startDateTime, endDateTime, lionPage);
     }
 }

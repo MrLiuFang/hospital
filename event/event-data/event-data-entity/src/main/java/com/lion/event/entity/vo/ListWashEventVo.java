@@ -44,6 +44,10 @@ public class ListWashEventVo {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime useDateTime;
 
+    @Schema(description = "洗手事件时间")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime dateTime;
+
     @Schema(description = "是否合规")
     private Boolean ia;
 

@@ -1,6 +1,7 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.enums.TagType;
 import com.lion.manage.entity.assets.AssetsType;
@@ -42,6 +43,9 @@ public class SystemAlarmGroupVo {
 
     @Schema(description = "设备码")
     private String deviceCode;
+
+    @Schema(description = "设备大类")
+    private DeviceClassify deviceClassify;
 
     @Schema(description = "设备类型")
     private DeviceType deviceType;

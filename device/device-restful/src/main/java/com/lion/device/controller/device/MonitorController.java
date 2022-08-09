@@ -7,6 +7,8 @@ import com.lion.core.ResultData;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.vo.DeviceMonitorTopVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
+import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.enums.State;
 import com.lion.device.service.cctv.CctvService;
 import com.lion.device.service.device.DeviceService;
@@ -28,7 +30,6 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @description:
@@ -77,8 +78,8 @@ public class MonitorController {
 
     @GetMapping("/list")
     @ApiOperation(value = "设备监控列表")
-    public IPageResultData<List<ListDeviceMonitorVo>> list(@ApiParam(value = "建筑ID") Long buildId, @ApiParam(value = "建筑楼层ID") Long buildFloorId, @ApiParam(value = "状态") State state,@ApiParam(value = "名称")String name,LionPage lionPage){
-        return deviceService.deviceMonitorList(buildId, buildFloorId, state, name, lionPage);
+    public IPageResultData<List<ListDeviceMonitorVo>> list(@ApiParam(value = "建筑ID") Long buildId, @ApiParam(value = "建筑楼层ID") Long buildFloorId, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备小类") DeviceType deviceType, @ApiParam(value = "状态") State state, @ApiParam(value = "名称")String name, LionPage lionPage){
+        return deviceService.deviceMonitorList(buildId, buildFloorId,deviceClassify ,deviceType , state, name, lionPage);
     }
 
     private DeviceMonitorTopVo calculation(List<Long> ids, DeviceMonitorTopVo vo){

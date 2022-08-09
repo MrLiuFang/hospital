@@ -375,9 +375,6 @@ public class WashEventServiceImpl implements WashEventService {
         if (Objects.nonNull(userTypeId)) {
             criteria.and("py").is(userTypeId);
         }
-        if (Objects.nonNull(type)) {
-            criteria.and("ai").is(ia);
-        }
         if (Objects.nonNull(type)){
             criteria.and("wet").is(type.getKey());
         }
@@ -394,15 +391,15 @@ public class WashEventServiceImpl implements WashEventService {
             startDateTime = LocalDateTime.now().minusDays(30);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
-            criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
+            criteria.andOperator( Criteria.where("adt").gte(startDateTime) ,Criteria.where("adt").lte(endDateTime));
         }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
-            criteria.and("ddt").gte(startDateTime);
+            criteria.and("adt").gte(startDateTime);
         }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
-            criteria.and("ddt").lte(endDateTime);
+            criteria.and("adt").lte(endDateTime);
         }
         query.addCriteria(criteria);
         query.with(lionPage);
-        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        query.with(Sort.by(Sort.Direction.DESC,"adt"));
         List<WashEvent> items = mongoTemplate.find(query,WashEvent.class);
 //        long count = mongoTemplate.count(query, WashEvent.class);
 //        PageableExecutionUtils.getPage(items, lionPage, () -> count);
@@ -423,6 +420,7 @@ public class WashEventServiceImpl implements WashEventService {
             vo.setIa(washEvent.getIa());
             vo.setTime(washEvent.getT());
             vo.setUseDateTime(washEvent.getDdt());
+            vo.setDateTime(washEvent.getAdt());
             com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
             if (optionalDevice.isPresent()){
                 vo.setDeviceName(optionalDevice.get().getName());
@@ -618,11 +616,11 @@ public class WashEventServiceImpl implements WashEventService {
             startDateTime = LocalDateTime.now().minusDays(30);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
-            criteria.andOperator(Criteria.where("ddt").gte(startDateTime), Criteria.where("ddt").lte(endDateTime));
+            criteria.andOperator(Criteria.where("adt").gte(startDateTime), Criteria.where("adt").lte(endDateTime));
         }else if (Objects.nonNull(startDateTime)) {
-            criteria.and("ddt").gte(startDateTime);
+            criteria.and("adt").gte(startDateTime);
         }else if (Objects.nonNull(endDateTime)) {
-            criteria.and("ddt").lte(endDateTime);
+            criteria.and("adt").lte(endDateTime);
         }
         criteria.and("ia").is(true);
         query.addCriteria(criteria);
