@@ -231,12 +231,12 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 //    }
 
     @Override
-    public IPageResultData<List<ListTagVo>> list(Boolean isTmp, Long departmentId, TagUseState useState, State state, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
+    public IPageResultData<List<ListTagVo>> list(String isTmp, Long departmentId, TagUseState useState, State state, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
-        if (Objects.equals(true,isTmp)){
+        if (Objects.nonNull(isTmp) && Objects.equals("true",isTmp.toLowerCase())){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_departmentId",null);
             jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_purpose",null);
-        }else if (Objects.equals(false,isTmp)){
+        }else if (Objects.nonNull(isTmp) && Objects.equals("false",isTmp.toLowerCase())){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_departmentId",null);
             jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_purpose",null);
         }
@@ -248,7 +248,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 //        if (Objects.nonNull(departmentId)){
 //            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
 //        }
-        if (departmentIds.size()>0 && !Objects.equals(true,isTmp)) {
+        if (departmentIds.size()>0 && Objects.nonNull(isTmp) && !Objects.equals("null",isTmp)) {
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         }
         if (Objects.nonNull(type)){

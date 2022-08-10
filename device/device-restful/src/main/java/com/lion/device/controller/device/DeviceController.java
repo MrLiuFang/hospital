@@ -122,11 +122,11 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @GetMapping("/list")
     @ApiOperation(value = "设备列表")
-    public IPageResultData<List<Device>> list( @ApiParam(value = "是否临时-导入")Boolean isTmp,@ApiParam(value = "区域ID")Long regionId,@ApiParam(value = "是否绑定区域")Boolean isBind, @ApiParam(value = "电量")Integer battery, @ApiParam(value = "设备组ID") Long deviceGroupId,@ApiParam(value = "设备名称") String name, @ApiParam(value = "设备编号") String code, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备分类")  DeviceType deviceType, LionPage lionPage){
+    public IPageResultData<List<Device>> list( @ApiParam(value = "是否临时-导入")String isTmp,@ApiParam(value = "区域ID")Long regionId,@ApiParam(value = "是否绑定区域")Boolean isBind, @ApiParam(value = "电量")Integer battery, @ApiParam(value = "设备组ID") Long deviceGroupId,@ApiParam(value = "设备名称") String name, @ApiParam(value = "设备编号") String code, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备分类")  DeviceType deviceType, LionPage lionPage){
         JpqlParameter jpqlParameter = new JpqlParameter();
-        if (Objects.equals(true,isTmp)){
+        if (Objects.nonNull(isTmp) && Objects.equals("true",isTmp.toLowerCase())){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_name",null);
-        }else if(Objects.equals(false,isTmp)){
+        }else if(Objects.nonNull(isTmp) && Objects.equals("false",isTmp.toLowerCase())){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_name",null);
         }
         if (StringUtils.hasText(name)){
