@@ -264,7 +264,7 @@ public class WashEventServiceImpl implements WashEventService {
         list.forEach(washEvent -> {
             ListWashEventVo1 vo = new ListWashEventVo1();
             BeanUtils.copyProperties(washEvent,vo);
-            if (Objects.equals(washEvent.getIa(),false)) {
+            if (Objects.equals(washEvent.getIa(),true)) {
 //                if (Objects.equals(WashEventType.REGION.getKey(),washEvent.getWet())) {
 //                    if (date.isAfter(washEvent.getWt()) || Objects.isNull(washEvent.getWt())) {
                         vo.setState(WashState.MISS);

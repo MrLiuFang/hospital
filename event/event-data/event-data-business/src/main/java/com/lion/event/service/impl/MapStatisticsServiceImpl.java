@@ -1008,12 +1008,16 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         Collections.sort(returnList,new Comparator<SystemAlarmGroupVo>(){
             @Override
             public int compare(SystemAlarmGroupVo o1, SystemAlarmGroupVo o2) {
+                if (o2.getDateTime().compareTo(o1.getDateTime()) == 0) {
+                    o2.setDateTime(o2.getDateTime().plusSeconds(1));
+                }
                 if (Objects.nonNull(o2.getDateTime()) && Objects.nonNull(o1.getDateTime())) {
                     return o2.getDateTime().compareTo(o1.getDateTime());
                 }
                 return 0;
             }
         });
+
         return returnList;
     }
 

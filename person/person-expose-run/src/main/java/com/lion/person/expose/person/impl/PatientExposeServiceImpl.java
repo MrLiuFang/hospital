@@ -27,7 +27,11 @@ public class PatientExposeServiceImpl extends BaseServiceImpl<Patient> implement
 
     @Override
     public void updateState(Long id, Integer state) {
-        patientDao.updateState(id, State.instance(state));
+        if (Objects.equals(state,State.NORMAL.getKey())) {
+            patientDao.updateState1(id, State.instance(state));
+        }else {
+            patientDao.updateState(id, State.instance(state));
+        }
     }
 
     @Override

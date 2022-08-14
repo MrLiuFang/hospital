@@ -211,11 +211,11 @@ public class WashEventDaoImpl implements WashEventDaoEx {
             startDateTime = LocalDateTime.now().minusDays(30);
         }
         if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
-            criteria.andOperator( Criteria.where("ddt").gte(startDateTime) ,Criteria.where("ddt").lte(endDateTime));
+            criteria.andOperator( Criteria.where("adt").gte(startDateTime) ,Criteria.where("adt").lte(endDateTime));
         }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
-            criteria.and("ddt").gte(startDateTime);
+            criteria.and("adt").gte(startDateTime);
         }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
-            criteria.and("ddt").lte(endDateTime);
+            criteria.and("adt").lte(endDateTime);
         }
         query.addCriteria(criteria);
         query.with(lionPage);

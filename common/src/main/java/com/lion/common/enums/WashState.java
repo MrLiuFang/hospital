@@ -9,7 +9,7 @@ import java.util.Objects;
 public enum WashState implements IEnum {
 
     NORMAL(0, "正常洗手"),
-    MISS(1, "错过洗手");
+    MISS(1, "错过洗手/违规洗手");
 
     private final int key;
 

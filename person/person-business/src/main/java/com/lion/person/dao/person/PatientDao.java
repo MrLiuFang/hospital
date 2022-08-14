@@ -45,17 +45,23 @@ public interface PatientDao extends BaseDao<Patient>, PatientDaoEx {
 
     @Modifying
     @Transactional
-    @Query(" update Patient  set deviceState =:state  ,version=version +1 where id = :id ")
+    @Query(" update Patient  set deviceState =:state  , version=version +1 where id = :id ")
     public void updateState(@Param("id")Long id, @Param("state") State state);
 
     @Modifying
     @Transactional
-    @Query(" update Patient  set patientState =:patientState  ,version=version +1 where id = :id ")
+    @Query(" update Patient  set deviceState =:state  ,patientState= null , version=version +1 where id = :id ")
+    public void updateState1(@Param("id")Long id, @Param("state") State state );
+
+
+    @Modifying
+    @Transactional
+    @Query(" update Patient  set deviceState = 2, patientState =:patientState  ,version=version +1 where id = :id ")
     public void updatePatientState(@Param("id")Long id, @Param("patientState") PatientState patientState);
 
     @Modifying
     @Transactional
-    @Query(" update Patient  set patientState =null  ,version=version +1 where id = :id ")
+    @Query(" update Patient  set deviceState = 1, patientState =null  ,version=version +1 where id = :id ")
     public void updatePatientStateIsNull(@Param("id")Long id);
 
     @Modifying

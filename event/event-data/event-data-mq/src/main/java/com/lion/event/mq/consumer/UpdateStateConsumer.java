@@ -63,35 +63,35 @@ public class UpdateStateConsumer implements RocketMQListener<MessageExt> {
             String msg = new String(body);
             UpdateStateDto updateStateDto = jacksonObjectMapper.readValue(msg, UpdateStateDto.class);
             if (Objects.equals(updateStateDto.getType(), Type.STAFF)){
-                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(updateStateDto.getId(),null,null,null)){
-                    return;
-                }
+//                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(updateStateDto.getId(),null,null,null)){
+//                    return;
+//                }
                 userExposeService.updateState(updateStateDto.getId(),updateStateDto.getState());
             }else if (Objects.equals(updateStateDto.getType(), Type.TEMPERATURE) || Objects.equals(updateStateDto.getType(), Type.HUMIDITY)){
-                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(null,null,null,updateStateDto.getId())){
-                    return;
-                }
+//                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(null,null,null,updateStateDto.getId())){
+//                    return;
+//                }
                 tagExposeService.updateDeviceState(updateStateDto.getId(),updateStateDto.getState());
             }else if (Objects.equals(updateStateDto.getType(), Type.PATIENT)){
-                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(updateStateDto.getId(),null,null,null)){
-                    return;
-                }
+//                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(updateStateDto.getId(),null,null,null)){
+//                    return;
+//                }
                 patientExposeService.updateState(updateStateDto.getId(),updateStateDto.getState());
             }else if (Objects.equals(updateStateDto.getType(), Type.MIGRANT)){
-                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(updateStateDto.getId(),null,null,null)){
-                    return;
-                }
+//                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(updateStateDto.getId(),null,null,null)){
+//                    return;
+//                }
                 temporaryPersonExposeService.updateState(updateStateDto.getId(),updateStateDto.getState());
             }else if (Objects.equals(updateStateDto.getType(), Type.ASSET)){
-                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(null,updateStateDto.getId(),null,null)){
-                    return;
-                }
+//                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(null,updateStateDto.getId(),null,null)){
+//                    return;
+//                }
                 assetsExposeService.updateState(updateStateDto.getId(),updateStateDto.getState());
             }
             else if (Objects.equals(updateStateDto.getType(), Type.DEVICE)){
-                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(null,updateStateDto.getId(),null,null)){
-                    return;
-                }
+//                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(null,updateStateDto.getId(),null,null)){
+//                    return;
+//                }
                 deviceExposeService.updateState(updateStateDto.getId(),updateStateDto.getState());
             }
         }catch (Exception e){
