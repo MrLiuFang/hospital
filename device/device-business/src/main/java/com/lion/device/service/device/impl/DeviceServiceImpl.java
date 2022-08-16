@@ -153,7 +153,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
                 redisTemplate.delete(RedisConstants.DEVICE_REGION+device.getId());
                 currentPositionExposeService.delete(null,d.getId(),null);
                 Device newDevice = new Device();
-                newDevice.setDeviceState(State.NOT_ACTIVE);
+                newDevice.setDeviceState(State.ACTIVE);
                 newDevice.setCode(device.getCode());
                 newDevice.setDeviceType(device.getDeviceType());
                 newDevice.setDeviceClassify(device.getDeviceClassify());

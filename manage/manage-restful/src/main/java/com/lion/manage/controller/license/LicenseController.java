@@ -254,7 +254,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
             aboutVo.setWorkstations(license.getWorkstationOrderList());
             aboutVo.setWorkstation(jsonNode.size());
             aboutVo.setMenuList(license.getMenuList());
-            aboutVo.setMonitorNum(deviceExposeService.countDeviceClassify(DeviceClassify.MONITOR));
+            aboutVo.setMonitorNum(deviceExposeService.count());
             aboutVo.setTagNum(tagExposeService.count());
             return ResultData.instance().setData(aboutVo);
 

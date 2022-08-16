@@ -2,6 +2,11 @@ package com.lion.upms.service.user.impl;
 
 import cn.hutool.core.util.NumberUtil;
 import cn.hutool.crypto.SecureUtil;
+import com.itextpdf.text.*;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
@@ -16,12 +21,14 @@ import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagLogExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.event.entity.SystemAlarm;
+import com.lion.event.entity.vo.ListWashEventVo;
 import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.event.expose.service.SystemAlarmExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.license.License;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentResponsibleUserExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.expose.license.LicenseExposeService;
@@ -44,6 +51,7 @@ import com.lion.upms.service.user.UserTypeService;
 import com.lion.upms.utils.ExcelColumn;
 import com.lion.upms.utils.ExportExcelUtil;
 import com.lion.upms.utils.ImportExcelUtil;
+import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MapToBeanUtil;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -64,12 +72,16 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -133,6 +145,11 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     @DubboReference
     private LicenseExposeService licenseExposeService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
+    private final String FONT = "simsun.ttc";
 
 
     @Override
@@ -248,13 +265,59 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000027"), "userType.userTypeName"));
         excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000028"), "number"));
         excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000029"), "username"));
-        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000029"), "username"));
         excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000030"), "isCreateAccount"));
         excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000031"), "roleName"));
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("user.xls", "UTF-8"));
         new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
+    }
+
+    @Override
+    public void exportPdf(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId) throws IOException, DocumentException {
+        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null, new LionPage(0,Integer.MAX_VALUE));
+        List<ListUserVo> list = pageResultData.getData();
+        BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+        Font fontChinese = new Font(bfChinese);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("staff.pdf", "UTF-8"));
+        com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+        Rectangle pageSize = new Rectangle(PageSize.A4.getHeight(), PageSize.A4.getWidth());
+        pageSize.rotate();
+        document.setPageSize(pageSize);
+        ServletOutputStream servletOutputStream = response.getOutputStream();
+        PdfWriter writer = PdfWriter.getInstance(document, servletOutputStream);
+        String userName = CurrentUserUtil.getCurrentUserUsername();
+        writer.setPageEvent(new PdfPageEventHelper(FONT,userName));
+        document.open();
+        PdfPTable table = new PdfPTable(5);
+        table.setWidths(new int[]{20, 20, 20, 20, 20});
+        table.setWidthPercentage(100);
+        PdfPCell cellTitle = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000002"), new Font(bfChinese,24)));
+        cellTitle.setColspan(8);
+        cellTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cellTitle);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        PdfPCell cellTitle1 = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000003")+":" +simpleDateFormat.format(new Date()), new Font(bfChinese)));
+        cellTitle1.setColspan(8);
+        table.addCell(cellTitle1);
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("0000026"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("0000028"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000006"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000007"), fontChinese));
+        table.addCell(new Paragraph(MessageI18nUtil.getMessage("3000008"), fontChinese));
+        for (ListUserVo user : list) {
+            table.addCell(new Paragraph(user.getName(), fontChinese));
+            table.addCell(new Paragraph(Objects.isNull(user.getNumber())?"":String.valueOf(user.getNumber()), fontChinese));
+            table.addCell(new Paragraph(user.getDepartmentName(), fontChinese));
+            table.addCell(new Paragraph(user.getUserType().getUserTypeName(), fontChinese));
+            table.addCell(new Paragraph(user.getGender().getDesc(), fontChinese));
+        }
+        document.add(table);
+        document.close();
+        servletOutputStream.flush();
+        servletOutputStream.close();
     }
 
     @Override

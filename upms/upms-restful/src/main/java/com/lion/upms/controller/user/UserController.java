@@ -1,6 +1,7 @@
 package com.lion.upms.controller.user;
 
 import cn.hutool.crypto.SecureUtil;
+import com.itextpdf.text.DocumentException;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
@@ -262,6 +263,18 @@ public class UserController extends BaseControllerImpl implements BaseController
             }
         }
         userService.export(departmentId,userTypeId,number,name,roleId);
+    }
+
+    @GetMapping("/export/pdf")
+    @ApiOperation(value = "导出PDF")
+    public void exportPdf(@ApiParam(value = "是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户类型") Long userTypeId,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId) throws IOException, IllegalAccessException, DocumentException {
+        if (Objects.equals(isMyDepartment,true)) {
+            Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
+            if (Objects.nonNull(department)) {
+                departmentId = department.getId();
+            }
+        }
+        userService.exportPdf(departmentId,userTypeId,number,name,roleId);
     }
 
     @PostMapping("/import")

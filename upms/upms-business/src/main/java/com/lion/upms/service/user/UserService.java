@@ -1,5 +1,6 @@
 package com.lion.upms.service.user;
 
+import com.itextpdf.text.DocumentException;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
@@ -64,6 +65,9 @@ public interface UserService extends BaseService<User> {
      * @param roleId
      */
     public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId) throws IOException, IllegalAccessException;
+
+    public void exportPdf(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId) throws IOException, DocumentException;
+
 
     /**
      * 导入

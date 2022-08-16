@@ -217,20 +217,21 @@ public class WashEventServiceImpl implements WashEventService {
         List<ListUserWashMonitorVo> returnList = new ArrayList<>();
         list.forEach(map -> {
             ListUserWashMonitorVo vo = null;
-            LocalDateTime startWorkTime = Objects.isNull(map.get("start_work_time"))?null: (LocalDateTime) map.get("start_work_time");
-            LocalDateTime endWorkTime = Objects.isNull(map.get("end_work_time"))?null: (LocalDateTime) map.get("end_work_time");
+//            LocalDateTime startWorkTime = Objects.isNull(map.get("start_work_time"))?null: (LocalDateTime) map.get("start_work_time");
+//            LocalDateTime endWorkTime = Objects.isNull(map.get("end_work_time"))?null: (LocalDateTime) map.get("end_work_time");
             Long userId = Long.valueOf(String.valueOf(map.get("id")) );
-            if (Objects.nonNull(startWorkTime)) {
-                List<Document> documentList = washEventDao.eventCount(startWorkTime, endWorkTime, null, null, userId, null);
+//            if (Objects.nonNull(startWorkTime)) {
+                List<Document> documentList = washEventDao.eventCount(startDateTime, endDateTime, null, null, userId, null);
                 if (Objects.nonNull(documentList) && documentList.size() > 0) {
                     Document document = documentList.get(0);
-                    vo = init(startWorkTime, endWorkTime, userId, document);
+                    vo = init(startDateTime, endDateTime, userId, document);
                 } else {
-                    vo = init(startWorkTime, endWorkTime, userId, null);
+                    vo = init(startDateTime, endDateTime, userId, null);
                 }
-            }else {
-                vo = init(startWorkTime, endWorkTime, userId, null);
-            }
+//            }
+//            else {
+//                vo = init(startWorkTime, endWorkTime, userId, null);
+//            }
 //            List<WashUser> washUserList = washUserExposeService.find(userId);
 //            if (Objects.isNull(washUserList) || washUserList.size() <= 0) {
 //                List<Wash> washList = washExposeService.findLoopWash(true);
@@ -673,8 +674,8 @@ public class WashEventServiceImpl implements WashEventService {
             vo.setNoWash(allNoWashRatio);
             vo.setConformance(allNoAlarmRatio);
         }
-        vo.setStartWorkTime(startDateTime);
-        vo.setEndWorkTime(endDateTime);
+//        vo.setStartWorkTime(startDateTime);
+//        vo.setEndWorkTime(endDateTime);
         vo.setUserId(userId);
         com.lion.core.Optional<User> optionalUser = userExposeService.findById(vo.getUserId());
         if (optionalUser.isPresent()) {
