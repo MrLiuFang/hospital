@@ -29,13 +29,20 @@ public class ListWashMonitorVo {
         @Schema(description = "全院/科室名称")
         private String name;
 
-        @Schema(description = "合规率")
-        private BigDecimal conformance = new BigDecimal(0);
+        @Schema(description = "合规")
+        private Integer conformance;
+
+        @Schema(description = "所有事件(合规+不合规)")
+        private Integer allCount;
 
         @Schema(description = "违规")
-        private BigDecimal violation = new BigDecimal(0);
+        private Integer violation;
 
         @Schema(description = "错过洗手")
-        private BigDecimal noWash =new BigDecimal(0);
+        private Integer noWash;
+
+        public Integer getAllCount() {
+            return violation+noWash+conformance;
+        }
     }
 }

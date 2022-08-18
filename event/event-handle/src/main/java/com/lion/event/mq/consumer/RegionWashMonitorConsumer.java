@@ -84,17 +84,12 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                         if (Objects.isNull(washTemplateItemVo)) {
                             return;
                         }
-                        WashRecordDto washRecordDto = washCommon.init(userCurrentRegionDto.getUserId(),userCurrentRegionDto.getRegionId(),null,userCurrentRegionDto.getUuid() , null,null);
+                        WashRecordDto washRecordDto = washCommon.init(userCurrentRegionDto.getUserId(),userCurrentRegionDto.getRegionId(),Objects.nonNull(regionWashMonitorDelayDto.getMonitorId())?Long.valueOf(regionWashMonitorDelayDto.getMonitorId()):null,userCurrentRegionDto.getUuid() , null,null);
                         WashEventDto washEventDto = new WashEventDto();
                         BeanUtils.copyProperties(washRecordDto,washEventDto);
                         washEventDto.setWi(washTemplateItemVo.getId());
                         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
-                        if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(userLastWashDto) && Objects.nonNull(washTemplateItemVo.getNoCheckTime()) && washTemplateItemVo.getNoCheckTime()>0) {
-                            Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
-                            if (duration.getSeconds() <= washTemplateItemVo.getNoCheckTime() * 60 ) {
-                                return;
-                            }
-                        }
+
                         if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(washTemplateItemVo.getBeforeTime()) && washTemplateItemVo.getBeforeTime() >0){
                             String before = (String) redisTemplate.opsForValue().get(RedisConstants.BEFORE_UUID+uuid);
                             redisTemplate.opsForValue().set(RedisConstants.BEFORE_UUID+uuid,uuid,24, TimeUnit.DAYS);
@@ -116,6 +111,15 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                             }
                         }
                         if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime() >0){
+                            if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(userLastWashDto) && Objects.nonNull(washTemplateItemVo.getNoCheckTime()) && washTemplateItemVo.getNoCheckTime()>0) {
+                                Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
+                                if (duration.getSeconds() <= washTemplateItemVo.getNoCheckTime() * 60 ) {
+                                    if((userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusSeconds(washTemplateItemVo.getAfterTime())) && userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime()))){
+                                        recordWashEvent(washEventDto);
+                                    }
+                                    return;
+                                }
+                            }
                             if (Objects.isNull(userLastWashDto)) {
                                 alarm(washEventDto,true,SystemAlarmType.ZZDQYWJXXSCZ,null,userCurrentRegionDto,null,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
                                 return;
@@ -204,9 +208,9 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
         if (Objects.nonNull(systemAlarmType)) {
             washEventDto.setAt(systemAlarmType.getKey());
         }
-        if (Objects.nonNull(wt)) {
-            washEventDto.setWt(wt);
-        }
+//        if (Objects.nonNull(wt)) {
+//            washEventDto.setWt(wt);
+//        }
         recordWashEvent(washEventDto);
         sendAlarmToTag(userCurrentRegionDto.getUserId(),wash,userCurrentRegionDto.getUuid(),systemAlarmType, userCurrentRegionDto,tagId );
 

@@ -40,7 +40,7 @@ public class ListUserWashMonitorVo {
 //    @Schema(description = "是否有洗手规则")
 //    private Boolean isExistWashRule = true;
 
-    @Schema(description = "合规率")
+    @Schema(description = "合规")
     private BigDecimal conformance = new BigDecimal(0);
 
     @Schema(description = "违规")
@@ -48,6 +48,13 @@ public class ListUserWashMonitorVo {
 
     @Schema(description = "错过洗手")
     private BigDecimal noWash =new BigDecimal(0);
+
+    @Schema(description = "所有事件(合规+不合规)")
+    private BigDecimal allCount;
+
+    public BigDecimal getAllCount() {
+        return conformance.add(violation).add(noWash);
+    }
 
     @Schema(description = "上班时间")
     @JsonFormat(

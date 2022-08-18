@@ -40,18 +40,18 @@ public class WashEventDaoImpl implements WashEventDaoEx {
 
     @Override
     public void updateWt(String uuid, LocalDateTime wt) {
-        Query query = new Query();
-        Criteria criteria = new Criteria();
-        criteria.and("ui").is(uuid);
-        query.addCriteria(criteria);
-        WashEvent washEvent = mongoTemplate.findOne(query, WashEvent.class);
-        if (Objects.nonNull(washEvent) && Objects.equals(true,washEvent.getIa()) && washEvent.getWt().isAfter(LocalDateTime.parse("9997-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) ) {
-            query = new Query();
-            query.addCriteria(Criteria.where("_id").is(washEvent.get_id()));
-            Update update = new Update();
-            update.set("wt", wt);
-            mongoTemplate.updateFirst(query, update, "wash_event");
-        }
+//        Query query = new Query();
+//        Criteria criteria = new Criteria();
+//        criteria.and("ui").is(uuid);
+//        query.addCriteria(criteria);
+//        WashEvent washEvent = mongoTemplate.findOne(query, WashEvent.class);
+//        if (Objects.nonNull(washEvent) && Objects.equals(true,washEvent.getIa()) && washEvent.getWt().isAfter(LocalDateTime.parse("9997-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))) ) {
+//            query = new Query();
+//            query.addCriteria(Criteria.where("_id").is(washEvent.get_id()));
+//            Update update = new Update();
+//            update.set("wt", wt);
+//            mongoTemplate.updateFirst(query, update, "wash_event");
+//        }
     }
 
     @Override
@@ -68,8 +68,8 @@ public class WashEventDaoImpl implements WashEventDaoEx {
         group = BasicDBObjectUtil.put(group,"$group","allCount",new BasicDBObject("$sum",1));//全部
         LocalDateTime wt = LocalDateTime.parse("9997-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         group = BasicDBObjectUtil.put(group,"$group","allNoAlarm",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",false})})).append("then",1).append("else",0))));//合规
-        group = BasicDBObjectUtil.put(group,"$group","allViolation",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$lte",new Object[]{"$wt", wt}) })).append("then",1).append("else",0))));//违规
-        group = BasicDBObjectUtil.put(group,"$group","allNoWash",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$gte",new Object[]{"$wt",wt}) })).append("then",1).append("else",0))));//错过洗手
+        group = BasicDBObjectUtil.put(group,"$group","allViolation",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$eq",new Object[]{"$at", 7}) })).append("then",1).append("else",0))));//违规
+        group = BasicDBObjectUtil.put(group,"$group","allNoWash",new BasicDBObject("$sum",new BasicDBObject("$cond",new BasicDBObject("if",new BasicDBObject("$and",new BasicDBObject[]{new BasicDBObject("$eq",new Object[]{"$ia",true}),new BasicDBObject("$eq",new Object[]{"$at",6}) })).append("then",1).append("else",0))));//错过洗手
 
         BasicDBObject match = new BasicDBObject();
         if (Objects.isNull(startDateTime)) {
@@ -91,19 +91,23 @@ public class WashEventDaoImpl implements WashEventDaoEx {
 
         BasicDBObject project = new BasicDBObject();
         project = BasicDBObjectUtil.put(project,"$project","_id",1);
-        project = BasicDBObjectUtil.put(project,"$project","allNoAlarmRatio",new BasicDBObject("$divide",new String[]{"$allNoAlarm","$allCount"}));
-        project = BasicDBObjectUtil.put(project,"$project","allViolationRatio",new BasicDBObject("$divide",new String[]{"$allViolation","$allCount"}));
-        project = BasicDBObjectUtil.put(project,"$project","allNoWashRatio",new BasicDBObject("$divide",new String[]{"$allNoWash","$allCount"}));
+//        project = BasicDBObjectUtil.put(project,"$project","allNoAlarmRatio",new BasicDBObject("$divide",new String[]{"$allNoAlarm","$allCount"}));
+//        project = BasicDBObjectUtil.put(project,"$project","allViolationRatio",new BasicDBObject("$divide",new String[]{"$allViolation","$allCount"}));
+//        project = BasicDBObjectUtil.put(project,"$project","allNoWashRatio",new BasicDBObject("$divide",new String[]{"$allNoWash","$allCount"}));
+        project = BasicDBObjectUtil.put(project,"$project","allCount","$allCount");
+        project = BasicDBObjectUtil.put(project,"$project","allNoAlarmRatio","$allNoAlarm");
+        project = BasicDBObjectUtil.put(project,"$project","allViolationRatio","$allViolation");
+        project = BasicDBObjectUtil.put(project,"$project","allNoWashRatio","$allNoWash");
 
         pipeline.add(match);
         pipeline.add(group);
         pipeline.add(project);
 
-        if (Objects.nonNull(userTypeId)){
-            BasicDBObject having = new BasicDBObject();
-            having = BasicDBObjectUtil.put(having,"$match","allNoAlarmRatio",new BasicDBObject("$lt",80));
-            pipeline.add(having);
-        }
+//        if (Objects.nonNull(userTypeId)){
+//            BasicDBObject having = new BasicDBObject();
+//            having = BasicDBObjectUtil.put(having,"$match","allNoAlarmRatio",new BasicDBObject("$lt",80));
+//            pipeline.add(having);
+//        }
 
         if (Objects.nonNull(lionPage)) {
             pipeline.add(new BasicDBObject("$skip",lionPage.getPageNumber()*lionPage.getPageSize()));

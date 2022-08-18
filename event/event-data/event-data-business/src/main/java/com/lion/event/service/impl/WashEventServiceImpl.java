@@ -150,13 +150,13 @@ public class WashEventServiceImpl implements WashEventService {
         List<Document> listHospitalAll = washEventDao.eventCount(startDateTime,endDateTime, false, null, null , null);
         if (Objects.nonNull(listHospitalAll) && listHospitalAll.size()>0){
             Document hospitalAll = listHospitalAll.get(0);
-            listWashMonitorVo.setHospital(init(MessageI18nUtil.getMessage("3000001"),hospitalAll.getDouble("allViolationRatio"),hospitalAll.getDouble("allNoWashRatio"),hospitalAll.getDouble("allNoAlarmRatio")));
+            listWashMonitorVo.setHospital(init(MessageI18nUtil.getMessage("3000001"),hospitalAll.getInteger("allViolationRatio"),hospitalAll.getInteger("allNoWashRatio"),hospitalAll.getInteger("allNoAlarmRatio")));
         }
         //所有科室事件
         List<Document> listDepartmentAll = washEventDao.eventCount(startDateTime,endDateTime,true,null, null , null);
         List<ListWashMonitorVo.Ratio> list = new ArrayList<>();
         listDepartmentAll.forEach(document -> {
-            list.add(init(document.getString("_id"),document.getDouble("allViolationRatio"),document.getDouble("allNoWashRatio"),document.getDouble("allNoAlarmRatio")));
+            list.add(init(document.getString("_id"),document.getInteger("allViolationRatio"),document.getInteger("allNoWashRatio"),document.getInteger("allNoAlarmRatio")));
         });
         listWashMonitorVo.setDepartment(list);
         return listWashMonitorVo;
@@ -192,7 +192,7 @@ public class WashEventServiceImpl implements WashEventService {
         }
         List<Document> userWash = washEventDao.eventCount(startDateTime,endDateTime,null,null, userId , null);
         if (Objects.nonNull(userWash) && userWash.size()>0) {
-            vo.setConformance(new BigDecimal(userWash.get(0).getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)));
+            vo.setConformance(new BigDecimal(userWash.get(0).getInteger("allNoAlarmRatio")).divide(new BigDecimal(userWash.get(0).getInteger("allCount")),2,BigDecimal.ROUND_HALF_UP).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100)));
         }
         List<WashEvent> list = washEventDao.userWashDetails(userId,startDateTime,endDateTime,lionPage);
         List<UserWashDetailsVo.UserWashEvent> pageList = new ArrayList<>();
@@ -368,6 +368,7 @@ public class WashEventServiceImpl implements WashEventService {
 
     @Override
     public IPageResultData<List<ListWashEventVo>> listWashEvent(Boolean ia, Long userTypeId, WashEventType type, Long regionId, Long departmentId, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(ia)) {
@@ -402,32 +403,79 @@ public class WashEventServiceImpl implements WashEventService {
         query.with(lionPage);
         query.with(Sort.by(Sort.Direction.DESC,"adt"));
         List<WashEvent> items = mongoTemplate.find(query,WashEvent.class);
-//        long count = mongoTemplate.count(query, WashEvent.class);
-//        PageableExecutionUtils.getPage(items, lionPage, () -> count);
-        List<ListWashEventVo> returnList = new ArrayList<>();
+        List<Long> userIds1 = new ArrayList<>();
+        userIds1.add(Long.MAX_VALUE);
         items.forEach(washEvent -> {
-            ListWashEventVo vo = new ListWashEventVo();
-            com.lion.core.Optional<User> optionalUser = userExposeService.findById(washEvent.getPi());
-            if (optionalUser.isPresent()){
-                User user = optionalUser.get();
-                com.lion.core.Optional<UserType> optionalUserType =  userTypeExposeService.findById(user.getUserTypeId());
-                vo.setUserType(optionalUserType.isPresent()?optionalUserType.get():null);
+            if (!userIds1.contains(washEvent.getPi())){
+                userIds1.add(washEvent.getPi());
+            }
+        });
+        List<User> userList = userExposeService.findInIds(userIds1);
+        List<ListWashEventVo> returnList = new ArrayList<>();
+        LocalDateTime _startDateTime = startDateTime;
+        userList.forEach(user -> {
+            Query query1 = new Query();
+            Criteria criteria1 = new Criteria();
+            criteria1.and("pi").is(user.getId());
+            if (Objects.nonNull(_startDateTime) && Objects.nonNull(endDateTime) ) {
+                criteria1.andOperator( Criteria.where("adt").gte(_startDateTime) ,Criteria.where("adt").lte(endDateTime));
+            }else if (Objects.nonNull(_startDateTime) &&  Objects.isNull(endDateTime)) {
+                criteria1.and("adt").gte(_startDateTime);
+            }else if (Objects.isNull(_startDateTime) &&  Objects.nonNull(endDateTime)) {
+                criteria1.and("adt").lte(endDateTime);
+            }
+            query1.addCriteria(criteria1);
+            query1.with(new LionPage(0,1));
+            query1.with(Sort.by(Sort.Direction.DESC,"adt"));
+            List<WashEvent> items1 = mongoTemplate.find(query1,WashEvent.class);
+            if (items1.size()>0) {
+                WashEvent washEvent = items1.get(0);
+                ListWashEventVo vo = new ListWashEventVo();
+                com.lion.core.Optional<UserType> optionalUserType = userTypeExposeService.findById(user.getUserTypeId());
+                vo.setUserType(optionalUserType.isPresent() ? optionalUserType.get() : null);
                 vo.setName(user.getName());
                 vo.setUserId(user.getId());
                 vo.setNumber(user.getNumber());
                 vo.setGender(user.getGender());
+                vo.setDepartmentName(washEvent.getDn());
+                vo.setIa(washEvent.getIa());
+                vo.setTime(washEvent.getT());
+                vo.setUseDateTime(washEvent.getDdt());
+                vo.setDateTime(washEvent.getAdt());
+                com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
+                if (optionalDevice.isPresent()) {
+                    vo.setDeviceName(optionalDevice.get().getName());
+                }
+                returnList.add(vo);
             }
-            vo.setDepartmentName(washEvent.getDn());
-            vo.setIa(washEvent.getIa());
-            vo.setTime(washEvent.getT());
-            vo.setUseDateTime(washEvent.getDdt());
-            vo.setDateTime(washEvent.getAdt());
-            com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
-            if (optionalDevice.isPresent()){
-                vo.setDeviceName(optionalDevice.get().getName());
-            }
-            returnList.add(vo);
         });
+
+//        long count = mongoTemplate.count(query, WashEvent.class);
+//        PageableExecutionUtils.getPage(items, lionPage, () -> count);
+
+//        items.forEach(washEvent -> {
+//            ListWashEventVo vo = new ListWashEventVo();
+//            com.lion.core.Optional<User> optionalUser = userExposeService.findById(washEvent.getPi());
+//            if (optionalUser.isPresent()){
+//                User user = optionalUser.get();
+//                com.lion.core.Optional<UserType> optionalUserType =  userTypeExposeService.findById(user.getUserTypeId());
+//                vo.setUserType(optionalUserType.isPresent()?optionalUserType.get():null);
+//                vo.setName(user.getName());
+//                vo.setUserId(user.getId());
+//                vo.setNumber(user.getNumber());
+//                vo.setGender(user.getGender());
+//            }
+//            vo.setDepartmentName(washEvent.getDn());
+//            vo.setIa(washEvent.getIa());
+//            vo.setTime(washEvent.getT());
+//            vo.setUseDateTime(washEvent.getDdt());
+//            vo.setDateTime(washEvent.getAdt());
+//            com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
+//            if (optionalDevice.isPresent()){
+//                vo.setDeviceName(optionalDevice.get().getName());
+//            }
+//            returnList.add(vo);
+//        });
         IPageResultData<List<ListWashEventVo>> pageResultData =new PageResultData<>(returnList,lionPage,0L);
         return pageResultData;
     }
@@ -626,7 +674,7 @@ public class WashEventServiceImpl implements WashEventService {
         criteria.and("ia").is(true);
         query.addCriteria(criteria);
         query.with(lionPage);
-        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        query.with(Sort.by(Sort.Direction.DESC,"adt"));
         List<WashEvent> items = mongoTemplate.find(query,WashEvent.class);
         List<ListViolationWashEventVo> returnList = new ArrayList<ListViolationWashEventVo>();
         items.forEach(washEvent -> {
@@ -667,11 +715,16 @@ public class WashEventServiceImpl implements WashEventService {
     private ListUserWashMonitorVo init(LocalDateTime startDateTime, LocalDateTime endDateTime,Long userId,Document document){
         ListUserWashMonitorVo vo = new ListUserWashMonitorVo();
         if (Objects.nonNull(document)) {
-            BigDecimal allViolationRatio = new BigDecimal(document.getDouble("allViolationRatio")).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
-            BigDecimal allNoWashRatio = new BigDecimal(document.getDouble("allNoWashRatio")).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
-            BigDecimal allNoAlarmRatio = new BigDecimal(document.getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal(100));
+            BigDecimal allViolationRatio = new BigDecimal(document.getInteger("allViolationRatio"));
+            BigDecimal allNoWashRatio = new BigDecimal(document.getInteger("allNoWashRatio"));
+            BigDecimal allNoAlarmRatio = new BigDecimal(document.getInteger("allNoAlarmRatio"));
             vo.setViolation(allViolationRatio);
             vo.setNoWash(allNoWashRatio);
+//            if (allNoAlarmRatio.compareTo(new BigDecimal("0")) == 0){
+//                vo.setConformance(new BigDecimal("0"));
+//            }else {
+//                vo.setConformance(new BigDecimal(document.getInteger("allCount")));
+//            }
             vo.setConformance(allNoAlarmRatio);
         }
 //        vo.setStartWorkTime(startDateTime);
@@ -694,12 +747,12 @@ public class WashEventServiceImpl implements WashEventService {
         return vo;
     }
 
-    private ListWashMonitorVo.Ratio init(String name, Double violation, Double noWash, Double conformance) {
+    private ListWashMonitorVo.Ratio init(String name, Integer violation, Integer noWash, Integer conformance) {
         ListWashMonitorVo.Ratio ratio = new ListWashMonitorVo.Ratio();
         ratio.setName(name);
-        ratio.setViolation(new BigDecimal(violation).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")));
-        ratio.setNoWash(new BigDecimal(noWash).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")));
-        ratio.setConformance(new BigDecimal(conformance).setScale(2, BigDecimal.ROUND_HALF_UP).multiply(new BigDecimal("100")));
+        ratio.setViolation(violation);
+        ratio.setNoWash(noWash);
+        ratio.setConformance(conformance);
         return ratio;
     }
 

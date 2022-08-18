@@ -31,9 +31,9 @@ public class WashEventDto extends WashRecordDto implements Serializable {
     @Schema(description = "触发警告原因(com.lion.manage.entity.enums.SystemAlarmType)")
     private Integer at;
 
-    @Schema(description = "洗手时间(针对区域洗手规则-有记录为违规洗手,没有记录为错过洗手)定时洗手规则一律为错过洗手(9999-01-01 00:00:00 为没有记录 小于该时间为有时间记录)")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime wt = LocalDateTime.parse("9999-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+//    @Schema(description = "洗手时间(针对区域洗手规则-有记录为违规洗手,没有记录为错过洗手)定时洗手规则一律为错过洗手(9999-01-01 00:00:00 为没有记录 小于该时间为有时间记录)")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    private LocalDateTime wt = LocalDateTime.parse("9999-01-01 00:00:00", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
     @Schema(description = "触发警告时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
