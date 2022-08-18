@@ -84,7 +84,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                         if (Objects.isNull(washTemplateItemVo)) {
                             return;
                         }
-                        WashRecordDto washRecordDto = washCommon.init(userCurrentRegionDto.getUserId(),userCurrentRegionDto.getRegionId(),Objects.nonNull(regionWashMonitorDelayDto.getMonitorId())?Long.valueOf(regionWashMonitorDelayDto.getMonitorId()):null,userCurrentRegionDto.getUuid() , null,null);
+                        WashRecordDto washRecordDto = washCommon.init(userCurrentRegionDto.getUserId(),userCurrentRegionDto.getRegionId(),null,userCurrentRegionDto.getUuid() , null,null);
                         WashEventDto washEventDto = new WashEventDto();
                         BeanUtils.copyProperties(washRecordDto,washEventDto);
                         washEventDto.setWi(washTemplateItemVo.getId());
@@ -138,6 +138,9 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                 alarm(washEventDto,true,SystemAlarmType.WXYBZDXSSBXS,userLastWashDto.getDateTime(),userCurrentRegionDto,userLastWashDto,washTemplateItemVo,regionWashMonitorDelayDto.getTagId() );
                                 return;
                             }
+                        }
+                        if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getMonitorId())) {
+                            washEventDto.setDvi(userLastWashDto.getMonitorId());
                         }
                         recordWashEvent(washEventDto);
 //                        List<Wash> washList = redisUtil.getWash(regionWashMonitorDelayDto.getRegionId());

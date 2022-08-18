@@ -40,4 +40,5 @@ public class RegionWashMonitorDelayDto implements Serializable {
      */
     private String monitorId;
 
+
 }
