@@ -47,7 +47,7 @@ public interface DeviceService extends BaseService<Device> {
      */
    public List<Long> allId();
 
-   public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, DeviceClassify deviceClassify, DeviceType deviceType,State deviceState, String name, LionPage lionPage);
+   public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, DeviceClassify deviceClassify, DeviceType deviceType,String state, String name, LionPage lionPage);
 
     /**
      * 详情
@@ -55,4 +55,8 @@ public interface DeviceService extends BaseService<Device> {
      * @return
      */
    public DetailsDeviceVo details(Long id);
+
+    public Integer countByDeviceStateIn(List<State> states);
+
+    public Integer countByDeviceStateNotIn(List<State> states);
 }

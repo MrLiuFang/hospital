@@ -1,8 +1,11 @@
 package com.lion.upms.expose.user;
 
+import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.core.service.BaseService;
 import com.lion.upms.entity.enums.State;
 import com.lion.upms.entity.user.User;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -66,6 +69,8 @@ public interface UserExposeService extends BaseService<User> {
      * @return
      */
     public List<User> findInIds(List<Long> ids);
+
+    public PageResultData<User> findInIds(List<Long> ids, LionPage lionPage);
 
     /**
      *

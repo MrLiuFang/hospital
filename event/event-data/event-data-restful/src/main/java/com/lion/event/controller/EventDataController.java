@@ -611,6 +611,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return washEventService.listWashEvent(ia,userTypeId , type, regionId, departmentId, userIds, startDateTime, endDateTime, lionPage);
     }
 
+    @GetMapping("/wash/event/list1")
+    @ApiOperation(value = "洗手事件(不返回总行数)")
+    public IPageResultData<List<ListWashEventVo>> listWashEvent1(@ApiParam("是否合规")Boolean ia,@ApiParam(value = "用户类型id")Long userTypeId, @ApiParam("类型") WashEventType type, @ApiParam("区域")Long regionId,@ApiParam("科室")Long departmentId,@ApiParam("员工")@RequestParam(value="userIds",required = false) List<Long> userIds,
+                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, LionPage lionPage){
+        return washEventService.listWashEvent1(ia,userTypeId , type, regionId, departmentId, userIds, startDateTime, endDateTime, lionPage);
+    }
+
     @GetMapping("/wash/event/list/export")
     @ApiOperation(value = "手卫生行为列表PDF导出")
     public void listWashEventExport(@ApiParam("是否合规")Boolean ia, @ApiParam("类型") WashEventType type, @ApiParam("区域")Long regionId,@ApiParam("科室")Long departmentId,@ApiParam("员工")@RequestParam(value="userIds",required = false) List<Long> userIds,

@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -65,40 +67,40 @@ public class MonitorController {
     public IResultData<DeviceMonitorTopVo> top(){
         DeviceMonitorTopVo deviceMonitorTopVo = new DeviceMonitorTopVo();
         List<Long> ids = deviceService.allId();
-        deviceMonitorTopVo.setNormalCount(ids.size());
-        deviceMonitorTopVo = calculation(ids, deviceMonitorTopVo);
+        deviceMonitorTopVo.setOnLineCount(deviceService.countByDeviceStateNotIn(new ArrayList<>(Arrays.asList(new State[]{State.OFF_LINE,State.FAULT,State.REPAIR}))));
 //        deviceMonitorTopVo = calculation(assetsExposeService.allId(), deviceMonitorTopVo);
 //        deviceMonitorTopVo = calculation(tagService.allId(), deviceMonitorTopVo);
 //        deviceMonitorTopVo = calculation(cctvService.allId(), deviceMonitorTopVo);
-        int fault = faultService.countNotSolve();
-        deviceMonitorTopVo.setNormalCount(deviceMonitorTopVo.getNormalCount()-fault);
-        deviceMonitorTopVo.setFaultCount(fault);
+//        int fault = faultService.countNotSolve();
+        deviceMonitorTopVo.setOfflineCount(deviceService.countByDeviceStateIn(new ArrayList<>(Arrays.asList(new State[]{State.OFF_LINE}))));
+        deviceMonitorTopVo.setFaultCount(deviceService.countByDeviceStateIn(new ArrayList<>(Arrays.asList(new State[]{State.FAULT,State.REPAIR}))));
         return ResultData.instance().setData(deviceMonitorTopVo);
     }
 
     @GetMapping("/list")
     @ApiOperation(value = "设备监控列表")
-    public IPageResultData<List<ListDeviceMonitorVo>> list(@ApiParam(value = "建筑ID") Long buildId, @ApiParam(value = "建筑楼层ID") Long buildFloorId, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备小类") DeviceType deviceType, @ApiParam(value = "状态") State state, @ApiParam(value = "名称")String name, LionPage lionPage){
+    public IPageResultData<List<ListDeviceMonitorVo>> list(@ApiParam(value = "建筑ID") Long buildId, @ApiParam(value = "建筑楼层ID") Long buildFloorId, @ApiParam(value = "设备大类") DeviceClassify deviceClassify,@ApiParam(value = "设备小类") DeviceType deviceType, @ApiParam(value = "状态(1=在线,2=离线,3=故障)") String state, @ApiParam(value = "名称")String name, LionPage lionPage){
+
         return deviceService.deviceMonitorList(buildId, buildFloorId,deviceClassify ,deviceType , state, name, lionPage);
     }
 
-    private DeviceMonitorTopVo calculation(List<Long> ids, DeviceMonitorTopVo vo){
-        ids.forEach(id->{
-            com.lion.core.Optional<Device> optional = deviceService.findById(id);
-            if (optional.isPresent()) {
-                Device device = optional.get();
-                if (Objects.nonNull(device.getLastDataTime())) {
-                    Duration duration = Duration.between(device.getLastDataTime(), LocalDateTime.now());
-                    if (duration.toMinutes() > 120) {
-                        vo.setOfflineCount(vo.getOfflineCount() + 1);
-                        vo.setNormalCount(vo.getNormalCount() - 1);
-                    }
-                } else {
-                    vo.setOfflineCount(vo.getOfflineCount() + 1);
-                    vo.setNormalCount(vo.getNormalCount() - 1);
-                }
-            }
-        });
-        return vo;
-    }
+//    private DeviceMonitorTopVo calculation(List<Long> ids, DeviceMonitorTopVo vo){
+//        ids.forEach(id->{
+//            com.lion.core.Optional<Device> optional = deviceService.findById(id);
+//            if (optional.isPresent()) {
+//                Device device = optional.get();
+//                if (Objects.nonNull(device.getLastDataTime())) {
+//                    Duration duration = Duration.between(device.getLastDataTime(), LocalDateTime.now());
+//                    if (duration.toMinutes() > 120) {
+//                        vo.setOfflineCount(vo.getOfflineCount() + 1);
+//                        vo.setNormalCount(vo.getNormalCount() - 1);
+//                    }
+//                } else {
+//                    vo.setOfflineCount(vo.getOfflineCount() + 1);
+//                    vo.setNormalCount(vo.getNormalCount() - 1);
+//                }
+//            }
+//        });
+//        return vo;
+//    }
 }

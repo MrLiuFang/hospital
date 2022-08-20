@@ -2,6 +2,7 @@ package com.lion.upms.expose.user.impl;
 
 import com.lion.constant.SearchConstant;
 import com.lion.core.LionPage;
+import com.lion.core.PageResultData;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
@@ -74,6 +75,17 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
     @Override
     public List<User> findInIds(List<Long> ids) {
         return userDao.findByIdIn(ids);
+    }
+
+    @Override
+    public PageResultData<User> findInIds(List<Long> ids, LionPage lionPage) {
+        JpqlParameter jpqlParameter = new JpqlParameter();
+        if (Objects.nonNull(ids) && ids.size()>0 ) {
+            jpqlParameter.setSearchParameter(SearchConstant.IN + "_id", ids);
+        }
+        lionPage.setJpqlParameter(jpqlParameter);
+
+        return (PageResultData<User>) PageResultData.convert(findNavigator(lionPage));
     }
 
     @Override

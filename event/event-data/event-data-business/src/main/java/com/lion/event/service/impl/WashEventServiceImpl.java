@@ -45,10 +45,12 @@ import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.bson.Document;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.ServletOutputStream;
@@ -392,13 +394,10 @@ public class WashEventServiceImpl implements WashEventService {
         if (Objects.isNull(startDateTime)) {
             startDateTime = LocalDateTime.now().minusDays(30);
         }
-        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
-            criteria.andOperator( Criteria.where("adt").gte(startDateTime) ,Criteria.where("adt").lte(endDateTime));
-        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
-            criteria.and("adt").gte(startDateTime);
-        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
-            criteria.and("adt").lte(endDateTime);
+        if (Objects.isNull(endDateTime)) {
+            endDateTime = LocalDateTime.now();
         }
+        criteria.andOperator( Criteria.where("adt").gte(startDateTime) ,Criteria.where("adt").lte(endDateTime));
         query.addCriteria(criteria);
         query.with(lionPage);
         query.with(Sort.by(Sort.Direction.DESC,"adt"));
@@ -410,20 +409,16 @@ public class WashEventServiceImpl implements WashEventService {
                 userIds1.add(washEvent.getPi());
             }
         });
-        List<User> userList = userExposeService.findInIds(userIds1);
+        PageResultData<User> userPageResultData = (PageResultData<User>) userExposeService.findInIds(userIds1,lionPage);
+        List<User> userList = (List<User>) userPageResultData.getData();
         List<ListWashEventVo> returnList = new ArrayList<>();
         LocalDateTime _startDateTime = startDateTime;
+        LocalDateTime _endDateTime = endDateTime;
         userList.forEach(user -> {
             Query query1 = new Query();
             Criteria criteria1 = new Criteria();
             criteria1.and("pi").is(user.getId());
-            if (Objects.nonNull(_startDateTime) && Objects.nonNull(endDateTime) ) {
-                criteria1.andOperator( Criteria.where("adt").gte(_startDateTime) ,Criteria.where("adt").lte(endDateTime));
-            }else if (Objects.nonNull(_startDateTime) &&  Objects.isNull(endDateTime)) {
-                criteria1.and("adt").gte(_startDateTime);
-            }else if (Objects.isNull(_startDateTime) &&  Objects.nonNull(endDateTime)) {
-                criteria1.and("adt").lte(endDateTime);
-            }
+            criteria1.andOperator( Criteria.where("adt").gte(_startDateTime) ,Criteria.where("adt").lte(_endDateTime));
             query1.addCriteria(criteria1);
             query1.with(new LionPage(0,1));
             query1.with(Sort.by(Sort.Direction.DESC,"adt"));
@@ -476,7 +471,77 @@ public class WashEventServiceImpl implements WashEventService {
 //            }
 //            returnList.add(vo);
 //        });
-        IPageResultData<List<ListWashEventVo>> pageResultData =new PageResultData<>(returnList,lionPage,0L);
+        IPageResultData<List<ListWashEventVo>> pageResultData =new PageResultData<>(returnList,lionPage,userPageResultData.getTotalElements());
+        return pageResultData;
+    }
+
+    public IPageResultData<List<ListWashEventVo>> listWashEvent1(Boolean ia, Long userTypeId, WashEventType type, Long regionId, Long departmentId, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+        Query query = new Query();
+        Criteria criteria = new Criteria();
+        if (Objects.nonNull(ia)) {
+            criteria.and("ia").is(ia);
+        }
+        if (Objects.nonNull(userTypeId)) {
+            criteria.and("py").is(userTypeId);
+        }
+        if (Objects.nonNull(type)){
+            criteria.and("wet").is(type.getKey());
+        }
+        if (Objects.nonNull(regionId)){
+            criteria.and("ri").is(regionId);
+        }
+        if (Objects.nonNull(departmentId)){
+            criteria.and("di").is(departmentId);
+        }
+        if (Objects.nonNull(userIds) && userIds.size()>0){
+            criteria.and("pi").in(userIds);
+        }
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
+        if (Objects.isNull(endDateTime)) {
+            endDateTime = LocalDateTime.now();
+        }
+        criteria.andOperator( Criteria.where("adt").gte(startDateTime) ,Criteria.where("adt").lte(endDateTime));
+        query.addCriteria(criteria);
+        query.with(lionPage);
+        query.with(Sort.by(Sort.Direction.DESC,"adt"));
+        List<WashEvent> items = mongoTemplate.find(query,WashEvent.class);
+        List<Long> userIds1 = new ArrayList<>();
+        userIds1.add(Long.MAX_VALUE);
+        items.forEach(washEvent -> {
+            if (!userIds1.contains(washEvent.getPi())){
+                userIds1.add(washEvent.getPi());
+            }
+        });
+
+        long count = mongoTemplate.count(query, WashEvent.class);
+        PageableExecutionUtils.getPage(items, lionPage, () -> count);
+        List<ListWashEventVo> returnList = new ArrayList<>();
+        items.forEach(washEvent -> {
+            ListWashEventVo vo = new ListWashEventVo();
+            com.lion.core.Optional<User> optionalUser = userExposeService.findById(washEvent.getPi());
+            if (optionalUser.isPresent()){
+                User user = optionalUser.get();
+                com.lion.core.Optional<UserType> optionalUserType =  userTypeExposeService.findById(user.getUserTypeId());
+                vo.setUserType(optionalUserType.isPresent()?optionalUserType.get():null);
+                vo.setName(user.getName());
+                vo.setUserId(user.getId());
+                vo.setNumber(user.getNumber());
+                vo.setGender(user.getGender());
+            }
+            vo.setDepartmentName(washEvent.getDn());
+            vo.setIa(washEvent.getIa());
+            vo.setTime(washEvent.getT());
+            vo.setUseDateTime(washEvent.getDdt());
+            vo.setDateTime(washEvent.getAdt());
+            com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
+            if (optionalDevice.isPresent()){
+                vo.setDeviceName(optionalDevice.get().getName());
+            }
+            returnList.add(vo);
+        });
+        IPageResultData<List<ListWashEventVo>> pageResultData =new PageResultData<>(returnList,lionPage,10L);
         return pageResultData;
     }
 
@@ -559,7 +624,7 @@ public class WashEventServiceImpl implements WashEventService {
             vo.setDeviceCount(deviceExposeService.findByRegionId(region.getId()).size());
             Document document = washEventDao.eventCount(startDateTime, endDateTime, region.getId());
             if (Objects.nonNull(document)) {
-                vo.setRatio(new BigDecimal(document.getDouble("allNoAlarmRatio")).setScale(2, BigDecimal.ROUND_HALF_UP));
+                vo.setRatio(new BigDecimal(document.getDouble("allNoAlarmRatio")).multiply(new BigDecimal(100)).setScale(2, BigDecimal.ROUND_HALF_UP));
             }
             returnList.add(vo);
         });

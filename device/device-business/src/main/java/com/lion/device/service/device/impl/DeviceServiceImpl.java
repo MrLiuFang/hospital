@@ -212,8 +212,9 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     }
 
     @Override
-    public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, DeviceClassify deviceClassify, DeviceType deviceType, State deviceState, String name, LionPage lionPage) {
-        Page<Device> page = deviceDao.deviceMonitorList(buildId, buildFloorId,deviceClassify ,deviceType , deviceState, name, lionPage);
+    public IPageResultData<List<ListDeviceMonitorVo>> deviceMonitorList(Long buildId, Long buildFloorId, DeviceClassify deviceClassify, DeviceType deviceType,String state, String name, LionPage lionPage) {
+
+        Page<Device> page = deviceDao.deviceMonitorList(buildId, buildFloorId,deviceClassify ,deviceType, state, name, lionPage);
         List<ListDeviceMonitorVo> returnList = new ArrayList<>();
         List<Device> list = page.getContent();
         list.forEach(device -> {
@@ -288,6 +289,16 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 
         }
         return detailsDeviceVo;
+    }
+
+    @Override
+    public Integer countByDeviceStateIn(List<State> states) {
+        return deviceDao.countByDeviceStateIn(states);
+    }
+
+    @Override
+    public Integer countByDeviceStateNotIn(List<State> states) {
+        return deviceDao.countByDeviceStateNotIn(states);
     }
 
     private DeviceStatisticsVo.DeviceStatisticsData count(DeviceClassify classify){

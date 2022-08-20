@@ -13,8 +13,10 @@ import lombok.Data;
 @Schema
 public class DeviceMonitorTopVo {
 
-    @Schema(description = "正常设备")
-    private Integer normalCount = 0;
+//    @Schema(description = "正常设备")
+//    private Integer normalCount = 0;
+
+    private Integer onLineCount = 0;
 
     @Schema(description = "离线设备")
     private Integer offlineCount =0 ;

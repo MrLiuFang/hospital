@@ -13,6 +13,7 @@ import lombok.extern.java.Log;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -197,6 +198,7 @@ public class WashEventDaoImpl implements WashEventDaoEx {
         }
         query.addCriteria(criteria);
         query.with(lionPage);
+        query.with(Sort.by(Sort.Direction.DESC,"adt"));
         List<WashEvent> items = mongoTemplate.find(query, WashEvent.class);
         return items;
     }

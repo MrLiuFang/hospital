@@ -109,9 +109,11 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
             Assets assets = null;
             if (Objects.nonNull(deviceDataDto.getMonitorId())) {
                 monitor = redisUtil.getDevice(deviceDataDto.getMonitorId());
+                redisTemplate.delete(RedisConstants.DEVICE_OFF_LINE+monitor.getId());
             }
             if (Objects.nonNull(deviceDataDto.getStarId())) {
                 star = redisUtil.getDevice(deviceDataDto.getStarId());
+                redisTemplate.delete(RedisConstants.DEVICE_OFF_LINE+monitor.getId());
             }
             if (Objects.isNull(monitor) && Objects.isNull(star)) {
                 return;

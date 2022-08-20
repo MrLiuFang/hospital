@@ -24,6 +24,8 @@ import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
+
 import com.lion.core.Optional;
 
 /**
@@ -63,7 +65,7 @@ public class UpdateDeviceDataTime {
                 userId.forEach(id -> {
                     LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
                     if (Objects.nonNull(dateTime)) {
-                        userExposeService.updateDeviceDataTime(id, dateTime);
+//                        userExposeService.updateDeviceDataTime(id, dateTime);
 //                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
                     }
                 });
@@ -77,7 +79,7 @@ public class UpdateDeviceDataTime {
                 assetsId.forEach(id -> {
                     LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
                     if (Objects.nonNull(dateTime)) {
-                        assetsExposeService.updateDeviceDataTime(id, dateTime);
+//                        assetsExposeService.updateDeviceDataTime(id, dateTime);
 //                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
                     }
                 });
@@ -89,10 +91,9 @@ public class UpdateDeviceDataTime {
             List<Long> deviceId = deviceExposeService.allId();
             if (Objects.nonNull(deviceId) && deviceId.size()>=0) {
                 deviceId.forEach(id -> {
-                    Device device = null;
                     LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
                     if (Objects.nonNull(dateTime)) {
-                        deviceExposeService.updateDeviceDataTime(id, dateTime);
+//                        deviceExposeService.updateDeviceDataTime(id, dateTime);
 //                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
 
                     } else {
@@ -101,10 +102,11 @@ public class UpdateDeviceDataTime {
                             dateTime = optional.get().getLastDataTime();
                         }
                     }
-                    if (Objects.nonNull(dateTime) && Objects.nonNull(device)) {
+                    if (Objects.nonNull(dateTime)) {
                         java.time.Duration duration = java.time.Duration.between(dateTime, LocalDateTime.now());
                         if (duration.toMinutes() > (60 * 24)) {
-                            if (!Objects.equals(device.getDeviceState(), State.ALARM)) {
+                            Boolean isOffLine = (Boolean) redisTemplate.opsForValue().get(RedisConstants.DEVICE_OFF_LINE+id);
+                            if (Objects.isNull(isOffLine)) {
                                 SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
                                 systemAlarmDto.setDateTime(LocalDateTime.now());
                                 systemAlarmDto.setType(Type.DEVICE);
@@ -112,10 +114,12 @@ public class UpdateDeviceDataTime {
                                 systemAlarmDto.setSystemAlarmType(SystemAlarmType.SBGZ);
                                 try {
                                     rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
+                                    redisTemplate.opsForValue().set(RedisConstants.DEVICE_OFF_LINE+id,true,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                                 } catch (JsonProcessingException e) {
                                     e.printStackTrace();
                                 }
                             }
+                            deviceExposeService.updateState(id,State.OFF_LINE.getKey());
                         }
                     }
                 });
@@ -129,7 +133,7 @@ public class UpdateDeviceDataTime {
                 tagId.forEach(id -> {
                     LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
                     if (Objects.nonNull(dateTime)) {
-                        tagExposeService.updateDeviceDataTime(id, dateTime);
+//                        tagExposeService.updateDeviceDataTime(id, dateTime);
 //                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
                     }
                 });

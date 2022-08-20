@@ -166,4 +166,8 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
 
     public long countByDeviceStateAndDeviceClassify(State state,DeviceClassify deviceClassify);
 
+    public Integer countByDeviceStateIn(List<State> state);
+
+    public Integer countByDeviceStateNotIn(List<State> state);
+
 }

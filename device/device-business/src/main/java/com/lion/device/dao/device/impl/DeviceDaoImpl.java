@@ -24,7 +24,7 @@ public class DeviceDaoImpl implements DeviceDaoEx {
     private BaseDao<Device> baseDao;
 
     @Override
-    public Page deviceMonitorList(Long buildId, Long buildFloorId, DeviceClassify deviceClassify, DeviceType deviceType, State deviceState, String name, LionPage lionPage) {
+    public Page deviceMonitorList(Long buildId, Long buildFloorId, DeviceClassify deviceClassify, DeviceType deviceType, String state, String name, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> searchParameter = new HashMap<>();
         sb.append(" select d from Device d where 1=1 ");
@@ -40,9 +40,21 @@ public class DeviceDaoImpl implements DeviceDaoEx {
             sb.append(" and d.buildFloorId =:buildFloorId ");
             searchParameter.put("buildFloorId",buildFloorId);
         }
-        if (Objects.nonNull(deviceState)){
-            sb.append(" and d.deviceState =:deviceState ");
-            searchParameter.put("deviceState", deviceState);
+        List<State> states = new ArrayList<>();
+        if (Objects.equals(state,"1")) {
+            states.add(State.REPAIR);
+            states.add(State.FAULT);
+            states.add(State.OFF_LINE);
+            sb.append(" and d.deviceState not in :states ");
+            searchParameter.put("states", states);
+        }else if (Objects.equals(state,"2")) {
+            sb.append(" and d.deviceState = :deviceState ");
+            searchParameter.put("deviceState", State.OFF_LINE);
+        }else if (Objects.equals(state,"3")) {
+            states.add(State.REPAIR);
+            states.add(State.FAULT);
+            sb.append(" and d.deviceState in :states ");
+            searchParameter.put("states", states);
         }
         if (Objects.nonNull(deviceClassify)) {
             sb.append(" and d.deviceClassify =:deviceClassify ");

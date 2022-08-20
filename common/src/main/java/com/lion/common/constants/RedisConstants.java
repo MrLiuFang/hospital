@@ -102,6 +102,8 @@ public class RedisConstants {
      */
     public static final String DEVICE = "device_";
 
+    public static final String DEVICE_OFF_LINE = "device_off_line";
+
     /**
      * 设备(key:deviceCode,value:device)
      */
