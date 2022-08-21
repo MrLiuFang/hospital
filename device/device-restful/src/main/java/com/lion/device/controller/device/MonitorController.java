@@ -67,12 +67,13 @@ public class MonitorController {
     public IResultData<DeviceMonitorTopVo> top(){
         DeviceMonitorTopVo deviceMonitorTopVo = new DeviceMonitorTopVo();
         List<Long> ids = deviceService.allId();
-        deviceMonitorTopVo.setOnLineCount(deviceService.countByDeviceStateNotIn(new ArrayList<>(Arrays.asList(new State[]{State.OFF_LINE,State.FAULT,State.REPAIR}))));
+        LocalDateTime dateTime = LocalDateTime.now().minusHours(24);
+        deviceMonitorTopVo.setOnLineCount(deviceService.countOnLine(dateTime));
 //        deviceMonitorTopVo = calculation(assetsExposeService.allId(), deviceMonitorTopVo);
 //        deviceMonitorTopVo = calculation(tagService.allId(), deviceMonitorTopVo);
 //        deviceMonitorTopVo = calculation(cctvService.allId(), deviceMonitorTopVo);
 //        int fault = faultService.countNotSolve();
-        deviceMonitorTopVo.setOfflineCount(deviceService.countByDeviceStateIn(new ArrayList<>(Arrays.asList(new State[]{State.OFF_LINE}))));
+        deviceMonitorTopVo.setOfflineCount(deviceService.countOffLine(dateTime));
         deviceMonitorTopVo.setFaultCount(deviceService.countByDeviceStateIn(new ArrayList<>(Arrays.asList(new State[]{State.FAULT,State.REPAIR}))));
         return ResultData.instance().setData(deviceMonitorTopVo);
     }

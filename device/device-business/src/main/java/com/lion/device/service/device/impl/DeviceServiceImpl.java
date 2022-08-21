@@ -244,7 +244,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
             vo.setState(device.getDeviceState());
             if (Objects.nonNull(device.getLastDataTime())) {
                 Duration duration = Duration.between(device.getLastDataTime(), LocalDateTime.now());
-                vo.setIsOnline(duration.toMinutes()<120);
+                vo.setIsOnline(duration.toMinutes()<60 * 24);
             }
             returnList.add(vo);
         });
@@ -299,6 +299,16 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     @Override
     public Integer countByDeviceStateNotIn(List<State> states) {
         return deviceDao.countByDeviceStateNotIn(states);
+    }
+
+    @Override
+    public Integer countOffLine(LocalDateTime dateTime) {
+        return deviceDao.countByLastDataTimeLessThanOrLastDataTimeIsNull(dateTime);
+    }
+
+    @Override
+    public Integer countOnLine(LocalDateTime dateTime) {
+        return deviceDao.countByLastDataTimeGreaterThanAndLastDataTimeNotNull(dateTime);
     }
 
     private DeviceStatisticsVo.DeviceStatisticsData count(DeviceClassify classify){

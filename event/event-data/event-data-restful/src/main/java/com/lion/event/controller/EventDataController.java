@@ -179,7 +179,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 //            @ApiImplicitParam(name = "departmentIds", value = "部门id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
 //            @ApiImplicitParam(name = "userIds", value = "用户id", allowMultiple = true, dataTypeClass = List.class, paramType = "query")
 //    })
-    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id")  String departmentIds,@ApiParam(value = "用户id")  String userIds, @ApiParam(value = "用户类型")  String userTypeId,
+    public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id")  String departmentIds,@ApiParam(value = "用户id")  String userIds, @ApiParam(value = "用户类型")  String userTypeIds,
                                                           @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                           @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                           LionPage lionPage) {
@@ -202,8 +202,8 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
             }
         }
         List<Long> listUserTypeId = new ArrayList<Long>();
-        if (StringUtils.hasText(userTypeId)){
-            String[] str = userTypeId.split(",");
+        if (StringUtils.hasText(userTypeIds)){
+            String[] str = userTypeIds.split(",");
             for (int i =0; i<str.length;i++) {
                 if (NumberUtil.isLong(str[i])) {
                     listUserTypeId.add(Long.valueOf(str[i]));
@@ -220,7 +220,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 //            @ApiImplicitParam(name = "userIds", value = "用户id", allowMultiple = true, dataTypeClass = List.class, paramType = "query"),
 //            @ApiImplicitParam(name = "userTypeId", value = "用户类型id", allowMultiple = true, dataTypeClass = List.class, paramType = "query")
 //    })
-    public IPageResultData<List<ListWashEventVo1>> userWashConformanceRatioScreen(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id")  String departmentIds,@ApiParam(value = "用户id")  String userIds, @ApiParam(value = "用户类型")  String userTypeId,
+    public IPageResultData<List<ListWashEventVo1>> userWashConformanceRatioScreen(@ApiParam(value = "用户姓名") String userName,@ApiParam(value = "部门id")  String departmentIds,@ApiParam(value = "用户id")  String userIds, @ApiParam(value = "用户类型")  String userTypeIds,
                                                                                  @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                  @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                                  LionPage lionPage) {
@@ -243,8 +243,8 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
             }
         }
         List<Long> listUserTypeId = new ArrayList<Long>();
-        if (StringUtils.hasText(userTypeId)){
-            String[] str = userTypeId.split(",");
+        if (StringUtils.hasText(userTypeIds)){
+            String[] str = userTypeIds.split(",");
             for (int i =0; i<str.length;i++) {
                 if (NumberUtil.isLong(str[i])) {
                     listUserTypeId.add(Long.valueOf(str[i]));

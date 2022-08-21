@@ -170,4 +170,7 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
 
     public Integer countByDeviceStateNotIn(List<State> state);
 
+    public Integer countByLastDataTimeLessThanOrLastDataTimeIsNull(LocalDateTime dateTime);
+
+    public Integer countByLastDataTimeGreaterThanAndLastDataTimeNotNull(LocalDateTime dateTime);
 }

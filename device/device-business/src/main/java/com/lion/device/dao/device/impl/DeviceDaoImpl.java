@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -41,15 +42,20 @@ public class DeviceDaoImpl implements DeviceDaoEx {
             searchParameter.put("buildFloorId",buildFloorId);
         }
         List<State> states = new ArrayList<>();
+        LocalDateTime dateTime = LocalDateTime.now().minusHours(24);
         if (Objects.equals(state,"1")) {
-            states.add(State.REPAIR);
-            states.add(State.FAULT);
-            states.add(State.OFF_LINE);
-            sb.append(" and d.deviceState not in :states ");
-            searchParameter.put("states", states);
+//            states.add(State.REPAIR);
+//            states.add(State.FAULT);
+//            states.add(State.OFF_LINE);
+//            sb.append(" and d.deviceState not in :states ");
+//            searchParameter.put("states", states);
+            sb.append(" and （ d.lastDataTime not null and d.lastDataTime > :dateTime )");
+            searchParameter.put("dateTime", dateTime);
         }else if (Objects.equals(state,"2")) {
-            sb.append(" and d.deviceState = :deviceState ");
-            searchParameter.put("deviceState", State.OFF_LINE);
+//            sb.append(" and d.deviceState = :deviceState ");
+//            searchParameter.put("deviceState", State.OFF_LINE);
+            sb.append(" and （ d.lastDataTime is null or d.lastDataTime < :dateTime )");
+            searchParameter.put("dateTime", dateTime);
         }else if (Objects.equals(state,"3")) {
             states.add(State.REPAIR);
             states.add(State.FAULT);

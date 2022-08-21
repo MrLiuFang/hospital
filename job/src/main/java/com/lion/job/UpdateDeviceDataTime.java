@@ -93,7 +93,7 @@ public class UpdateDeviceDataTime {
                 deviceId.forEach(id -> {
                     LocalDateTime dateTime = (LocalDateTime) redisTemplate.opsForValue().get(RedisConstants.LAST_DATA + String.valueOf(id));
                     if (Objects.nonNull(dateTime)) {
-//                        deviceExposeService.updateDeviceDataTime(id, dateTime);
+                        deviceExposeService.updateDeviceDataTime(id, dateTime);
 //                        redisTemplate.delete(RedisConstants.LAST_DATA + String.valueOf(id));
 
                     } else {

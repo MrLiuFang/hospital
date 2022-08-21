@@ -399,7 +399,7 @@ public class WashEventServiceImpl implements WashEventService {
         }
         criteria.andOperator( Criteria.where("adt").gte(startDateTime) ,Criteria.where("adt").lte(endDateTime));
         query.addCriteria(criteria);
-        query.with(lionPage);
+//        query.with(lionPage);
         query.with(Sort.by(Sort.Direction.DESC,"adt"));
         List<WashEvent> items = mongoTemplate.find(query,WashEvent.class);
         List<Long> userIds1 = new ArrayList<>();
