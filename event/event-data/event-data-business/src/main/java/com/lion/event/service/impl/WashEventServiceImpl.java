@@ -147,6 +147,7 @@ public class WashEventServiceImpl implements WashEventService {
 
     @Override
     public ListWashMonitorVo washRatio(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         ListWashMonitorVo listWashMonitorVo = new ListWashMonitorVo();
         //医院所有事件
         List<Document> listHospitalAll = washEventDao.eventCount(startDateTime,endDateTime, false, null, null , null);
@@ -725,7 +726,11 @@ public class WashEventServiceImpl implements WashEventService {
     @Override
     public IPageResultData<List<ListViolationWashEventVo>> violationWashEvent(LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         Query query = new Query();
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         Criteria criteria = new Criteria();
+        if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
+            criteria.and("pdi").in(departmentIds);
+        }
         if (Objects.isNull(startDateTime)) {
             startDateTime = LocalDateTime.now().minusDays(30);
         }

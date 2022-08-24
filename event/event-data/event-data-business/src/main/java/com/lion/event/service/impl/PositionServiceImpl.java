@@ -241,7 +241,7 @@ public class PositionServiceImpl implements PositionService {
             BeanUtils.copyProperties(position,vo);
             if (optionalTag.isPresent()){
                 Tag tag = optionalTag.get();
-                vo.setDeviceName(tag.getDeviceName());
+//                vo.setDeviceName(tag.);
                 vo.setTagCode(tag.getTagCode());
                 vo.setTagPurpose(tag.getPurpose());
                 com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(tag.getDepartmentId());

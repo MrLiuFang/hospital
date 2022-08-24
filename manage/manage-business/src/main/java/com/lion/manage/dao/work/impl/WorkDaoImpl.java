@@ -44,15 +44,15 @@ public class WorkDaoImpl implements WorkDaoEx {
             sb.append(" and t1.user_type_id in( :userTypeId )");
             searchParameter.put("userTypeId", userTypeId);
         }
-        if (Objects.nonNull(startDateTime)){
-            sb.append(" and t2.start_work_time >= :startDateTime  ");
-            searchParameter.put("startDateTime",startDateTime);
-        }
+//        if (Objects.nonNull(startDateTime)){
+//            sb.append(" and t2.start_work_time >= :startDateTime  ");
+//            searchParameter.put("startDateTime",startDateTime);
+//        }
 
-        if (Objects.nonNull(endDateTime)){
-            sb.append(" and ( t2.end_work_time <= :endDateTime or t2.end_work_time is null )  ");
-            searchParameter.put("endDateTime",endDateTime);
-        }
+//        if (Objects.nonNull(endDateTime)){
+//            sb.append(" and ( t2.end_work_time <= :endDateTime or t2.end_work_time is null )  ");
+//            searchParameter.put("endDateTime",endDateTime);
+//        }
         return (Page<Map<String,Object>>) baseDao.findNavigatorByNativeSql(lionPage, sb.toString(), searchParameter,null);
     }
 }

@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Mr.Liu
@@ -143,10 +142,12 @@ public interface TagDao extends BaseDao<Tag> {
 
     /**
      * 统计
+     *
      * @param purpose
+     * @param departmentIds
      * @return
      */
-    public int countByPurpose(TagPurpose purpose);
+    public int countByPurposeAndDepartmentIdIn(TagPurpose purpose,List<Long> departmentIds);
 
     public long countByDeviceState(State state);
 }

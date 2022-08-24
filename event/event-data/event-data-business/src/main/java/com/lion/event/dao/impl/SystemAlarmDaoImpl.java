@@ -21,6 +21,7 @@ import com.lion.event.entity.vo.SystemAlarmVo;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.expose.assets.AssetsExposeService;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.expose.person.PatientExposeService;
@@ -85,6 +86,9 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
 
     @DubboReference
     private TemporaryPersonExposeService temporaryPersonExposeService;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
 
     @Override
     public void updateSdt(String id) {
@@ -512,8 +516,12 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         List<Bson> pipeline = new ArrayList<Bson>();
         BasicDBObject match = new BasicDBObject();
         LocalDateTime now = LocalDateTime.now();
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         if (Objects.nonNull(departmentId)) {
-            match = BasicDBObjectUtil.put(match, "$match", "sdi", new BasicDBObject("$eq", departmentId));
+            departmentIds.add(departmentId);
+        }
+        if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
+            match = BasicDBObjectUtil.put(match, "$match", "sdi", new BasicDBObject("$in", departmentIds));
         }
 //        match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte",LocalDateTime.of(now.toLocalDate(), LocalTime.MIN) ).append("$lte",now));
         match = BasicDBObjectUtil.put(match,"$match","dt", new BasicDBObject("$gte", LocalDateTime.of(LocalDate.now().minusDays(7), LocalTime.MIN )).append("$lte",now));
@@ -531,7 +539,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
-    public long todayDaysStatistics(Type type, LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public long todayDaysStatistics(Type type, LocalDateTime startDateTime, LocalDateTime endDateTime, List<Long> departmentIds) {
 //        List<Bson> pipeline = new ArrayList<Bson>();
 //        BasicDBObject match = new BasicDBObject();
 //        if (Objects.isNull(startDateTime)) {
@@ -568,6 +576,10 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         if (Objects.nonNull(type)) {
             criteria.and("ty").is(type.getKey());
         }
+        if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
+            criteria.and("sdi").in(departmentIds);
+        }
+
         query.addCriteria(criteria);
         return mongoTemplate.count(query, SystemAlarm.class);
 //        Aggregation aggregation = Aggregation.newAggregation(Aggregation.match(criteria),Aggregation.group("_id"), Aggregation.count().as("countNum"));

@@ -30,6 +30,8 @@ public interface RegionDao extends BaseDao<Region> {
      */
     public List<Region> findByDepartmentId(Long departmentId);
 
+    public List<Region> findByDepartmentIdIn(List<Long> departmentIds);
+
     /**
      * 根据建筑查询
      * @param buildId

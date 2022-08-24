@@ -1,5 +1,6 @@
 package com.lion.device.dao.device.impl;
 
+import com.lion.constant.SearchConstant;
 import com.lion.core.LionPage;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.dao.device.DeviceDaoEx;
@@ -7,6 +8,10 @@ import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.enums.State;
+import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.department.DepartmentExposeService;
+import com.lion.manage.expose.region.RegionExposeService;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
@@ -23,6 +28,12 @@ public class DeviceDaoImpl implements DeviceDaoEx {
 
     @Autowired
     private BaseDao<Device> baseDao;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
+
+    @DubboReference
+    private RegionExposeService regionExposeService;
 
     @Override
     public Page deviceMonitorList(Long buildId, Long buildFloorId, DeviceClassify deviceClassify, DeviceType deviceType, String state, String name, LionPage lionPage) {
@@ -49,12 +60,12 @@ public class DeviceDaoImpl implements DeviceDaoEx {
 //            states.add(State.OFF_LINE);
 //            sb.append(" and d.deviceState not in :states ");
 //            searchParameter.put("states", states);
-            sb.append(" and （ d.lastDataTime not null and d.lastDataTime > :dateTime )");
+            sb.append(" and ( d.lastDataTime is not null and d.lastDataTime > :dateTime )");
             searchParameter.put("dateTime", dateTime);
         }else if (Objects.equals(state,"2")) {
 //            sb.append(" and d.deviceState = :deviceState ");
 //            searchParameter.put("deviceState", State.OFF_LINE);
-            sb.append(" and （ d.lastDataTime is null or d.lastDataTime < :dateTime )");
+            sb.append(" and ( d.lastDataTime is null or d.lastDataTime < :dateTime )");
             searchParameter.put("dateTime", dateTime);
         }else if (Objects.equals(state,"3")) {
             states.add(State.REPAIR);
@@ -76,10 +87,24 @@ public class DeviceDaoImpl implements DeviceDaoEx {
 
     @Override
     public Page deviceState(LionPage lionPage) {
+        Map<String, Object> searchParameter = new HashMap<>();
+        List<Long> departmentIds = new ArrayList<>();
+        departmentIds = departmentExposeService.responsibleDepartment(null);
         StringBuilder sb = new StringBuilder();
-        sb.append(" select d from Device d ");
-        sb.append(" order by d.deviceState desc ,battery desc ");
-        return baseDao.findNavigator(lionPage,sb.toString(), null);
+        sb.append(" select d from Device d where 1=1 and (battery = 2 or battery = 1) ");
+        if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
+            List<Region> list = regionExposeService.findByDepartmentIds(departmentIds);
+            List<Long> regionIds = new ArrayList<>();
+            list.forEach(region -> {
+                regionIds.add(region.getId());
+            });
+            if (Objects.nonNull(regionIds) && regionIds.size()>0){
+                sb.append( " and regionId in :regionIds " );
+                searchParameter.put("regionIds", regionIds);
+            }
+        }
+//        sb.append(" order by d.deviceState desc ,battery desc ");
+        return baseDao.findNavigator(lionPage,sb.toString(), searchParameter);
     }
 
     @Override

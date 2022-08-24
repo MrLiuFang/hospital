@@ -59,6 +59,11 @@ public class RegionExposeServiceImpl extends BaseServiceImpl<Region> implements 
     }
 
     @Override
+    public List<Region> findByDepartmentIds(List<Long> departmentIds) {
+        return regionDao.findByDepartmentIdIn(departmentIds);
+    }
+
+    @Override
     public PageResultData<List<Region>> find(LionPage lionPage) {
         Page<Region> page = findNavigator(lionPage);
         PageResultData pageResultData = new PageResultData(page.getContent(),new LionPage(page.getNumber(),page.getSize()),page.getTotalElements());

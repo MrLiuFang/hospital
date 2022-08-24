@@ -231,12 +231,13 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 //    }
 
     @Override
-    public IPageResultData<List<ListTagVo>> list(String isTmp, Long departmentId, TagUseState useState, State state, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
+    public IPageResultData<List<ListTagVo>> list(Boolean isResponsibleDepartment, Boolean isAll, String isTmp, Long departmentId, TagUseState useState, State state, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
+
         if (Objects.nonNull(isTmp) && Objects.equals("true",isTmp.toLowerCase())){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_departmentId",null);
             jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_purpose",null);
-        }else if (Objects.nonNull(isTmp) && Objects.equals("false",isTmp.toLowerCase())){
+        }else if (Objects.isNull (isTmp) ||(Objects.nonNull(isTmp) && Objects.equals("false",isTmp.toLowerCase()))){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_departmentId",null);
             jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_purpose",null);
         }
@@ -248,7 +249,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 //        if (Objects.nonNull(departmentId)){
 //            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
 //        }
-        if (departmentIds.size()>0 && Objects.nonNull(isTmp) && !Objects.equals("null",isTmp)) {
+        if (!Objects.equals(isAll,true) && departmentIds.size()>0 && Objects.nonNull(isTmp) && !Objects.equals("null",isTmp)) {
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         }
         if (Objects.nonNull(type)){
@@ -483,7 +484,8 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     public List<PurposeStatisticsVo> purposeStatistics() {
         List<PurposeStatisticsVo> list = new ArrayList<PurposeStatisticsVo>();
         for (TagPurpose tagPurpose: TagPurpose.values()){
-            int count = tagDao.countByPurpose(tagPurpose);
+            List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
+            int count = tagDao.countByPurposeAndDepartmentIdIn(tagPurpose, departmentIds);
             PurposeStatisticsVo vo = PurposeStatisticsVo.builder()
                     .purpose(tagPurpose)
                     .count(count)

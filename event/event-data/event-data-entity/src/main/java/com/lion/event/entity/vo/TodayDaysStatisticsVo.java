@@ -16,20 +16,20 @@ import lombok.Data;
 public class TodayDaysStatisticsVo {
 
     @Schema(description = "警报总数")
-    private long total;
+    private long total = 0 ;
 
     @Schema(description = "患者数量")
-    private long patientCount;
+    private long patientCount= 0 ;
 
     @Schema(description = "流动人员数量")
-    private long temporaryPersonCount;
+    private long temporaryPersonCount= 0 ;
 
     @Schema(description = "职员数量")
-    private long staffCount;
+    private long staffCount= 0 ;
 
     @Schema(description = "资产数量")
-    private long assetsCount;
+    private long assetsCount= 0 ;
 
     @Schema(description = "温湿数量")
-    private long humidCount;
+    private long humidCount= 0 ;
 }

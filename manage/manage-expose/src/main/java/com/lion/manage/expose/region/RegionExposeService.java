@@ -42,6 +42,8 @@ public interface RegionExposeService extends BaseService<Region> {
      */
     public List<Region> findByDepartmentId(Long departmentId);
 
+    public List<Region> findByDepartmentIds(List<Long> departmentIds);
+
     /**
      *
      * @param lionPage

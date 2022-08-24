@@ -28,6 +28,7 @@ import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.rule.Alarm;
 import com.lion.manage.expose.assets.AssetsExposeService;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.manage.expose.rule.AlarmExposeService;
 import com.lion.person.entity.person.Patient;
@@ -114,6 +115,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
 
     @Override
     public SystemAlarm save(SystemAlarm systemAlarm) {
@@ -451,12 +455,14 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         if (Objects.isNull(endDateTime)) {
             endDateTime =LocalDateTime.of(now.toLocalDate(), LocalTime.MAX);
         }
-        vo.setTotal(alarmDao.todayDaysStatistics(null, startDateTime, endDateTime));
-        vo.setStaffCount(alarmDao.todayDaysStatistics(Type.STAFF, startDateTime, endDateTime ));
-        vo.setPatientCount(alarmDao.todayDaysStatistics(Type.PATIENT, startDateTime, endDateTime ));
-        vo.setTemporaryPersonCount(alarmDao.todayDaysStatistics(Type.MIGRANT, startDateTime, endDateTime ));
-        vo.setHumidCount(alarmDao.todayDaysStatistics(Type.HUMIDITY, startDateTime, endDateTime ));
-        vo.setHumidCount(alarmDao.todayDaysStatistics(Type.TEMPERATURE, startDateTime, endDateTime ));
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
+        vo.setTotal(alarmDao.todayDaysStatistics(null, startDateTime, endDateTime, departmentIds));
+        vo.setStaffCount(alarmDao.todayDaysStatistics(Type.STAFF, startDateTime, endDateTime, departmentIds));
+        vo.setPatientCount(alarmDao.todayDaysStatistics(Type.PATIENT, startDateTime, endDateTime, departmentIds));
+        vo.setTemporaryPersonCount(alarmDao.todayDaysStatistics(Type.MIGRANT, startDateTime, endDateTime, departmentIds));
+        vo.setHumidCount(vo.getHumidCount() + alarmDao.todayDaysStatistics(Type.HUMIDITY, startDateTime, endDateTime, departmentIds));
+        vo.setHumidCount(vo.getHumidCount() + alarmDao.todayDaysStatistics(Type.TEMPERATURE, startDateTime, endDateTime, departmentIds));
+        vo.setAssetsCount(alarmDao.todayDaysStatistics(Type.ASSET, startDateTime, endDateTime, departmentIds));
         return vo;
     }
 

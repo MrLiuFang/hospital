@@ -7,9 +7,11 @@ import com.lion.core.LionPage;
 import com.lion.core.PageResultData;
 import com.lion.event.dao.WashEventDaoEx;
 import com.lion.event.entity.WashEvent;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.AggregateIterable;
 import lombok.extern.java.Log;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,8 @@ public class WashEventDaoImpl implements WashEventDaoEx {
 
     @Autowired
     private MongoTemplate mongoTemplate;
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
 
 
     @Override
@@ -59,6 +63,7 @@ public class WashEventDaoImpl implements WashEventDaoEx {
     public List<Document> eventCount(LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isDepartmentGroup, Long userTypeId, Long userId, LionPage lionPage) {
         List<Bson> pipeline = new ArrayList<Bson>();
         BasicDBObject group = new BasicDBObject();
+        List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         if (Objects.nonNull(isDepartmentGroup) && Objects.equals(isDepartmentGroup,true)) {
             group = BasicDBObjectUtil.put(group,"$group","_id","$pdn"); //部门分组
         }else if (Objects.nonNull(isDepartmentGroup) && Objects.equals(isDepartmentGroup,false)){
@@ -88,6 +93,9 @@ public class WashEventDaoImpl implements WashEventDaoEx {
         }
         if (Objects.nonNull(userId)){
             match = BasicDBObjectUtil.put(match,"$match","pi",new BasicDBObject("$eq",userId) );
+        }
+        if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
+            match = BasicDBObjectUtil.put(match,"$match","pdi",new BasicDBObject("$in",departmentIds) );
         }
 
         BasicDBObject project = new BasicDBObject();
@@ -216,13 +224,10 @@ public class WashEventDaoImpl implements WashEventDaoEx {
         if (Objects.isNull(startDateTime)) {
             startDateTime = LocalDateTime.now().minusDays(30);
         }
-        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime) ) {
-            criteria.andOperator( Criteria.where("adt").gte(startDateTime) ,Criteria.where("adt").lte(endDateTime));
-        }else if (Objects.nonNull(startDateTime) &&  Objects.isNull(endDateTime)) {
-            criteria.and("adt").gte(startDateTime);
-        }else if (Objects.isNull(startDateTime) &&  Objects.nonNull(endDateTime)) {
-            criteria.and("adt").lte(endDateTime);
+        if (Objects.isNull(endDateTime)) {
+            endDateTime = LocalDateTime.now();
         }
+        criteria.andOperator( Criteria.where("adt").gte(startDateTime) ,Criteria.where("adt").lte(endDateTime));
         query.addCriteria(criteria);
         query.with(lionPage);
         List<WashEvent> items = mongoTemplate.find(query, WashEvent.class);
