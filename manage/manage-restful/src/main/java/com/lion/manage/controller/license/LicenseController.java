@@ -4,12 +4,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.annotation.AuthorizationIgnore;
-import com.lion.common.enums.Type;
 import com.lion.core.IResultData;
 import com.lion.core.ResultData;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
-import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
@@ -47,6 +45,7 @@ import java.security.KeyFactory;
 import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDate;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -90,6 +89,9 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
         } else {
             licensePath = "D:\\license\\";
         }
+        AtomicInteger tagCount = new AtomicInteger(0);
+        AtomicInteger deviceCount = new AtomicInteger(0);
+        int userCount = 0;
         fileName = UUID.randomUUID().toString();
         ObjectMapper objectMapper = new ObjectMapper();
         Map<String, MultipartFile> files = multipartHttpServletRequest.getFileMap();
@@ -104,6 +106,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
             java.io.File file1 = new java.io.File(licensePath+fileName+".zip");
             file.transferTo(file1);
             unPacket(file1, Paths.get(licensePath+fileName));
+
             try {
                 BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(new File(licensePath+fileName+"/EquipmentOrder_EN1.lic")), "UTF-8"));
                 String lineTxt = null;
@@ -163,6 +166,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                                 }else if (Objects.equals(equipmentId,7)){
                                     entity.setDeviceClassify(DeviceClassify.RECYCLING_BOX);
                                 }
+                                deviceCount.incrementAndGet();
                                 deviceExposeService.save(entity);
                             }else if (tagList.contains(equipmentId)) {
 //                                {"id":8,"name":"新生兒標籤"},{"id":9,"name":"普通標籤"},{"id":10,"name":"職員標籤"},{"id":11,"name":"溫濕標籤"},{"id":12,"name":"一次性標籤"},{"id":13,"name":"帶按鈕標籤"}
@@ -184,6 +188,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                                 }else if (Objects.equals(equipmentId,14)){
                                     entity1.setType(TagType.PREVENT_FALLING);
                                 }
+                                tagCount.incrementAndGet();
                                 tagExposeService.save(entity1);
                             }
                         }
@@ -212,6 +217,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                 license.setEndDate(LocalDate.parse(jsonNode1.get("endDate").asText()));
                 license.setMenuList(jsonNode1.get("interfacePermissionMenuList").toString());
                 license.setUserNum(jsonNode1.get("userNum").asLong());
+                userCount=license.getUserNum().intValue();
                 license.setPersonInCharge(jsonNode1.get("personInCharge").asText());
                 license.setWorkstationOrderList(jsonNode1.get("interfaceWorkstationOrderLsit").toString());
                 license = licenseService.save(license);
@@ -220,7 +226,13 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                 e.printStackTrace();
             }
         }
-        return ResultData.instance();
+        ResultData resultData = ResultData.instance();
+        Map<String,Integer> map = new HashMap<>();
+        map.put("tagCount",tagCount.get());
+        map.put("deviceCount",deviceCount.get());
+        map.put("userCount",userCount);
+        resultData.setData(map);
+        return resultData;
     }
 
     @GetMapping("/menu")

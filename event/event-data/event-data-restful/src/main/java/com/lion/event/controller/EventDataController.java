@@ -173,6 +173,15 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         return ResultData.instance().setData(eventService.userWashDetails(userId, startDateTime, endDateTime, lionPage));
     }
 
+    @GetMapping("/user/wash/details/export")
+    @ApiOperation(value = "手卫生监控（用户洗手详细）不返回总行数")
+    public void userWashDetailsExport(@ApiParam(value = "用户id") @NotNull(message = "{3000017}") Long userId,
+                                                          @NotNull(message = "开始时间不能为空") @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                          @NotNull(message = "结束时间不能为空") @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
+                                                          LionPage lionPage) throws DocumentException, IOException {
+        eventService.userWashDetailsExport(userId, startDateTime, endDateTime);
+    }
+
     @GetMapping("/user/wash/conformance/ratio")
     @ApiOperation(value = "手卫生监控（员工合规率）")
 //    @ApiImplicitParams({

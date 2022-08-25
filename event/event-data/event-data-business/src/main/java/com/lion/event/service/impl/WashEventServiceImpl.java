@@ -10,6 +10,7 @@ import com.lion.common.dto.UserLastWashDto;
 import com.lion.common.enums.WashEventType;
 import com.lion.common.enums.WashState;
 import com.lion.common.expose.file.FileExposeService;
+import com.lion.common.utils.BasicDBObjectUtil;
 import com.lion.common.utils.RedisUtil;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
@@ -39,10 +40,13 @@ import com.lion.upms.expose.user.UserExposeService;
 import com.lion.upms.expose.user.UserTypeExposeService;
 import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
+import com.mongodb.BasicDBObject;
+import com.mongodb.client.AggregateIterable;
 import lombok.extern.java.Log;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -213,23 +217,93 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
+    public void userWashDetailsExport(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws DocumentException, IOException {
+        List<WashEvent> list = washEventDao.userWashDetails(userId,startDateTime,endDateTime,new LionPage(0,99999));
+        BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
+        Font fontChinese = new Font(bfChinese);
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/pdf");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("event.pdf", "UTF-8"));
+        com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+        Rectangle pageSize = new Rectangle(PageSize.A4.getHeight(), PageSize.A4.getWidth());
+        pageSize.rotate();
+        document.setPageSize(pageSize);
+        ServletOutputStream servletOutputStream = response.getOutputStream();
+        PdfWriter writer = PdfWriter.getInstance(document, servletOutputStream);
+        writer.setPageEvent(new PdfPageEventHelper(FONT,CurrentUserUtil.getCurrentUserUsername()));
+        document.open();
+        PdfPTable table = new PdfPTable(5);
+        table.setWidths(new int[]{20, 20, 20, 20, 20});
+        table.setWidthPercentage(100);
+        PdfPCell cellTitle = new PdfPCell(new Paragraph("員工洗手詳情", new Font(bfChinese,24)));
+        cellTitle.setColspan(8);
+        cellTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
+        table.addCell(cellTitle);
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        PdfPCell cellTitle1 = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000003")+":" +simpleDateFormat.format(new Date()), new Font(bfChinese)));
+        cellTitle1.setColspan(5);
+        table.addCell(cellTitle1);
+        table.addCell(new Paragraph("使用時間", fontChinese));
+        table.addCell(new Paragraph("使用設備", fontChinese));
+        table.addCell(new Paragraph("所屬區域", fontChinese));
+        table.addCell(new Paragraph("使用時長", fontChinese));
+        table.addCell(new Paragraph("是否合規", fontChinese));
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        for (WashEvent washEvent : list) {
+            table.addCell(new Paragraph(Objects.nonNull(washEvent.getDdt())?dateTimeFormatter.format(washEvent.getDdt()):"", fontChinese));
+            table.addCell(new Paragraph(washEvent.getDvn(), fontChinese));
+            table.addCell(new Paragraph(washEvent.getRn(), fontChinese));
+            table.addCell(new Paragraph(Objects.isNull(washEvent.getT())?"":String.valueOf(washEvent.getT()), fontChinese));
+            table.addCell(new Paragraph(Objects.equals(true, washEvent.getIa())?"否":"是", fontChinese));
+        }
+        document.add(table);
+        document.close();
+        servletOutputStream.flush();
+        servletOutputStream.close();
+    }
+
+    @Override
     public IPageResultData<List<ListUserWashMonitorVo>> userWashConformanceRatio(String userName, List<Long> departmentIds, List<Long> userIds, List<Long> userTypeId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+
+        List<Bson> pipeline = new ArrayList<Bson>();
+        BasicDBObject group = new BasicDBObject();
+        group = BasicDBObjectUtil.put(group,"$group","_id","$pi"); //员工分组
+        BasicDBObject match = new BasicDBObject();
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
+        if (Objects.isNull(endDateTime)) {
+            endDateTime = LocalDateTime.now();
+        }
+        if (Objects.nonNull(startDateTime) && Objects.nonNull(endDateTime)) {
+            match = BasicDBObjectUtil.put(match,"$match","adt", new BasicDBObject("$gte",startDateTime).append("$lte",endDateTime));
+        }
+        pipeline.add(match);
+        pipeline.add(group);
+        AggregateIterable<Document> aggregateIterable = mongoTemplate.getCollection("wash_event").aggregate(pipeline);
+        aggregateIterable.forEach(document -> {
+            userIds.add(document.getLong("_id"));
+        });
+        userIds.add(Long.MAX_VALUE);
+
         PageResultData<Map<String,Object>> page = workExposeService.find(departmentIds,userIds , userName, userTypeId, startDateTime, endDateTime, lionPage);
         Long totalElements = (Long) page.getTotalElements();
         List<Map<String,Object>> list = page.getContent();
         List<ListUserWashMonitorVo> returnList = new ArrayList<>();
+        LocalDateTime finalStartDateTime = startDateTime;
+        LocalDateTime finalEndDateTime = endDateTime;
         list.forEach(map -> {
             ListUserWashMonitorVo vo = null;
 //            LocalDateTime startWorkTime = Objects.isNull(map.get("start_work_time"))?null: (LocalDateTime) map.get("start_work_time");
 //            LocalDateTime endWorkTime = Objects.isNull(map.get("end_work_time"))?null: (LocalDateTime) map.get("end_work_time");
             Long userId = Long.valueOf(String.valueOf(map.get("id")) );
 //            if (Objects.nonNull(startWorkTime)) {
-                List<Document> documentList = washEventDao.eventCount(startDateTime, endDateTime, null, null, userId, null);
+                List<Document> documentList = washEventDao.eventCount(finalStartDateTime, finalEndDateTime, null, null, userId, null);
                 if (Objects.nonNull(documentList) && documentList.size() > 0) {
                     Document document = documentList.get(0);
-                    vo = init(startDateTime, endDateTime, userId, document);
+                    vo = init(finalStartDateTime, finalEndDateTime, userId, document);
                 } else {
-                    vo = init(startDateTime, endDateTime, userId, null);
+                    vo = init(finalStartDateTime, finalEndDateTime, userId, null);
                 }
 //            }
 //            else {

@@ -249,7 +249,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 //        if (Objects.nonNull(departmentId)){
 //            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
 //        }
-        if (!Objects.equals(isAll,true) && departmentIds.size()>0 && Objects.nonNull(isTmp) && !Objects.equals("null",isTmp)) {
+        if (!(Objects.nonNull(isTmp) && Objects.equals("true",isTmp.toLowerCase())) && departmentIds.size()>0 && Objects.nonNull(isTmp)) {
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         }
         if (Objects.nonNull(type)){
