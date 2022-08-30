@@ -59,6 +59,8 @@ public interface DeviceService extends BaseService<Device> {
 
     public Integer countByDeviceStateIn(List<State> states);
 
+    public Integer countByIsFault(Boolean isFault);
+
     public Integer countByDeviceStateNotIn(List<State> states);
 
     public Integer countOffLine(LocalDateTime dateTime);

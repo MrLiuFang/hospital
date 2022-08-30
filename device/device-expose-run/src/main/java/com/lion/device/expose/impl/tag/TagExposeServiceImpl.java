@@ -88,16 +88,23 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     }
 
     @Override
-    public Integer countTag(Long departmentId, TagPurpose purpose, State deviceState) {
-        if (Objects.isNull(deviceState)) {
-            return tagDao.countByDepartmentIdAndPurpose(departmentId, purpose);
+    public Integer countTag(Long departmentId, TagPurpose purpose, State deviceState, Boolean isAlarm) {
+        if (Objects.equals(isAlarm,true)) {
+            return tagDao.countByDepartmentIdAndPurposeAndDeviceStateAndIsAlarmIsTrue(departmentId, purpose,deviceState);
+        }else if (Objects.equals(isAlarm,false)){
+            return tagDao.countByDepartmentIdAndPurposeAndDeviceStateAndIsAlarmIsFalse(departmentId, purpose, deviceState);
         }
-        return tagDao.countByDepartmentIdAndPurposeAndDeviceState(departmentId, purpose,deviceState);
+        return tagDao.countByDepartmentIdAndPurposeAndDeviceState(departmentId, purpose, deviceState);
     }
 
     @Override
     public void updateDeviceState(Long id, Integer state) {
         tagDao.updateDeviceState(id, State.instance(state));
+    }
+
+    @Override
+    public void updateIsAlarm(Long id, Boolean isAlarm) {
+        tagDao.updateIaAlarm(id, isAlarm);
     }
 
     @Override
@@ -148,10 +155,10 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
         return list;
     }
 
-    @Override
-    public long countActive() {
-        return count()-tagDao.countByDeviceState(State.NOT_ACTIVE);
-    }
+//    @Override
+//    public long countActive() {
+//        return count()-tagDao.countByDeviceState(State.NOT_ACTIVE);
+//    }
 
     @Override
     public void updateRssi(String tagId, String rssi) {

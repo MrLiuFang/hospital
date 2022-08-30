@@ -68,10 +68,7 @@ public class DeviceDaoImpl implements DeviceDaoEx {
             sb.append(" and ( d.lastDataTime is null or d.lastDataTime < :dateTime )");
             searchParameter.put("dateTime", dateTime);
         }else if (Objects.equals(state,"3")) {
-            states.add(State.REPAIR);
-            states.add(State.FAULT);
-            sb.append(" and d.deviceState in :states ");
-            searchParameter.put("states", states);
+            sb.append(" and d.isFault is true ");
         }
         if (Objects.nonNull(deviceClassify)) {
             sb.append(" and d.deviceClassify =:deviceClassify ");
@@ -103,6 +100,11 @@ public class DeviceDaoImpl implements DeviceDaoEx {
                 searchParameter.put("regionIds", regionIds);
             }
         }
+//        sb.append( " and deviceState in :deviceState " );
+//        List<State> list = new ArrayList<>();
+//        list.add(State.USED);
+//        list.add(State.ALARM);
+//        searchParameter.put("deviceState", list);
 //        sb.append(" order by d.deviceState desc ,battery desc ");
         return baseDao.findNavigator(lionPage,sb.toString(), searchParameter);
     }

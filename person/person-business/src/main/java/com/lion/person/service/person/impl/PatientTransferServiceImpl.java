@@ -3,9 +3,11 @@ package com.lion.person.service.person.impl;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.LionPage;
+import com.lion.core.Optional;
 import com.lion.core.PageResultData;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
+import com.lion.device.expose.tag.TagPatientExposeService;
 import com.lion.exception.BusinessException;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.ward.WardRoomSickbed;
@@ -62,6 +64,9 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
 
     @DubboReference
     private FileExposeService fileExposeService;
+
+    @DubboReference
+    private TagPatientExposeService tagPatientExposeService;
 
     @Override
     public void transfer(TransferDto transferDto) {
@@ -181,6 +186,7 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
                 patientTransfer.setState(updateTransferDto.getTransferState());
                 update(patientTransfer);
             }
+//            tagPatientExposeService.unbinding(updateTransferDto.getPatientId(),false);
         }
     }
 

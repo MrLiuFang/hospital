@@ -68,7 +68,6 @@ public class UserWashServiceImpl implements UserWashService {
         }
         //记录当前用户所在区域
         UserCurrentRegionDto userCurrentRegionDto = recordUserCurrentRegion(user,monitorRegion,starRegion, deviceDataDto, tag);
-        System.out.println(userCurrentRegionDto.getRegionId());
         if (Objects.isNull(userCurrentRegionDto)){
             return;
         }
@@ -207,27 +206,27 @@ public class UserWashServiceImpl implements UserWashService {
 //            }
 
             //记录洗手
-            WashRecordDto washRecordDto = washCommon.init(user.getId(),Objects.isNull(userCurrentRegionDto)?null:userCurrentRegionDto.getRegionId()
-                    ,device.getId(),userCurrentRegionDto.getUuid(),deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
-            rocketMQTemplate.syncSend(TopicConstants.WASH_RECORD, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washRecordDto)).build());
-
-            Region region = redisUtil.getRegionById(userCurrentRegionDto.getRegionId());
-            ListWashTemplateItemVo washTemplateItemVo = redisUtil.getWashTemplate(region.getWashTemplateId());
-            if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime()>0) {
-                String str = (String) redisTemplate.opsForValue().get(RedisConstants.WASH_MONITOR +user.getId());
-                if (Objects.isNull(str)) {
-                    return;
-                }
+//            WashRecordDto washRecordDto = washCommon.init(user.getId(),Objects.isNull(userCurrentRegionDto)?null:userCurrentRegionDto.getRegionId()
+//                    ,device.getId(),userCurrentRegionDto.getUuid(),deviceDataDto.getTime(),deviceDataDto.getSystemDateTime());
+//            rocketMQTemplate.syncSend(TopicConstants.WASH_RECORD, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washRecordDto)).build());
+//
+//            Region region = redisUtil.getRegionById(userCurrentRegionDto.getRegionId());
+//            ListWashTemplateItemVo washTemplateItemVo = redisUtil.getWashTemplate(region.getWashTemplateId());
+//            if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(washTemplateItemVo.getAfterTime()) && washTemplateItemVo.getAfterTime()>0) {
+//                String str = (String) redisTemplate.opsForValue().get(RedisConstants.WASH_MONITOR +user.getId());
+//                if (Objects.isNull(str)) {
+//                    return;
+//                }
 //                redisTemplate.delete(RedisConstants.WASH_MONITOR +user.getId());
-                WashEventDto washEventDto = new WashEventDto();
-                BeanUtils.copyProperties(washRecordDto,washEventDto);
-                washEventDto.setWi(washTemplateItemVo.getId());
-                try {
-                    rocketMQTemplate.syncSend(TopicConstants.WASH_EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washEventDto)).build());
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-            }
+//                WashEventDto washEventDto = new WashEventDto();
+//                BeanUtils.copyProperties(washRecordDto,washEventDto);
+//                washEventDto.setWi(washTemplateItemVo.getId());
+//                try {
+//                    rocketMQTemplate.syncSend(TopicConstants.WASH_EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washEventDto)).build());
+//                } catch (JsonProcessingException e) {
+//                    e.printStackTrace();
+//                }
+//            }
 //            List<Wash> list = redisUtil.getWash(userCurrentRegionDto.getRegionId());
 //            list.forEach(wash -> {
 //                if (Objects.nonNull(wash.getAfterEnteringTime()) && wash.getAfterEnteringTime()>0 ) {

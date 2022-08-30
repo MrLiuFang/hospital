@@ -85,6 +85,11 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     }
 
     @Override
+    public void updateIsAlarm(Long id, Boolean isAlarm) {
+        deviceDao.updateIsAlarm(id, isAlarm);
+    }
+
+    @Override
     public List<Device> find(LocalDateTime startPreviousDisinfectDate, LocalDateTime endPreviousDisinfectDate, String name, String code) {
         Map<String, Object> searchParameter = new HashMap<String, Object>();
         if (Objects.nonNull(startPreviousDisinfectDate)) {
@@ -149,9 +154,9 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
             com.lion.core.Optional<Device> optional = findById(id);
             if (optional.isPresent()) {
                 Device device = optional.get();
-                if (Objects.equals(device.getDeviceState(),State.NOT_ACTIVE)) {
-                    BusinessException.throwException(device.getName() +"未激活不能使用");
-                }
+//                if (Objects.equals(device.getDeviceState(),State.NOT_ACTIVE)) {
+//                    BusinessException.throwException(device.getName() +"未激活不能使用");
+//                }
 //                if (!Objects.equals(device.getDeviceClassify(), DeviceClassify.STAR_AP)) {
                     new_ids.add(device.getId());
 //                }
@@ -179,14 +184,14 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     }
 
     @Override
-    public int count(Long departmentId, List<State> states) {
+    public int count(Long departmentId, List<State> states, Boolean IsAlarm) {
         List<Region> regionList = regionExposeService.findByDepartmentId(departmentId);
         List<Long> reginIds = new ArrayList<>();
         reginIds.add(Long.MAX_VALUE);
         regionList.forEach(region -> {
             reginIds.add(region.getId());
         });
-        return deviceDao.countByRegionIdInAndDeviceStateIn(reginIds,states);
+        return deviceDao.countByRegionIdInAndDeviceStateInAndIsAlarm(reginIds,states,IsAlarm);
     }
 
     @Override
@@ -212,6 +217,16 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
         Device device = deviceDao.findFirstByCode(monitorId);
         if (Objects.nonNull(device)) {
             device.setMonitorRssi(rssi);
+            update(device);
+        }
+    }
+
+    @Override
+    public void updateIsOnline(Long id, Boolean isOnline) {
+        Optional<Device> optional = this.findById(id);
+        if (optional.isPresent() && Objects.nonNull(isOnline)) {
+            Device device = optional.get();
+            device.setISOnline(isOnline);
             update(device);
         }
     }

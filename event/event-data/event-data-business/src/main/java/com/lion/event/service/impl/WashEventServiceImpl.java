@@ -52,8 +52,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
@@ -756,45 +758,22 @@ public class WashEventServiceImpl implements WashEventService {
 
     @Override
     public void updateWashTime(UserLastWashDto userLastWashDto) {
-//        if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && Objects.nonNull(userLastWashDto.getUserId()) ) {
-//            Document match = new Document();
-//            match.put("pi",userLastWashDto.getUserId());
-//            match.put("ddt",userLastWashDto.getDateTime());
-//            match.put("sdt",userLastWashDto.getSystemDateTime());
-//            Query query = new BasicQuery(match);
-//            WashEvent washEvent = mongoTemplate.findOne(query, WashEvent.class);
-//            if (Objects.nonNull(washEvent)) {
-//                Query queryUpdate = new Query();
-//                queryUpdate.addCriteria(Criteria.where("_id").is(washEvent.get_id()));
-//                Update update = new Update();
-//                update.set("t", userLastWashDto.getTime());
-//                if (Objects.nonNull(washEvent.getWi())) {
-//                    Wash wash = redisUtil.getWashById(washEvent.getWi());
-//                    if (Objects.nonNull(wash)) {
-//                        if (userLastWashDto.getTime()<wash.getDuration()) {
-//                            update.set("ia",true);
-//                            update.set("at",SystemAlarmType.WDDBZSXSC.getKey());
-//                            // TODO 给硬件发消息
-//                            log.info("给硬件发送消息-洗手时长不够");
-//                            SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
-//                            systemAlarmDto.setDateTime(LocalDateTime.now());
-//                            systemAlarmDto.setType(Type.STAFF);
-//                            systemAlarmDto.setTagId(userLastWashDto.getTagId());
-//                            systemAlarmDto.setRegionId(washEvent.getRi());
-//                            systemAlarmDto.setPeopleId(washEvent.getPi());
-//                            systemAlarmDto.setDelayDateTime(systemAlarmDto.getDateTime());
-//                            systemAlarmDto.setSystemAlarmType(SystemAlarmType.WDDBZSXSC);
-//                            try {
-//                                rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
-//                            } catch (JsonProcessingException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }
-//                }
-//                mongoTemplate.updateFirst(queryUpdate, update, "wash_event");
-//            }
-//        }
+        if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && Objects.nonNull(userLastWashDto.getUserId()) ) {
+            Document match = new Document();
+            match.put("pi",userLastWashDto.getUserId());
+            match.put("ddt",userLastWashDto.getDateTime());
+            match.put("sdt",userLastWashDto.getSystemDateTime());
+            Query query = new BasicQuery(match);
+            WashEvent washEvent = mongoTemplate.findOne(query, WashEvent.class);
+            if (Objects.nonNull(washEvent)) {
+                washEvent.setT(userLastWashDto.getTime());
+                Query queryUpdate = new Query();
+                queryUpdate.addCriteria(Criteria.where("_id").is(washEvent.get_id()));
+                Update update = new Update();
+                update.set("t", userLastWashDto.getTime());
+                mongoTemplate.updateFirst(queryUpdate, update, "wash_event");
+            }
+        }
     }
 
     @Override

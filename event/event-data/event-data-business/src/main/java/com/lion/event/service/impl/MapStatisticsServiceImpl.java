@@ -482,9 +482,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 DepartmentTagStatisticsDetailsVo.TagDepartmentVo tagDepartmentVo = new DepartmentTagStatisticsDetailsVo.TagDepartmentVo();
                 tagDepartmentVo.setDepartmentName(department.getName());
                 tagDepartmentVo.setDepartmentId(department.getId());
-                departmentTagStatisticsDetailsVo.setTagCount(departmentTagStatisticsDetailsVo.getTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, null));
-                departmentTagStatisticsDetailsVo.setNormalTagCount(departmentTagStatisticsDetailsVo.getNormalTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.NORMAL));
-                departmentTagStatisticsDetailsVo.setAbnormalTagCount(departmentTagStatisticsDetailsVo.getAbnormalTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.ALARM));
+                departmentTagStatisticsDetailsVo.setTagCount(departmentTagStatisticsDetailsVo.getTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.USED, null));
+                departmentTagStatisticsDetailsVo.setNormalTagCount(departmentTagStatisticsDetailsVo.getNormalTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.USED,false ));
+                departmentTagStatisticsDetailsVo.setAbnormalTagCount(departmentTagStatisticsDetailsVo.getAbnormalTagCount() + tagExposeService.countTag(department.getId(), TagPurpose.THERMOHYGROGRAPH, com.lion.device.entity.enums.State.USED, true));
 
                 List<Tag> tagList = tagExposeService.find(department.getId(), TagPurpose.THERMOHYGROGRAPH, keyword, finalListIds);
                 List<DepartmentTagStatisticsDetailsVo.TagVo> tagVos = new ArrayList<>();
@@ -613,8 +613,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 //        List<DepartmentDeviceGroupStatisticsDetailsVo.DeviceGroupDetailsVo> deviceGroupDetailsVos = new ArrayList<>();
         list.forEach(id->{
 //            departmentDeviceGroupStatisticsDetailsVo.setDeviceGroupCount(departmentDeviceGroupStatisticsDetailsVo.getDeviceGroupCount() + deviceGroupExposeService.count(id));
-            departmentDeviceStatisticsDetailsVo.setNormalDeviceCount(departmentDeviceStatisticsDetailsVo.getNormalDeviceCount() + deviceExposeService.count(id, Arrays.asList(new com.lion.device.entity.enums.State[]{com.lion.device.entity.enums.State.NORMAL})));
-            departmentDeviceStatisticsDetailsVo.setAbnormalDeviceCount(departmentDeviceStatisticsDetailsVo.getAbnormalDeviceCount() + deviceExposeService.count(id, Arrays.asList(new com.lion.device.entity.enums.State[]{com.lion.device.entity.enums.State.ALARM,com.lion.device.entity.enums.State.FAULT,com.lion.device.entity.enums.State.REPAIR})));
+            departmentDeviceStatisticsDetailsVo.setNormalDeviceCount(departmentDeviceStatisticsDetailsVo.getNormalDeviceCount() + deviceExposeService.count(id, Arrays.asList(new com.lion.device.entity.enums.State[]{com.lion.device.entity.enums.State.USED}), false));
+            departmentDeviceStatisticsDetailsVo.setAbnormalDeviceCount(departmentDeviceStatisticsDetailsVo.getAbnormalDeviceCount() + deviceExposeService.count(id, Arrays.asList(new com.lion.device.entity.enums.State[]{com.lion.device.entity.enums.State.USED,}), true));
             DepartmentDeviceStatisticsDetailsVo.DepartmentDeviceDetailsVo deviceDetailsVo = new DepartmentDeviceStatisticsDetailsVo.DepartmentDeviceDetailsVo();
             deviceDetailsVo.setDepartmentId(id);
             com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(id);

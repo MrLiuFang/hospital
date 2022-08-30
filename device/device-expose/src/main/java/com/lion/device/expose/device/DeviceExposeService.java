@@ -59,6 +59,8 @@ public interface DeviceExposeService extends BaseService<Device> {
      */
     public void updateState(Long id,Integer state);
 
+    public void updateIsAlarm(Long id,Boolean isAlarm);
+
     /**
      *
      * @param startPreviousDisinfectDate
@@ -117,11 +119,13 @@ public interface DeviceExposeService extends BaseService<Device> {
 
     /**
      * 根据科室统计
+     *
      * @param departmentId
      * @param states
+     * @param IsAlarm
      * @return
      */
-    public int count(Long departmentId, List<State> states);
+    public int count(Long departmentId, List<State> states, Boolean IsAlarm);
 
     public long countDeviceClassify(DeviceClassify deviceClassify);
 
@@ -136,6 +140,7 @@ public interface DeviceExposeService extends BaseService<Device> {
 
     public void updateRssi(String monitorId, String rssi);
 
+    public void updateIsOnline(Long id,Boolean isOnline);
 
 
 }

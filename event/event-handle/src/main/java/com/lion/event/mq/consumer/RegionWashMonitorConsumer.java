@@ -84,11 +84,11 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                         if (Objects.isNull(washTemplateItemVo)) {
                             return;
                         }
-                        WashRecordDto washRecordDto = washCommon.init(userCurrentRegionDto.getUserId(),userCurrentRegionDto.getRegionId(),null,userCurrentRegionDto.getUuid() , null,null);
+                        UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
+                        WashRecordDto washRecordDto = washCommon.init(userCurrentRegionDto.getUserId(),userCurrentRegionDto.getRegionId(),null,userCurrentRegionDto.getUuid() , userLastWashDto.getDateTime(),userLastWashDto.getSystemDateTime());
                         WashEventDto washEventDto = new WashEventDto();
                         BeanUtils.copyProperties(washRecordDto,washEventDto);
                         washEventDto.setWi(washTemplateItemVo.getId());
-                        UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
 
                         if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(washTemplateItemVo.getBeforeTime()) && washTemplateItemVo.getBeforeTime() >0){
                             String before = (String) redisTemplate.opsForValue().get(RedisConstants.BEFORE_UUID+uuid);

@@ -4,12 +4,10 @@ import com.lion.core.IPageResultData;
 import com.lion.core.IResultData;
 import com.lion.core.LionPage;
 import com.lion.core.ResultData;
-import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.vo.DeviceMonitorTopVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
-import com.lion.device.entity.enums.State;
 import com.lion.device.service.cctv.CctvService;
 import com.lion.device.service.device.DeviceService;
 import com.lion.device.service.fault.FaultService;
@@ -26,12 +24,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @description:
@@ -74,7 +68,7 @@ public class MonitorController {
 //        deviceMonitorTopVo = calculation(cctvService.allId(), deviceMonitorTopVo);
 //        int fault = faultService.countNotSolve();
         deviceMonitorTopVo.setOfflineCount(deviceService.countOffLine(dateTime));
-        deviceMonitorTopVo.setFaultCount(deviceService.countByDeviceStateIn(new ArrayList<>(Arrays.asList(new State[]{State.FAULT,State.REPAIR}))));
+        deviceMonitorTopVo.setFaultCount(deviceService.countByIsFault(true));
         return ResultData.instance().setData(deviceMonitorTopVo);
     }
 

@@ -111,7 +111,7 @@ public class UpdateDeviceDataTime {
                                 systemAlarmDto.setDateTime(LocalDateTime.now());
                                 systemAlarmDto.setType(Type.DEVICE);
                                 systemAlarmDto.setDeviceId(id);
-                                systemAlarmDto.setSystemAlarmType(SystemAlarmType.SBGZ);
+                                systemAlarmDto.setSystemAlarmType(SystemAlarmType.LS);
                                 try {
                                     rocketMQTemplate.syncSend(TopicConstants.SYSTEM_ALARM, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(systemAlarmDto)).build());
                                     redisTemplate.opsForValue().set(RedisConstants.DEVICE_OFF_LINE+id,true,RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
@@ -119,7 +119,9 @@ public class UpdateDeviceDataTime {
                                     e.printStackTrace();
                                 }
                             }
-                            deviceExposeService.updateState(id,State.OFF_LINE.getKey());
+                            deviceExposeService.updateIsOnline(id,false);
+                        }else {
+                            deviceExposeService.updateIsOnline(id,true);
                         }
                     }
                 });

@@ -83,7 +83,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
     @ApiOperation(value = "新增设备")
     public IResultData add(@RequestBody @Validated({Validator.Insert.class})AddDeviceDto addDeviceDto){
         Device device = new Device();
-        addDeviceDto.setDeviceState(State.ACTIVE);
+//        addDeviceDto.setDeviceState(State.NOT_USED);
         BeanUtils.copyProperties(addDeviceDto,device);
         this.deviceService.save(device);
         return ResultData.instance();
@@ -93,9 +93,6 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
     @ApiOperation(value = "修改设备")
     public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateDeviceDto updateDeviceDto){
         Device device = new Device();
-        if (Objects.equals(updateDeviceDto.getDeviceState(),State.NOT_ACTIVE)) {
-            updateDeviceDto.setDeviceState(null);
-        }
         BeanUtils.copyProperties(updateDeviceDto,device);
         this.deviceService.update(device);
         return ResultData.instance();

@@ -86,6 +86,11 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
 
     @Modifying
     @Transactional
+    @Query(" update Device set isAlarm =:isAlarm ,version=version+1 where id = :id ")
+    public void updateIsAlarm(@Param("id")Long id,@Param("isAlarm") Boolean isAlarm);
+
+    @Modifying
+    @Transactional
     @Query(" update Device set deviceState = 4,   previousDisinfectDate =:previousDisinfectDate ,version=version+1 where id = :id ")
     public void updateDisinfectDate(@Param("id")Long id,@Param("previousDisinfectDate") LocalDate previousDisinfectDate);
 
@@ -164,13 +169,18 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
      */
     public int countByRegionIdInAndDeviceStateIn(List<Long> reginIds,List<State> states );
 
+    public int countByRegionIdInAndDeviceStateInAndIsAlarm(List<Long> reginIds,List<State> states ,Boolean IsAlarm);
+
     public long countByDeviceStateAndDeviceClassify(State state,DeviceClassify deviceClassify);
 
     public Integer countByDeviceStateIn(List<State> state);
 
     public Integer countByDeviceStateNotIn(List<State> state);
 
-    public Integer countByLastDataTimeLessThanOrLastDataTimeIsNull(LocalDateTime dateTime);
+    public Integer countByDeviceStateAndIsFault(State deviceState, Boolean isFault);
+
+    @Query(" select count(d) from Device d where d.deviceState = :deviceState and (d.lastDataTime > :dateTime or d.lastDataTime is null )  ")
+    public Integer countByDeviceStateAndLastDataTimeLessThanOrLastDataTimeIsNull(State deviceState,LocalDateTime dateTime);
 
     public Integer countByLastDataTimeGreaterThanAndLastDataTimeNotNull(LocalDateTime dateTime);
 }

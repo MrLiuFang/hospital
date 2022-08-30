@@ -107,6 +107,10 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
         if (Objects.equals(assetsFault.getState(),AssetsFaultState.FINISH)){
             BusinessException.throwException(MessageI18nUtil.getMessage("2000067"));
         }
+        int i = assetsFaultDao.countByAssetsIdAndState(assetsFault.getAssetsId(),AssetsFaultState.NOT_FINISHED);
+        if (i>0) {
+            BusinessException.throwException("有未處理的故障,不能再繼續申報故障");
+        }
         save(assetsFault);
         Optional<Assets> optional =  assetsService.findById(assetsFault.getAssetsId());
         if (optional.isPresent()) {

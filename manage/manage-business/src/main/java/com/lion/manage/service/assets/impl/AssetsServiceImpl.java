@@ -35,6 +35,7 @@ import com.lion.manage.entity.enums.AssetsFaultState;
 import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
+import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.department.DepartmentUserExposeService;
 import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsFaultService;
@@ -127,6 +128,9 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 
     @Autowired
     private HttpServletResponse response;
+
+    @DubboReference
+    private DepartmentExposeService departmentExposeService;
 
     @Override
     @Transactional
@@ -324,8 +328,9 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         }
         if (Objects.equals(isMyDepartment,true)) {
             Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
-            if (Objects.nonNull(department)){
-                departmentId = department.getId();
+            List<Long> ids = departmentExposeService.responsibleDepartment(null);
+            if (Objects.nonNull(ids) && ids.size()>0){
+                jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",ids);
             }
         }
         if (Objects.nonNull(departmentId)) {

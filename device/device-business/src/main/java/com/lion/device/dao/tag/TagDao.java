@@ -94,6 +94,10 @@ public interface TagDao extends BaseDao<Tag> {
      */
     public Integer countByDepartmentIdAndPurpose(Long departmentId, TagPurpose purpose);
 
+    public Integer countByDepartmentIdAndPurposeAndDeviceStateAndIsAlarmIsTrue(Long departmentId, TagPurpose purpose,State deviceState);
+
+    public Integer countByDepartmentIdAndPurposeAndDeviceStateAndIsAlarmIsFalse(Long departmentId, TagPurpose purpose,State deviceState);
+
     public Integer countByDepartmentIdAndPurposeAndIdIn(Long departmentId, TagPurpose purpose,List<Long> listIds);
 
     /**
@@ -115,6 +119,11 @@ public interface TagDao extends BaseDao<Tag> {
     @Transactional
     @Query(" update Tag set deviceState =:state ,version=version +1 where id = :id ")
     public void updateDeviceState(@Param("id")Long id, @Param("state") State state);
+
+    @Modifying
+    @Transactional
+    @Query(" update Tag set isAlarm =:isAlarm ,version=version +1 where id = :id ")
+    public void updateIaAlarm(@Param("id")Long id, @Param("isAlarm") Boolean isAlarm);
 
     @Modifying
     @Transactional

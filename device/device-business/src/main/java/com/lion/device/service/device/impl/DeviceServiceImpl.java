@@ -153,7 +153,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
                 redisTemplate.delete(RedisConstants.DEVICE_REGION+device.getId());
                 currentPositionExposeService.delete(null,d.getId(),null);
                 Device newDevice = new Device();
-                newDevice.setDeviceState(State.ACTIVE);
+                newDevice.setDeviceState(State.NOT_USED);
                 newDevice.setCode(device.getCode());
                 newDevice.setDeviceType(device.getDeviceType());
                 newDevice.setDeviceClassify(device.getDeviceClassify());
@@ -241,6 +241,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 //            }
             vo.setImg(device.getImg());
             vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
+            vo.setIsFault(device.getIsFault());
             vo.setState(device.getDeviceState());
             if (Objects.nonNull(device.getLastDataTime())) {
                 Duration duration = Duration.between(device.getLastDataTime(), LocalDateTime.now());
@@ -297,13 +298,18 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     }
 
     @Override
+    public Integer countByIsFault(Boolean isFault) {
+        return deviceDao.countByDeviceStateAndIsFault(State.USED,true);
+    }
+
+    @Override
     public Integer countByDeviceStateNotIn(List<State> states) {
         return deviceDao.countByDeviceStateNotIn(states);
     }
 
     @Override
     public Integer countOffLine(LocalDateTime dateTime) {
-        return deviceDao.countByLastDataTimeLessThanOrLastDataTimeIsNull(dateTime);
+        return deviceDao.countByDeviceStateAndLastDataTimeLessThanOrLastDataTimeIsNull(State.USED, dateTime);
     }
 
     @Override

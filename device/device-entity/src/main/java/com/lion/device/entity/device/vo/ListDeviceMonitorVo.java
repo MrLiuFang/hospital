@@ -48,6 +48,9 @@ public class ListDeviceMonitorVo {
     @Schema(description = "是否在线")
     private Boolean isOnline =false;
 
+    @Schema(description = "是否故障")
+    private Boolean isFault;
+
     @Schema(description = "电量")
     private Integer battery;
 

@@ -109,7 +109,16 @@ public class Device extends BaseEntity implements Serializable {
     @Schema(description = "设备状态")
     @Column(name = "device_state")
     @Convert(converter = State.StateConverter.class)
-    private State deviceState = State.NOT_ACTIVE;
+    private State deviceState = State.NOT_USED;
+
+    @Schema(description = "是否告警")
+    private Boolean isAlarm;
+
+    @Schema(description = "是否故障")
+    private Boolean isFault;
+
+    @Schema(description = "是否在线")
+    private Boolean iSOnline;
 
     @Schema(description = "最后的设备数据时间")
     @Column(name = "last_data_time")

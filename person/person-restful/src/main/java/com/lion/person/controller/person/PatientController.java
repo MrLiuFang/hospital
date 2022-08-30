@@ -120,6 +120,16 @@ public class PatientController extends BaseControllerImpl implements BaseControl
         return resultData;
     }
 
+    @DeleteMapping("/transfer/delete")
+    @ApiOperation(value = "患者转移")
+    public IResultData transfer(@RequestBody List<DeleteDto> deleteDtoList){
+        deleteDtoList.forEach(deleteDto -> {
+            patientTransferService.deleteById(deleteDto.getId());
+        });
+        ResultData resultData = ResultData.instance();
+        return resultData;
+    }
+
 
     @PutMapping("/transfer/update")
     @ApiOperation(value = "修改患者转移状态(只修改非完成&取消的转移)")

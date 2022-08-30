@@ -59,9 +59,9 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
         if (Objects.isNull(tag)){
             BusinessException.throwException(MessageI18nUtil.getMessage("4000021"));
         }
-        if (Objects.equals(tag.getDeviceState(), State.NOT_ACTIVE)) {
-            BusinessException.throwException(tag.getTagCode() +"未激活不能使用");
-        }
+//        if (Objects.equals(tag.getDeviceState(), State.NOT_ACTIVE)) {
+//            BusinessException.throwException(tag.getTagCode() +"未激活不能使用");
+//        }
         if (!Objects.equals(tag.getPurpose(), TagPurpose.ASSETS)){
             BusinessException.throwException(MessageI18nUtil.getMessage("4000022"));
         }

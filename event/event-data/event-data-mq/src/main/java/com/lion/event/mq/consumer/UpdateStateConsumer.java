@@ -71,7 +71,7 @@ public class UpdateStateConsumer implements RocketMQListener<MessageExt> {
 //                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(null,null,null,updateStateDto.getId())){
 //                    return;
 //                }
-                tagExposeService.updateDeviceState(updateStateDto.getId(),updateStateDto.getState());
+                tagExposeService.updateIsAlarm(updateStateDto.getId(),Objects.equals(updateStateDto.getState(),1)?false:true);
             }else if (Objects.equals(updateStateDto.getType(), Type.PATIENT)){
 //                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(updateStateDto.getId(),null,null,null)){
 //                    return;
@@ -92,7 +92,7 @@ public class UpdateStateConsumer implements RocketMQListener<MessageExt> {
 //                if (Objects.equals(updateStateDto.getState(),1) && findAlarm(null,updateStateDto.getId(),null,null)){
 //                    return;
 //                }
-                deviceExposeService.updateState(updateStateDto.getId(),updateStateDto.getState());
+                deviceExposeService.updateIsAlarm(updateStateDto.getId(),Objects.equals(updateStateDto.getState(),1)?false:true);
             }
         }catch (Exception e){
             e.printStackTrace();

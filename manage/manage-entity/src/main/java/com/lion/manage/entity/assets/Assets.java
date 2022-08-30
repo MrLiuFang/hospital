@@ -106,6 +106,8 @@ public class Assets extends BaseEntity implements Serializable {
     @Convert(converter = com.lion.manage.entity.enums.State.StateConverter.class)
     private com.lion.manage.entity.enums.State deviceState = State.NORMAL;
 
+
+
     @Schema(description = "最后的设备数据时间")
     @Column(name = "last_data_time")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

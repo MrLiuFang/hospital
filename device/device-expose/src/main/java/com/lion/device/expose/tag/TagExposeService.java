@@ -67,12 +67,14 @@ public interface TagExposeService extends BaseService<Tag> {
 
     /**
      * 根据科室统计标签
+     *
      * @param departmentId
      * @param purpose
      * @param deviceState
+     * @param isAlarm
      * @return
      */
-    public Integer countTag(Long departmentId, TagPurpose purpose, State deviceState);
+    public Integer countTag(Long departmentId, TagPurpose purpose, State deviceState,Boolean isAlarm);
 
     /**
      * 修改状态
@@ -80,6 +82,8 @@ public interface TagExposeService extends BaseService<Tag> {
      * @param state
      */
     public void updateDeviceState(Long id, Integer state);
+
+    public void updateIsAlarm(Long id,Boolean isAlarm);
 
     public void updateDeviceState(String code, State state);
 
@@ -116,7 +120,7 @@ public interface TagExposeService extends BaseService<Tag> {
      */
     public List<Long> find(TagType tagType,String tagCode);
 
-    public long countActive();
+//    public long countActive();
 
     public void updateRssi(String tagId, String rssi);
 

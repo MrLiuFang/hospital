@@ -41,4 +41,5 @@ public interface AssetsFaultDao extends BaseDao<AssetsFault> {
      * @return
      */
     public AssetsFault findFirstByAssetsIdAndStateOrderByCreateDateTimeDesc(Long assetsId,AssetsFaultState state);
+
 }

@@ -14,15 +14,15 @@ import java.util.Objects;
  */
 public enum State implements IEnum {
 
-    NORMAL(1, "正常"),
-    ALARM(2, "警报"),
+//    NORMAL(1, "正常"),
+//    ALARM(2, "警报"),
     USED(3, "使用中"),
-    NOT_USED(4, "未使用"),
-    FAULT(5, "故障"),
-    REPAIR(6, "维修中"),
-    NOT_ACTIVE(7, "未激活"),
-    ACTIVE(8, "已激活"),
-    OFF_LINE(9, "离线");
+    NOT_USED(4, "未使用");
+//    FAULT(5, "故障"),
+//    REPAIR(6, "维修中"),
+//    NOT_ACTIVE(7, "未激活"),
+//    ACTIVE(8, "已激活");
+//    OFF_LINE(9, "离线")
 
 
     private final int key;

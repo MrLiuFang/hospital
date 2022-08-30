@@ -74,7 +74,7 @@ public class WashRecordDto implements Serializable {
     private String rn;
 
     @Schema(description = "洗手时长")
-    private Integer t;
+    private Integer t = 0;
 
     @Schema(description = "设备产生的洗手時間")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

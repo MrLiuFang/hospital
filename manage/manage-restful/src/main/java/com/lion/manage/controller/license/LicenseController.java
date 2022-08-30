@@ -128,16 +128,16 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                         Boolean b = false;
                         Device device = deviceExposeService.find(equipmentNo);
                         if (Objects.nonNull(device)) {
-                            if (Objects.equals(State.NOT_ACTIVE,device.getDeviceState())) {
-                                deviceExposeService.updateState(equipmentNo, State.ACTIVE);
-                            }
+//                            if (Objects.equals(State.NOT_ACTIVE,device.getDeviceState())) {
+//                                deviceExposeService.updateState(equipmentNo, State.ACTIVE);
+//                            }
                             b = true;
                         }
                         Tag tag = tagExposeService.find(equipmentNo);
                         if (Objects.nonNull(tag)) {
-                            if (Objects.equals(State.NOT_ACTIVE,tag.getDeviceState())) {
-                                tagExposeService.updateDeviceState(equipmentNo, State.ACTIVE);
-                            }
+//                            if (Objects.equals(State.NOT_ACTIVE,tag.getDeviceState())) {
+//                                tagExposeService.updateDeviceState(equipmentNo, State.ACTIVE);
+//                            }
                             b = true;
                         }
                         if (!b) {
@@ -147,7 +147,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
                             List<Integer> tagList = Arrays.asList(new Integer[]{8,9,10,11,12,13,14});
                             if (deviceList.contains(equipmentId)) {
                                 Device entity = new Device();
-                                entity.setDeviceState(State.ACTIVE);
+                                entity.setDeviceState(State.NOT_USED);
                                 entity.setCode(equipmentNo);
                                 if (Objects.equals(equipmentId,1)){
                                     entity.setDeviceClassify(DeviceClassify.STAR_AP);
@@ -172,7 +172,7 @@ public class LicenseController extends BaseControllerImpl implements BaseControl
 //                                {"id":8,"name":"新生兒標籤"},{"id":9,"name":"普通標籤"},{"id":10,"name":"職員標籤"},{"id":11,"name":"溫濕標籤"},{"id":12,"name":"一次性標籤"},{"id":13,"name":"帶按鈕標籤"}
                                 Tag entity1 = new Tag();
                                 entity1.setTagCode(equipmentNo);
-                                entity1.setDeviceState(State.ACTIVE);
+                                entity1.setDeviceState(State.NOT_USED);
                                 if (Objects.equals(equipmentId,8)){
                                     entity1.setType(TagType.BABY);
                                 }else if (Objects.equals(equipmentId,9)){
