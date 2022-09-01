@@ -52,23 +52,12 @@ public class DeviceDaoImpl implements DeviceDaoEx {
             sb.append(" and d.buildFloorId =:buildFloorId ");
             searchParameter.put("buildFloorId",buildFloorId);
         }
-        List<State> states = new ArrayList<>();
-        LocalDateTime dateTime = LocalDateTime.now().minusHours(24);
         if (Objects.equals(state,"1")) {
-//            states.add(State.REPAIR);
-//            states.add(State.FAULT);
-//            states.add(State.OFF_LINE);
-//            sb.append(" and d.deviceState not in :states ");
-//            searchParameter.put("states", states);
-            sb.append(" and ( d.lastDataTime is not null and d.lastDataTime > :dateTime )");
-            searchParameter.put("dateTime", dateTime);
+            sb.append(" and isOnline is true ");
         }else if (Objects.equals(state,"2")) {
-//            sb.append(" and d.deviceState = :deviceState ");
-//            searchParameter.put("deviceState", State.OFF_LINE);
-            sb.append(" and ( d.lastDataTime is null or d.lastDataTime < :dateTime )");
-            searchParameter.put("dateTime", dateTime);
+            sb.append("  and isOnline is false ");
         }else if (Objects.equals(state,"3")) {
-            sb.append(" and d.isFault is true ");
+            sb.append("  and d.isFault is true ");
         }
         if (Objects.nonNull(deviceClassify)) {
             sb.append(" and d.deviceClassify =:deviceClassify ");
@@ -78,6 +67,8 @@ public class DeviceDaoImpl implements DeviceDaoEx {
             sb.append(" and d.deviceType =:deviceType ");
             searchParameter.put("deviceType", deviceType);
         }
+        sb.append(" and  deviceState = :deviceState  ");
+        searchParameter.put("deviceState", State.USED);
         sb.append(" order by d.createDateTime ");
         return baseDao.findNavigator(lionPage,sb.toString(),searchParameter);
     }

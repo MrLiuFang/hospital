@@ -103,13 +103,13 @@ public class Tag extends BaseEntity implements Serializable {
     private com.lion.device.entity.enums.State deviceState = State.NOT_USED;
 
     @Schema(description = "是否告警")
-    private Boolean isAlarm;
+    private Boolean isAlarm = false;
 
     @Schema(description = "是否故障")
-    private Boolean isFault;
+    private Boolean isFault = false;
 
     @Schema(description = "是否在线")
-    private Boolean iSOnline;
+    private Boolean isOnline = false;
 
     @Schema(description = "最后的设备数据时间")
     @Column(name = "last_data_time")

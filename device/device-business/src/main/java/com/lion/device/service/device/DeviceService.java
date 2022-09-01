@@ -13,7 +13,6 @@ import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.enums.State;
 import org.springframework.data.domain.Page;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -63,7 +62,7 @@ public interface DeviceService extends BaseService<Device> {
 
     public Integer countByDeviceStateNotIn(List<State> states);
 
-    public Integer countOffLine(LocalDateTime dateTime);
+    public Integer countOffLine();
 
-    public Integer countOnLine(LocalDateTime dateTime);
+    public Integer countOnLine();
 }

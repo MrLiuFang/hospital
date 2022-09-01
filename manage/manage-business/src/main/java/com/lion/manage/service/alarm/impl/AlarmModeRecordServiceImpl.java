@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -107,10 +108,14 @@ public class AlarmModeRecordServiceImpl extends BaseServiceImpl<AlarmModeRecord>
     public void export(LocalDateTime startDateTime, LocalDateTime endDateTime, AlarmMode alarmMode, String name) throws IOException, IllegalAccessException {
         IPageResultData<List<ListAlarmModeRecordVo>> pageResultData = list(startDateTime,endDateTime,alarmMode,name,new LionPage(0,Integer.MAX_VALUE));
         List<ListAlarmModeRecordVo> list = pageResultData.getData();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        list.forEach(listAlarmModeRecordVo -> {
+            listAlarmModeRecordVo.setDateTime(dateTimeFormatter.format(listAlarmModeRecordVo.getCreateDateTime()));
+        });
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
-        excelColumn.add(ExcelColumn.build("data time", "createDateTime"));
-        excelColumn.add(ExcelColumn.build("name", "name"));
-        excelColumn.add(ExcelColumn.build("alarm mode", "alarmMode"));
+        excelColumn.add(ExcelColumn.build("時間", "dateTime"));
+        excelColumn.add(ExcelColumn.build("操作員", "name"));
+        excelColumn.add(ExcelColumn.build("模式", "alarmMode"));
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("alarmMode.xls", "UTF-8"));

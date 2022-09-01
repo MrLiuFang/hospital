@@ -36,6 +36,8 @@ public interface RecyclingBoxRecordService {
      */
     public IPageResultData<List<ListRecyclingBoxRecordVo>> list(Boolean isDisinfect,TagType tagType, String name, String code, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime,Long id, LionPage lionPage);
 
+    public void listExport(Boolean isDisinfect,TagType tagType, String name, String code, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime,Long id, LionPage lionPage) throws IOException, IllegalAccessException;
+
     /**
      * 回收箱当前
      * @param startPreviousDisinfectDate

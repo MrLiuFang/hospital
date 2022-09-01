@@ -14,12 +14,12 @@ import java.util.Objects;
 public enum Type implements IEnum {
 
     ASSET(0, "资产"),
-    STAFF(1, "员工"),
+    STAFF(1, "职员"),
     TEMPERATURE(2, "温度仪"),
     ERU(3, "eru"),
     HUMIDITY(4, "湿度仪"),
     TEMP_TAG(5, "临时标签"),
-    PATIENT(6, "患者"),
+    PATIENT(6, "留院人员"),
     MIGRANT(7, "流动人员"),
     DEVICE(8, "设备");
 

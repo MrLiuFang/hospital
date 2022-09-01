@@ -3,6 +3,7 @@ package com.lion.event.controller;
 import cn.hutool.core.util.NumberUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.itextpdf.text.DocumentException;
+import com.lion.common.enums.SystemAlarmState;
 import com.lion.common.enums.Type;
 import com.lion.common.enums.WashEventType;
 import com.lion.common.utils.RedisUtil;
@@ -478,7 +479,10 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IPageResultData<List<ListSystemAlarmVo>> staffSystemAlarm(@ApiParam("员工id") @NotNull(message = "{3000024}") Long userId,@ApiParam("区域id") Long regionId,
                                                                      @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                      @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,LionPage lionPage) {
-        return systemAlarmService.list(userId,regionId,startDateTime,endDateTime, lionPage);
+        List list = new ArrayList();
+        list.add(SystemAlarmState.UNTREATED.getKey());
+        list.add(SystemAlarmState.CALL.getKey());
+        return systemAlarmService.list(userId,regionId,startDateTime,endDateTime, lionPage, list);
     }
 
     @GetMapping("/patient/position")
@@ -492,10 +496,15 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/patient/system/alarm")
     @ApiOperation(value = "地图监控患者警告列表(不返回总行数)")
-    public IPageResultData<List<ListSystemAlarmVo>> patientSystemAlarm(@ApiParam("患者id") @NotNull(message = "{3000018}") Long patientId,@ApiParam("区域id") Long regionId,
+    public IPageResultData<List<ListSystemAlarmVo>> patientSystemAlarm(@ApiParam("患者id") @NotNull(message = "{3000018}") Long patientId,@ApiParam("区域id") Long regionId,@ApiParam("查看所有事件") Boolean isAll,
                                                                         @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                         @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,LionPage lionPage) {
-        return systemAlarmService.list(patientId, regionId,startDateTime ,endDateTime, lionPage);
+        List list = new ArrayList();
+        if (!Objects.equals(isAll,true)) {
+            list.add(SystemAlarmState.UNTREATED.getKey());
+            list.add(SystemAlarmState.CALL.getKey());
+        }
+        return systemAlarmService.list(patientId, regionId,startDateTime ,endDateTime, lionPage,list);
     }
 
     @GetMapping("/temporary/person/position")
@@ -563,7 +572,10 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IPageResultData<List<ListSystemAlarmVo>> temporaryPersonSystemAlarm(@ApiParam("流动人员id") @NotNull(message = "{3000023}") Long temporaryPersonId,@ApiParam("区域id") Long regionId,
                                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,LionPage lionPage) {
-        return systemAlarmService.list(temporaryPersonId,regionId ,startDateTime ,endDateTime, lionPage);
+        List list = new ArrayList();
+        list.add(SystemAlarmState.UNTREATED.getKey());
+        list.add(SystemAlarmState.CALL.getKey());
+        return systemAlarmService.list(temporaryPersonId,regionId ,startDateTime ,endDateTime, lionPage, list);
     }
 
     @GetMapping("/assets/details")
@@ -702,6 +714,14 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                                                   @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                   @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,@ApiParam("回收箱id")Long id,LionPage lionPage){
         return recyclingBoxRecordService.list(isDisinfect, tagType, name, code, tagCode, startDateTime, endDateTime,id , lionPage);
+    }
+
+    @GetMapping("/recyclingBox/history/list/export")
+    @ApiOperation(value = "回收箱历史记录导出")
+    public void recyclingBoxHistoryListExport(@ApiParam("是否消毒-true=历史记录,false=当前") Boolean isDisinfect, @ApiParam("标签类型")TagType tagType,@ApiParam("回收箱名称")String name,@ApiParam("回收箱编码")String code,@ApiParam("标签编码")String tagCode,
+                                                                                   @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
+                                                                                   @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,@ApiParam("回收箱id")Long id,LionPage lionPage) throws IOException, IllegalAccessException {
+        recyclingBoxRecordService.listExport(isDisinfect, tagType, name, code, tagCode, startDateTime, endDateTime,id , lionPage);
     }
 
     @GetMapping("/recyclingBox/current/list")

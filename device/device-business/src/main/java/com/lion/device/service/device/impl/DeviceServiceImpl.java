@@ -4,6 +4,7 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.Optional;
 import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.impl.BaseServiceImpl;
@@ -41,8 +42,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -141,6 +140,14 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     @Override
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public List<Device> delete(List<DeleteDto> deleteDtoList) {
+        deleteDtoList.forEach(deleteDto -> {
+            Optional<Device> optional = findById(deleteDto.getId());
+            optional.ifPresent(device -> {
+                if (Objects.equals(device.getDeviceState(),State.USED)) {
+                    BusinessException.throwException("設備使用中不能刪除");
+                }
+            });
+        });
         List<Device> list = new ArrayList<>();
         deleteDtoList.forEach(d->{
             com.lion.core.Optional<Device> optional = this.findById(d.getId());
@@ -243,10 +250,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
             vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
             vo.setIsFault(device.getIsFault());
             vo.setState(device.getDeviceState());
-            if (Objects.nonNull(device.getLastDataTime())) {
-                Duration duration = Duration.between(device.getLastDataTime(), LocalDateTime.now());
-                vo.setIsOnline(duration.toMinutes()<60 * 24);
-            }
+            vo.setIsOnline(device.getIsOnline());
             returnList.add(vo);
         });
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
@@ -308,13 +312,13 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     }
 
     @Override
-    public Integer countOffLine(LocalDateTime dateTime) {
-        return deviceDao.countByDeviceStateAndLastDataTimeLessThanOrLastDataTimeIsNull(State.USED, dateTime);
+    public Integer countOffLine() {
+        return deviceDao.countByDeviceStateAndIsOnline(State.USED, false);
     }
 
     @Override
-    public Integer countOnLine(LocalDateTime dateTime) {
-        return deviceDao.countByLastDataTimeGreaterThanAndLastDataTimeNotNull(dateTime);
+    public Integer countOnLine() {
+        return deviceDao.countByDeviceStateAndIsOnline(State.USED, true);
     }
 
     private DeviceStatisticsVo.DeviceStatisticsData count(DeviceClassify classify){

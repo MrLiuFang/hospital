@@ -22,4 +22,6 @@ public class ListAlarmModeRecordVo extends AlarmModeRecord {
 
     @Schema(description = "切换人头像url")
     private String headPortraitUrl;
+
+    private String dateTime;
 }

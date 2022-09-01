@@ -161,34 +161,38 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
     public List<Tag> delete(List<DeleteDto> deleteDtoList) {
         List<Tag> list = new ArrayList<>();
         deleteDtoList.forEach(deleteDto -> {
-            TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
-            if (Objects.nonNull(tagUser)) {
-                com.lion.core.Optional<Tag> optional = findById(tagUser.getTagId());
-                if (optional.isPresent()) {
-                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000044"));
-                }
-            }
-            TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
-            if (Objects.nonNull(tagUser)) {
-                com.lion.core.Optional<Tag> optional = findById(tagAssets.getTagId());
-                if (optional.isPresent()) {
-                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000045"));
-                }
-            }
-            TagPatient tagPatient = tagPatientDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
-            if (Objects.nonNull(tagPatient)) {
-                com.lion.core.Optional<Tag> optional = findById(tagPatient.getTagId());
-                if (optional.isPresent()) {
-                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000046"));
-                }
-            }
-            TagPostdocs tagPostdocs = tagPostdocsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
-            if (Objects.nonNull(tagPostdocs)) {
-                com.lion.core.Optional<Tag> optional = findById(tagPostdocs.getTagId());
-                if (optional.isPresent()) {
-                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000047"));
-                }
-            }
+//            TagUser tagUser = tagUserDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
+//            if (Objects.nonNull(tagUser)) {
+//                com.lion.core.Optional<Tag> optional = findById(tagUser.getTagId());
+//                if (optional.isPresent()) {
+//                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000044"));
+//                }
+//            }
+            tagUserDao.deleteByTagId(deleteDto.getId());
+//            TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
+//            if (Objects.nonNull(tagAssets)) {
+//                com.lion.core.Optional<Tag> optional = findById(tagAssets.getTagId());
+//                if (optional.isPresent()) {
+//                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000045"));
+//                }
+//            }
+            tagAssetsDao.deleteByTagId(deleteDto.getId());
+//            TagPatient tagPatient = tagPatientDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
+//            if (Objects.nonNull(tagPatient)) {
+//                com.lion.core.Optional<Tag> optional = findById(tagPatient.getTagId());
+//                if (optional.isPresent()) {
+//                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000046"));
+//                }
+//            }
+            tagPatientDao.deleteByTagId(deleteDto.getId());
+//            TagPostdocs tagPostdocs = tagPostdocsDao.findFirstByTagIdAndUnbindingTimeIsNull(deleteDto.getId());
+//            if (Objects.nonNull(tagPostdocs)) {
+//                com.lion.core.Optional<Tag> optional = findById(tagPostdocs.getTagId());
+//                if (optional.isPresent()) {
+//                    BusinessException.throwException(optional.get().getTagCode() + MessageI18nUtil.getMessage("4000047"));
+//                }
+//            }
+            tagPostdocsDao.deleteByTagId(deleteDto.getId());
             redisTemplate.delete(RedisConstants.TAG_BIND_TYPE+deleteDto.getId());
             currentPositionExposeService.delete(null,null,deleteDto.getId());
         });
@@ -249,7 +253,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 //        if (Objects.nonNull(departmentId)){
 //            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
 //        }
-        if (!(Objects.nonNull(isTmp) && Objects.equals("true",isTmp.toLowerCase())) && departmentIds.size()>0 && Objects.nonNull(isTmp)) {
+        if ((!(Objects.nonNull(isTmp) && Objects.equals("true",isTmp.toLowerCase())) || Objects.isNull(isTmp) ) && departmentIds.size()>0  ) {
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         }
         if (Objects.nonNull(type)){
@@ -342,7 +346,6 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 if (!Objects.equals(tag.getDeviceState(),State.USED)) {
                     tag.setDeviceState(State.USED);
                     update(tag);
-                    vo.setDeviceState(State.USED);
                 }
             }
             returnList.add(vo);

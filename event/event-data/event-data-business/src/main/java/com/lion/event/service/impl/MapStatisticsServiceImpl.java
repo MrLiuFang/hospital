@@ -1069,13 +1069,19 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         for (SystemAlarmVo systemAlarmVo : list) {
             table.addCell(new Paragraph(Type.instance(systemAlarmVo.getTy()).getDesc(), fontChinese));
             table.addCell(new Paragraph(systemAlarmVo.getTagCode(), fontChinese));
-            table.addCell(new Paragraph(systemAlarmVo.getType().getDesc(), fontChinese));
+            table.addCell(new Paragraph(systemAlarmVo.getType().getDesc()+"標籤", fontChinese));
             com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(systemAlarmVo.getDi());
             table.addCell(new Paragraph(optionalDepartment.isEmpty()?"":optionalDepartment.get().getName(), fontChinese));
             table.addCell(new Paragraph(dateTimeFormatter.format(systemAlarmVo.getDt()), fontChinese));
 			table.addCell(new Paragraph(systemAlarmVo.getRn(), fontChinese));
 			table.addCell(new Paragraph(systemAlarmVo.getAlarmContent(), fontChinese));
-            table.addCell(new Paragraph(Objects.equals(systemAlarmVo.getUa(),1)?"已处理":"未处理", fontChinese));
+            String str = "";
+            if (Objects.equals(systemAlarmVo.getUa(),0) || Objects.equals(systemAlarmVo.getUa(),2)) {
+                str = "未處理";
+            }else {
+                str = "已處理";
+            }
+            table.addCell(new Paragraph(str, fontChinese));
         }
         document.add(table);
         document.close();

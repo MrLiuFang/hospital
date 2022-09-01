@@ -249,7 +249,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
     }
 
     @Override
-    public IPageResultData<List<ListSystemAlarmVo>> list(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<ListSystemAlarmVo>> list(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, List<Integer> systemAlarmStates) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(pi)) {
@@ -258,7 +258,9 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         if (Objects.nonNull(ri)) {
             criteria.and("ri").is(ri);
         }
-        criteria.and("ua").in(SystemAlarmState.UNTREATED.getKey(),SystemAlarmState.CALL.getKey());
+        if (Objects.nonNull(systemAlarmStates) && systemAlarmStates.size()>0) {
+            criteria.and("ua").in(systemAlarmStates);
+        }
         if (Objects.isNull(startDateTime)){
             startDateTime = LocalDateTime.now().minusDays(30);
         }
@@ -271,7 +273,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
         }
         query.addCriteria(criteria);
         query.with(lionPage);
-        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
+        query.with(Sort.by(Sort.Direction.DESC,"dt"));
         List<SystemAlarm> items = mongoTemplate.find(query,SystemAlarm.class);
 //        long count = mongoTemplate.count(query, SystemAlarm.class);
 //        PageableExecutionUtils.getPage(items, lionPage, () -> count);

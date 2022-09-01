@@ -197,11 +197,11 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
         IPageResultData<List<ListTemporaryPersonVo>> pageResultData = list(name,isLeave,tagCode,startDateTime,endDateTime,new LionPage(0, Integer.MAX_VALUE));
         List<ListTemporaryPersonVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
-        excelColumn.add(ExcelColumn.build("name", "name"));
-        excelColumn.add(ExcelColumn.build("gender", "gender"));
-        excelColumn.add(ExcelColumn.build("tag code", "tagCode"));
-        excelColumn.add(ExcelColumn.build("remarks", "remarks"));
-        excelColumn.add(ExcelColumn.build("state", "deviceState"));
+        excelColumn.add(ExcelColumn.build("姓名", "name"));
+        excelColumn.add(ExcelColumn.build("性別", "gender"));
+        excelColumn.add(ExcelColumn.build("標籤編碼", "tagCode"));
+        excelColumn.add(ExcelColumn.build("拜訪原因", "remarks"));
+        excelColumn.add(ExcelColumn.build("狀態", "deviceState"));
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("temporaryPerson.xls", "UTF-8"));

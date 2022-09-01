@@ -19,6 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
@@ -79,6 +80,7 @@ public class EventRecordExposeServiceImpl extends BaseServiceImpl<EventRecord> i
         if (Objects.nonNull(endDateTime)) {
             jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_createDateTime",startDatetime);
         }
+        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
         Page<EventRecord> page = this.findNavigator(lionPage);
         List<EventRecord> list = page.getContent();

@@ -60,14 +60,8 @@ public class MonitorController {
     @ApiOperation(value = "设备监控顶部")
     public IResultData<DeviceMonitorTopVo> top(){
         DeviceMonitorTopVo deviceMonitorTopVo = new DeviceMonitorTopVo();
-        List<Long> ids = deviceService.allId();
-        LocalDateTime dateTime = LocalDateTime.now().minusHours(24);
-        deviceMonitorTopVo.setOnLineCount(deviceService.countOnLine(dateTime));
-//        deviceMonitorTopVo = calculation(assetsExposeService.allId(), deviceMonitorTopVo);
-//        deviceMonitorTopVo = calculation(tagService.allId(), deviceMonitorTopVo);
-//        deviceMonitorTopVo = calculation(cctvService.allId(), deviceMonitorTopVo);
-//        int fault = faultService.countNotSolve();
-        deviceMonitorTopVo.setOfflineCount(deviceService.countOffLine(dateTime));
+        deviceMonitorTopVo.setOnLineCount(deviceService.countOnLine());
+        deviceMonitorTopVo.setOfflineCount(deviceService.countOffLine());
         deviceMonitorTopVo.setFaultCount(deviceService.countByIsFault(true));
         return ResultData.instance().setData(deviceMonitorTopVo);
     }

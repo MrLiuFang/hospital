@@ -127,6 +127,23 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
     }
 
     @Override
+    public void listExport(Boolean isDisinfect, TagType tagType, String name, String code, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, Long id, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListRecyclingBoxRecordVo>> pageResultData = list(isDisinfect,tagType,name,code,tagCode,startDateTime,endDateTime,id,new LionPage(0,Integer.MAX_VALUE));
+        List<ListRecyclingBoxRecordVo> list = pageResultData.getData();
+        List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
+        excelColumn.add(ExcelColumn.build("时间", "ddt"));
+        excelColumn.add(ExcelColumn.build("回收箱名称", "rbn"));
+        excelColumn.add(ExcelColumn.build("回收箱编码", "rbc"));
+        excelColumn.add(ExcelColumn.build("标签编码", "tc"));
+        excelColumn.add(ExcelColumn.build("进入回收箱时间", "ddt"));
+//        excelColumn.add(ExcelColumn.build("标签类型", "tt"));
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("application/excel");
+        response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("recyclingBox.xls", "UTF-8"));
+        new ExportExcelUtil().export(list, response.getOutputStream(), excelColumn);
+    }
+
+    @Override
     public IPageResultData<List<ListRecyclingBoxCurrentVo>> recyclingBoxCurrentList(LocalDateTime startPreviousDisinfectDate, LocalDateTime endPreviousDisinfectDate, String name, String code, LionPage lionPage) {
         List<Device> list = deviceExposeService.find(startPreviousDisinfectDate, endPreviousDisinfectDate, name, code);
         List<Long> ids = new ArrayList<Long>();

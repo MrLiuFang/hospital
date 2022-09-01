@@ -226,7 +226,7 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
         Optional<Device> optional = this.findById(id);
         if (optional.isPresent() && Objects.nonNull(isOnline)) {
             Device device = optional.get();
-            device.setISOnline(isOnline);
+            device.setIsOnline(isOnline);
             update(device);
         }
     }

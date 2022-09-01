@@ -1,5 +1,6 @@
 package com.lion.event.utils;
 
+import com.lion.core.IEnum;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
@@ -68,7 +69,12 @@ public class ExportExcelUtil {
 					return getCellValue(field.get(data),key.substring(key.indexOf(".")+1));
 				 }
 				 Object value = field.get(data);
-				 return value ==null?"":value.toString();
+				if (Objects.nonNull(value) && value instanceof IEnum) {
+					return ((IEnum)value).getDesc();
+				}else {
+					return value ==null?"":value.toString();
+				}
+
 			}
 		}
 		

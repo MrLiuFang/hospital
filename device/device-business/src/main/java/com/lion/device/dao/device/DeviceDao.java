@@ -183,4 +183,6 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
     public Integer countByDeviceStateAndLastDataTimeLessThanOrLastDataTimeIsNull(State deviceState,LocalDateTime dateTime);
 
     public Integer countByLastDataTimeGreaterThanAndLastDataTimeNotNull(LocalDateTime dateTime);
+
+    public Integer countByDeviceStateAndIsOnline(State deviceState,Boolean isOnline);
 }

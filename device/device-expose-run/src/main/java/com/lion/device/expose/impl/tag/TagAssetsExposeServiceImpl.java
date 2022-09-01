@@ -81,6 +81,7 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
 //                BusinessException.throwException("该标签正在使用中");
 //            }
 //        }
+        tagAssetsDao.deleteByAssetsId(assetsId);
         TagAssets newTagAssets = new TagAssets();
         newTagAssets.setAssetsId(assetsId);
         newTagAssets.setTagId(tag.getId());
