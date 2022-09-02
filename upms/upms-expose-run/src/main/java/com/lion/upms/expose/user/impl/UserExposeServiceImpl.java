@@ -135,4 +135,9 @@ public class UserExposeServiceImpl extends BaseServiceImpl<User> implements User
         userDao.updateLastDataTime(id,dateTime);
     }
 
+    @Override
+    public List<User> find(String name, List<Long> userIds) {
+        return userDao.find(name,userIds);
+    }
+
 }

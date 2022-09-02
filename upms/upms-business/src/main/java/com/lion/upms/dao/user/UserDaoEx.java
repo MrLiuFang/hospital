@@ -1,8 +1,8 @@
 package com.lion.upms.dao.user;
 
-import com.lion.core.LionPage;
 import com.lion.upms.entity.user.User;
-import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 /**
  * @author Mr.Liu
@@ -10,5 +10,7 @@ import org.springframework.data.domain.Page;
  * @date 2021/3/24下午2:14
  */
 public interface UserDaoEx {
+
+    public List<User> find(String name, List<Long> userIds);
 
 }

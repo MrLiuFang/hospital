@@ -52,19 +52,7 @@ public class TemporaryPersonExposeServiceImpl extends BaseServiceImpl<TemporaryP
 
     @Override
     public List<TemporaryPerson> find(Long departmentId, String name, List<Long> ids) {
-        if (StringUtils.hasText(name) && (Objects.isNull(ids) || ids.size() <=0)){
-            return temporaryPersonDao.findByDepartmentIdAndIsLeaveAndNameLike(departmentId,false,"%"+name+"%");
-        }else if (StringUtils.hasText(name) && (Objects.nonNull(ids) || ids.size() >0)){
-            return temporaryPersonDao.findByDepartmentIdAndIsLeaveAndNameLikeAndIdIn(departmentId,false,"%"+name+"%",ids);
-        }
-
-        if (!StringUtils.hasText(name) && (Objects.isNull(ids) || ids.size() <=0)){
-            return temporaryPersonDao.findByDepartmentIdAndIsLeave(departmentId, false);
-        }else if (!StringUtils.hasText(name) && (Objects.nonNull(ids) || ids.size() >0)){
-            return temporaryPersonDao.findByDepartmentIdAndIsLeaveAndIdIn(departmentId, false,ids);
-        }
-
-        return temporaryPersonDao.findByDepartmentIdAndIsLeave(departmentId, false);
+        return temporaryPersonDao.find(departmentId,name,ids);
     }
 
     @Override

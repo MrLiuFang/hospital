@@ -71,7 +71,13 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
 
     @Override
     public Integer countDevice(Long departmentId) {
-        return deviceDao.countDevice(departmentId);
+        List<Region> list = regionExposeService.findByDepartmentId(departmentId);
+        List<Long> regionIds = new ArrayList<>();
+        regionIds.add(Long.MAX_VALUE);
+        list.forEach(region -> {
+            regionIds.add(region.getId());
+        });
+        return deviceDao.countDevice(regionIds);
     }
 
     @Override

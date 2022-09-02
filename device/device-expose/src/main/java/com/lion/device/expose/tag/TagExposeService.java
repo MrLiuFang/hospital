@@ -50,11 +50,11 @@ public interface TagExposeService extends BaseService<Tag> {
      *
      * @param departmentId
      * @param purpose
-     * @param tagCode
+     * @param keyword
      * @param listIds
      * @return
      */
-    public List<Tag> find(Long departmentId, TagPurpose purpose, String tagCode ,List<Long> listIds);
+    public List<Tag> find(Long departmentId, TagPurpose purpose, String keyword, List<Long> listIds);
 
 
     /**

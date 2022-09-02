@@ -19,7 +19,7 @@ import java.util.List;
  * @Description:
  * @date 2021/4/7下午8:15
  */
-public interface TagDao extends BaseDao<Tag> {
+public interface TagDao extends BaseDao<Tag> ,TagDaoEx {
 
     /**
      * 根据标签编码查询

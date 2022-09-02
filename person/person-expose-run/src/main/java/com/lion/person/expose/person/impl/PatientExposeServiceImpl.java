@@ -8,7 +8,6 @@ import com.lion.person.entity.person.Patient;
 import com.lion.person.expose.person.PatientExposeService;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -64,18 +63,7 @@ public class PatientExposeServiceImpl extends BaseServiceImpl<Patient> implement
 
     @Override
     public List<Patient> find(Long departmentId, String name, List<Long> ids) {
-        if (StringUtils.hasText(name) && (Objects.isNull(ids)|| ids.size()<=0 )  ){
-            return patientDao.findByDepartmentIdAndIsLeaveAndNameLikeOrderByPatientStateDesc(departmentId,false,"%"+name+"%");
-        }else if (StringUtils.hasText(name) && (Objects.nonNull(ids)|| ids.size()>0 )  ){
-            return patientDao.findByDepartmentIdAndIsLeaveAndNameLikeAndIdIn(departmentId,false,"%"+name+"%",ids);
-        }
-        if (!StringUtils.hasText(name) && (Objects.isNull(ids)|| ids.size()<=0 )  ) {
-            return patientDao.findByDepartmentIdAndIsLeaveOrderByPatientStateDesc(departmentId, false);
-        }else if (!StringUtils.hasText(name) && (Objects.nonNull(ids)|| ids.size()>0 )  ) {
-            return patientDao.findByDepartmentIdAndIsLeaveAndIdIn(departmentId, false,ids);
-        }
-
-        return patientDao.findByDepartmentIdAndIsLeaveOrderByPatientStateDesc(departmentId, false);
+        return patientDao.find(departmentId,name,ids);
     }
 
     @Override

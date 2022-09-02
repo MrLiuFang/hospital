@@ -19,7 +19,6 @@ public class PatientDaoImpl implements PatientDaoEx {
 
     public Page<Map<String, Object>> listMerge(Integer type, String name, String cardNumber, String tagCode, String medicalRecordNo, String sort, List<Long> departmentIds, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
-        System.out.println(departmentIds);
         sb.append(" select t.* from ( ");
         Map<String, Object> searchParameter = new HashMap();
         if (StringUtils.hasText(name)) {
@@ -84,5 +83,35 @@ public class PatientDaoImpl implements PatientDaoEx {
 //        }
 
         return (Page<Map<String, Object>>) this.baseDao.findNavigatorByNativeSql(lionPage, sb.toString(), searchParameter, HashMap.class);
+    }
+
+    @Override
+    public List<Patient> find(Long departmentId, String name, List<Long> ids) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select p Patient p where 1=1  ");
+        Map<String, Object> searchParameter = new HashMap();
+        if (StringUtils.hasText(name)) {
+            sb.append(" and ( p.name like :name or p.medicalRecordNo like :medicalRecordNo or p.phoneNumber like :phoneNumber" +
+                    " or p.medicalRecordNo like :medicalRecordNo or p.emergencyContactPhoneNumber like :emergencyContactPhoneNumber" +
+                    " or p.emergencyContact like :emergencyContact or p.address like :address ) ");
+            searchParameter.put("name", "%" + name + "%");
+            searchParameter.put("medicalRecordNo", "%" + name + "%");
+            searchParameter.put("phoneNumber", "%" + name + "%");
+            searchParameter.put("medicalRecordNo", "%" + name + "%");
+            searchParameter.put("emergencyContactPhoneNumber", "%" + name + "%");
+            searchParameter.put("emergencyContact", "%" + name + "%");
+            searchParameter.put("address", "%" + name + "%");
+        }
+
+        if (Objects.nonNull(departmentId)) {
+            sb.append(" and departmentId = :departmentId ");
+            searchParameter.put("departmentId", departmentId);
+        }
+
+        if (Objects.nonNull(ids) && ids.size() >0){
+            sb.append(" and id in :ids ");
+            searchParameter.put("ids", ids);
+        }
+        return (List<Patient>) this.baseDao.findAll(sb.toString(),searchParameter);
     }
 }

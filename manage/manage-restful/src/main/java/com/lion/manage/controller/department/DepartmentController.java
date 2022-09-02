@@ -96,7 +96,7 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
 
     @GetMapping("/list")
     @ApiOperation(value = "科室列表")
-    public IPageResultData<List<ListDepartmentVo>> list(@ApiParam(value = "科室名称") String name, LionPage lionPage){
+    public IPageResultData<List<ListDepartmentVo>> list(@ApiParam(value = "科室名称") String name,@ApiParam(value = "是否查询所有")Boolean isAll, LionPage lionPage){
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
@@ -104,7 +104,7 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
         }
         List<Long> departmentIds = new ArrayList<>();
         departmentIds = departmentExposeService.responsibleDepartment(null);
-        if (departmentIds.size()>0) {
+        if (!Objects.equals(isAll,true) && departmentIds.size()>0) {
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",departmentIds);
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);

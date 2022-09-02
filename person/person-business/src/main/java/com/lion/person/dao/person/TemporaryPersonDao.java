@@ -16,7 +16,7 @@ import java.util.List;
  * @author: Mr.Liu
  * @time: 2021/5/25 上午9:04
  */
-public interface TemporaryPersonDao extends BaseDao<TemporaryPerson> {
+public interface TemporaryPersonDao extends BaseDao<TemporaryPerson> ,TemporaryPersonDaoEx {
 
     @Modifying
     @Transactional

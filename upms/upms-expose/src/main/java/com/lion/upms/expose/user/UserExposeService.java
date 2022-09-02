@@ -5,7 +5,6 @@ import com.lion.core.PageResultData;
 import com.lion.core.service.BaseService;
 import com.lion.upms.entity.enums.State;
 import com.lion.upms.entity.user.User;
-import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -111,5 +110,7 @@ public interface UserExposeService extends BaseService<User> {
      * @param dateTime
      */
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime);
+
+    public List<User> find(String name, List<Long> userIds);
 
 }

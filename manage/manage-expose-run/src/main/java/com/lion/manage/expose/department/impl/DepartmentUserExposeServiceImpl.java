@@ -68,33 +68,21 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
 
     @Override
     public List<Long> findAllUser(Long departmentId, String name, List<Long> userIds) {
-        if (StringUtils.hasText(name) || (Objects.nonNull(userIds) && userIds.size()>0)) {
-            List<User> userList = null;
-            if (StringUtils.hasText(name) &&  (Objects.nonNull(userIds) && userIds.size()>0)) {
-                userList = userExposeService.findByNameAndInIds(name,userIds);
-            }
-            if (!StringUtils.hasText(name) &&  (Objects.nonNull(userIds) && userIds.size()>0)) {
-                userList = userExposeService.findInIds(userIds);
-            }
-            if (StringUtils.hasText(name) &&  (Objects.isNull(userIds) || userIds.size()<=0)) {
-                userList = userExposeService.findByName(name);
-            }
-            List<Long> _userIds = new ArrayList<>();
-            if (Objects.nonNull(userList)) {
-                userList.forEach(user -> {
-                    _userIds.add(user.getId());
-                });
-            }
-            if (Objects.nonNull(userIds) && userIds.size()>0) {
-                List<DepartmentUser> list = departmentUserDao.findByDepartmentIdAndUserIdIn(departmentId,_userIds);
-                List<Long> returnList = new ArrayList<Long>();
-                list.forEach(departmentUser -> {
-                    returnList.add(departmentUser.getUserId());
-                });
-                return returnList;
-            }
+        List<Long> returnList = new ArrayList<Long>();
+        List<User> userList = userExposeService.find(name,userIds);
+        List<Long> _userIds = new ArrayList<>();
+        if (Objects.nonNull(userList)) {
+            userList.forEach(user -> {
+                _userIds.add(user.getId());
+            });
         }
-        return findAllUser(departmentId);
+        if (Objects.nonNull(userIds) && userIds.size()>0) {
+            List<DepartmentUser> list = departmentUserDao.findByDepartmentIdAndUserIdIn(departmentId,_userIds);
+            list.forEach(departmentUser -> {
+                returnList.add(departmentUser.getUserId());
+            });
+        }
+        return returnList;
     }
 
     @Override
