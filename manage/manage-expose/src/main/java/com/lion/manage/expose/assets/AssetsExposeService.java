@@ -45,6 +45,8 @@ public interface AssetsExposeService extends BaseService<Assets> {
      */
     public Integer countByDepartmentId(Long departmentId, State deviceState,List<Long> assetsIds);
 
+    public Integer count(Long departmentId,com.lion.manage.entity.enums.State deviceState,Boolean isAlarm,Boolean isFault,List<Long> assetsIds);
+
     /**
      * 查询部门内的资产
      * @param departmentId
@@ -81,4 +83,6 @@ public interface AssetsExposeService extends BaseService<Assets> {
      * @param dateTime
      */
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime);
+
+    public Integer countFault(Long departmentId);
 }

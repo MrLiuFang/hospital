@@ -13,9 +13,8 @@ import java.util.Objects;
  * @time: 2021/5/31 上午10:26
  */
 public enum State implements IEnum {
-
-    NORMAL(1, "正常"),
-    ALARM(2, "警报");
+    USED(1, "使用中"),
+    NOT_USED(2, "未使用");
 
     private final int key;
 

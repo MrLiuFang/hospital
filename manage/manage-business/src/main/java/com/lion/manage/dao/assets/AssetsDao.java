@@ -132,9 +132,9 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
     public List<Long> allId();
 
     @Modifying
-    @Query(" update Assets  set deviceState =:state ,version = version+1 where id = :id ")
+    @Query(" update Assets  set isAlarm =:isAlarm ,version = version+1 where id = :id ")
     @Transactional
-    public void updateState(@Param("id")Long id, @Param("state") State state);
+    public void updateState(@Param("id")Long id, @Param("isAlarm") Boolean isAlarm);
 
     @Modifying
     @Transactional
@@ -148,4 +148,9 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
      */
     public int countByAssetsTypeId(Long assetsTypeId);
 
+    public int countByDepartmentIdAndDeviceStateAndIsAlarmAndIsFault(Long departmentId,State deviceState,Boolean isAlarm,Boolean isFault);
+
+    public int countByDepartmentIdAndDeviceStateAndIsAlarmAndIsFaultAndIdIn(Long departmentId,State deviceState, Boolean isAlarm,Boolean isFault,List<Long> ids);
+
+    public int countByDepartmentIdAndIsFaultIsTrue(Long departmentId);
 }

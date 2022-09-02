@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.lion.core.persistence.Validator;
 import com.lion.core.persistence.entity.BaseEntity;
+import com.lion.device.entity.enums.State;
 import com.lion.manage.entity.enums.AssetsState;
 import com.lion.manage.entity.enums.AssetsUseState;
-import com.lion.manage.entity.enums.State;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.Data;
@@ -77,16 +77,16 @@ public class Assets extends BaseEntity implements Serializable {
 //    @NotNull(message = "所属科室不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Long departmentId;
 
-    @Schema(description = "使用状态")
-    @Column(name = "use_state")
-    @Convert(converter = AssetsUseState.AssetsUseStateConverter.class)
-//    @NotNull(message = "使用状态不能为空", groups = {Validator.Insert.class, Validator.Update.class})
-    private AssetsUseState useState = AssetsUseState.NOT_USED;
-
-    @Schema(description = "状态")
-    @Column(name = "state")
-    @Convert(converter = AssetsState.AssetsStateConverter.class)
-    private AssetsState state = AssetsState.NOT_USED;
+//    @Schema(description = "使用状态")
+//    @Column(name = "use_state")
+//    @Convert(converter = AssetsUseState.AssetsUseStateConverter.class)
+////    @NotNull(message = "使用状态不能为空", groups = {Validator.Insert.class, Validator.Update.class})
+//    private AssetsUseState useState = AssetsUseState.NOT_USED;
+//
+//    @Schema(description = "状态")
+//    @Column(name = "state")
+//    @Convert(converter = AssetsState.AssetsStateConverter.class)
+//    private AssetsState state = AssetsState.NOT_USED;
 
     @Schema(description = "是否需要使用登记")
     @Column(name = "use_registration")
@@ -104,7 +104,13 @@ public class Assets extends BaseEntity implements Serializable {
     @Schema(description = "设备状态")
     @Column(name = "device_state")
     @Convert(converter = com.lion.manage.entity.enums.State.StateConverter.class)
-    private com.lion.manage.entity.enums.State deviceState = State.NORMAL;
+    private com.lion.manage.entity.enums.State deviceState = com.lion.manage.entity.enums.State.NOT_USED;
+
+    @Schema(description = "是否告警")
+    private Boolean isAlarm = false;
+
+    @Schema(description = "是否故障")
+    private Boolean isFault = false;
 
 
 

@@ -53,12 +53,12 @@ public interface DeviceDao extends BaseDao<Device>,DeviceDaoEx {
 
     /**
      * 根据设备组统计电量设备
-     * @param deviceGroupIds
+     * @param departmentId
      * @param battery
      * @return
      */
-    @Query(" select count(d) from Device d join DeviceGroupDevice dgd on d.id = dgd.deviceId where dgd.deviceGroupId in :deviceGroupIds and d.battery = :battery ")
-    public Integer countDevice(List<Long> deviceGroupIds, Integer battery);
+    @Query(" select count(d) from Device d join Region r on d.regionId =  r.id where r.departmentId = :deviceGroupIds and ( d.battery = 1 or d.battery = 2 ) ")
+    public Integer countDevice(Long departmentId);
 
 
     @Query( " select d.id from Device d ")

@@ -39,11 +39,12 @@ public interface DeviceExposeService extends BaseService<Device> {
 
     /**
      * 根据设备组统计电量设备
-     * @param deviceGroupIds
+     *
+     * @param departmentId
      * @param battery
      * @return
      */
-    public Integer countDevice(List<Long> deviceGroupIds, Integer battery);
+    public Integer countDevice(Long departmentId);
 
     /**
      * 更新设备数据上传时间

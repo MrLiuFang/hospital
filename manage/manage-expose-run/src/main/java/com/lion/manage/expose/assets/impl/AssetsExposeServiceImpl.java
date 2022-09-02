@@ -50,6 +50,15 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
     }
 
     @Override
+    public Integer count(Long departmentId, State deviceState, Boolean isAlarm, Boolean isFault, List<Long> assetsIds) {
+        if (Objects.nonNull(assetsIds) && assetsIds.size()>0) {
+            return assetsDao.countByDepartmentIdAndDeviceStateAndIsAlarmAndIsFaultAndIdIn(departmentId,deviceState,isAlarm,isFault,assetsIds);
+        }else {
+            return assetsDao.countByDepartmentIdAndDeviceStateAndIsAlarmAndIsFault(departmentId,deviceState,isAlarm,isFault);
+        }
+    }
+
+    @Override
     public List<Assets> findByDepartmentId(Long departmentId) {
         return assetsDao.findByDepartmentId(departmentId);
     }
@@ -75,12 +84,18 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
 
     @Override
     public void updateState(Long id, Integer state) {
-        assetsDao.updateState(id, State.instance(state));
+        assetsDao.updateState(id, Objects.equals(state,1)?false:true);
     }
 
     @Override
     public void updateDeviceDataTime(Long id, LocalDateTime dateTime) {
         assetsDao.updateLastDataTime(id,dateTime);
+    }
+
+    @Override
+    public Integer countFault(Long departmentId) {
+
+        return assetsDao.countByDepartmentIdAndIsFaultIsTrue(departmentId);
     }
 
 

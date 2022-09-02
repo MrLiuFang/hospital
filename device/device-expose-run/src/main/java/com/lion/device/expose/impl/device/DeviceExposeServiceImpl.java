@@ -70,8 +70,8 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
     }
 
     @Override
-    public Integer countDevice(List<Long> deviceGroupIds, Integer battery) {
-        return deviceDao.countDevice(deviceGroupIds, battery);
+    public Integer countDevice(Long departmentId) {
+        return deviceDao.countDevice(departmentId);
     }
 
     @Override

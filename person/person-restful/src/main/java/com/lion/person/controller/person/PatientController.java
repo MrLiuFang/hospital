@@ -1,20 +1,20 @@
 package com.lion.person.controller.person;
 
-import com.lion.core.IPageResultData;
-import com.lion.core.IResultData;
-import com.lion.core.LionPage;
-import com.lion.core.ResultData;
+import com.lion.core.*;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.Validator;
+import com.lion.device.expose.tag.TagPatientExposeService;
 import com.lion.person.entity.enums.TransferState;
+import com.lion.person.entity.person.Patient;
 import com.lion.person.entity.person.dto.*;
 import com.lion.person.entity.person.vo.*;
 import com.lion.person.service.person.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.validation.annotation.Validated;
@@ -50,6 +50,9 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @Autowired
     private PatientLogService patientLogService;
+
+    @DubboReference
+    private TagPatientExposeService tagPatientExposeService;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增患者")
@@ -211,5 +214,17 @@ public class PatientController extends BaseControllerImpl implements BaseControl
     @ApiOperation("今日登记和登出统计")
     public IResultData<TodayStatisticsVo> todayStatistics() {
         return ResultData.instance().setData(this.patientService.todayStatistics());
+    }
+
+    @GetMapping({"/unbundlingTag"})
+    @ApiOperation("患者解绑tag")
+    public IResultData unbundlingTag(Long id){
+        Optional<Patient> optional = patientService.findById(id);
+        optional.ifPresent(patient -> {
+            patient.setTagCode("");
+            patientService.update(patient);
+        });
+        tagPatientExposeService.unbinding(id,false);
+        return ResultData.instance();
     }
 }

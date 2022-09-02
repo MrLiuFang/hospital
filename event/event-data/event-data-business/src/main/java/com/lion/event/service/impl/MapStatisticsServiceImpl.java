@@ -274,8 +274,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
 //                        deviceGroupIds.add(region.getDeviceGroupId());
 //                    }
 //                });
-            departmentStatisticsDetailsVo.setLowPowerDeviceCount(deviceExposeService.countDevice(deviceGroupIds, 2));
+            departmentStatisticsDetailsVo.setLowPowerDeviceCount(deviceExposeService.countDevice(departmentId));
             departmentStatisticsDetailsVo.setLowPowerTagCount(tagExposeService.countTag(departmentId, 2));
+            departmentStatisticsDetailsVo.setLowPowerTagCount(departmentStatisticsDetailsVo.getLowPowerTagCount() + tagExposeService.countTag(departmentId, 1));
             Map<String, Integer> map = systemAlarmService.groupCount(departmentId);
             if (map.containsKey("allAlarmCount")) {
                 departmentStatisticsDetailsVo.setAllAlarmCount(map.get("allAlarmCount"));
@@ -289,6 +290,9 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(departmentId, null, null));
             departmentStatisticsDetailsVo.setTagCount(tagExposeService.countTag(departmentId));
             departmentStatisticsDetailsVo.setCctvCount(cctvExposeService.count(departmentId));
+            departmentStatisticsDetailsVo.setPatientCount(patientExposeService.count(departmentId,null,null));
+            departmentStatisticsDetailsVo.setPatientAlarmCount(patientExposeService.count(departmentId,State.ALARM,null));
+            departmentStatisticsDetailsVo.setFaultCount(assetsExposeService.countFault(departmentId));
 //                returnList.add(departmentStatisticsDetailsVo);
         }
 //        });
@@ -376,7 +380,14 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo staff = new DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo();
                     staff.setUserId(user.getId());
                     staff.setUserName(user.getName());
-                    staff.setDeviceState(user.getDeviceState());
+                    List<SystemAlarm> list1 = systemAlarmService.find(user.getId(),false,LocalDateTime.now().minusDays(3),LocalDateTime.now());
+                    if (list1.size()>0) {
+                        userExposeService.updateState(user.getId(),com.lion.upms.entity.enums.State.ALARM.getKey());
+                        staff.setDeviceState(com.lion.upms.entity.enums.State.ALARM);
+                    }else {
+                        userExposeService.updateState(user.getId(),com.lion.upms.entity.enums.State.NORMAL.getKey());
+                        staff.setDeviceState(com.lion.upms.entity.enums.State.NORMAL);
+                    }
                     staff.setIsInRegion(finalListIds.contains(user.getId()));
                     com.lion.core.Optional<UserType> optionalUserType = userTypeExposeService.findById(user.getUserTypeId());
                     staff.setUserType(optionalUserType.isPresent()?optionalUserType.get():null);
@@ -427,15 +438,19 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo vo = new DepartmentAssetsStatisticsDetailsVo.AssetsDepartmentVo();
                 vo.setDepartmentName(department.getName());
                 vo.setDepartmentId(department.getId());
-                departmentAssetsStatisticsDetailsVo.setAssetsCount(departmentAssetsStatisticsDetailsVo.getAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), null,finalListIds ));
-                departmentAssetsStatisticsDetailsVo.setNormalAssetsCount(departmentAssetsStatisticsDetailsVo.getNormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.NORMAL, finalListIds));
-                departmentAssetsStatisticsDetailsVo.setAbnormalAssetsCount(departmentAssetsStatisticsDetailsVo.getAbnormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.ALARM, finalListIds));
+                departmentAssetsStatisticsDetailsVo.setAssetsCount(departmentAssetsStatisticsDetailsVo.getAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.USED,finalListIds ));
+                departmentAssetsStatisticsDetailsVo.setNormalAssetsCount(departmentAssetsStatisticsDetailsVo.getNormalAssetsCount() + assetsExposeService.count(department.getId(), com.lion.manage.entity.enums.State.USED, false,false, finalListIds));
+//                departmentAssetsStatisticsDetailsVo.setAbnormalAssetsCount(departmentAssetsStatisticsDetailsVo.getAbnormalAssetsCount() + assetsExposeService.countByDepartmentId(department.getId(), com.lion.manage.entity.enums.State.ALARM, finalListIds));
                 List<Assets> assets = assetsExposeService.findByDepartmentId(department.getId(), keyword, keyword, finalListIds);
                 List<DepartmentAssetsStatisticsDetailsVo.AssetsVo> assetsVos = new ArrayList<>();
                 assets.forEach(a -> {
                     DepartmentAssetsStatisticsDetailsVo.AssetsVo assetsVo = new DepartmentAssetsStatisticsDetailsVo.AssetsVo();
                     BeanUtils.copyProperties(a, assetsVo);
-                    assetsVo.setIsFault(assetsFaultExposeService.countNotFinish(a.getId())>0);
+                    Integer i = assetsFaultExposeService.countNotFinish(a.getId());
+                    if (i>0){
+                        assetsExposeService.updateState(a.getId(),2);
+                    }
+                    assetsVo.setIsFault(i>0);
                     TagAssets tagAssets = tagAssetsExposeService.find(a.getId());
                     if (Objects.nonNull(tagAssets)) {
                         com.lion.core.Optional<Tag> optionalTag = tagExposeService.findById(tagAssets.getTagId());
@@ -547,7 +562,14 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                     }
                     vo.setId(patient.getId());
                     vo.setName(patient.getName());
-                    vo.setDeviceState(patient.getDeviceState());
+                    List<SystemAlarm> list1 = systemAlarmService.find(patient.getId(),false,LocalDateTime.now().minusDays(3),LocalDateTime.now());
+                    if (list1.size()>0) {
+                        patientExposeService.updateState(patient.getId(),State.ALARM.getKey());
+                        vo.setDeviceState(State.ALARM);
+                    }else {
+                        patientExposeService.updateState(patient.getId(),State.NORMAL.getKey());
+                        vo.setDeviceState(State.NORMAL);
+                    }
                     vo.setPatientState(patient.getPatientState());
                     vo.setTagCode(patient.getTagCode());
                     vo.setHeadPortrait(patient.getHeadPortrait());
@@ -590,7 +612,14 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                         vo.setBattery(tag.getBattery());
                     }
                     vo.setName(temporaryPerson.getName());
-                    vo.setDeviceState(temporaryPerson.getDeviceState());
+                    List<SystemAlarm> list1 = systemAlarmService.find(temporaryPerson.getId(),false,LocalDateTime.now().minusDays(3),LocalDateTime.now());
+                    if (list1.size()>0) {
+                        temporaryPersonExposeService.updateState(temporaryPerson.getId(),State.ALARM.getKey());
+                        vo.setDeviceState(State.ALARM);
+                    }else {
+                        temporaryPersonExposeService.updateState(temporaryPerson.getId(),State.NORMAL.getKey());
+                        vo.setDeviceState(State.NORMAL);
+                    }
                     vo.setTagCode(temporaryPerson.getTagCode());
                     vo.setId(temporaryPerson.getId());
                     vo.setHeadPortrait(temporaryPerson.getHeadPortrait());

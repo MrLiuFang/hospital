@@ -32,6 +32,11 @@ public class DepartmentAssetsStatisticsDetailsVo {
     @Schema(description = "部门信息")
     private List<AssetsDepartmentVo> assetsDepartmentVos;
 
+
+    public Integer getAbnormalAssetsCount() {
+        return this.assetsCount - this.normalAssetsCount;
+    }
+
     @Schema
     @Data
     public static class AssetsDepartmentVo {
@@ -71,8 +76,5 @@ public class DepartmentAssetsStatisticsDetailsVo {
 
         @Schema(description = "标签电量")
         private Integer battery;
-
-        @Schema(description = "是否有未处理的故障")
-        private Boolean isFault;
     }
 }

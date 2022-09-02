@@ -115,10 +115,8 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
         Optional<Assets> optional =  assetsService.findById(assetsFault.getAssetsId());
         if (optional.isPresent()) {
             Assets assets = optional.get();
-            if (Objects.nonNull(assets.getState()) && assets.getState().getKey()<= AssetsState.REPAIR.getKey()) {
-                assets.setState(AssetsState.REPAIR);
-                assetsService.update(assets);
-            }
+            assets.setIsFault(true);
+            assetsService.update(assets);
         }
     }
 
@@ -133,15 +131,8 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
             Optional<Assets> optional =  assetsService.findById(assetsFault.getAssetsId());
             if (optional.isPresent()) {
                 Assets assets = optional.get();
-                if (Objects.nonNull(assets.getState()) && assets.getState().getKey()<= AssetsState.REPAIR.getKey()) {
-                    AssetsBorrow assetsBorrow = assetsBorrowService.findFirstByAssetsIdAndReturnUserIdIsNull(updateAssetsFaultDto.getAssetsId());
-                    if (Objects.nonNull(assetsBorrow)) {
-                        assets.setState(AssetsState.NOT_USED);
-                    }else {
-                        assets.setState(AssetsState.USEING);
-                    }
-                    assetsService.update(assets);
-                }
+                assets.setIsFault(false);
+                assetsService.update(assets);
             }
         }
         super.update(assetsFault);

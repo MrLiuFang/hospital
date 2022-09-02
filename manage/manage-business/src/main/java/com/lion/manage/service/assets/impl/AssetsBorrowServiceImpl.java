@@ -25,6 +25,7 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsState;
 import com.lion.manage.entity.enums.AssetsUseState;
+import com.lion.manage.entity.enums.State;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import com.lion.manage.expose.department.DepartmentExposeService;
@@ -166,11 +167,8 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
             com.lion.core.Optional<Assets> optional  = assetsService.findById(assetsBorrow.getAssetsId());
             if (optional.isPresent()) {
                 Assets assets = optional.get();
-                if (Objects.nonNull(assets.getState()) && assets.getState().getKey()<=AssetsState.NOT_USED.getKey()) {
-                    assets.setUseState(AssetsUseState.USEING);
-                    assets.setState(AssetsState.USEING);
-                    assetsService.update(assets);
-                }
+                assets.setDeviceState(State.USED);
+                assetsService.update(assets);
             }
         });
     }
@@ -282,11 +280,8 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
                         com.lion.core.Optional<Assets> optionalAssets = assetsService.findById(assetsBorrow.getAssetsId());
                         if (optionalAssets.isPresent()) {
                             Assets assets = optionalAssets.get();
-                            if (Objects.nonNull(assets.getState()) && assets.getState().getKey()<=AssetsState.NOT_USED.getKey()) {
-                                assets.setUseState(AssetsUseState.NOT_USED);
-                                assets.setState(AssetsState.NOT_USED);
-                                assetsService.update(assets);
-                            }
+                            assets.setDeviceState(State.NOT_USED);
+                            assetsService.update(assets);
                         }
                     }
                 }

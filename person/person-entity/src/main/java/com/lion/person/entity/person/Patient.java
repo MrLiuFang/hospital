@@ -96,6 +96,9 @@ public class Patient extends Person implements Serializable {
     @Convert(converter = PatientState.PatientStateConverter.class)
     private PatientState patientState;
 
+    @Schema(description = "是否告警")
+    private Boolean  isAlarm;
+
     @Schema(description = "备注")
     @Column(name = "remarks")
 //    @Length(max = 255,message = "{1000004}",groups = {Validator.Insert.class, Validator.Update.class})
