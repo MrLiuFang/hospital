@@ -1,6 +1,7 @@
 package com.lion.manage.entity.region.vo;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.lion.core.persistence.Validator;
 import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.device.WarningBell;
@@ -13,6 +14,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.Data;
 
+import javax.persistence.Column;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -23,6 +26,9 @@ import java.util.List;
 @Data
 @Schema
 public class DetailsRegionVo extends Region {
+
+    @Schema(description = "科室名称")
+    public String departmentName;
 
     @Schema(description = "所有关联的设备")
     @JsonIgnoreProperties(ignoreUnknown = true,value = {"y","x","buildFloorId","buildId","electricity","warrantyPeriodDate","purchaseDate","warrantyPeriod","createDateTime","updateDateTime","createUserId","updateUserId"})

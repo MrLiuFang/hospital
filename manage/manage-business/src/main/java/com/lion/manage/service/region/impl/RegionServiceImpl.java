@@ -2,10 +2,7 @@ package com.lion.manage.service.region.impl;
 
 import com.lion.common.constants.RedisConstants;
 import com.lion.constant.SearchConstant;
-import com.lion.core.IPageResultData;
-import com.lion.core.LionPage;
-import com.lion.core.PageResultData;
-import com.lion.core.ResultData;
+import com.lion.core.*;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
@@ -268,6 +265,10 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         Region region = optional.get();
         DetailsRegionVo detailsRegionVo = new DetailsRegionVo();
         BeanUtils.copyProperties(region,detailsRegionVo);
+        Optional<Department> departmentOptional = departmentService.findById(region.departmentId);
+        if (departmentOptional.isPresent()){
+            detailsRegionVo.setDepartmentName(optional.get().getName());
+        }
         detailsRegionVo.setDevices(deviceExposeService.findByRegionId(region.getId()));
         detailsRegionVo.setWardRooms(wardRoomService.findByRegionId(region.getId()));
         detailsRegionVo.setWardRoomSickbeds(wardRoomSickbedService.findByRegionId(region.getId()));

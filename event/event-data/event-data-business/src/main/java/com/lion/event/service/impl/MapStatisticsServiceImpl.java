@@ -1098,7 +1098,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
         for (SystemAlarmVo systemAlarmVo : list) {
             table.addCell(new Paragraph(Type.instance(systemAlarmVo.getTy()).getDesc(), fontChinese));
             table.addCell(new Paragraph(systemAlarmVo.getTagCode(), fontChinese));
-            table.addCell(new Paragraph(systemAlarmVo.getType().getDesc()+"標籤", fontChinese));
+            table.addCell(new Paragraph(systemAlarmVo.getTagType().getDesc()+"標籤", fontChinese));
             com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(systemAlarmVo.getDi());
             table.addCell(new Paragraph(optionalDepartment.isEmpty()?"":optionalDepartment.get().getName(), fontChinese));
             table.addCell(new Paragraph(dateTimeFormatter.format(systemAlarmVo.getDt()), fontChinese));

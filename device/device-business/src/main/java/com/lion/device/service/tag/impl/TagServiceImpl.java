@@ -287,6 +287,12 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
                 list.add(State.NOT_USED);
                 jpqlParameter.setSearchParameter(SearchConstant.IN + "_deviceState", list);
             }
+            if (Objects.equals(useState,TagUseState.USEING)) {
+                List<State> list = new ArrayList<>();
+//                list.add(State.ACTIVE);
+                list.add(State.USED);
+                jpqlParameter.setSearchParameter(SearchConstant.IN + "_deviceState", list);
+            }
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
