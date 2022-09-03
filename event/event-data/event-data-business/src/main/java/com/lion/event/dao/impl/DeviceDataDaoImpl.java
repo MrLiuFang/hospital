@@ -6,6 +6,7 @@ import com.lion.core.PageResultData;
 import com.lion.event.dao.DeviceDataDaoEx;
 import com.lion.event.entity.DeviceData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -47,6 +48,7 @@ public class DeviceDataDaoImpl implements DeviceDataDaoEx {
         }
         query.addCriteria(criteria);
         query.with(lionPage);
+        query.with(Sort.by(Sort.Direction.DESC,"ddt"));
         List<DeviceData> items = mongoTemplate.find(query,DeviceData.class);
 //        long count = mongoTemplate.count(query, Wash.class);
 //        PageableExecutionUtils.getPage(items, lionPage, () -> count);

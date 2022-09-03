@@ -295,12 +295,12 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         table.setWidths(new int[]{20, 20, 20, 20, 20});
         table.setWidthPercentage(100);
         PdfPCell cellTitle = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000002"), new Font(bfChinese,24)));
-        cellTitle.setColspan(8);
+        cellTitle.setColspan(5);
         cellTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cellTitle);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         PdfPCell cellTitle1 = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000003")+":" +simpleDateFormat.format(new Date()), new Font(bfChinese)));
-        cellTitle1.setColspan(8);
+        cellTitle1.setColspan(5);
         table.addCell(cellTitle1);
         table.addCell(new Paragraph(MessageI18nUtil.getMessage("0000026"), fontChinese));
         table.addCell(new Paragraph(MessageI18nUtil.getMessage("0000028"), fontChinese));

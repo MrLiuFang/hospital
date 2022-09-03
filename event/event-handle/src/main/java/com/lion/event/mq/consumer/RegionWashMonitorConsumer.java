@@ -8,6 +8,7 @@ import com.lion.common.dto.*;
 import com.lion.common.enums.Type;
 import com.lion.common.enums.WashEventType;
 import com.lion.common.utils.RedisUtil;
+import com.lion.device.entity.device.Device;
 import com.lion.event.mq.consumer.common.WashCommon;
 import com.lion.event.utils.WashRuleUtil;
 import com.lion.manage.entity.enums.SystemAlarmType;
@@ -85,11 +86,10 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                             return;
                         }
                         UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
-                        WashRecordDto washRecordDto = washCommon.init(userCurrentRegionDto.getUserId(),userCurrentRegionDto.getRegionId(),null,userCurrentRegionDto.getUuid() , userLastWashDto.getDateTime(),userLastWashDto.getSystemDateTime());
+                        WashRecordDto washRecordDto = washCommon.init(userCurrentRegionDto.getUserId(),userCurrentRegionDto.getRegionId(),null,userCurrentRegionDto.getUuid() , Objects.isNull(userLastWashDto)?null:userLastWashDto.getDateTime(),Objects.isNull(userLastWashDto)?null:userLastWashDto.getSystemDateTime());
                         WashEventDto washEventDto = new WashEventDto();
                         BeanUtils.copyProperties(washRecordDto,washEventDto);
                         washEventDto.setWi(washTemplateItemVo.getId());
-
                         if (Objects.nonNull(washTemplateItemVo) && Objects.nonNull(washTemplateItemVo.getBeforeTime()) && washTemplateItemVo.getBeforeTime() >0){
                             String before = (String) redisTemplate.opsForValue().get(RedisConstants.BEFORE_UUID+uuid);
                             redisTemplate.opsForValue().set(RedisConstants.BEFORE_UUID+uuid,uuid,24, TimeUnit.DAYS);
@@ -141,6 +141,9 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                         }
                         if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getMonitorId())) {
                             washEventDto.setDvi(userLastWashDto.getMonitorId());
+                            Device device = redisUtil.getDevice(userLastWashDto.getMonitorId());
+                            washEventDto.setDvc(device.getCode());
+                            washEventDto.setDvn(device.getName());
                         }
                         recordWashEvent(washEventDto);
 //                        List<Wash> washList = redisUtil.getWash(regionWashMonitorDelayDto.getRegionId());
@@ -208,6 +211,12 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
     private void alarm(WashEventDto washEventDto,Boolean ia,SystemAlarmType systemAlarmType,LocalDateTime wt,UserCurrentRegionDto userCurrentRegionDto,UserLastWashDto userLastWashDto,WashTemplateItem wash,Long tagId) throws JsonProcessingException {
         washEventDto.setWet(WashEventType.REGION.getKey());
         washEventDto.setIa(ia);
+        if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getMonitorId())) {
+            washEventDto.setDvi(userLastWashDto.getMonitorId());
+            Device device = redisUtil.getDevice(userLastWashDto.getMonitorId());
+            washEventDto.setDvc(device.getCode());
+            washEventDto.setDvn(device.getName());
+        }
         if (Objects.nonNull(systemAlarmType)) {
             washEventDto.setAt(systemAlarmType.getKey());
         }

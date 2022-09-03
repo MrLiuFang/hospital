@@ -196,12 +196,15 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     public void export(String name, Boolean isLeave, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
         IPageResultData<List<ListTemporaryPersonVo>> pageResultData = list(name,isLeave,tagCode,startDateTime,endDateTime,new LionPage(0, Integer.MAX_VALUE));
         List<ListTemporaryPersonVo> list = pageResultData.getData();
+        list.forEach(listTemporaryPersonVo -> {
+            listTemporaryPersonVo.setStateStr(Objects.equals(listTemporaryPersonVo.getIsLeave(),true)?"已登出":"未登出");
+        });
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("姓名", "name"));
         excelColumn.add(ExcelColumn.build("性別", "gender"));
         excelColumn.add(ExcelColumn.build("標籤編碼", "tagCode"));
         excelColumn.add(ExcelColumn.build("拜訪原因", "remarks"));
-        excelColumn.add(ExcelColumn.build("狀態", "deviceState"));
+        excelColumn.add(ExcelColumn.build("狀態", "stateStr"));
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("temporaryPerson.xls", "UTF-8"));

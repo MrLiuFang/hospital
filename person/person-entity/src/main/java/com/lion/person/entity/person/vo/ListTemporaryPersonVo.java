@@ -12,4 +12,5 @@ import lombok.Data;
 @Schema
 public class ListTemporaryPersonVo extends TemporaryPersonDetailsVo {
 
+    private String stateStr;
 }

@@ -234,21 +234,20 @@ public class WashEventServiceImpl implements WashEventService {
         PdfWriter writer = PdfWriter.getInstance(document, servletOutputStream);
         writer.setPageEvent(new PdfPageEventHelper(FONT,CurrentUserUtil.getCurrentUserUsername()));
         document.open();
-        PdfPTable table = new PdfPTable(5);
-        table.setWidths(new int[]{20, 20, 20, 20, 20});
+        PdfPTable table = new PdfPTable(4);
+        table.setWidths(new int[]{25, 25, 25, 25});
         table.setWidthPercentage(100);
         PdfPCell cellTitle = new PdfPCell(new Paragraph("員工洗手詳情", new Font(bfChinese,24)));
-        cellTitle.setColspan(8);
+        cellTitle.setColspan(4);
         cellTitle.setHorizontalAlignment(Element.ALIGN_CENTER);
         table.addCell(cellTitle);
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         PdfPCell cellTitle1 = new PdfPCell(new Paragraph(MessageI18nUtil.getMessage("3000003")+":" +simpleDateFormat.format(new Date()), new Font(bfChinese)));
-        cellTitle1.setColspan(5);
+        cellTitle1.setColspan(4);
         table.addCell(cellTitle1);
         table.addCell(new Paragraph("使用時間", fontChinese));
         table.addCell(new Paragraph("使用設備", fontChinese));
         table.addCell(new Paragraph("所屬區域", fontChinese));
-        table.addCell(new Paragraph("使用時長", fontChinese));
         table.addCell(new Paragraph("是否合規", fontChinese));
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         for (WashEvent washEvent : list) {

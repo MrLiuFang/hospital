@@ -88,7 +88,7 @@ public class PatientDaoImpl implements PatientDaoEx {
     @Override
     public List<Patient> find(Long departmentId, String name, List<Long> ids) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select p from Patient p where 1=1  ");
+        sb.append(" select p from Patient p where p.isLeave is false  ");
         Map<String, Object> searchParameter = new HashMap();
         if (StringUtils.hasText(name)) {
             sb.append(" and ( p.name like :name or p.medicalRecordNo like :medicalRecordNo or p.phoneNumber like :phoneNumber" +
