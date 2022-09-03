@@ -448,6 +448,7 @@ public class WashEventServiceImpl implements WashEventService {
     @Override
     public IPageResultData<List<ListWashEventVo>> listWashEvent(Boolean ia, Long userTypeId, WashEventType type, Long regionId, Long departmentId, List<Long> userIds, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
 
+        List<Long>  departmentIds =  departmentExposeService.responsibleDepartment(departmentId);
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(ia)) {
@@ -462,11 +463,11 @@ public class WashEventServiceImpl implements WashEventService {
         if (Objects.nonNull(regionId)){
             criteria.and("ri").is(regionId);
         }
-        if (Objects.nonNull(departmentId)){
-            criteria.and("di").is(departmentId);
-        }
         if (Objects.nonNull(userIds) && userIds.size()>0){
             criteria.and("pi").in(userIds);
+        }
+        if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
+            criteria.and("pdi").in(departmentIds);
         }
         if (Objects.isNull(startDateTime)) {
             startDateTime = LocalDateTime.now().minusDays(30);

@@ -193,14 +193,18 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                           @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                           @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                           LionPage lionPage) {
-        List<Long> listDepartmentIds = new ArrayList<Long>();
+        List<Long> listDepartmentIds = departmentExposeService.responsibleDepartment(null);
         if (StringUtils.hasText(departmentIds)){
             String[] str = departmentIds.split(",");
+            List<Long> list1 = new ArrayList<>();
             for (int i =0; i<str.length;i++) {
                 if (NumberUtil.isLong(str[i])) {
-                    listDepartmentIds.add(Long.valueOf(str[i]));
+                    if (listDepartmentIds.contains(Long.valueOf(str[i]))){
+                        list1.add(Long.valueOf(str[i]));
+                    }
                 }
             }
+            listDepartmentIds = list1;
         }
         List<Long> listUserIds = new ArrayList<Long>();
         if (StringUtils.hasText(userIds)){

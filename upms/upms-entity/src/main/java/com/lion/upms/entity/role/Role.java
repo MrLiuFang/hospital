@@ -68,7 +68,10 @@ public class Role extends BaseEntity implements Serializable {
     @Convert(converter = AlarmMode.AlarmModeConverter.class)
     private AlarmMode alarmModel = AlarmMode.STANDARD;
 
-    @Schema(description = "标签是否禁音")
+    @Schema(description = "标签是否禁用")
     @Column(name = "tag_forbidden_sound" )
     private Boolean tagForbiddenSound =false;
+
+    @Schema(description = "是否操作员")
+    private Boolean isOperator = false;
 }

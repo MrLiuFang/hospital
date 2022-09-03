@@ -24,14 +24,14 @@ public class UserDaoImpl implements UserDaoEx {
     @Override
     public List<User> find(String name, List<Long> userIds) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select u User u where 1=1  ");
+        sb.append(" select u from User u where 1=1  ");
         Map<String, Object> searchParameter = new HashMap();
         if (Objects.nonNull(userIds) && userIds.size()>0){
             sb.append(" and u.id in :userIds ");
             searchParameter.put("userIds", userIds);
         }
         if (StringUtils.hasText(name)) {
-            sb.append(" and  (u.name like :name or email like :email or tagCode like :tagCode or phoneNumber like :phoneNumber or address like :address ) ");
+            sb.append(" and  (u.name like :name or u.email like :email or u.tagCode like :tagCode or u.phoneNumber like :phoneNumber or u.address like :address ) ");
             searchParameter.put("name", "%"+name+"%");
             searchParameter.put("email", "%"+name+"%");
             searchParameter.put("tagCode", "%"+name+"%");

@@ -20,7 +20,7 @@ public class TemporaryPersonDaoImpl implements TemporaryPersonDaoEx {
     @Override
     public List<TemporaryPerson> find(Long departmentId, String keyword, List<Long> ids) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select t TemporaryPerson t where isLeave is false  ");
+        sb.append(" select t from TemporaryPerson t where isLeave is false  ");
         Map<String, Object> searchParameter = new HashMap();
         if (Objects.nonNull(departmentId)) {
             sb.append(" and t.departmentId = :departmentId ");
@@ -31,7 +31,7 @@ public class TemporaryPersonDaoImpl implements TemporaryPersonDaoEx {
             searchParameter.put("ids",ids);
         }
         if (StringUtils.hasText(keyword)) {
-            sb.append(" and ( idNo like :idNo or name like :name or phoneNumber like :phoneNumber) ");
+            sb.append(" and ( t.idNo like :idNo or t.name like :name or t.phoneNumber like :phoneNumber) ");
             searchParameter.put("idNo","%"+keyword+"%");
             searchParameter.put("name","%"+keyword+"%");
             searchParameter.put("phoneNumber","%"+keyword+"%");

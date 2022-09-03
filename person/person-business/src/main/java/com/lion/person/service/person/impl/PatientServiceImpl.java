@@ -271,7 +271,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     @Override
-    public IPageResultData<List<ListPatientVo>> list(String name, Boolean isLeave, Boolean isWaitLeave, LocalDateTime birthday, TransferState transferState, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, String cardNumber, LionPage lionPage) {
+    public IPageResultData<List<ListPatientVo>> list(String keyword, String name, Boolean isLeave, Boolean isWaitLeave, LocalDateTime birthday, TransferState transferState, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, String cardNumber, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
         jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
@@ -306,6 +306,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
                 jpqlParameter.setSearchParameter(SearchConstant.NOT_IN+"_id",ids);
             }
         }
+
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }

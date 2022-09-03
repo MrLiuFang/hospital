@@ -69,11 +69,11 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @GetMapping("/list")
     @ApiOperation(value = "患者列表")
-    public IPageResultData<List<ListPatientVo>> list(@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出（true=历史患者）") Boolean isLeave,@ApiParam(value = "是否等待登出(通过回收箱登出)") Boolean isWaitLeave,@ApiParam(value = "出生日期(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime birthday,
+    public IPageResultData<List<ListPatientVo>> list(@ApiParam(value = "关键字")String keyword,@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出（true=历史患者）") Boolean isLeave,@ApiParam(value = "是否等待登出(通过回收箱登出)") Boolean isWaitLeave,@ApiParam(value = "出生日期(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime birthday,
                                                      @ApiParam(value = "转移状态") TransferState transferState,@ApiParam(value = "金卡号")String cardNumber, @ApiParam(value = "标签编码") String tagCode,@ApiParam(value = "病历号") String medicalRecordNo,@ApiParam(value = "床位id") Long sickbedId,
                                                      @ApiParam(value = "入院开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "入院结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                       LionPage lionPage){
-        return patientService.list(name, isLeave, isWaitLeave, birthday, transferState, tagCode, medicalRecordNo, sickbedId, startDateTime, endDateTime,cardNumber , lionPage);
+        return patientService.list(keyword, name, isLeave, isWaitLeave, birthday, transferState, tagCode, medicalRecordNo, sickbedId, startDateTime, endDateTime, cardNumber, lionPage);
     }
 
     @GetMapping("/details")
@@ -225,6 +225,10 @@ public class PatientController extends BaseControllerImpl implements BaseControl
             patientService.update(patient);
         });
         tagPatientExposeService.unbinding(id,false);
+        UpdateTransferDto updateTransferDto = new UpdateTransferDto();
+        updateTransferDto.setPatientId(id);
+        updateTransferDto.setTransferState(TransferState.WAITING_TO_RECEIVE);
+        patientTransferService.updateState(updateTransferDto);
         return ResultData.instance();
     }
 }

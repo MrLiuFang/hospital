@@ -88,7 +88,7 @@ public class PatientDaoImpl implements PatientDaoEx {
     @Override
     public List<Patient> find(Long departmentId, String name, List<Long> ids) {
         StringBuilder sb = new StringBuilder();
-        sb.append(" select p Patient p where 1=1  ");
+        sb.append(" select p from Patient p where 1=1  ");
         Map<String, Object> searchParameter = new HashMap();
         if (StringUtils.hasText(name)) {
             sb.append(" and ( p.name like :name or p.medicalRecordNo like :medicalRecordNo or p.phoneNumber like :phoneNumber" +
@@ -104,12 +104,12 @@ public class PatientDaoImpl implements PatientDaoEx {
         }
 
         if (Objects.nonNull(departmentId)) {
-            sb.append(" and departmentId = :departmentId ");
+            sb.append(" and p.departmentId = :departmentId ");
             searchParameter.put("departmentId", departmentId);
         }
 
         if (Objects.nonNull(ids) && ids.size() >0){
-            sb.append(" and id in :ids ");
+            sb.append(" and p.id in :ids ");
             searchParameter.put("ids", ids);
         }
         return (List<Patient>) this.baseDao.findAll(sb.toString(),searchParameter);
