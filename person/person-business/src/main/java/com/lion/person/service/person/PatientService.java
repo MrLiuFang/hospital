@@ -46,6 +46,8 @@ public interface PatientService extends BaseService<Patient> {
     /**
      * 列表
      *
+     * @param isOne
+     * @param bedCode
      * @param keyword
      * @param name
      * @param isLeave
@@ -61,7 +63,7 @@ public interface PatientService extends BaseService<Patient> {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListPatientVo>> list(String keyword,String name, Boolean isLeave, Boolean isWaitLeave,LocalDateTime birthday,TransferState transferState,String tagCode,String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime,String cardNumber, LionPage lionPage);
+    public IPageResultData<List<ListPatientVo>> list(Boolean isOne,String bedCode,String keyword,String name, Boolean isLeave, Boolean isWaitLeave,LocalDateTime birthday,TransferState transferState,String tagCode,String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime,String cardNumber, LionPage lionPage);
 
     /**
      * 详情
@@ -83,4 +85,7 @@ public interface PatientService extends BaseService<Patient> {
 
     TodayStatisticsVo todayStatistics();
 
+    public Patient setOtherInfo(Patient patient);
+
+    public void sickbedIsCanUse(Long sickbedId,Long patientId);
 }

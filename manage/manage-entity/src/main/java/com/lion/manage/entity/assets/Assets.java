@@ -51,6 +51,8 @@ public class Assets extends BaseEntity implements Serializable {
 
     private String govCode;
 
+    private String positionCode;
+
     @Schema(description = "资产分类")
     @Column(name = "assets_type_id")
 //    @Convert(converter = AssetsType.AssetsTypeConverter.class)

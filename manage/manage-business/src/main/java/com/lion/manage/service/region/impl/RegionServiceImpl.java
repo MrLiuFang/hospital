@@ -267,7 +267,7 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         BeanUtils.copyProperties(region,detailsRegionVo);
         Optional<Department> departmentOptional = departmentService.findById(region.departmentId);
         if (departmentOptional.isPresent()){
-            detailsRegionVo.setDepartmentName(optional.get().getName());
+            detailsRegionVo.setDepartmentName(departmentOptional.get().getName());
         }
         detailsRegionVo.setDevices(deviceExposeService.findByRegionId(region.getId()));
         detailsRegionVo.setWardRooms(wardRoomService.findByRegionId(region.getId()));

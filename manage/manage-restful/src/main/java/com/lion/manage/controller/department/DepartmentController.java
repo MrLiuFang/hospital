@@ -98,9 +98,17 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
     @ApiOperation(value = "科室列表")
     public IPageResultData<List<ListDepartmentVo>> list(@ApiParam(value = "科室名称") String name,@ApiParam(value = "是否查询所有")Boolean isAll, LionPage lionPage){
         ResultData resultData = ResultData.instance();
+        List<ListDepartmentVo> listDepartmentVo = new ArrayList<ListDepartmentVo>();
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
+            List<Department> list = departmentService.findAllParent(name);
+            list.forEach(department -> {
+                ListDepartmentVo departmentVo = new ListDepartmentVo();
+                BeanUtils.copyProperties(department,departmentVo);
+                departmentVo.setResponsibleUser(departmentResponsibleUserService.responsibleUser(department.getId()));
+                listDepartmentVo.add(departmentVo);
+            });
+            return new PageResultData(listDepartmentVo, new LionPage(0,30), list.size());
         }
         List<Long> departmentIds = new ArrayList<>();
         departmentIds = departmentExposeService.responsibleDepartment(null);
@@ -111,7 +119,6 @@ public class DepartmentController extends BaseControllerImpl implements BaseCont
         lionPage.setJpqlParameter(jpqlParameter);
         PageResultData page = (PageResultData) departmentService.findNavigator(lionPage);
         List<Department> list = page.getContent();
-        List<ListDepartmentVo> listDepartmentVo = new ArrayList<ListDepartmentVo>();
         list.forEach(department -> {
             ListDepartmentVo departmentVo = new ListDepartmentVo();
             BeanUtils.copyProperties(department,departmentVo);

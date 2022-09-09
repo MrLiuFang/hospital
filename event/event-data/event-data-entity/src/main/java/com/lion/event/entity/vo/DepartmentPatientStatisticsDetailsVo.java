@@ -73,7 +73,7 @@ public class DepartmentPatientStatisticsDetailsVo {
         @Schema(description = "是否异常")
         private com.lion.person.entity.enums.State deviceState = State.NORMAL;
 
-        @Schema(description = "病人状态")
-        private PatientState patientState;
+//        @Schema(description = "病人状态")
+//        private PatientState patientState;
     }
 }

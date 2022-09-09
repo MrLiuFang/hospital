@@ -4,7 +4,6 @@ import com.lion.core.persistence.curd.BaseDao;
 import com.lion.manage.entity.ward.WardRoomSickbed;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
@@ -58,4 +57,6 @@ public interface WardRoomSickbedDao extends BaseDao<WardRoomSickbed> ,WardRoomSi
      * @return
      */
     public int countByWardRoomId(Long wardRoomId);
+
+    public List<WardRoomSickbed> findByBedCodeLike(String bedCode);
 }

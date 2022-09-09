@@ -92,8 +92,9 @@ public interface UserDao extends BaseDao<User>, UserDaoEx {
      * @param deviceState
      * @return
      */
-    public int countByIdInAndAndDeviceState(List<Long> ids, State deviceState);
+    public int countByIdInAndDeviceState(List<Long> ids, State deviceState);
 
+    public int countByIdIn(List<Long> ids);
     /**
      * 统计用户类型
      * @param userTypeIds

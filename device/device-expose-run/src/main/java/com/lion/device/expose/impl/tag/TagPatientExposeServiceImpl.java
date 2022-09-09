@@ -73,10 +73,10 @@ public class TagPatientExposeServiceImpl extends BaseServiceImpl<TagPatient> imp
 //            BusinessException.throwException(MessageI18nUtil.getMessage("4000025"));
 //        }
         if (!Objects.equals(departmentId,tag.getDepartmentId())) {
-            com.lion.core.Optional<Department> optionalTagDepartment = departmentExposeService.findById(tag.getDepartmentId());
+//            com.lion.core.Optional<Department> optionalTagDepartment = departmentExposeService.findById(tag.getDepartmentId());
             com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(departmentId);
-            if (optionalTagDepartment.isPresent() && optionalDepartment.isPresent()) {
-                BusinessException.throwException(MessageI18nUtil.getMessage("4000026", new Object[]{optionalTagDepartment.get().getName(), optionalDepartment.get().getName()}));
+            if (optionalDepartment.isPresent()) {
+                BusinessException.throwException(MessageI18nUtil.getMessage("4000026", new Object[]{tag.getTagCode(), optionalDepartment.get().getName()}));
             }
         }
         if (!Objects.equals(tag.getPurpose(), TagPurpose.PATIENT)){

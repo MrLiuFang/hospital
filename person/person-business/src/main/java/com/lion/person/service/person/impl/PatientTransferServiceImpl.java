@@ -70,41 +70,45 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
 
     @Override
     public void transfer(TransferDto transferDto) {
+        patientTransferDao.deleteByPatientId(transferDto.getPatientId());
         PatientTransfer patientTransfer = new PatientTransfer();
         com.lion.core.Optional<Patient> optionalPatient = patientService.findById(transferDto.getPatientId());
-        com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(transferDto.getDepartmentId());
-        List<TransferState> state = new ArrayList<>();
-        state.add(TransferState.CANCEL);
-        state.add(TransferState.FINISH);
-        PatientTransfer oldPatientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(transferDto.getPatientId(),state);
-        if (Objects.nonNull(oldPatientTransfer)) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("1000041"));
+//        com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(transferDto.getDepartmentId());
+//        List<TransferState> state = new ArrayList<>();
+//        state.add(TransferState.CANCEL);
+//        state.add(TransferState.FINISH);
+//        PatientTransfer oldPatientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(transferDto.getPatientId(),state);
+//        if (Objects.nonNull(oldPatientTransfer)) {
+//            BusinessException.throwException(MessageI18nUtil.getMessage("1000041"));
+//        }
+//        if (optionalDepartment.isEmpty()) {
+//            BusinessException.throwException(MessageI18nUtil.getMessage("1000042"));
+//        }
+//        if (optionalPatient.isEmpty()) {
+//            BusinessException.throwException(MessageI18nUtil.getMessage("1000043"));
+//        }
+
+//        if (Objects.equals(patient.getIsLeave(),true)){
+//            BusinessException.throwException(MessageI18nUtil.getMessage("1000044"));
+//        }
+//        if (Objects.equals(transferDto.getDepartmentId(),patient.getDepartmentId())) {
+//            BusinessException.throwException(MessageI18nUtil.getMessage("1000045"));
+//        }
+//        Long userId = CurrentUserUtil.getCurrentUserId();
+        if (optionalPatient.isPresent()) {
+            Patient patient = optionalPatient.get();
+            patientTransfer.setNewDepartmentId(transferDto.getDepartmentId());
+            patientTransfer.setPatientId(transferDto.getPatientId());
+            patientTransfer.setOldSickbedId(patient.getSickbedId());
+            patientTransfer.setOldDepartmentId(patient.getDepartmentId());
+            patientTransfer.setState(TransferState.TRANSFERRING);
+            save(patientTransfer);
         }
-        if (optionalDepartment.isEmpty()) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("1000042"));
-        }
-        if (optionalPatient.isEmpty()) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("1000043"));
-        }
-        Patient patient = optionalPatient.get();
-        if (Objects.equals(patient.getIsLeave(),true)){
-            BusinessException.throwException(MessageI18nUtil.getMessage("1000044"));
-        }
-        if (Objects.equals(transferDto.getDepartmentId(),patient.getDepartmentId())) {
-            BusinessException.throwException(MessageI18nUtil.getMessage("1000045"));
-        }
-        Long userId = CurrentUserUtil.getCurrentUserId();
-        patientTransfer.setNewDepartmentId(transferDto.getDepartmentId());
-        patientTransfer.setPatientId(transferDto.getPatientId());
-        patientTransfer.setOldSickbedId(patient.getSickbedId());
-        patientTransfer.setOldDepartmentId(patient.getDepartmentId());
-        patientTransfer.setState(TransferState.TRANSFERRING);
-        save(patientTransfer);
 
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class})
     public void receiveOrCancel(ReceivePatientDto receivePatientDto) {
 //        if (Objects.isNull(receivePatientDto.getId())) {
 //            BusinessException.throwException(MessageI18nUtil.getMessage("1000026"));
@@ -112,20 +116,38 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
         if (!(Objects.equals(receivePatientDto.getState(),TransferState.FINISH) || Objects.equals(receivePatientDto.getState(),TransferState.CANCEL))) {
             BusinessException.throwException(MessageI18nUtil.getMessage("1000046"));
         }
+
+        PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientId(receivePatientDto.getPatientId());
+        Optional<Patient> optional = patientService.findById(receivePatientDto.getPatientId());
+        if (optional.isPresent()){
+            Patient patient = optional.get();
+            patient.setTagCode(receivePatientDto.getTagCode());
+            patient.setSickbedId(receivePatientDto.getSickbedId());
+            if (Objects.nonNull(patientTransfer)){
+                patient.setDepartmentId(patientTransfer.getNewDepartmentId());
+            }
+            if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH) ){
+                tagPatientExposeService.binding(receivePatientDto.getPatientId(),receivePatientDto.getTagCode(),patientTransfer.getNewDepartmentId());
+                patientService.setOtherInfo(patient);
+                patientService.sickbedIsCanUse(patient.getSickbedId(),receivePatientDto.getPatientId());
+                patientService.update(patient);
+            }
+        }
+        patientTransferDao.deleteByPatientId(receivePatientDto.getPatientId());
 //        if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH)) {
 //            Patient patient = new Patient();
 //            patient.setId(receivePatientDto.getPatientId());
 //            patientService.update(patient);
 //        }
-        patientTransferDao.update1(receivePatientDto.getPatientId(),receivePatientDto.getState());
+//        patientTransferDao.update1(receivePatientDto.getPatientId(),receivePatientDto.getState());
 //        List<TransferState> state = new ArrayList<>();
 //        state.add(TransferState.CANCEL);
 //        state.add(TransferState.FINISH);
 //        PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(receivePatientDto.getId(),state);
 //        patientTransfer.setState(receivePatientDto.getState());
-        if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH)) {
-            patientTransferDao.update2(receivePatientDto.getPatientId(),receivePatientDto.getState(),receivePatientDto.getNewSickbedId());
-        }
+//        if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH)) {
+//            patientTransferDao.update2(receivePatientDto.getPatientId(),receivePatientDto.getState(),receivePatientDto.getNewSickbedId());
+//        }
 //        Long userId = CurrentUserUtil.getCurrentUserId();
 //        patientTransfer.setReceiveUserId(userId);
 //        patientTransfer.setReceiveDateTime(LocalDateTime.now());
@@ -177,17 +199,16 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
 
     @Override
     public void updateState(UpdateTransferDto updateTransferDto) {
-        if (!Objects.equals(updateTransferDto.getTransferState(),TransferState.ROUTINE)) {
-            List<TransferState> list = new ArrayList<>();
-            list.add(TransferState.FINISH);
-            list.add(TransferState.CANCEL);
-            PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientIdAndStateNotIn(updateTransferDto.getPatientId(),list);
-            if (Objects.nonNull(patientTransfer)) {
-                patientTransfer.setState(updateTransferDto.getTransferState());
-                update(patientTransfer);
-            }
-//            tagPatientExposeService.unbinding(updateTransferDto.getPatientId(),false);
+        PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientId(updateTransferDto.getPatientId());
+        if (Objects.nonNull(patientTransfer)) {
+            patientTransfer.setState(updateTransferDto.getTransferState());
+            update(patientTransfer);
         }
+    }
+
+    @Override
+    public void deleteByPatientId(Long patientId) {
+        patientTransferDao.deleteByPatientId(patientId);
     }
 
 }

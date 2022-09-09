@@ -24,6 +24,8 @@ public interface PatientTransferDao extends BaseDao<PatientTransfer> {
      */
     public PatientTransfer findFirstByPatientIdAndStateNotIn(Long patientId, List<TransferState> state);
 
+    public PatientTransfer findFirstByPatientId(Long patientId);
+
     /**
      *
      * @param patientId
@@ -52,6 +54,7 @@ public interface PatientTransferDao extends BaseDao<PatientTransfer> {
      * @param patientId
      * @return
      */
+    @Transactional()
     public int deleteByPatientId(Long patientId);
 
     @Transactional

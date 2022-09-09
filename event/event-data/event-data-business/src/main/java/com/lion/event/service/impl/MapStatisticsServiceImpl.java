@@ -287,6 +287,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             if (map.containsKey("alarmCount")) {
                 departmentStatisticsDetailsVo.setAlarmCount(map.get("alarmCount"));
             }
+            departmentStatisticsDetailsVo.setOnlineStaffCount(departmentUserExposeService.count(departmentId,null,null));
             departmentStatisticsDetailsVo.setAssetsCount(assetsExposeService.countByDepartmentId(departmentId, null, null));
             departmentStatisticsDetailsVo.setTagCount(tagExposeService.countTag(departmentId));
             departmentStatisticsDetailsVo.setCctvCount(cctvExposeService.count(departmentId));
@@ -570,7 +571,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                         patientExposeService.updateState(patient.getId(),State.NORMAL.getKey());
                         vo.setDeviceState(State.NORMAL);
                     }
-                    vo.setPatientState(patient.getPatientState());
+//                    vo.setPatientState(patient.getPatientState());
                     vo.setTagCode(patient.getTagCode());
                     vo.setHeadPortrait(patient.getHeadPortrait());
                     vo.setHeadPortraitUrl(fileExposeService.getUrl(patient.getHeadPortrait()));

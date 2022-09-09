@@ -96,6 +96,8 @@ public class Patient extends Person implements Serializable {
     @Convert(converter = PatientState.PatientStateConverter.class)
     private PatientState patientState;
 
+
+
     @Schema(description = "是否告警")
     private Boolean  isAlarm;
 

@@ -33,6 +33,7 @@ import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsFaultState;
 import com.lion.manage.entity.enums.AssetsUseState;
+import com.lion.manage.entity.enums.State;
 import com.lion.manage.entity.enums.SystemAlarmType;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.expose.department.DepartmentExposeService;
@@ -316,7 +317,12 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsTypeId",assetsTypeId);
         }
         if (Objects.nonNull(useState)) {
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_useState",useState);
+            if (Objects.equals(useState,AssetsUseState.USEING)) {
+                jpqlParameter.setSearchParameter(SearchConstant.EQUAL + "_deviceState", State.USED);
+            }else if (Objects.equals(useState,AssetsUseState.NOT_USED)) {
+                jpqlParameter.setSearchParameter(SearchConstant.EQUAL + "_deviceState", State.NOT_USED);
+            }
+
         }
         if (StringUtils.hasText(tagCode)) {
             TagAssets tagAssets =  tagAssetsExposeService.findByTagCode(tagCode);

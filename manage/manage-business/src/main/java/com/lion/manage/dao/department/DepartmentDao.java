@@ -12,7 +12,7 @@ import java.util.List;
  * @Description:
  * @date 2021/3/23下午2:24
  */
-public interface DepartmentDao extends BaseDao<Department> {
+public interface DepartmentDao extends BaseDao<Department> ,DepartmentDaoEx{
 
     /**
      * 根据科室名称查询科室
@@ -27,6 +27,8 @@ public interface DepartmentDao extends BaseDao<Department> {
      * @return
      */
     public List<Department> findByParentIdOrderByCreateDateTimeAsc(Long parentId);
+
+    public List<Department> findByParentIdAndIdInOrderByCreateDateTimeAsc(Long parentId,List<Long> ids);
 
     /**
      * 根据科室名称查询科室

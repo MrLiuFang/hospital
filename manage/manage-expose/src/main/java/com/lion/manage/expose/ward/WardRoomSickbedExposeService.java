@@ -20,4 +20,6 @@ public interface WardRoomSickbedExposeService extends BaseService<WardRoomSickbe
      */
     public List<WardRoomSickbed> find(Long regionId);
 
+    public List<WardRoomSickbed> find(String bedCode);
+
 }

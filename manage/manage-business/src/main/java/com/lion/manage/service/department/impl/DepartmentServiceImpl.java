@@ -94,12 +94,20 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
     @Override
     public List<TreeDepartmentVo> treeList(String name) {
         List<Department> list= new ArrayList<>();
+        List<Long> ids = new ArrayList<>();
         if (StringUtils.hasText(name)){
-            list = departmentDao.findByNameLike(name);
+            list = departmentDao.findAllParent(name);
+            list.forEach(department -> {
+                ids.add(department.getId());
+            });
+            ids.add(Long.MAX_VALUE);
+        }
+        if (ids.size()>0) {
+            list = departmentDao.findByParentIdAndIdInOrderByCreateDateTimeAsc(0L,ids);
         }else {
             list = departmentDao.findByParentIdOrderByCreateDateTimeAsc(0L);
         }
-        return convertVo(list);
+        return convertVo(list,ids);
     }
 
     @Override
@@ -230,8 +238,13 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
         return departmentIds;
     }
 
+    @Override
+    public List<Department> findAllParent(String name) {
+        return departmentDao.findAllParent(name);
+    }
 
-    private List<TreeDepartmentVo> convertVo(List<Department> list){
+
+    private List<TreeDepartmentVo> convertVo(List<Department> list,List<Long> ids){
         List<TreeDepartmentVo> returnList = new ArrayList<TreeDepartmentVo>();
         list.forEach(department -> {
             TreeDepartmentVo treeDepartmentVo = new TreeDepartmentVo();
@@ -239,7 +252,11 @@ public class DepartmentServiceImpl extends BaseServiceImpl<Department> implement
             if (Objects.isNull(department.getParentId()) || !Objects.equals(department.getParentId(),0L)) {
 
             }
-            treeDepartmentVo.setChildren(convertVo(departmentDao.findByParentIdOrderByCreateDateTimeAsc(department.getId())));
+            if (ids.size()>0) {
+                treeDepartmentVo.setChildren(convertVo(departmentDao.findByParentIdAndIdInOrderByCreateDateTimeAsc(department.getId(),ids),ids));
+            }else {
+                treeDepartmentVo.setChildren(convertVo(departmentDao.findByParentIdOrderByCreateDateTimeAsc(department.getId()),ids));
+            }
             treeDepartmentVo.setResponsibleUser(departmentResponsibleUserService.responsibleUser(department.getId()));
             returnList.add(treeDepartmentVo);
         });

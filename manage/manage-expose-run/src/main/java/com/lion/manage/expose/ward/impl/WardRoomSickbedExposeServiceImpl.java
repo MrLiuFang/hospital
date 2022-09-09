@@ -8,7 +8,6 @@ import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * @description:
@@ -24,5 +23,10 @@ public class WardRoomSickbedExposeServiceImpl extends BaseServiceImpl<WardRoomSi
     @Override
     public List<WardRoomSickbed> find(Long regionId) {
         return wardRoomSickbedDao.findByRegionId(regionId);
+    }
+
+    @Override
+    public List<WardRoomSickbed> find(String bedCode) {
+        return wardRoomSickbedDao.findByBedCodeLike("%"+bedCode+"%");
     }
 }

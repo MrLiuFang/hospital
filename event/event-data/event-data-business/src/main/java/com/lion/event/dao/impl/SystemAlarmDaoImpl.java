@@ -352,6 +352,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                         if (Objects.nonNull(assets)) {
                             vo.setTitle(assets.getName());
                             vo.setImgId(assets.getImg());
+                            vo.setTagCode(assets.getCode());
                             String imgUrl = null;
                             if (cache.containsKey(assets.getImg())) {
                                 imgUrl = (String) cache.get(assets.getImg());
@@ -449,6 +450,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
                         if (Objects.nonNull(device)) {
                             vo.setTitle(device.getName());
                             vo.setImgId(device.getImg());
+                            vo.setTagCode(device.getCode());
                             String imgUrl = null;
                             if (cache.containsKey(device.getImg())) {
                                 imgUrl = (String) cache.get(device.getImg());

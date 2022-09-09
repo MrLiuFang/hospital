@@ -48,4 +48,6 @@ public interface PatientTransferService extends BaseService<PatientTransfer> {
      * @param updateTransferDto
      */
     public void updateState(UpdateTransferDto updateTransferDto);
+
+    public void deleteByPatientId(Long patientId);
 }

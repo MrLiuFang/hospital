@@ -59,28 +59,15 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
         if (Objects.isNull(tag)){
             BusinessException.throwException(MessageI18nUtil.getMessage("4000021"));
         }
-//        if (Objects.equals(tag.getDeviceState(), State.NOT_ACTIVE)) {
-//            BusinessException.throwException(tag.getTagCode() +"未激活不能使用");
-//        }
+
         if (!Objects.equals(tag.getPurpose(), TagPurpose.ASSETS)){
             BusinessException.throwException(MessageI18nUtil.getMessage("4000022"));
         }
         if (!Objects.equals(tag.getDepartmentId(), departmentId)){
             BusinessException.throwException(MessageI18nUtil.getMessage("4000023"));
         }
-        TagAssets tagAssets = tagAssetsDao.findFirstByAssetsIdAndUnbindingTimeIsNull(assetsId);
-        if (Objects.nonNull(tagAssets)){
-            if (!Objects.equals( tagAssets.getAssetsId(), assetsId)){
-                BusinessException.throwException(MessageI18nUtil.getMessage("4000024"));
-            }else {
-                return true;
-            }
-        }
-//        else {
-//            if (Objects.equals(tag.getUseState(), TagUseState.USEING)){
-//                BusinessException.throwException("该标签正在使用中");
-//            }
-//        }
+
+        unrelation(assetsId);
         tagAssetsDao.deleteByAssetsId(assetsId);
         TagAssets newTagAssets = new TagAssets();
         newTagAssets.setAssetsId(assetsId);
