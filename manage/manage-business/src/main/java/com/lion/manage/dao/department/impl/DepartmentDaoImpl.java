@@ -28,7 +28,7 @@ public class DepartmentDaoImpl implements DepartmentDaoEx {
                 "  cte_parent b " +
                 "  on a.id=b.parent_id" +
                 ")             " +
-                "select * from cte_parent ");
+                "select distinct * from cte_parent ");
         return baseDao.getSession().createNativeQuery(sql.toString(),Department.class).getResultList();
     }
 }

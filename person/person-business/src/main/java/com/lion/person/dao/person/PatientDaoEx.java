@@ -13,4 +13,6 @@ public interface PatientDaoEx {
 
     public List<Patient> find(Long departmentId, String name, List<Long> ids);
 
+    public Page<Patient> find(String cardNumber,LionPage lionPage);
+
 }

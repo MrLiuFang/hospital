@@ -114,4 +114,13 @@ public class PatientDaoImpl implements PatientDaoEx {
         }
         return (List<Patient>) this.baseDao.findAll(sb.toString(),searchParameter);
     }
+
+    @Override
+    public Page<Patient> find(String cardNumber, LionPage lionPage) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(" select t2.* from (select card_number,max(create_date_time) as 'create_date_time' from t_patient where card_number like :cardNumber and is_leave = 1 group by card_number) t1 join t_patient t2 on t1.card_number = t2.card_number and t1.create_date_time = t2.create_date_time  ");
+        Map<String, Object> searchParameter = new HashMap();
+        searchParameter.put("cardNumber","%"+cardNumber+"%");
+        return (Page<Patient>) baseDao.findNavigatorByNativeSql(lionPage,sb.toString(),searchParameter,Patient.class);
+    }
 }

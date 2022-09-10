@@ -73,7 +73,7 @@ public class PatientController extends BaseControllerImpl implements BaseControl
                                                      @ApiParam(value = "转移状态") TransferState transferState,@ApiParam(value = "金卡号")String cardNumber, @ApiParam(value = "标签编码") String tagCode,@ApiParam(value = "病历号") String medicalRecordNo,@ApiParam(value = "床位id") Long sickbedId,
                                                      @ApiParam(value = "入院开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "入院结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                       LionPage lionPage){
-        return patientService.list(isOne, bedCode, keyword, name, isLeave, isWaitLeave, birthday, transferState, tagCode, medicalRecordNo, sickbedId, startDateTime, endDateTime, cardNumber, lionPage);
+        return (IPageResultData<List<ListPatientVo>>) patientService.list(isOne, bedCode, keyword, name, isLeave, isWaitLeave, birthday, transferState, tagCode, medicalRecordNo, sickbedId, startDateTime, endDateTime, cardNumber, lionPage);
     }
 
     @GetMapping("/details")
