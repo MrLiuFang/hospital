@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Mr.Liu
@@ -75,4 +76,5 @@ public interface DepartmentDao extends BaseDao<Department> ,DepartmentDaoEx{
 //    @Query( " select d from Department d join Region r on d.id = r.departmentId where r.deviceGroupId = :deviceGroupId " )
 //    public Department findByDeviceGroupId(@Param("deviceGroupId")Long deviceGroupId);
 
+    public Optional<Department> findByName(String name);
 }

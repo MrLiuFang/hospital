@@ -1,5 +1,6 @@
 package com.lion.manage.expose.department.impl;
 
+import com.lion.core.Optional;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.manage.dao.department.DepartmentDao;
 import com.lion.manage.entity.department.Department;
@@ -40,6 +41,12 @@ public class DepartmentExposeServiceImpl extends BaseServiceImpl<Department> imp
     @Override
     public List<Long> responsibleDepartment(Long departmentId) {
         return departmentService.responsibleDepartment(departmentId);
+    }
+
+    @Override
+    public Optional<Department> find(String name) {
+        java.util.Optional<Department> optional = departmentDao.findByName(name);
+        return  optional.isPresent()?Optional.of(optional.get()):Optional.empty();
     }
 
 //    @Override

@@ -4,12 +4,14 @@ import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
+import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.UserType;
 import com.lion.upms.entity.user.dto.AddUserTypeDto;
 import com.lion.upms.entity.user.dto.UpdateUserTypeDto;
 import com.lion.upms.entity.user.vo.ListUserTypeVo;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Mr.Liu
@@ -43,5 +45,7 @@ public interface UserTypeService extends BaseService<UserType> {
      * @return
      */
     public IPageResultData<List<ListUserTypeVo>> list(String name, LionPage LionPage);
+
+    public Optional<UserType> find(String name);
 
 }

@@ -1,5 +1,6 @@
 package com.lion.upms.service.user.impl;
 
+import com.alibaba.druid.sql.visitor.functions.If;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
@@ -9,6 +10,7 @@ import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.upms.dao.user.UserDao;
+import com.lion.upms.dao.user.UserTypeDao;
 import com.lion.upms.entity.user.QUserType;
 import com.lion.upms.entity.user.UserType;
 import com.lion.upms.entity.user.dto.AddUserTypeDto;
@@ -28,6 +30,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * @author Mr.Liu
@@ -90,6 +93,13 @@ public class UserTypeServiceImpl extends BaseServiceImpl<UserType> implements Us
             returnList.add(vo);
         });
         return new PageResultData<List<ListUserTypeVo>>(returnList,LionPage,page.getTotalElements());
+    }
+
+    @Override
+    public Optional<UserType> find(String name) {
+        QUserType qUserType = QUserType.userType;
+        UserType userType = jpaQueryFactory.selectFrom(qUserType).where(qUserType.userTypeName.eq(name)).fetchOne();
+        return Optional.ofNullable(userType);
     }
 
     private void assertUserTypeNameExist(String userTypeName, Long id) {

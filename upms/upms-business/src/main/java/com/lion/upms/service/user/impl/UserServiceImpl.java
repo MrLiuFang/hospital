@@ -261,12 +261,13 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null, new LionPage(0,Integer.MAX_VALUE));
         List<ListUserVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
-        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000026"), "name"));
-        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000027"), "userType.userTypeName"));
-        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000028"), "number"));
-        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000029"), "username"));
-        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000030"), "isCreateAccount"));
-        excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("0000031"), "roleName"));
+        excelColumn.add(ExcelColumn.build("姓名", "name"));
+        excelColumn.add(ExcelColumn.build("類型", "userType.userTypeName"));
+        excelColumn.add(ExcelColumn.build("科室", "departmentName"));
+        excelColumn.add(ExcelColumn.build("職員編號", "number"));
+        excelColumn.add(ExcelColumn.build("賬號", "username"));
+        excelColumn.add(ExcelColumn.build("賬號啓用", "isCreateAccount"));
+        excelColumn.add(ExcelColumn.build("角色", "roleName"));
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("user.xls", "UTF-8"));
@@ -331,6 +332,14 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     private void importUser(InputStream inputStream, String fileName) throws IOException {
+        List<License> list = licenseExposeService.findAll();
+        if (Objects.nonNull(list) && list.size()>0) {
+            License license = list.get(0);
+            long userCount = this.count();
+            if (userCount >= license.getUserNum()) {
+                BusinessException.throwException("用户数已超过授权用户数");
+            }
+        }
         if (Objects.isNull(inputStream)) {
             return;
         }
@@ -342,43 +351,54 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         Sheet sheet = wookbook.getSheetAt(0);
         int totalRowNum = sheet.getLastRowNum();
         List<String> listRowKey = new ArrayList<String>();
-        listRowKey.add("username");
-        listRowKey.add("password");
-        listRowKey.add("name");
-        listRowKey.add("email");
-        listRowKey.add("gender");
-        listRowKey.add("birthday");
-        listRowKey.add("number");
-        listRowKey.add("tagCode");
-        listRowKey.add("phoneNumber");
-        listRowKey.add("address");
+        listRowKey.add("姓名");
+        listRowKey.add("類型");
+        listRowKey.add("科室");
+        listRowKey.add("職員編號");
+        listRowKey.add("賬號");
+        listRowKey.add("賬號啓用");
+        listRowKey.add("角色");
         ImportExcelUtil.check(sheet.getRow(0),listRowKey);
         for (int i = 1; i <= totalRowNum; i++) {
-            AddUserDto addUserDto = new AddUserDto();
+            User user = new User();
             Row row = sheet.getRow(i);
-            String username = ImportExcelUtil.getCellValue(row.getCell(0)).toString();
-            String password = ImportExcelUtil.getCellValue(row.getCell(1)).toString();
-            String name = ImportExcelUtil.getCellValue(row.getCell(2)).toString();
-            String email = ImportExcelUtil.getCellValue(row.getCell(3)).toString();
-            String gender = ImportExcelUtil.getCellValue(row.getCell(4)).toString();
-            String birthday = ImportExcelUtil.getCellValue(row.getCell(5)).toString();
-            String number = ImportExcelUtil.getCellValue(row.getCell(6)).toString();
-            String tagCode = ImportExcelUtil.getCellValue(row.getCell(7)).toString();
-            String phoneNumber = ImportExcelUtil.getCellValue(row.getCell(8)).toString();
-            String address = ImportExcelUtil.getCellValue(row.getCell(9)).toString();
+            String name = ImportExcelUtil.getCellValue(row.getCell(0)).toString();
+            String userTypeName = ImportExcelUtil.getCellValue(row.getCell(1)).toString();
+            String departmentName = ImportExcelUtil.getCellValue(row.getCell(2)).toString();
+            String number = ImportExcelUtil.getCellValue(row.getCell(3)).toString();
+            String username = ImportExcelUtil.getCellValue(row.getCell(4)).toString();
+            String isCreateAccount = ImportExcelUtil.getCellValue(row.getCell(5)).toString();
+            String roleName = ImportExcelUtil.getCellValue(row.getCell(6)).toString();
 
-            addUserDto.setUsername(username);
-            addUserDto.setPassword(passwordEncoder.encode(SecureUtil.md5(password)));
-            addUserDto.setName(name);
-            addUserDto.setEmail(email);
-            addUserDto.setGender(Gender.valueOf(gender));
-            addUserDto.setBirthday(LocalDate.parse(birthday));
-            addUserDto.setNumber(NumberUtil.isInteger(number)?Integer.valueOf(number):null);
-            addUserDto.setTagCode(tagCode);
-            addUserDto.setPhoneNumber(phoneNumber);
-            addUserDto.setAddress(address);
-
-            add(addUserDto);
+            if (StringUtils.hasText(isCreateAccount) && Objects.equals(isCreateAccount.toLowerCase().trim(),"true")) {
+                user.setUsername(username);
+                user.setEmail(username);
+                user.setPassword(passwordEncoder.encode(SecureUtil.md5(username)));
+            }
+            user.setName(name);
+            user.setGender(Gender.MAN);
+            user.setNumber(NumberUtil.isInteger(number)?Integer.valueOf(number):null);
+            if (StringUtils.hasText(userTypeName)) {
+                Optional<UserType> optionalUserType = userTypeService.find(userTypeName);
+                if (optionalUserType.isPresent()) {
+                    user.setUserTypeId(optionalUserType.get().getId());
+                }
+            }
+            assertNumberExist(NumberUtil.isInteger(number)?Integer.valueOf(number):null,null);
+            assertEmailExist(username,null);
+            user = save(user);
+            if (StringUtils.hasText(departmentName)) {
+                com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.find(departmentName);
+                if (optionalDepartment.isPresent()){
+                    departmentUserExposeService.relationDepartment(user.getId(),optionalDepartment.get().getId());
+                }
+            }
+            if (StringUtils.hasText(roleName)) {
+                Role role = roleDao.findFirstByName(roleName);
+                if (Objects.nonNull(role)){
+                    roleUserService.relationRole(user.getId(),role.getId());
+                }
+            }
         }
     }
 

@@ -1,5 +1,6 @@
 package com.lion.manage.expose.department;
 
+import com.lion.core.Optional;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.department.Department;
 
@@ -26,5 +27,7 @@ public interface DepartmentExposeService extends BaseService<Department> {
 //     * @return
 //     */
 //    public Department find(Long deviceGroupId);
+
+    public Optional<Department> find(String name);
 
 }
