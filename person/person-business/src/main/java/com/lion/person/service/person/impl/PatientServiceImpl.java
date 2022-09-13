@@ -275,10 +275,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
     }
 
     @Override
-    public Page<Patient> list(Boolean isOne, String bedCode, String keyword, String name, Boolean isLeave, Boolean isWaitLeave, LocalDateTime birthday, TransferState transferState, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, String cardNumber, LionPage lionPage) {
+    public Page<Patient> list(Integer level, Boolean isOne, String bedCode, String keyword, String name, Boolean isLeave, Boolean isWaitLeave, LocalDate birthday, TransferState transferState, String tagCode, String medicalRecordNo, Long sickbedId, LocalDate startDateTime, LocalDate endDateTime, String cardNumber, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
-        jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         if (Objects.nonNull(transferState) && Objects.equals(transferState,TransferState.TRANSFERRING)) {
             List<PatientTransfer> list =patientTransferDao.findByState(transferState);
             List<Long> ids = new ArrayList<>();
@@ -291,8 +290,9 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             if (ids.size()>0) {
                 jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
             }
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         }else if (Objects.nonNull(transferState) && Objects.equals(transferState,TransferState.WAITING_TO_RECEIVE)) {
-            List<PatientTransfer> list2 =patientTransferDao.findByState(TransferState.WAITING_TO_RECEIVE);
+            List<PatientTransfer> list2 =patientTransferDao.findByStateAndNewDepartmentIdIn(TransferState.WAITING_TO_RECEIVE,departmentIds);
             List<Long> ids = new ArrayList<>();
             ids.add(Long.MAX_VALUE);
             list2.forEach(patientTransfer -> {
@@ -313,11 +313,15 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             if (ids.size()>0) {
                 jpqlParameter.setSearchParameter(SearchConstant.NOT_IN+"_id",ids);
             }
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         }
         if (Objects.equals(isOne,true)) {
             if (StringUtils.hasText(cardNumber)) {
                 return patientDao.find(cardNumber,lionPage);
             }
+        }
+        if (Objects.nonNull(level)) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_level",level);
         }
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
@@ -354,10 +358,11 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_sickbedId",sickbedId);
         }
         if (Objects.nonNull(startDateTime)){
-            jpqlParameter.setSearchParameter(SearchConstant.GREATER_THAN_OR_EQUAL_TO+"_createDateTime",startDateTime);
+
+            jpqlParameter.setSearchParameter(SearchConstant.GREATER_THAN_OR_EQUAL_TO+"_createDateTime",LocalDateTime.of(startDateTime, LocalTime.MIN));
         }
         if (Objects.nonNull(endDateTime)){
-            jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_createDateTime",endDateTime);
+            jpqlParameter.setSearchParameter(SearchConstant.LESS_THAN_OR_EQUAL_TO+"_createDateTime",LocalDateTime.of(endDateTime, LocalTime.MAX));
         }
         if (StringUtils.hasText(cardNumber)) {
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_cardNumber",cardNumber);

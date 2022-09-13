@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -69,11 +70,11 @@ public class PatientController extends BaseControllerImpl implements BaseControl
 
     @GetMapping("/list")
     @ApiOperation(value = "患者列表")
-    public IPageResultData<List<ListPatientVo>> list(@ApiParam(value = "重复数据是否只显示一条数据")Boolean isOne,@ApiParam(value = "床位编码")String bedCode,@ApiParam(value = "关键字")String keyword,@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出（true=历史患者）") Boolean isLeave,@ApiParam(value = "是否等待登出(通过回收箱登出)") Boolean isWaitLeave,@ApiParam(value = "出生日期(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime birthday,
-                                                     @ApiParam(value = "转移状态") TransferState transferState,@ApiParam(value = "金卡号")String cardNumber, @ApiParam(value = "标签编码") String tagCode,@ApiParam(value = "病历号") String medicalRecordNo,@ApiParam(value = "床位id") Long sickbedId,
-                                                     @ApiParam(value = "入院开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "入院结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-                                                      LionPage lionPage){
-        return (IPageResultData<List<ListPatientVo>>) patientService.list(isOne, bedCode, keyword, name, isLeave, isWaitLeave, birthday, transferState, tagCode, medicalRecordNo, sickbedId, startDateTime, endDateTime, cardNumber, lionPage);
+    public IPageResultData<List<ListPatientVo>> list(@ApiParam(value = "患者级别")Integer level, @ApiParam(value = "重复数据是否只显示一条数据")Boolean isOne, @ApiParam(value = "床位编码")String bedCode, @ApiParam(value = "关键字")String keyword, @ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出（true=历史患者）") Boolean isLeave, @ApiParam(value = "是否等待登出(通过回收箱登出)") Boolean isWaitLeave, @ApiParam(value = "出生日期(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate birthday,
+                                                     @ApiParam(value = "转移状态") TransferState transferState, @ApiParam(value = "金卡号")String cardNumber, @ApiParam(value = "标签编码") String tagCode, @ApiParam(value = "病历号") String medicalRecordNo, @ApiParam(value = "床位id") Long sickbedId,
+                                                     @ApiParam(value = "入院开始时间(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDateTime, @ApiParam(value = "入院结束时间(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDateTime,
+                                                     LionPage lionPage){
+        return (IPageResultData<List<ListPatientVo>>) patientService.list(level, isOne, bedCode, keyword, name, isLeave, isWaitLeave, birthday, transferState, tagCode, medicalRecordNo, sickbedId, startDateTime, endDateTime, cardNumber, lionPage);
     }
 
     @GetMapping("/details")

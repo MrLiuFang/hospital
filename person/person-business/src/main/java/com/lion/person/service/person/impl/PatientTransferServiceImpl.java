@@ -128,6 +128,7 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
             }
             if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH) ){
                 tagPatientExposeService.binding(receivePatientDto.getPatientId(),receivePatientDto.getTagCode(),patientTransfer.getNewDepartmentId());
+                patient.setDepartmentId(patientTransfer.getNewDepartmentId());
                 patientService.setOtherInfo(patient);
                 patientService.sickbedIsCanUse(patient.getSickbedId(),receivePatientDto.getPatientId());
                 patientService.update(patient);

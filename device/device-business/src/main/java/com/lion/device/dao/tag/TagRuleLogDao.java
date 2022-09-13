@@ -2,6 +2,7 @@ package com.lion.device.dao.tag;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.tag.TagRuleLog;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * @Author Mr.Liu
@@ -15,5 +16,6 @@ public interface TagRuleLogDao extends BaseDao<TagRuleLog> {
      * @param tagRuleId
      * @return
      */
+    @Transactional
     public int deleteByTagRuleId(Long tagRuleId);
 }

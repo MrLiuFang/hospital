@@ -14,7 +14,7 @@ import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.entity.person.vo.TodayStatisticsVo;
 import org.springframework.data.domain.Page;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -46,6 +46,7 @@ public interface PatientService extends BaseService<Patient> {
     /**
      * 列表
      *
+     * @param level
      * @param isOne
      * @param bedCode
      * @param keyword
@@ -63,7 +64,7 @@ public interface PatientService extends BaseService<Patient> {
      * @param lionPage
      * @return
      */
-    public Page<Patient> list(Boolean isOne, String bedCode, String keyword, String name, Boolean isLeave, Boolean isWaitLeave, LocalDateTime birthday, TransferState transferState, String tagCode, String medicalRecordNo, Long sickbedId, LocalDateTime startDateTime, LocalDateTime endDateTime, String cardNumber, LionPage lionPage);
+    public Page<Patient> list(Integer level,Boolean isOne, String bedCode, String keyword, String name, Boolean isLeave, Boolean isWaitLeave, LocalDate birthday, TransferState transferState, String tagCode, String medicalRecordNo, Long sickbedId, LocalDate startDateTime, LocalDate endDateTime, String cardNumber, LionPage lionPage);
 
     /**
      * 详情

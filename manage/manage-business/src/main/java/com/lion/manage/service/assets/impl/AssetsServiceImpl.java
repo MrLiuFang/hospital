@@ -5,6 +5,7 @@ import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.Optional;
 import com.lion.core.PageResultData;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
@@ -259,6 +260,10 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             detailsAssetsVo.setAlarmId(systemAlarm.get_id());
         }
         detailsAssetsVo.setDetailsAssetsBorrowVo(assetsBorrowService.lastDetails(assets.getId()));
+        Optional<AssetsType> assetsTypeOptional = assetsTypeService.findById(assets.getAssetsTypeId());
+        if (assetsTypeOptional.isPresent()) {
+            detailsAssetsVo.setAssetsTypeName(assetsTypeOptional.get().getAssetsTypeName());
+        }
         return detailsAssetsVo;
     }
 

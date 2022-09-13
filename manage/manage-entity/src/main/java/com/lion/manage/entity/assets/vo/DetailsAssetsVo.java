@@ -67,5 +67,8 @@ public class DetailsAssetsVo extends Assets {
     @Schema(description = "最后一此借用")
     private DetailsAssetsBorrowVo detailsAssetsBorrowVo;
 
+    @Schema(description = "资产类型名称")
+    private String assetsTypeName;
+
 
 }
