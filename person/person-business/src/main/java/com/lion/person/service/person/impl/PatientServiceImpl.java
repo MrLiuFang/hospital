@@ -542,7 +542,7 @@ public class PatientServiceImpl extends BaseServiceImpl<Patient> implements Pati
             if (Objects.equals(patientLeaveDto.getIsLeave(), true)) {
                 tagPatientExposeService.unbinding(patient.getId(), false);
             }
-//            currentPositionExposeService.delete(patient.getId(), null, null);
+            currentPositionExposeService.delete(patient.getId(), null, null);
             patientTransferService.deleteByPatientId(patient.getId());
         }
     }

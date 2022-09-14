@@ -62,16 +62,16 @@ public class UserButtonServiceImpl implements UserButtonService {
         }
         commonService.position(deviceDataDto,user,currentRegionDto.getRegionId(),tag );
         if (Objects.equals(1,deviceDataDto.getButtonId())) {
-            record(currentRegionDto,user,TagRuleEffect.instance(1).getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
+            record(currentRegionDto,user,tagRule.getGreenButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
             event(tagRule.getGreenButtonTip(),tagRule.getGreenButton(),tag,currentRegionDto,user);
         }else if (Objects.equals(2,deviceDataDto.getButtonId())) {
-            record(currentRegionDto,user,TagRuleEffect.instance(2).getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
+            record(currentRegionDto,user,tagRule.getRedButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
             event(tagRule.getRedButtonTip(),tagRule.getRedButton(),tag,currentRegionDto,user);
         }else if (Objects.equals(3,deviceDataDto.getButtonId())) {
-            record(currentRegionDto,user,TagRuleEffect.instance(3).getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
+            record(currentRegionDto,user,tagRule.getYellowButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
             event(tagRule.getYellowButtonTip(),tagRule.getYellowButton(),tag,currentRegionDto,user);
         }else if (Objects.equals(4,deviceDataDto.getButtonId())) {
-            record(currentRegionDto,user,TagRuleEffect.instance(4).getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
+            record(currentRegionDto,user,tagRule.getBottomButton().getDesc(),deviceDataDto.getButtonId(), tag, deviceDataDto);
             event(tagRule.getBottomButtonTip(),tagRule.getBottomButton(),tag,currentRegionDto,user);
         }
     }
