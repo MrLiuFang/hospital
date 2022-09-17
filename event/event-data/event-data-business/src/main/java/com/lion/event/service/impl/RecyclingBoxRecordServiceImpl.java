@@ -128,7 +128,7 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
 
     @Override
     public void listExport(Boolean isDisinfect, TagType tagType, String name, String code, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, Long id, LionPage lionPage) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListRecyclingBoxRecordVo>> pageResultData = list(isDisinfect,tagType,name,code,tagCode,startDateTime,endDateTime,id,new LionPage(0,Integer.MAX_VALUE));
+        IPageResultData<List<ListRecyclingBoxRecordVo>> pageResultData = list(isDisinfect,tagType,name,code,tagCode,startDateTime,endDateTime,id,lionPage);
         List<ListRecyclingBoxRecordVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("时间", "ddt"));
@@ -187,8 +187,8 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
     }
 
     @Override
-    public void recyclingBoxCurrentListExport(LocalDateTime startPreviousDisinfectDate, LocalDateTime endPreviousDisinfectDate, String name, String code) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListRecyclingBoxCurrentVo>> pageResultData = recyclingBoxCurrentList(startPreviousDisinfectDate,endPreviousDisinfectDate,name,code,new LionPage(0,Integer.MAX_VALUE));
+    public void recyclingBoxCurrentListExport(LocalDateTime startPreviousDisinfectDate, LocalDateTime endPreviousDisinfectDate, String name, String code, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListRecyclingBoxCurrentVo>> pageResultData = recyclingBoxCurrentList(startPreviousDisinfectDate,endPreviousDisinfectDate,name,code,lionPage);
         List<ListRecyclingBoxCurrentVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("name", "name"));
@@ -221,7 +221,8 @@ public class RecyclingBoxRecordServiceImpl implements RecyclingBoxRecordService 
             Update update = new Update();
             update.set("id", true);
             mongoTemplate.updateFirst(new Query(where),update,"recycling_box_record");
+            deviceExposeService.updateDisinfectDate(recyclingBoxRecord.getTi());
         });
-        deviceExposeService.updateDisinfectDate(recyclingBoxId);
+
     }
 }

@@ -121,9 +121,9 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @GetMapping("/export")
     @ApiOperation(value = "导出")
     public void export(@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code,@ApiParam(value = "科室id")Long departmentId,Boolean isMyDepartment,
-                       @ApiParam(value = "资产分类") Long assetsTypeId, @ApiParam(value = "使用状态") AssetsUseState useState) throws IOException, IllegalAccessException {
+                       @ApiParam(value = "资产分类") Long assetsTypeId, @ApiParam(value = "使用状态") AssetsUseState useState,LionPage lionPage) throws IOException, IllegalAccessException {
 
-        assetsService.export(name, code, departmentId, isMyDepartment, assetsTypeId, useState);
+        assetsService.export(name, code, departmentId, isMyDepartment, assetsTypeId, useState,lionPage );
     }
 
     @GetMapping("/details")
@@ -166,8 +166,8 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @GetMapping("/borrw/list/export")
     @ApiOperation(value = "资产借用列表导出")
     public void listBorrwExport(@ApiParam(value = "资产名称")String name,@ApiParam(value = "登记人/借用人")Long borrowUserId,@ApiParam(value = "资产类型")Long assetsTypeId,@ApiParam(value = "科室id") Long departmentId, @ApiParam(value = "资产id") Long assetsId, @ApiParam(value = "借用开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "借用结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-                                                               @ApiParam(value = "是否已归还(null值 查所有)") Boolean isReturn) throws IOException, IllegalAccessException {
-        assetsBorrowService.export( name, borrowUserId, assetsTypeId, departmentId, assetsId, startDateTime, endDateTime, isReturn);
+                                                               @ApiParam(value = "是否已归还(null值 查所有)") Boolean isReturn,LionPage lionPage) throws IOException, IllegalAccessException {
+        assetsBorrowService.export( name, borrowUserId, assetsTypeId, departmentId, assetsId, startDateTime, endDateTime, isReturn,lionPage );
     }
 
 //    @GetMapping("/borrw/details")
@@ -233,11 +233,11 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @GetMapping("/fault/list/export")
     @ApiOperation(value = "资产故障列表导出")
     public void listFaultExport(@ApiParam("科室")Long departmentId, @ApiParam("状态") AssetsFaultState state, @ApiParam("资产ID") Long assetsId,@ApiParam("故障编码")String code,@ApiParam("设备-资产编码")String assetsCode,
-                                                              @ApiParam("关键字") String keyword,
+                                                              @ApiParam("关键字") String keyword,LionPage lionPage,
                                                               @ApiParam(value = "开始申报时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                               @ApiParam(value = "结束申报时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) throws IOException, IllegalAccessException {
 
-        assetsFaultService.export(departmentId, state, assetsId, code, assetsCode, keyword, startDateTime, endDateTime);
+        assetsFaultService.export(departmentId, state, assetsId, code, assetsCode, keyword, startDateTime, endDateTime,lionPage );
     }
 
     @GetMapping("/fault/details")

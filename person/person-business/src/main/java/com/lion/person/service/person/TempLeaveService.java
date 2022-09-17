@@ -7,9 +7,6 @@ import com.lion.person.entity.person.TempLeave;
 import com.lion.person.entity.person.dto.AddTempLeaveDto;
 import com.lion.person.entity.person.dto.AdvanceOverTempLeaveDto;
 import com.lion.person.entity.person.vo.ListTempLeaveVo;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -50,13 +47,15 @@ public interface TempLeaveService extends BaseService<TempLeave> {
 
     /**
      * 导出
+     *
      * @param tagCode
      * @param departmentId
      * @param patientId
      * @param userId
      * @param startDateTime
      * @param endDateTime
+     * @param lionPage
      * @return
      */
-    public void export( String tagCode,  Long departmentId, Long patientId,Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException;
+    public void export( String tagCode,  Long departmentId, Long patientId,Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime,LionPage lionPage) throws IOException, IllegalAccessException;
 }

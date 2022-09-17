@@ -70,14 +70,16 @@ public interface PositionService {
 
     /**
      * 导出
+     *
      * @param pi
      * @param ri
      * @param startDateTime
      * @param endDateTime
+     * @param lionPage
      * @param response
      * @param request
      */
-    public void positionExport(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException;
+    public void positionExport(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime,LionPage lionPage, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException;
 
     /**
      * 新增事件
@@ -112,6 +114,7 @@ public interface PositionService {
 
     /**
      * 标签位置导出
+     *
      * @param tagPurpose
      * @param regionId
      * @param departmentId
@@ -119,8 +122,9 @@ public interface PositionService {
      * @param tagCode
      * @param startDateTime
      * @param endDateTime
+     * @param lionPage
      */
-    public void tagPositionExport(TagPurpose tagPurpose, Long regionId, Long departmentId,String deviceName, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException;
+    public void tagPositionExport(TagPurpose tagPurpose, Long regionId, Long departmentId,String deviceName, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime,LionPage lionPage) throws IOException, IllegalAccessException;
 
     /**
      * 更新患者离开区域时间
@@ -141,12 +145,14 @@ public interface PositionService {
 
     /**
      * 事件记录导出
+     *
      * @param code
      * @param name
      * @param startDateTime
      * @param endDateTime
+     * @param lionPage
      */
-    public void eventRecordListExport(String code, String name,LocalDateTime startDateTime,LocalDateTime endDateTime) throws IOException, IllegalAccessException;
+    public void eventRecordListExport(String code, String name,LocalDateTime startDateTime,LocalDateTime endDateTime,LionPage lionPage) throws IOException, IllegalAccessException;
 
     /**
      * 事件记录详情

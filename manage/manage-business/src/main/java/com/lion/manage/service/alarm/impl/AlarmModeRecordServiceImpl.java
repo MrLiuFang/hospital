@@ -15,9 +15,7 @@ import com.lion.manage.utils.ExcelColumn;
 import com.lion.manage.utils.ExportExcelUtil;
 import com.lion.upms.entity.enums.AlarmMode;
 import com.lion.upms.entity.user.User;
-import com.lion.upms.entity.user.vo.ListUserVo;
 import com.lion.upms.expose.user.UserExposeService;
-import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,14 +26,12 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @description:
@@ -105,8 +101,8 @@ public class AlarmModeRecordServiceImpl extends BaseServiceImpl<AlarmModeRecord>
     }
 
     @Override
-    public void export(LocalDateTime startDateTime, LocalDateTime endDateTime, AlarmMode alarmMode, String name) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListAlarmModeRecordVo>> pageResultData = list(startDateTime,endDateTime,alarmMode,name,new LionPage(0,Integer.MAX_VALUE));
+    public void export(LocalDateTime startDateTime, LocalDateTime endDateTime, AlarmMode alarmMode, String name, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListAlarmModeRecordVo>> pageResultData = list(startDateTime,endDateTime,alarmMode,name,lionPage);
         List<ListAlarmModeRecordVo> list = pageResultData.getData();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         list.forEach(listAlarmModeRecordVo -> {

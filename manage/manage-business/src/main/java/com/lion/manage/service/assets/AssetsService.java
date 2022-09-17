@@ -92,14 +92,16 @@ public interface AssetsService extends BaseService<Assets> {
 
     /**
      * 导出
+     *
      * @param name
      * @param code
      * @param departmentId
      * @param isMyDepartment
      * @param assetsTypeId
      * @param useState
+     * @param lionPage
      * @throws IOException
      * @throws IllegalAccessException
      */
-    public void export(String name,  String code,Long departmentId,Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState) throws IOException, IllegalAccessException;
+    public void export(String name,  String code,Long departmentId,Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState,LionPage lionPage) throws IOException, IllegalAccessException;
 }

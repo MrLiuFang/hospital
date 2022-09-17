@@ -23,8 +23,6 @@ import com.lion.manage.entity.assets.vo.ListAssetsBorrowVo;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
-import com.lion.manage.entity.enums.AssetsState;
-import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.enums.State;
 import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.ward.WardRoomSickbed;
@@ -60,7 +58,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -245,8 +242,8 @@ public class AssetsBorrowServiceImpl extends BaseServiceImpl<AssetsBorrow> imple
     }
 
     @Override
-    public void export(String name, Long borrowUserId, Long assetsTypeId, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListAssetsBorrowVo>> pageResultData = list(name,borrowUserId,assetsTypeId,departmentId,assetsId,startDateTime,endDateTime,isReturn,new LionPage(0,Integer.MAX_VALUE));
+    public void export(String name, Long borrowUserId, Long assetsTypeId, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListAssetsBorrowVo>> pageResultData = list(name,borrowUserId,assetsTypeId,departmentId,assetsId,startDateTime,endDateTime,isReturn,lionPage);
         List<ListAssetsBorrowVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("assets name", "name"));

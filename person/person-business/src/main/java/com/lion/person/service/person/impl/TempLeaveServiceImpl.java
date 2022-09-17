@@ -40,7 +40,6 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @description:
@@ -155,8 +154,8 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
     }
 
     @Override
-    public void export(String tagCode, Long departmentId, Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListTempLeaveVo>> pageResultData = list(tagCode,departmentId,patientId,userId,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+    public void export(String tagCode, Long departmentId, Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListTempLeaveVo>> pageResultData = list(tagCode,departmentId,patientId,userId,startDateTime,endDateTime,lionPage);
         List<ListTempLeaveVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("patient name", "patientName"));

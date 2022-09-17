@@ -58,15 +58,17 @@ public interface UserService extends BaseService<User> {
 
     /**
      * 导出
+     *
      * @param departmentId
      * @param userTypeIds
      * @param number
      * @param name
      * @param roleId
+     * @param lionPage
      */
-    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId) throws IOException, IllegalAccessException;
+    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId,LionPage lionPage) throws IOException, IllegalAccessException;
 
-    public void exportPdf(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId) throws IOException, DocumentException;
+    public void exportPdf(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId,LionPage lionPage) throws IOException, DocumentException;
 
 
     /**

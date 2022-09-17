@@ -1,6 +1,5 @@
 package com.lion.person.service.person.impl;
 
-import com.ibm.icu.impl.number.parse.IgnorablesMatcher;
 import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
@@ -50,7 +49,6 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -193,8 +191,8 @@ public class TemporaryPersonServiceImpl extends BaseServiceImpl<TemporaryPerson>
     }
 
     @Override
-    public void export(String name, Boolean isLeave, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListTemporaryPersonVo>> pageResultData = list(name,isLeave,tagCode,startDateTime,endDateTime,new LionPage(0, Integer.MAX_VALUE));
+    public void export(String name, Boolean isLeave, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListTemporaryPersonVo>> pageResultData = list(name,isLeave,tagCode,startDateTime,endDateTime,lionPage);
         List<ListTemporaryPersonVo> list = pageResultData.getData();
         list.forEach(listTemporaryPersonVo -> {
             listTemporaryPersonVo.setStateStr(Objects.equals(listTemporaryPersonVo.getIsLeave(),true)?"已登出":"未登出");

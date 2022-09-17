@@ -49,7 +49,6 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.BasicQuery;
@@ -219,8 +218,8 @@ public class WashEventServiceImpl implements WashEventService {
     }
 
     @Override
-    public void userWashDetailsExport(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws DocumentException, IOException {
-        List<WashEvent> list = washEventDao.userWashDetails(userId,startDateTime,endDateTime,new LionPage(0,99999));
+    public void userWashDetailsExport(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws DocumentException, IOException {
+        List<WashEvent> list = washEventDao.userWashDetails(userId,startDateTime,endDateTime,lionPage);
         BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
         Font fontChinese = new Font(bfChinese);
         response.setCharacterEncoding("UTF-8");

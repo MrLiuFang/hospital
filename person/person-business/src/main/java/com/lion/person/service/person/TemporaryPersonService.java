@@ -7,14 +7,9 @@ import com.lion.core.service.BaseService;
 import com.lion.person.entity.person.TemporaryPerson;
 import com.lion.person.entity.person.dto.*;
 import com.lion.person.entity.person.vo.ListTemporaryPersonVo;
-import com.lion.person.entity.person.vo.PatientDetailsVo;
 import com.lion.person.entity.person.vo.TemporaryPersonDetailsVo;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -58,14 +53,16 @@ public interface TemporaryPersonService extends BaseService<TemporaryPerson> {
 
     /**
      * 导出
+     *
      * @param name
      * @param isLeave
      * @param tagCode
      * @param startDateTime
      * @param endDateTime
+     * @param lionPage
      * @return
      */
-    public void export(String name,Boolean isLeave,String tagCode, LocalDateTime startDateTime,LocalDateTime endDateTime) throws IOException, IllegalAccessException;
+    public void export(String name,Boolean isLeave,String tagCode, LocalDateTime startDateTime,LocalDateTime endDateTime,LionPage lionPage) throws IOException, IllegalAccessException;
     /**
      * 详情
      * @param id

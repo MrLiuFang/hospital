@@ -32,13 +32,15 @@ public interface HumitureRecordService {
 
     /**
      * 温湿标签列表导出
+     *
      * @param regionId
      * @param departmentId
      * @param deviceCode
      * @param startDateTime
      * @param endDateTime
+     * @param lionPage
      */
-    public void temperatureHumidityListExport(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException;
+    public void temperatureHumidityListExport(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime,LionPage lionPage) throws IOException, IllegalAccessException;
 
     /**
      * 查询最后的记录

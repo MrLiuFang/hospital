@@ -32,12 +32,14 @@ public interface UserTagButtonRecordService  {
 
     /**
      * 导出
+     *
      * @param tagRuleEffect
      * @param name
      * @param startDateTime
      * @param endDateTime
+     * @param lionPage
      */
-    public void export( TagRuleEffect tagRuleEffect,String name,LocalDateTime startDateTime,LocalDateTime endDateTime) throws IOException, IllegalAccessException;
+    public void export( TagRuleEffect tagRuleEffect,String name,LocalDateTime startDateTime,LocalDateTime endDateTime,LionPage lionPage) throws IOException, IllegalAccessException;
 
     public UserTagButtonRecord findLsat(Long userId);
 }

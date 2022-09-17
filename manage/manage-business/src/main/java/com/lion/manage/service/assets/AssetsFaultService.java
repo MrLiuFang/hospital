@@ -11,7 +11,6 @@ import com.lion.manage.entity.assets.vo.ListAssetsFaultVo;
 import com.lion.manage.entity.enums.AssetsFaultState;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -51,6 +50,7 @@ public interface AssetsFaultService extends BaseService<AssetsFault> {
 
     /**
      * 导出
+     *
      * @param departmentId
      * @param state
      * @param assetsId
@@ -59,8 +59,9 @@ public interface AssetsFaultService extends BaseService<AssetsFault> {
      * @param keyword
      * @param startDateTime
      * @param endDateTime
+     * @param lionPage
      */
-    public void export(Long departmentId, AssetsFaultState state,  Long assetsId, String code, String assetsCode,String keyword,LocalDateTime startDateTime,LocalDateTime endDateTime) throws IOException, IllegalAccessException;
+    public void export(Long departmentId, AssetsFaultState state,  Long assetsId, String code, String assetsCode,String keyword,LocalDateTime startDateTime,LocalDateTime endDateTime,LionPage lionPage) throws IOException, IllegalAccessException;
 
     /**
      * 详情

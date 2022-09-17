@@ -357,12 +357,12 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public void positionExport(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException {
+    public void positionExport(Long pi, Long ri, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         if (Objects.isNull(startDateTime)) {
             startDateTime = LocalDateTime.parse("2000-01-01 00:00:00", dateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         }
-        IPageResultData<List<Position>> pageResultData = list(pi,null,ri,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+        IPageResultData<List<Position>> pageResultData = list(pi,null,ri,startDateTime,endDateTime,lionPage);
         List<Position> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build(MessageI18nUtil.getMessage("3000036"), "rn"));
@@ -417,8 +417,8 @@ public class PositionServiceImpl implements PositionService {
         return positionDao.personAllRegion(personId,regionId , startDateTime, endDateTime);
     }
     @Override
-    public void tagPositionExport(TagPurpose tagPurpose, Long regionId, Long departmentId, String deviceName, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListPositionVo>> pageResultData = tagPosition(tagPurpose,regionId,departmentId,deviceName,tagCode,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+    public void tagPositionExport(TagPurpose tagPurpose, Long regionId, Long departmentId, String deviceName, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListPositionVo>> pageResultData = tagPosition(tagPurpose,regionId,departmentId,deviceName,tagCode,startDateTime,endDateTime,lionPage);
         List<ListPositionVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("datetime", "ddt"));
@@ -460,8 +460,8 @@ public class PositionServiceImpl implements PositionService {
     }
 
     @Override
-    public void eventRecordListExport(String code, String name, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
-        IPageResultData<List<EventRecordVo>> pageResultData = eventRecordList(code, name, startDateTime, endDateTime, new LionPage(0,Integer.MAX_VALUE));
+    public void eventRecordListExport(String code, String name, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<EventRecordVo>> pageResultData = eventRecordList(code, name, startDateTime, endDateTime, lionPage);
         List<EventRecordVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("code", "code"));

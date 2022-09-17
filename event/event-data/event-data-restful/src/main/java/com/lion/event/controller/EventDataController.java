@@ -180,7 +180,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                           @NotNull(message = "开始时间不能为空") @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                           @NotNull(message = "结束时间不能为空") @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                           LionPage lionPage) throws DocumentException, IOException {
-        eventService.userWashDetailsExport(userId, startDateTime, endDateTime);
+        eventService.userWashDetailsExport(userId, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/user/wash/conformance/ratio")
@@ -535,10 +535,10 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/position/export")
     @ApiOperation(value = "轨迹导出")
-    public void positionExport(@ApiParam("人员(员工,病人,流动人员)id") Long personId, @ApiParam("区域id") Long regionId,
+    public void positionExport(@ApiParam("人员(员工,病人,流动人员)id") Long personId, @ApiParam("区域id") Long regionId,LionPage lionPage,
                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime, HttpServletResponse response, HttpServletRequest request) throws IOException, IllegalAccessException {
-        positionService.positionExport(personId,regionId,startDateTime,endDateTime, response,request );
+        positionService.positionExport(personId,regionId,startDateTime,endDateTime,lionPage , response, request);
     }
 
     @PostMapping("/event/record/add")
@@ -559,10 +559,10 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/event/record/export")
     @ApiOperation(value = "事件记录列表导出")
-    public void eventRecordList(@ApiParam("时间编号")String code, @ApiParam("创建人姓名")String name,
+    public void eventRecordList(@ApiParam("时间编号")String code, @ApiParam("创建人姓名")String name,LionPage lionPage,
                                                                 @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) throws IOException, IllegalAccessException {
-        positionService.eventRecordListExport(code, name, startDateTime, endDateTime);
+        positionService.eventRecordListExport(code, name, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/event/record/details")
@@ -691,7 +691,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                              @ApiParam(value = "开始进入时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                              @ApiParam(value = "结束进入时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                              LionPage lionPage) throws IOException, IllegalAccessException {
-        positionService.tagPositionExport(tagPurpose, regionId, departmentId, deviceName, tagCode, startDateTime, endDateTime);
+        positionService.tagPositionExport(tagPurpose, regionId, departmentId, deviceName, tagCode, startDateTime, endDateTime,lionPage );
     }
 
     @GetMapping("/tag/temperatureHumidity/list")
@@ -709,7 +709,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
                                                                                LionPage lionPage) throws IOException, IllegalAccessException {
-        humitureRecordService.temperatureHumidityListExport(regionId, departmentId, deviceCode, startDateTime, endDateTime);
+        humitureRecordService.temperatureHumidityListExport(regionId, departmentId, deviceCode, startDateTime, endDateTime, lionPage);
     }
 
     @GetMapping("/recyclingBox/history/list")
@@ -738,10 +738,10 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/recyclingBox/current/list/export")
     @ApiOperation(value = "回收箱当前导出")
-    public void recyclingBoxCurrentList(@ApiParam(value = "上次开始消毒时间(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime startPreviousDisinfectDate,
+    public void recyclingBoxCurrentList(@ApiParam(value = "上次开始消毒时间(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime startPreviousDisinfectDate,LionPage lionPage,
                                                                                     @ApiParam(value = "上次结束消毒时间(yyyy-MM-dd)") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDateTime endPreviousDisinfectDate,
                                                                                     @ApiParam(value = "回收箱名称") String name,@ApiParam(value = "回收箱编号")String code) throws IOException, IllegalAccessException {
-        recyclingBoxRecordService.recyclingBoxCurrentListExport(startPreviousDisinfectDate, endPreviousDisinfectDate, name, code);
+        recyclingBoxRecordService.recyclingBoxCurrentListExport(startPreviousDisinfectDate, endPreviousDisinfectDate, name, code,lionPage );
     }
 
     @PutMapping("/recyclingBox/disinfect")
@@ -761,10 +761,10 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping("/user/tag/button/list/export")
     @ApiOperation(value = "员工标签按钮日志导出")
-    public void userTagButtonRecordListExport(@ApiParam(value = "操作类型") TagRuleEffect tagRuleEffect,@ApiParam(value = "姓名")String name,
+    public void userTagButtonRecordListExport(@ApiParam(value = "操作类型") TagRuleEffect tagRuleEffect,@ApiParam(value = "姓名")String name,LionPage lionPage,
                                                                                     @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                     @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) throws IOException, IllegalAccessException {
-        userTagButtonRecordService.export(tagRuleEffect, name, startDateTime, endDateTime);
+        userTagButtonRecordService.export(tagRuleEffect, name, startDateTime, endDateTime,lionPage );
     }
 
     @GetMapping("/system/alarm/seven/days/statistics")

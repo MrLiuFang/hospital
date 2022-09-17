@@ -21,7 +21,6 @@ import com.lion.device.expose.tag.TagExposeService;
 import com.lion.device.expose.tag.TagLogExposeService;
 import com.lion.device.expose.tag.TagUserExposeService;
 import com.lion.event.entity.SystemAlarm;
-import com.lion.event.entity.vo.ListWashEventVo;
 import com.lion.event.expose.service.CurrentPositionExposeService;
 import com.lion.event.expose.service.SystemAlarmExposeService;
 import com.lion.exception.BusinessException;
@@ -78,8 +77,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -257,8 +254,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
-    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null, new LionPage(0,Integer.MAX_VALUE));
+    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null, lionPage);
         List<ListUserVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("姓名", "name"));
@@ -275,8 +272,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
-    public void exportPdf(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId) throws IOException, DocumentException {
-        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null, new LionPage(0,Integer.MAX_VALUE));
+    public void exportPdf(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, LionPage lionPage) throws IOException, DocumentException {
+        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null, lionPage);
         List<ListUserVo> list = pageResultData.getData();
         BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
         Font fontChinese = new Font(bfChinese);

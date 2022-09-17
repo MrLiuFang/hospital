@@ -13,7 +13,6 @@ import com.lion.event.utils.ExcelColumn;
 import com.lion.event.utils.ExportExcelUtil;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
-import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +31,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @description:
@@ -102,8 +100,8 @@ public class UserTagButtonRecordServiceImpl implements UserTagButtonRecordServic
     }
 
     @Override
-    public void export(TagRuleEffect tagRuleEffect, String name, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListUserTagButtonRecordVo>> pageResultData = list(tagRuleEffect,name,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+    public void export(TagRuleEffect tagRuleEffect, String name, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListUserTagButtonRecordVo>> pageResultData = list(tagRuleEffect,name,startDateTime,endDateTime,lionPage);
         List<ListUserTagButtonRecordVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("date time", "ddt"));

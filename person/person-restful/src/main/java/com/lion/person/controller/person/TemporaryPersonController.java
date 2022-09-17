@@ -58,10 +58,10 @@ public class TemporaryPersonController extends BaseControllerImpl implements Bas
 
     @GetMapping("/export")
     @ApiOperation(value = "流动人员列表导出")
-    public void export(@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出") Boolean isLeave,@ApiParam(value = "标签编码")String tagCode,
+    public void export(@ApiParam(value = "姓名")String name, @ApiParam(value = "是否登出") Boolean isLeave,@ApiParam(value = "标签编码")String tagCode,LionPage lionPage,
                                                              @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                              @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) throws IOException, IllegalAccessException {
-        temporaryPersonService.export(name, isLeave, tagCode, startDateTime, endDateTime);
+        temporaryPersonService.export(name, isLeave, tagCode, startDateTime, endDateTime,lionPage );
     }
 
     @GetMapping("/details")

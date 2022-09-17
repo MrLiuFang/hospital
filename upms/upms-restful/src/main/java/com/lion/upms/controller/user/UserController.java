@@ -255,26 +255,26 @@ public class UserController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/export")
     @ApiOperation(value = "导出")
-    public void export(@ApiParam(value = "是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户类型") Long userTypeId,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId) throws IOException, IllegalAccessException {
+    public void export(@ApiParam(value = "是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户类型") Long userTypeId,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId,LionPage lionPage) throws IOException, IllegalAccessException {
         if (Objects.equals(isMyDepartment,true)) {
             Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
             if (Objects.nonNull(department)) {
                 departmentId = department.getId();
             }
         }
-        userService.export(departmentId,userTypeId,number,name,roleId);
+        userService.export(departmentId,userTypeId,number,name,roleId,lionPage );
     }
 
     @GetMapping("/export/pdf")
     @ApiOperation(value = "导出PDF")
-    public void exportPdf(@ApiParam(value = "是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户类型") Long userTypeId,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId) throws IOException, IllegalAccessException, DocumentException {
+    public void exportPdf(@ApiParam(value = "是否本科室") Boolean isMyDepartment, @ApiParam(value = "科室") Long departmentId,@ApiParam(value = "用户类型") Long userTypeId,@ApiParam(value = "员工编号") Integer number,@ApiParam(value = "姓名")  String name,@ApiParam(value = "角色") Long roleId,LionPage lionPage) throws IOException, IllegalAccessException, DocumentException {
         if (Objects.equals(isMyDepartment,true)) {
             Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
             if (Objects.nonNull(department)) {
                 departmentId = department.getId();
             }
         }
-        userService.exportPdf(departmentId,userTypeId,number,name,roleId);
+        userService.exportPdf(departmentId,userTypeId,number,name,roleId,lionPage );
     }
 
     @PostMapping("/import")

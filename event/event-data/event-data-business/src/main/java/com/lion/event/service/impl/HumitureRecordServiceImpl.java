@@ -13,7 +13,6 @@ import com.lion.event.entity.vo.ListHumitureRecordVo;
 import com.lion.event.service.HumitureRecordService;
 import com.lion.event.utils.ExcelColumn;
 import com.lion.event.utils.ExportExcelUtil;
-import com.lion.manage.entity.alarm.vo.ListAlarmModeRecordVo;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -110,8 +109,8 @@ public class HumitureRecordServiceImpl implements HumitureRecordService {
     }
 
     @Override
-    public void temperatureHumidityListExport(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListHumitureRecordVo>> pageResultData = temperatureHumidityList(regionId,departmentId,deviceCode,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+    public void temperatureHumidityListExport(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListHumitureRecordVo>> pageResultData = temperatureHumidityList(regionId,departmentId,deviceCode,startDateTime,endDateTime,lionPage);
         List<ListHumitureRecordVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("device name", "deviceName"));

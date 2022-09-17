@@ -30,7 +30,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @description:
@@ -96,9 +95,9 @@ public class AlarmModeController extends BaseControllerImpl implements BaseContr
     @GetMapping("/mode/list/export")
     @ApiOperation(value = "获取切换记录列表导出")
     public void alarmModeListExport(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime, @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-                                                                      @ApiParam(value = "模式")AlarmMode alarmMode, @ApiParam(value = "操作员姓名")String name) throws IOException, IllegalAccessException {
+                                                                      @ApiParam(value = "模式")AlarmMode alarmMode, @ApiParam(value = "操作员姓名")String name,LionPage lionPage) throws IOException, IllegalAccessException {
 
-        alarmModeRecordService.export(startDateTime, endDateTime, alarmMode, name);
+        alarmModeRecordService.export(startDateTime, endDateTime, alarmMode, name,lionPage );
     }
 
 }

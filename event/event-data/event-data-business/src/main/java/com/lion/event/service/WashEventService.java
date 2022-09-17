@@ -61,7 +61,7 @@ public interface WashEventService {
      */
     UserWashDetailsVo userWashDetails(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
 
-    void userWashDetailsExport(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime) throws DocumentException, IOException;
+    void userWashDetailsExport(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime,LionPage lionPage) throws DocumentException, IOException;
 
     /**
      * 员工合规率

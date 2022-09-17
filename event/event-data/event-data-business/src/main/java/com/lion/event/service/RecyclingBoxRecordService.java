@@ -50,12 +50,14 @@ public interface RecyclingBoxRecordService {
     IPageResultData<List<ListRecyclingBoxCurrentVo>> recyclingBoxCurrentTagList(Long id);
     /**
      * 回收箱导出
+     *
      * @param startPreviousDisinfectDate
      * @param endPreviousDisinfectDate
      * @param name
      * @param code
+     * @param lionPage
      */
-    public void recyclingBoxCurrentListExport(LocalDateTime startPreviousDisinfectDate,LocalDateTime endPreviousDisinfectDate, String name,String code) throws IOException, IllegalAccessException;
+    public void recyclingBoxCurrentListExport(LocalDateTime startPreviousDisinfectDate,LocalDateTime endPreviousDisinfectDate, String name,String code,LionPage lionPage) throws IOException, IllegalAccessException;
 
 
     /**

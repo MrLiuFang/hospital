@@ -44,6 +44,7 @@ public interface AssetsBorrowService extends BaseService<AssetsBorrow> {
 
     /**
      * 导出
+     *
      * @param name
      * @param borrowUserId
      * @param assetsTypeId
@@ -52,8 +53,9 @@ public interface AssetsBorrowService extends BaseService<AssetsBorrow> {
      * @param startDateTime
      * @param endDateTime
      * @param isReturn
+     * @param lionPage
      */
-    void export(String name, Long borrowUserId, Long assetsTypeId, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn) throws IOException, IllegalAccessException;
+    void export(String name, Long borrowUserId, Long assetsTypeId, Long departmentId, Long assetsId, LocalDateTime startDateTime, LocalDateTime endDateTime, Boolean isReturn,LionPage lionPage) throws IOException, IllegalAccessException;
 
     /**
      * 修改资产借用(归还)

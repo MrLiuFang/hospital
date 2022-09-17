@@ -10,21 +10,16 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.exception.BusinessException;
 import com.lion.manage.dao.assets.AssetsFaultDao;
 import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.assets.AssetsBorrow;
 import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.assets.dto.AddAssetsFaultDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsFaultDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsFaultVo;
-import com.lion.manage.entity.assets.vo.ListAssetsBorrowVo;
 import com.lion.manage.entity.assets.vo.ListAssetsFaultVo;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
 import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.enums.AssetsFaultState;
-import com.lion.manage.entity.enums.AssetsState;
-import com.lion.manage.entity.enums.AssetsUseState;
 import com.lion.manage.entity.region.Region;
-import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.service.assets.AssetsBorrowService;
 import com.lion.manage.service.assets.AssetsFaultService;
 import com.lion.manage.service.assets.AssetsService;
@@ -48,7 +43,6 @@ import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -228,8 +222,8 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
     }
 
     @Override
-    public void export(Long departmentId, AssetsFaultState state, Long assetsId, String code, String assetsCode, String keyword, LocalDateTime startDateTime, LocalDateTime endDateTime) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListAssetsFaultVo>> pageResultData = list(departmentId,state,assetsId,code,assetsCode,keyword,startDateTime,endDateTime,new LionPage(0,Integer.MAX_VALUE));
+    public void export(Long departmentId, AssetsFaultState state, Long assetsId, String code, String assetsCode, String keyword, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListAssetsFaultVo>> pageResultData = list(departmentId,state,assetsId,code,assetsCode,keyword,startDateTime,endDateTime,lionPage);
         List<ListAssetsFaultVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("code", "code"));

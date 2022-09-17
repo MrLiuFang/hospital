@@ -389,8 +389,8 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     }
 
     @Override
-    public void export(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListAssetsVo>> pageResultData = list(null, name, code, departmentId, isMyDepartment, assetsTypeId, useState,null , new LionPage(0,Integer.MAX_VALUE));
+    public void export(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListAssetsVo>> pageResultData = list(null, name, code, departmentId, isMyDepartment, assetsTypeId, useState,null , lionPage);
         List<ListAssetsVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("name", "name"));
