@@ -77,6 +77,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -355,6 +356,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         listRowKey.add("賬號");
         listRowKey.add("賬號啓用");
         listRowKey.add("角色");
+        listRowKey.add("聯繫電話");
+        listRowKey.add("生日");
+        listRowKey.add("性別");
         ImportExcelUtil.check(sheet.getRow(0),listRowKey);
         for (int i = 1; i <= totalRowNum; i++) {
             User user = new User();
@@ -363,14 +367,25 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             String userTypeName = ImportExcelUtil.getCellValue(row.getCell(1)).toString();
             String departmentName = ImportExcelUtil.getCellValue(row.getCell(2)).toString();
             String number = ImportExcelUtil.getCellValue(row.getCell(3)).toString();
+            number = number.substring(0,number.indexOf("."));
             String username = ImportExcelUtil.getCellValue(row.getCell(4)).toString();
             String isCreateAccount = ImportExcelUtil.getCellValue(row.getCell(5)).toString();
             String roleName = ImportExcelUtil.getCellValue(row.getCell(6)).toString();
+            String phoneNumber = ImportExcelUtil.getCellValue(row.getCell(7)).toString();
+            String birthday = ImportExcelUtil.getCellValue(row.getCell(8)).toString();
+            String gender = ImportExcelUtil.getCellValue(row.getCell(9)).toString();
 
             if (StringUtils.hasText(isCreateAccount) && Objects.equals(isCreateAccount.toLowerCase().trim(),"true")) {
                 user.setUsername(username);
                 user.setEmail(username);
                 user.setPassword(passwordEncoder.encode(SecureUtil.md5(username)));
+            }
+            user.setPhoneNumber(phoneNumber.substring(0,phoneNumber.indexOf(".")));
+            user.setBirthday(LocalDate.parse(birthday));
+            if (Objects.equals(gender,"男")) {
+                user.setGender(Gender.MAN);
+            }else if (Objects.equals(gender,"女")) {
+                user.setGender(Gender.WOMAN);
             }
             user.setName(name);
             user.setGender(Gender.MAN);

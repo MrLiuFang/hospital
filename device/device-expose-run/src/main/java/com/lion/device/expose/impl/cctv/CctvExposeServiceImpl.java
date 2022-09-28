@@ -69,4 +69,14 @@ public class CctvExposeServiceImpl extends BaseServiceImpl<Cctv> implements Cctv
     public Integer count(Long departmentId) {
         return cctvDao.countByDepartmentId(departmentId);
     }
+
+    @Override
+    public List<Cctv> findRegionId(Long regionId) {
+        return cctvDao.findByRegionId(regionId);
+    }
+
+    @Override
+    public List<Cctv> findDepartmentId(Long departmentId) {
+        return cctvDao.findByDepartmentId(departmentId);
+    }
 }

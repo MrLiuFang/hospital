@@ -126,12 +126,9 @@ public class WarningBellServiceImpl extends BaseServiceImpl<WarningBell> impleme
                     detailsWarningBellVo.setDepartmentName(optionalDepartment.get().getName());
                 }
             }
-            RegionWarningBell regionWarningBell = regionWarningBellExposeService.find(warningBell.getId());
-            if (Objects.nonNull(regionWarningBell)) {
-                com.lion.core.Optional<Region> optionalRegion = regionExposeService.findById(regionWarningBell.getRegionId());
-                if (optionalRegion.isPresent()) {
-                    detailsWarningBellVo.setRegionName(optionalRegion.get().getName());
-                }
+            com.lion.core.Optional<Region> optionalRegion = regionExposeService.findById(warningBell.getRegionId());
+            if (optionalRegion.isPresent()) {
+                detailsWarningBellVo.setRegionName(optionalRegion.get().getName());
             }
 
             detailsWarningBellVo.setImgUrl(fileExposeService.getUrl(warningBell.getImg()));

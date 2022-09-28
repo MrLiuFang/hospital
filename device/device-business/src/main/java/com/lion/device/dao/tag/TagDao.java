@@ -28,6 +28,8 @@ public interface TagDao extends BaseDao<Tag> ,TagDaoEx {
      */
     Tag findFirstByTagCode(String tagCode);
 
+    List<Tag> findByTagCodeLike(String tagCode);
+
     /**
      * 根据设备编码查询
      * @param deviceCode

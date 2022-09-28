@@ -45,6 +45,8 @@ public class WarningBell extends BaseEntity {
     @NotNull(message = "{0000009}",groups = {Validator.Insert.class,Validator.Update.class})
     private Long departmentId;
 
+    private Long regionId;
+
     @Schema(description = "图片")
     private Long img;
 }

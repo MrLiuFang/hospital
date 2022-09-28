@@ -7,7 +7,6 @@ import com.lion.core.service.BaseService;
 import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
-import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
@@ -60,7 +59,7 @@ public interface TagService extends BaseService<Tag> {
      * @param lionPage
      * @return
      */
-    IPageResultData<List<ListTagVo>> list(Boolean isResponsibleDepartment,Boolean isAll,String isTmp, Long departmentId,TagUseState useState, State state, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage);
+    IPageResultData<List<ListTagVo>> list(Boolean isResponsibleDepartment,Boolean isAll,String isTmp, Long departmentId,String useState, State state, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage);
 
     /**
      * 获取所有数据的id

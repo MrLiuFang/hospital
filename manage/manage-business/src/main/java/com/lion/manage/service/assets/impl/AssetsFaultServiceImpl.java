@@ -145,7 +145,7 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
             });
         }
         if (StringUtils.hasText(keyword)) {
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",keyword);
+//            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",keyword);
             List<Assets> list = assetsService.findByKeyword(keyword);
             list.forEach(assets -> {
                 ids.add(assets.getId());
@@ -228,7 +228,7 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("code", "code"));
         excelColumn.add(ExcelColumn.build("name", "name"));
-        excelColumn.add(ExcelColumn.build("deviceCode", "deviceCode"));
+        excelColumn.add(ExcelColumn.build("device code", "deviceCode"));
         excelColumn.add(ExcelColumn.build("department name", "departmentName"));
         excelColumn.add(ExcelColumn.build("region name", "regionName"));
         excelColumn.add(ExcelColumn.build("describe", "describe"));

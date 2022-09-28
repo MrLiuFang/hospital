@@ -31,10 +31,11 @@ public class TemporaryPersonDaoImpl implements TemporaryPersonDaoEx {
             searchParameter.put("ids",ids);
         }
         if (StringUtils.hasText(keyword)) {
-            sb.append(" and ( t.idNo like :idNo or t.name like :name or t.phoneNumber like :phoneNumber) ");
+            sb.append(" and ( t.idNo like :idNo or t.name like :name or t.phoneNumber like :phoneNumber or t.tagCode like :tagCode ) ");
             searchParameter.put("idNo","%"+keyword+"%");
             searchParameter.put("name","%"+keyword+"%");
             searchParameter.put("phoneNumber","%"+keyword+"%");
+            searchParameter.put("tagCode", "%" + keyword + "%");
         }
         return (List<TemporaryPerson>) this.baseDao.findAll(sb.toString() ,searchParameter);
     }

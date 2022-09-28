@@ -2,20 +2,23 @@ package com.lion.person.dao.person.impl;
 
 import com.lion.core.LionPage;
 import com.lion.core.persistence.curd.BaseDao;
+import com.lion.device.entity.tag.Tag;
+import com.lion.device.expose.tag.TagExposeService;
 import com.lion.person.dao.person.PatientDaoEx;
 import com.lion.person.entity.person.Patient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import javax.annotation.Resource;
+import java.util.*;
 
 public class PatientDaoImpl implements PatientDaoEx {
     @Autowired
     private BaseDao<Patient> baseDao;
+
+    @Resource
+    private TagExposeService tagExposeService;
 
     public Page<Map<String, Object>> listMerge(Integer type, String name, String cardNumber, String tagCode, String medicalRecordNo, String sort, List<Long> departmentIds, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
@@ -93,7 +96,7 @@ public class PatientDaoImpl implements PatientDaoEx {
         if (StringUtils.hasText(name)) {
             sb.append(" and ( p.name like :name or p.medicalRecordNo like :medicalRecordNo or p.phoneNumber like :phoneNumber" +
                     " or p.medicalRecordNo like :medicalRecordNo or p.emergencyContactPhoneNumber like :emergencyContactPhoneNumber" +
-                    " or p.emergencyContact like :emergencyContact or p.address like :address ) ");
+                    " or p.emergencyContact like :emergencyContact or p.address like :address or sickbedId in :sickbedIds or tagCode like :tagCode ) ");
             searchParameter.put("name", "%" + name + "%");
             searchParameter.put("medicalRecordNo", "%" + name + "%");
             searchParameter.put("phoneNumber", "%" + name + "%");
@@ -101,6 +104,14 @@ public class PatientDaoImpl implements PatientDaoEx {
             searchParameter.put("emergencyContactPhoneNumber", "%" + name + "%");
             searchParameter.put("emergencyContact", "%" + name + "%");
             searchParameter.put("address", "%" + name + "%");
+            searchParameter.put("tagCode", "%" + name + "%");
+            List<Tag> tags = tagExposeService.findByTagCode(name);
+            List<Long> sickbedIds = new ArrayList<>();
+            sickbedIds.add(Long.MAX_VALUE);
+            tags.forEach(tag -> {
+                sickbedIds.add(tag.getId());
+            });
+            searchParameter.put("sickbedIds", sickbedIds);
         }
 
         if (Objects.nonNull(departmentId)) {

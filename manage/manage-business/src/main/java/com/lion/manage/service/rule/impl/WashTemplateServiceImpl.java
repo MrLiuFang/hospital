@@ -13,8 +13,6 @@ import com.lion.manage.dao.region.RegionDao;
 import com.lion.manage.dao.rule.WashDeviceTypeDao;
 import com.lion.manage.dao.rule.WashTemplateDao;
 import com.lion.manage.dao.rule.WashTemplateItemDao;
-import com.lion.manage.entity.assets.Assets;
-import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.rule.WashDeviceType;
 import com.lion.manage.entity.rule.WashTemplate;
 import com.lion.manage.entity.rule.WashTemplateItem;
@@ -112,10 +110,19 @@ public class WashTemplateServiceImpl extends BaseServiceImpl<WashTemplate> imple
     }
 
     @Override
-    public IPageResultData<List<ListWashTemplateVo>> list(String name, LionPage LionPage) {
+    public IPageResultData<List<ListWashTemplateVo>> list(String name, String userName, LionPage LionPage) {
         Map<String,Object> searchParameter = new HashMap<String,Object>();
         if (StringUtils.hasText(name)) {
             searchParameter.put(SearchConstant.LIKE + "_name", name);
+        }
+        if (StringUtils.hasText(userName)) {
+            List<User> userList = userExposeService.findByName(userName);
+            List<Long> userIds = new ArrayList<>();
+            userIds.add(Long.MAX_VALUE);
+            userList.forEach(user -> {
+                userIds.add(user.getId());
+            });
+            searchParameter.put(SearchConstant.IN + "_createUserId", userIds);
         }
         Page<WashTemplate> page = findNavigator(LionPage,searchParameter);
         List<WashTemplate> list = page.getContent();

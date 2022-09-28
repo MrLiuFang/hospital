@@ -76,12 +76,10 @@ public class DepartmentUserExposeServiceImpl extends BaseServiceImpl<DepartmentU
                 _userIds.add(user.getId());
             });
         }
-        if (Objects.nonNull(userIds) && userIds.size()>0) {
-            List<DepartmentUser> list = departmentUserDao.findByDepartmentIdAndUserIdIn(departmentId,_userIds);
-            list.forEach(departmentUser -> {
-                returnList.add(departmentUser.getUserId());
-            });
-        }
+        List<DepartmentUser> list = departmentUserDao.findByDepartmentIdAndUserIdIn(departmentId,_userIds);
+        list.forEach(departmentUser -> {
+            returnList.add(departmentUser.getUserId());
+        });
         return returnList;
     }
 

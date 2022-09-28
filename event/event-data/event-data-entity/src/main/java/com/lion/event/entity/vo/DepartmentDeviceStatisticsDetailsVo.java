@@ -62,5 +62,8 @@ public class DepartmentDeviceStatisticsDetailsVo {
 
         @Schema(name = "设备")
         private List<DetailsDeviceVo> detailsDeviceVos;
+
+        @Schema(name = "cctv")
+        private List<Cctv> cctvs;
     }
 }

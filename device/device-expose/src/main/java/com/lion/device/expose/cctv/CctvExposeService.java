@@ -2,7 +2,6 @@ package com.lion.device.expose.cctv;
 
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.cctv.Cctv;
-import org.springframework.cache.annotation.Cacheable;
 
 import java.util.List;
 
@@ -43,5 +42,9 @@ public interface CctvExposeService extends BaseService<Cctv> {
      * @param departmentId
      * @return
      */
-    public Integer count(Long departmentId);
+    public Integer count(Long DepartmentId);
+
+    public List<Cctv> findRegionId(Long regionId);
+
+    public List<Cctv> findDepartmentId(Long departmentId);
 }

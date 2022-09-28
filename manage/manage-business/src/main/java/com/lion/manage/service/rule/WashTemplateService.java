@@ -40,11 +40,13 @@ public interface WashTemplateService extends BaseService<WashTemplate> {
 
     /**
      * 列表
+     *
      * @param name
+     * @param userName
      * @param LionPage
      * @return
      */
-    public IPageResultData<List<ListWashTemplateVo>> list(String name, LionPage LionPage);
+    public IPageResultData<List<ListWashTemplateVo>> list(String name,String userName, LionPage LionPage);
 
     /**
      * 详情

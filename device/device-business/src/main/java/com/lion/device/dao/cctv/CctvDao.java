@@ -37,4 +37,8 @@ public interface CctvDao extends BaseDao<Cctv> {
     @Query( " select t.id from Cctv t ")
     public List<Long> allId();
 
+    public List<Cctv> findByRegionId(Long regionId);
+
+    public List<Cctv> findByDepartmentId(Long departmentId);
+
 }

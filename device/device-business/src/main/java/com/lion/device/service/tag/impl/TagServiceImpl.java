@@ -235,7 +235,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 //    }
 
     @Override
-    public IPageResultData<List<ListTagVo>> list(Boolean isResponsibleDepartment, Boolean isAll, String isTmp, Long departmentId, TagUseState useState, State state, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
+    public IPageResultData<List<ListTagVo>> list(Boolean isResponsibleDepartment, Boolean isAll, String isTmp, Long departmentId, String useState, State state, Integer battery, String tagCode, TagType type, TagPurpose purpose, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
 
         if (Objects.nonNull(isTmp) && Objects.equals("true",isTmp.toLowerCase())){
@@ -281,13 +281,13 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         if (Objects.nonNull(useState)){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_departmentId",null);
             jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_purpose",null);
-            if (Objects.equals(useState,TagUseState.NOT_USED)) {
+            if (Objects.equals(useState,"USED")) {
                 List<State> list = new ArrayList<>();
 //                list.add(State.ACTIVE);
                 list.add(State.NOT_USED);
                 jpqlParameter.setSearchParameter(SearchConstant.IN + "_deviceState", list);
             }
-            if (Objects.equals(useState,TagUseState.USEING)) {
+            if (Objects.equals(useState,"NOT_USED")) {
                 List<State> list = new ArrayList<>();
 //                list.add(State.ACTIVE);
                 list.add(State.USED);

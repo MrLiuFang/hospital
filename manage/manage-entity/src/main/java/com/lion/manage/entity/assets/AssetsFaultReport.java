@@ -39,7 +39,7 @@ public class AssetsFaultReport extends BaseEntity implements Serializable {
     private Long assetsFaultId;
 
     @Schema(description = "汇报")
-    @Column(name = "report")
+    @Column(name = "report",length = 2000)
     @NotNull(message = "{2000016}", groups = {Validator.Insert.class, Validator.Update.class})
     @Length(max = 250,message ="{2000017}" , groups = {Validator.Insert.class, Validator.Update.class})
     private String report;

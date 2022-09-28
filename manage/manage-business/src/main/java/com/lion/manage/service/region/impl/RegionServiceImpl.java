@@ -304,10 +304,10 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
         ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name","%"+name+"%");
         }
         if (StringUtils.hasText(code)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code","%"+code+"%");
         }
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0){
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);

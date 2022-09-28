@@ -8,7 +8,6 @@ import com.lion.device.dao.tag.TagDao;
 import com.lion.device.entity.enums.State;
 import com.lion.device.entity.enums.TagLogContent;
 import com.lion.device.entity.enums.TagPurpose;
-import com.lion.device.entity.enums.TagUseState;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagAssets;
 import com.lion.device.expose.tag.TagAssetsExposeService;
@@ -20,11 +19,12 @@ import com.lion.utils.MessageI18nUtil;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -120,13 +120,20 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
     }
 
     @Override
-    public TagAssets findByTagCode(String tagCode) {
-        Tag tag = tagDao.findFirstByTagCode(tagCode);
-        if (Objects.nonNull(tag)) {
-            TagAssets tagAssets = tagAssetsDao.findFirstByTagIdAndUnbindingTimeIsNull(tag.getId());
-            if (Objects.nonNull(tagAssets)) {
-                return tagAssets;
-            }
+    public List<TagAssets> findByTagCode(String tagCode) {
+        List<Tag> tags = new ArrayList<>();
+        if (StringUtils.hasText(tagCode)) {
+            tags = tagDao.findByTagCodeLike("%" + tagCode + "%");
+        }else {
+            return null;
+        }
+        if (Objects.nonNull(tags) && tags.size()>0) {
+            List<Long> ids = new ArrayList<>();
+            tags.forEach(tag -> {
+                ids.add(tag.getId());
+            });
+            List<TagAssets> tagAssets = tagAssetsDao.findFirstByTagIdInAndUnbindingTimeIsNull(ids);
+            return tagAssets;
         }
         return null;
     }

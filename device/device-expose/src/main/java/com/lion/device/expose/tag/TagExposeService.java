@@ -30,6 +30,8 @@ public interface TagExposeService extends BaseService<Tag> {
      */
     public Tag find(String tagCode);
 
+    public List<Tag> findByTagCode(String tagCode);
+
     /**
      * 更新电量
      * @param tagId

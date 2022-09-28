@@ -1,7 +1,6 @@
 package com.lion.manage.dao.assets;
 
 import com.lion.core.persistence.curd.BaseDao;
-import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.State;
 import org.springframework.data.jpa.repository.Modifying;
@@ -116,14 +115,16 @@ public interface AssetsDao extends BaseDao<Assets> ,AssetsDaoEx {
 
     /**
      * 查询部门内的资产
+     *
      * @param departmentId
      * @param name
      * @param code
      * @param ids
+     * @param ids1
      * @return
      */
-    @Query( " select a from Assets a where a.departmentId =:departmentId and ( a.name like :name or a.code like :code) and a.id in :ids")
-    public List<Assets> findByDepartmentIdOrNameLikeOrCodeLikeAndIdIn(Long departmentId,String name,String code,List<Long> ids);
+    @Query( " select a from Assets a where a.departmentId =:departmentId and ( a.name like :name or a.code like :code or a.id in :ids ) and a.id in :ids1")
+    public List<Assets> findByDepartmentIdOrNameLikeOrCodeLikeAndIdIn(Long departmentId,String name,String code,List<Long> ids,List<Long> ids1);
 
     @Query( " select a from Assets a where a.departmentId =:departmentId and a.id in :ids")
     public List<Assets> findByDepartmentIdAndIdIn(Long departmentId,List<Long> ids);

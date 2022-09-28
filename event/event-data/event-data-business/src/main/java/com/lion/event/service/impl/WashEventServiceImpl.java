@@ -183,6 +183,12 @@ public class WashEventServiceImpl implements WashEventService {
     @Override
     public UserWashDetailsVo userWashDetails(Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
         UserWashDetailsVo vo = new UserWashDetailsVo();
+        if (Objects.isNull(startDateTime)) {
+            startDateTime = LocalDateTime.now().minusDays(30);
+        }
+        if (Objects.isNull(endDateTime)) {
+            endDateTime = LocalDateTime.now();
+        }
         com.lion.core.Optional<User> optionalUser = userExposeService.findById(userId);
         if (optionalUser.isPresent()){
             User user = optionalUser.get();

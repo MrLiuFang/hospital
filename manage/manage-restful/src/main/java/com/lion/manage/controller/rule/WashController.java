@@ -145,8 +145,8 @@ public class WashController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/list/template")
     @ApiOperation(value = "洗手规则模板列表")
-    public IPageResultData<List<ListWashTemplateVo>> listTemplate(String name, LionPage lionPage) {
-        return washTemplateService.list(name, lionPage);
+    public IPageResultData<List<ListWashTemplateVo>> listTemplate(String name,String userName, LionPage lionPage) {
+        return washTemplateService.list(name,userName , lionPage);
     }
 
     @GetMapping("/details/template")

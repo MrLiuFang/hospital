@@ -51,9 +51,10 @@ public interface TagAssetsExposeService extends BaseService<TagAssets> {
 
     /**
      * 根据tagCode查询绑定的资产
+     *
      * @param tagCode
      * @return
      */
-    public TagAssets findByTagCode(String tagCode);
+    public List<TagAssets> findByTagCode(String tagCode);
 
 }

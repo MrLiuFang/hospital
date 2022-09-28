@@ -289,7 +289,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 
     @Override
     public List<Assets> findByKeyword(String keyword) {
-        return assetsDao.findByCodeLikeOrNameLike(keyword,keyword);
+        return assetsDao.findByCodeLikeOrNameLike("%"+keyword+"%","%"+keyword+"%");
     }
 
     @Override
@@ -330,9 +330,13 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 
         }
         if (StringUtils.hasText(tagCode)) {
-            TagAssets tagAssets =  tagAssetsExposeService.findByTagCode(tagCode);
-            if (Objects.nonNull(tagAssets)) {
-                jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_id",tagAssets.getAssetsId());
+            List<TagAssets> tagAssets =  tagAssetsExposeService.findByTagCode(tagCode);
+            if (Objects.nonNull(tagAssets) && tagAssets.size()>0) {
+                List<Long> ids = new ArrayList<>();
+                tagAssets.forEach(tagAssets1 -> {
+                    ids.add(tagAssets1.getAssetsId());
+                });
+                jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
             }else {
                 jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_id",Long.MAX_VALUE);
             }

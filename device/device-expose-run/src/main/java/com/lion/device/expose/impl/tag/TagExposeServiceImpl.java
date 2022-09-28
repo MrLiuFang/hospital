@@ -49,6 +49,11 @@ public class TagExposeServiceImpl extends BaseServiceImpl<Tag> implements TagExp
     }
 
     @Override
+    public List<Tag> findByTagCode(String tagCode) {
+        return tagDao.findByTagCodeLike(tagCode);
+    }
+
+    @Override
     public void updateBattery(Long tagId, Integer battery) {
         com.lion.core.Optional<Tag> optional = tagService.findById(tagId);
         if (optional.isPresent()) {

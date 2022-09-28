@@ -372,7 +372,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             departmentStaffStatisticsDetailsVo.setStaffCount(departmentStaffStatisticsDetailsVo.getStaffCount() + departmentUserExposeService.count(department.getId(),null, finalListIds));
             departmentStaffStatisticsDetailsVo.setNormalStaffCount(departmentStaffStatisticsDetailsVo.getNormalStaffCount() + departmentUserExposeService.count(department.getId(), com.lion.upms.entity.enums.State.NORMAL, finalListIds));
             departmentStaffStatisticsDetailsVo.setAbnormalStaffCount(departmentStaffStatisticsDetailsVo.getAbnormalStaffCount() + departmentUserExposeService.count(department.getId(), com.lion.upms.entity.enums.State.ALARM, finalListIds));
-            List<Long> userIds = departmentUserExposeService.findAllUser(department.getId(),name, (Objects.equals(false,isAll) || Objects.nonNull(regionId)) ?finalListIds:null);
+            List<Long> userIds = departmentUserExposeService.findAllUser(department.getId(),name, (Objects.equals(true,isAll)) ?null:finalListIds);
             List<DepartmentStaffStatisticsDetailsVo.DepartmentStaffVo> listStaff = new ArrayList<>();
             userIds.forEach(userId->{
                 com.lion.core.Optional<User> optionalUser = userExposeService.findById(userId);
@@ -656,6 +656,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 detailsDeviceVos.add(detailsDeviceVo);
             });
             deviceDetailsVo.setDetailsDeviceVos(detailsDeviceVos);
+            deviceDetailsVo.setCctvs(cctvExposeService.findDepartmentId(departmentId));
             departmentDeviceDetailsVos.add(deviceDetailsVo);
 
 //            List<Region> regionList = regionExposeService.findByDepartmentId(id);

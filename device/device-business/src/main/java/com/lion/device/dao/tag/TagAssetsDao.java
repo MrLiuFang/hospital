@@ -4,6 +4,8 @@ import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.tag.TagAssets;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -41,4 +43,6 @@ public interface TagAssetsDao extends BaseDao<TagAssets> {
      * @return
      */
     public TagAssets findFirstByTagIdAndUnbindingTimeIsNull(Long tagId);
+
+    public List<TagAssets> findFirstByTagIdInAndUnbindingTimeIsNull(List<Long> tagId);
 }
