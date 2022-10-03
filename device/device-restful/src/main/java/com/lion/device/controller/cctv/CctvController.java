@@ -2,6 +2,7 @@ package com.lion.device.controller.cctv;
 
 import com.lion.constant.SearchConstant;
 import com.lion.core.*;
+import com.lion.core.Optional;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
@@ -21,6 +22,8 @@ import com.lion.manage.expose.build.BuildFloorExposeService;
 import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.RegionCctvExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
+import com.lion.upms.entity.user.User;
+import com.lion.upms.expose.user.UserExposeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -65,6 +68,9 @@ public class CctvController extends BaseControllerImpl implements BaseController
 
     @DubboReference
     private DepartmentExposeService departmentExposeService;
+
+    @DubboReference
+    private UserExposeService userExposeService;
 
     @GetMapping("/list")
     @ApiOperation(value = "设备列表")
@@ -150,6 +156,16 @@ public class CctvController extends BaseControllerImpl implements BaseController
         if (optionalDepartment.isPresent()){
             vo.setDepartmentName(optionalDepartment.get().getName());
         }
+
+        Optional<User> createUserOptional = userExposeService.findById(cctv.getCreateUserId());
+        if (createUserOptional.isPresent()) {
+            vo.setCreateUserName(createUserOptional.get().getName());
+        }
+        Optional<User> updateUserOptional = userExposeService.findById(cctv.getCreateUserId());
+        if (updateUserOptional.isPresent()) {
+            vo.setUpdateUserName(updateUserOptional.get().getName());
+        }
+
 
         return vo;
     }

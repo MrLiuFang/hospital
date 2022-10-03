@@ -51,6 +51,8 @@ import java.util.Objects;
 import com.lion.core.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toList;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -88,6 +90,9 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
 
     @Autowired
     private AssetsBorrowService assetsBorrowService;
+
+    @Autowired
+    private AssetsFaultService assetsFaultService;
 
 
     @Override
@@ -140,16 +145,17 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
         if (departmentIds.size()>0) {
             List<Assets> list = assetsService.findByDepartmentId(departmentIds);
             ids.add(Long.MAX_VALUE);
-            list.forEach(assets -> {
+            for (Assets assets : list) {
                 ids.add(assets.getId());
-            });
+            }
         }
         if (StringUtils.hasText(keyword)) {
-//            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",keyword);
-            List<Assets> list = assetsService.findByKeyword(keyword);
-            list.forEach(assets -> {
-                ids.add(assets.getId());
+            List<AssetsFault> assetsFaults = assetsFaultDao.findByCodeLikeOrDescribeLike("%"+keyword+"%","%"+keyword+"%");
+            List<Long> _ids = new ArrayList<>();
+            assetsFaults.forEach(assetsFault -> {
+                _ids.add(assetsFault.getAssetsId());
             });
+            ids = ids.stream().filter(item -> _ids.contains(item)).collect(toList());
             if (ids.size()<=0){
                 ids.add(Long.MAX_VALUE);
             }
@@ -165,15 +171,17 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
         }
         if (StringUtils.hasText(assetsCode)) {
             List<Assets> list = assetsService.find(assetsCode);
+            List<Long> _ids = new ArrayList<>();
             list.forEach(assets -> {
-                ids.add(assets.getId());
+                _ids.add(assets.getId());
             });
+            ids = ids.stream().filter(item -> _ids.contains(item)).collect(toList());
             if (ids.size()<=0){
                 ids.add(Long.MAX_VALUE);
             }
         }
         if (ids.size()>0){
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids.stream().distinct().collect(Collectors.toList()));
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_assetsId",ids.stream().distinct().collect(toList()));
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
@@ -226,13 +234,13 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
         IPageResultData<List<ListAssetsFaultVo>> pageResultData = list(departmentId,state,assetsId,code,assetsCode,keyword,startDateTime,endDateTime,lionPage);
         List<ListAssetsFaultVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
-        excelColumn.add(ExcelColumn.build("code", "code"));
-        excelColumn.add(ExcelColumn.build("name", "name"));
-        excelColumn.add(ExcelColumn.build("device code", "deviceCode"));
-        excelColumn.add(ExcelColumn.build("department name", "departmentName"));
-        excelColumn.add(ExcelColumn.build("region name", "regionName"));
-        excelColumn.add(ExcelColumn.build("describe", "describe"));
-        excelColumn.add(ExcelColumn.build("datetime", "createDateTime"));
+        excelColumn.add(ExcelColumn.build("編碼", "code"));
+        excelColumn.add(ExcelColumn.build("名稱", "name"));
+        excelColumn.add(ExcelColumn.build("設備編碼", "deviceCode"));
+        excelColumn.add(ExcelColumn.build("科室名稱", "departmentName"));
+        excelColumn.add(ExcelColumn.build("區域名稱", "regionName"));
+        excelColumn.add(ExcelColumn.build("故障描述", "describe"));
+        excelColumn.add(ExcelColumn.build("創建時間", "createDateTime"));
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("assetsFault.xls", "UTF-8"));
@@ -282,6 +290,11 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
             return vo;
         }
         return null;
+    }
+
+    @Override
+    public List<AssetsFault> find(String keyword) {
+        return assetsFaultDao.findByCodeLikeOrDescribeLike("%"+keyword+"%","%"+keyword+"%");
     }
 
     private void assertAssetsExist(Long id) {

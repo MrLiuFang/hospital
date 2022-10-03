@@ -132,7 +132,7 @@ public class TagAssetsExposeServiceImpl extends BaseServiceImpl<TagAssets> imple
             tags.forEach(tag -> {
                 ids.add(tag.getId());
             });
-            List<TagAssets> tagAssets = tagAssetsDao.findFirstByTagIdInAndUnbindingTimeIsNull(ids);
+            List<TagAssets> tagAssets = tagAssetsDao.findByTagIdInAndUnbindingTimeIsNull(ids);
             return tagAssets;
         }
         return null;

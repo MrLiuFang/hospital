@@ -284,13 +284,13 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             if (Objects.equals(useState,"USED")) {
                 List<State> list = new ArrayList<>();
 //                list.add(State.ACTIVE);
-                list.add(State.NOT_USED);
+                list.add(State.USED);
                 jpqlParameter.setSearchParameter(SearchConstant.IN + "_deviceState", list);
             }
             if (Objects.equals(useState,"NOT_USED")) {
                 List<State> list = new ArrayList<>();
 //                list.add(State.ACTIVE);
-                list.add(State.USED);
+                list.add(State.NOT_USED);
                 jpqlParameter.setSearchParameter(SearchConstant.IN + "_deviceState", list);
             }
         }

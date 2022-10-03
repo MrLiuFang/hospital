@@ -115,6 +115,13 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
     private void save(List<Long> newUser,Long tagRuleId,List<TagRuleUser> list){
         if (Objects.nonNull(newUser)) {
             newUser.forEach(id->{
+                TagRuleUser tagRuleUser = tagRuleUserDao.findFirstByUserIdAndTagRuleIdNot(id, tagRuleId);
+                if (Objects.nonNull(tagRuleUser)) {
+                    com.lion.core.Optional<User> optional = userExposeService.findById(id);
+                    if (optional.isPresent()){
+                        BusinessException.throwException(optional.get().getName() + MessageI18nUtil.getMessage("4000043"));
+                    }
+                }
                 tagRuleUserDao.deleteByUserIdAndAndTagRuleId(id,tagRuleId);
                 TagRuleUser newTagRuleUser = new TagRuleUser();
                 newTagRuleUser.setUserId(id);

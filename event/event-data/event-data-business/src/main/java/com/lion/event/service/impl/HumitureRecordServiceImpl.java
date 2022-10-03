@@ -56,7 +56,7 @@ public class HumitureRecordServiceImpl implements HumitureRecordService {
     }
 
     @Override
-    public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime, List<String> ids, LionPage lionPage) {
         Map<String, Object> searchParameter = new HashMap<>();
         if (StringUtils.hasText(deviceCode)){
             searchParameter.put(SearchConstant.LIKE+"_deviceCode",deviceCode);
@@ -68,6 +68,9 @@ public class HumitureRecordServiceImpl implements HumitureRecordService {
         });
         Query query = new Query();
         Criteria criteria = new Criteria();
+        if (Objects.nonNull(ids) && ids.size()>0){
+            criteria.and("_id").in(ids);
+        }
         if (tagIds.size()>0) {
             criteria.and("ti").in(tagIds);
         }
@@ -109,8 +112,8 @@ public class HumitureRecordServiceImpl implements HumitureRecordService {
     }
 
     @Override
-    public void temperatureHumidityListExport(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListHumitureRecordVo>> pageResultData = temperatureHumidityList(regionId,departmentId,deviceCode,startDateTime,endDateTime,lionPage);
+    public void temperatureHumidityListExport(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime, List<String> ids, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListHumitureRecordVo>> pageResultData = temperatureHumidityList(regionId,departmentId,deviceCode,startDateTime,endDateTime,ids , lionPage);
         List<ListHumitureRecordVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("device name", "deviceName"));

@@ -293,23 +293,26 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     }
 
     @Override
-    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed, String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, String tagCode, LionPage lionPage) {
+    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed, String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, String tagCode, List<Long> ids, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
+        if (Objects.isNull(ids)) {
+            ids = new ArrayList<>();
+        }else if (Objects.nonNull(ids) && ids.size()>0){
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
+        }
         if (Objects.equals(isBorrowed,true)) {
             List<AssetsBorrow> list = assetsBorrowDao.findFirstByReturnUserIdIsNull();
-            List<Long> ids = new ArrayList<>();
             ids.add(Long.MAX_VALUE);
-            list.forEach(assetsBorrow -> {
+            for (AssetsBorrow assetsBorrow :list) {
                 ids.add(assetsBorrow.getAssetsId());
-            });
+            }
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
         }else if (Objects.equals(isBorrowed,false)) {
             List<AssetsBorrow> list = assetsBorrowDao.findFirstByReturnUserIdIsNull();
-            List<Long> ids = new ArrayList<>();
             ids.add(Long.MAX_VALUE);
-            list.forEach(assetsBorrow -> {
+            for (AssetsBorrow assetsBorrow :list) {
                 ids.add(assetsBorrow.getAssetsId());
-            });
+            }
             jpqlParameter.setSearchParameter(SearchConstant.NOT_IN+"_id",ids);
         }
         if (StringUtils.hasText(name)){
@@ -330,22 +333,21 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
 
         }
         if (StringUtils.hasText(tagCode)) {
-            List<TagAssets> tagAssets =  tagAssetsExposeService.findByTagCode(tagCode);
-            if (Objects.nonNull(tagAssets) && tagAssets.size()>0) {
-                List<Long> ids = new ArrayList<>();
-                tagAssets.forEach(tagAssets1 -> {
-                    ids.add(tagAssets1.getAssetsId());
-                });
+            List<TagAssets> tagAssetsList =  tagAssetsExposeService.findByTagCode(tagCode);
+            if (Objects.nonNull(tagAssetsList) && tagAssetsList.size()>0) {
+                for (TagAssets tagAssets :tagAssetsList) {
+                    ids.add(tagAssets.getAssetsId());
+                }
                 jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
             }else {
                 jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_id",Long.MAX_VALUE);
             }
         }
         if (Objects.equals(isMyDepartment,true)) {
-            Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
-            List<Long> ids = departmentExposeService.responsibleDepartment(null);
-            if (Objects.nonNull(ids) && ids.size()>0){
-                jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",ids);
+//            Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
+            List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
+            if (Objects.nonNull(departmentIds) && ids.size()>0){
+                jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
             }
         }
         if (Objects.nonNull(departmentId)) {
@@ -393,17 +395,17 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     }
 
     @Override
-    public void export(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, LionPage lionPage) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListAssetsVo>> pageResultData = list(null, name, code, departmentId, isMyDepartment, assetsTypeId, useState,null , lionPage);
+    public void export(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, List<Long> ids, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListAssetsVo>> pageResultData = list(null, name, code, departmentId, isMyDepartment, assetsTypeId, useState,null, ids, lionPage);
         List<ListAssetsVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
-        excelColumn.add(ExcelColumn.build("name", "name"));
-        excelColumn.add(ExcelColumn.build("type", "assetsType.assetsTypeName"));
-        excelColumn.add(ExcelColumn.build("code", "code"));
-        excelColumn.add(ExcelColumn.build("departmentName", "departmentName"));
-        excelColumn.add(ExcelColumn.build("position", "position"));
-        excelColumn.add(ExcelColumn.build("useRegistration", "useRegistration"));
-        excelColumn.add(ExcelColumn.build("useState", "useState"));
+        excelColumn.add(ExcelColumn.build("名稱", "name"));
+        excelColumn.add(ExcelColumn.build("資產類型", "assetsType.assetsTypeName"));
+        excelColumn.add(ExcelColumn.build("編碼", "code"));
+        excelColumn.add(ExcelColumn.build("科室名稱", "departmentName"));
+        excelColumn.add(ExcelColumn.build("位置", "position"));
+        excelColumn.add(ExcelColumn.build("是否使用登記", "useRegistration"));
+        excelColumn.add(ExcelColumn.build("狀態", "deviceState.desc"));
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/excel");
         response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode("assets.xls", "UTF-8"));

@@ -69,4 +69,6 @@ public interface AssetsFaultService extends BaseService<AssetsFault> {
      * @return
      */
     DetailsAssetsFaultVo details(Long id);
+
+    List<AssetsFault> find(String keyword);
 }

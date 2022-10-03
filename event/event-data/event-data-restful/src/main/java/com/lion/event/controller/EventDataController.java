@@ -699,8 +699,8 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(@ApiParam("区域")Long regionId, @ApiParam("科室")Long departmentId, @ApiParam("设备编码")String deviceCode,
                                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-                                                                               LionPage lionPage){
-        return humitureRecordService.temperatureHumidityList(regionId, departmentId, deviceCode, startDateTime, endDateTime, lionPage);
+                                                                               List<String> ids,LionPage lionPage){
+        return humitureRecordService.temperatureHumidityList(regionId, departmentId, deviceCode, startDateTime, endDateTime,ids , lionPage);
     }
 
     @GetMapping("/tag/temperatureHumidity/list/export")
@@ -708,8 +708,8 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public void temperatureHumidityListExport(@ApiParam("区域")Long regionId, @ApiParam("科室")Long departmentId, @ApiParam("设备编码")String deviceCode,
                                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-                                                                               LionPage lionPage) throws IOException, IllegalAccessException {
-        humitureRecordService.temperatureHumidityListExport(regionId, departmentId, deviceCode, startDateTime, endDateTime, lionPage);
+                                                                               List<String> ids,LionPage lionPage) throws IOException, IllegalAccessException {
+        humitureRecordService.temperatureHumidityListExport(regionId, departmentId, deviceCode, startDateTime, endDateTime, ids, lionPage);
     }
 
     @GetMapping("/recyclingBox/history/list")

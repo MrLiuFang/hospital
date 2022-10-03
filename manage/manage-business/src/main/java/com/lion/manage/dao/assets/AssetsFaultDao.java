@@ -5,6 +5,8 @@ import com.lion.core.service.BaseService;
 import com.lion.manage.entity.assets.AssetsFault;
 import com.lion.manage.entity.enums.AssetsFaultState;
 
+import java.util.List;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -41,5 +43,7 @@ public interface AssetsFaultDao extends BaseDao<AssetsFault> {
      * @return
      */
     public AssetsFault findFirstByAssetsIdAndStateOrderByCreateDateTimeDesc(Long assetsId,AssetsFaultState state);
+
+    public List<AssetsFault> findByCodeLikeOrDescribeLike(String code,String describe);
 
 }

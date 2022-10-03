@@ -6,8 +6,10 @@ import com.lion.common.constants.RedisConstants;
 import com.lion.common.constants.TopicConstants;
 import com.lion.common.dto.SystemAlarmDto;
 import com.lion.common.enums.Type;
+import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.device.Device;
 import com.lion.device.entity.enums.State;
+import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.manage.entity.enums.SystemAlarmType;
@@ -21,6 +23,9 @@ import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.net.InetSocketAddress;
+import java.net.Socket;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
@@ -56,6 +61,9 @@ public class UpdateDeviceDataTime {
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @DubboReference
+    private CctvExposeService cctvExposeService;
 
     @Scheduled(cron = "0 */1 * * * ?")
     public void execute() {
@@ -142,6 +150,32 @@ public class UpdateDeviceDataTime {
                 tagId.clear();
                 tagId = null;
             }
+        }
+
+        {
+            List<Cctv> cctvs = cctvExposeService.findAll();
+            cctvs.forEach(cctv -> {
+                if (Objects.nonNull(cctv.getIp()) && Objects.nonNull(cctv.getPort())) {
+                    Socket socket = new Socket();
+                    try {
+                        socket.connect(new InetSocketAddress(cctv.getIp(), cctv.getPort()), 10); // 建立连接
+                        if (socket.isConnected()){
+                            cctv.setIsOnline(true);
+                        }else {
+                            cctv.setIsOnline(false);
+                        }
+                    }catch (Exception exception) {
+                        cctv.setIsOnline(false);
+                    }finally {
+                        try {
+                            socket.close();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    cctvExposeService.update(cctv);
+                }
+            });
         }
     }
 }

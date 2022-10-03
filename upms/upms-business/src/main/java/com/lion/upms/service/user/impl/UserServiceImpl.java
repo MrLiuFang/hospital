@@ -81,6 +81,8 @@ import java.time.LocalDate;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Mr.Liu
@@ -204,8 +206,11 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
-    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, Boolean isAdmin, LionPage lionPage) {
+    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, Boolean isAdmin, List<Long> ids, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
+        if (Objects.nonNull(ids) && ids.size()>0) {
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
+        }
         if (Objects.nonNull(departmentId)){
             List<Long> userList = departmentUserExposeService.findAllUser(departmentId);
             if (Objects.nonNull(userList) && userList.size()<=0){
@@ -255,8 +260,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
-    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, LionPage lionPage) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null, lionPage);
+    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, List<Long> ids, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null,ids , lionPage);
         List<ListUserVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("姓名", "name"));
@@ -274,7 +279,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
 
     @Override
     public void exportPdf(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, LionPage lionPage) throws IOException, DocumentException {
-        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null, lionPage);
+        IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null,null , lionPage);
         List<ListUserVo> list = pageResultData.getData();
         BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
         Font fontChinese = new Font(bfChinese);
@@ -376,6 +381,12 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             String gender = ImportExcelUtil.getCellValue(row.getCell(9)).toString();
 
             if (StringUtils.hasText(isCreateAccount) && Objects.equals(isCreateAccount.toLowerCase().trim(),"true")) {
+                Pattern p = Pattern.compile("^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(\\.([a-zA-Z0-9_-])+)+$");
+                Matcher m = p.matcher(username);
+                boolean b = m.matches();
+                if (!b) {
+                    BusinessException.throwException(username+"--账号请输入正确的邮箱");
+                }
                 user.setUsername(username);
                 user.setEmail(username);
                 user.setPassword(passwordEncoder.encode(SecureUtil.md5(username)));
@@ -389,6 +400,9 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             }
             user.setName(name);
             user.setGender(Gender.MAN);
+            if (!NumberUtil.isInteger(number)) {
+                BusinessException.throwException(number+"--员工编码只能是数字");
+            }
             user.setNumber(NumberUtil.isInteger(number)?Integer.valueOf(number):null);
             if (StringUtils.hasText(userTypeName)) {
                 Optional<UserType> optionalUserType = userTypeService.find(userTypeName);

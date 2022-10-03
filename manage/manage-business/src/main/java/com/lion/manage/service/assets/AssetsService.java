@@ -85,10 +85,11 @@ public interface AssetsService extends BaseService<Assets> {
      * @param assetsTypeId
      * @param useState
      * @param tagCode
+     * @param ids
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed,String name, String code, Long departmentId, Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState, String tagCode,LionPage lionPage);
+    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed,String name, String code, Long departmentId, Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState, String tagCode,List<Long> ids,LionPage lionPage);
 
     /**
      * 导出
@@ -99,9 +100,10 @@ public interface AssetsService extends BaseService<Assets> {
      * @param isMyDepartment
      * @param assetsTypeId
      * @param useState
+     * @param ids
      * @param lionPage
      * @throws IOException
      * @throws IllegalAccessException
      */
-    public void export(String name,  String code,Long departmentId,Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState,LionPage lionPage) throws IOException, IllegalAccessException;
+    public void export(String name,  String code,Long departmentId,Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState,List<Long> ids,LionPage lionPage) throws IOException, IllegalAccessException;
 }

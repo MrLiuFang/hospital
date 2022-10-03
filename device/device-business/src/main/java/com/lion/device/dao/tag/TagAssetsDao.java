@@ -44,5 +44,5 @@ public interface TagAssetsDao extends BaseDao<TagAssets> {
      */
     public TagAssets findFirstByTagIdAndUnbindingTimeIsNull(Long tagId);
 
-    public List<TagAssets> findFirstByTagIdInAndUnbindingTimeIsNull(List<Long> tagId);
+    public List<TagAssets> findByTagIdInAndUnbindingTimeIsNull(List<Long> tagId);
 }

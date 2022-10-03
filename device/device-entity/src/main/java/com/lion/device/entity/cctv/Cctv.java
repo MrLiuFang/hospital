@@ -30,7 +30,7 @@ import java.time.LocalDateTime;
 
 @DynamicInsert
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"lastDataTime","deviceState","createDateTime","updateDateTime","createUserId","updateUserId"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime"})
 @Schema(description = "cctv")
 public class Cctv extends BaseEntity implements Serializable {
 
@@ -63,6 +63,12 @@ public class Cctv extends BaseEntity implements Serializable {
 //    @NotNull(message = "端口不能为空", groups = {Validator.Insert.class, Validator.Update.class})
     private Integer port;
 
+    @Schema(description = "账号")
+    private String account;
+
+    @Schema(description = "密码")
+    private String password;
+
     @Schema(description = "建筑id（关联区域自动更新该值）")
     @Column(name = "build_id")
     private Long buildId;
@@ -79,13 +85,19 @@ public class Cctv extends BaseEntity implements Serializable {
     @Column(name = "department_id")
     private Long departmentId;
 
-    @Schema(description = "设备状态")
-    @Column(name = "device_state")
-    @Convert(converter = State.StateConverter.class)
-    private State deviceState = State.NOT_USED;
+    @Schema(description = "是否在线")
+    private Boolean isOnline = false;
 
-    @Schema(description = "最后的设备数据时间")
-    @Column(name = "last_data_time")
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private LocalDateTime lastDataTime;
+    @Schema(description = "是否启用")
+    private Boolean isEnable =false;
+
+//    @Schema(description = "设备状态")
+//    @Column(name = "device_state")
+//    @Convert(converter = State.StateConverter.class)
+//    private State deviceState = State.NOT_USED;
+
+//    @Schema(description = "最后的设备数据时间")
+//    @Column(name = "last_data_time")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+//    private LocalDateTime lastDataTime;
 }

@@ -32,4 +32,8 @@ public class CctvVo extends Cctv {
     @Schema(description = "图片")
     private String imgUrl;
 
+    private String createUserName;
+
+    private String updateUserName;
+
 }
