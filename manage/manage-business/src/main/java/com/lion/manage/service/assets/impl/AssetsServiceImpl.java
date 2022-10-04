@@ -51,6 +51,7 @@ import com.lion.manage.utils.ExcelColumn;
 import com.lion.manage.utils.ExportExcelUtil;
 import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -297,23 +298,32 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.isNull(ids)) {
             ids = new ArrayList<>();
-        }else if (Objects.nonNull(ids) && ids.size()>0){
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
         }
         if (Objects.equals(isBorrowed,true)) {
             List<AssetsBorrow> list = assetsBorrowDao.findFirstByReturnUserIdIsNull();
-            ids.add(Long.MAX_VALUE);
+            List<Long> _ids = new ArrayList<>();
+            _ids.add(Long.MAX_VALUE);
             for (AssetsBorrow assetsBorrow :list) {
-                ids.add(assetsBorrow.getAssetsId());
+                _ids.add(assetsBorrow.getAssetsId());
             }
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
+            if (Objects.nonNull(_ids) && _ids.size()>0) {
+                ids =  (List<Long>) CollectionUtils.intersection(ids, _ids);
+            }else {
+                ids = _ids;
+            }
+
         }else if (Objects.equals(isBorrowed,false)) {
             List<AssetsBorrow> list = assetsBorrowDao.findFirstByReturnUserIdIsNull();
-            ids.add(Long.MAX_VALUE);
+            List<Long> _ids = new ArrayList<>();
+            _ids.add(Long.MAX_VALUE);
             for (AssetsBorrow assetsBorrow :list) {
-                ids.add(assetsBorrow.getAssetsId());
+                _ids.add(assetsBorrow.getAssetsId());
             }
-            jpqlParameter.setSearchParameter(SearchConstant.NOT_IN+"_id",ids);
+            if (Objects.nonNull(_ids) && _ids.size()>0) {
+                ids =  (List<Long>) CollectionUtils.intersection(ids, _ids);
+            }else {
+                ids = _ids;
+            }
         }
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
@@ -334,13 +344,17 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         }
         if (StringUtils.hasText(tagCode)) {
             List<TagAssets> tagAssetsList =  tagAssetsExposeService.findByTagCode(tagCode);
+            List<Long> _ids = new ArrayList<>();
+            _ids.add(Long.MAX_VALUE);
             if (Objects.nonNull(tagAssetsList) && tagAssetsList.size()>0) {
                 for (TagAssets tagAssets :tagAssetsList) {
-                    ids.add(tagAssets.getAssetsId());
+                    _ids.add(tagAssets.getAssetsId());
                 }
-                jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
+            }
+            if (Objects.nonNull(_ids) && _ids.size()>0) {
+                ids =  (List<Long>) CollectionUtils.intersection(ids, _ids);
             }else {
-                jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_id",Long.MAX_VALUE);
+                ids = _ids;
             }
         }
         if (Objects.equals(isMyDepartment,true)) {
@@ -352,6 +366,9 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         }
         if (Objects.nonNull(departmentId)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
+        }
+        if (Objects.nonNull(ids) && ids.size()>0) {
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);

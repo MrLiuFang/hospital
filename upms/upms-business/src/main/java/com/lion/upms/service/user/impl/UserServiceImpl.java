@@ -53,6 +53,7 @@ import com.lion.upms.utils.ImportExcelUtil;
 import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MapToBeanUtil;
 import com.lion.utils.MessageI18nUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -208,16 +209,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     @Override
     public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, Boolean isAdmin, List<Long> ids, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
-        if (Objects.nonNull(ids) && ids.size()>0) {
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
-        }
-        if (Objects.nonNull(departmentId)){
-            List<Long> userList = departmentUserExposeService.findAllUser(departmentId);
-            if (Objects.nonNull(userList) && userList.size()<=0){
-                userList.add(Long.MAX_VALUE);
-            }
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",userList);
-        }
+
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }
@@ -238,6 +230,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             }
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",userList);
         }
+        List<Long> _ids = new ArrayList<>();
         if (Objects.equals(isAdmin,true)){
             List<Role> roleList = roleService.find("admin","super_admin");
             List<Long> userList = new ArrayList<>();
@@ -250,7 +243,25 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             if (userList.size()<=0){
                 userList.add(Long.MAX_VALUE);
             }
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",userList);
+            _ids = userList;
+        }
+
+        if (Objects.nonNull(ids) && ids.size()>0) {
+            if (_ids.size()>0) {
+                _ids = (List<Long>) CollectionUtils.intersection(_ids, ids);
+            }else {
+                _ids = ids;
+            }
+        }
+        if (Objects.nonNull(departmentId)){
+            List<Long> userList = departmentUserExposeService.findAllUser(departmentId);
+            if (Objects.nonNull(userList) && userList.size()<=0){
+                userList.add(Long.MAX_VALUE);
+            }
+            _ids = (List<Long>) CollectionUtils.intersection(_ids, userList);
+        }
+        if (Objects.nonNull(_ids) && _ids.size()>0){
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",_ids);
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
