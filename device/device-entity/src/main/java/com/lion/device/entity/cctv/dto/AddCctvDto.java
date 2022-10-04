@@ -13,5 +13,5 @@ import lombok.Data;
 @Data
 @Schema
 @JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime","createUserId","updateUserId"})
-public class UpdateCctvDto extends Cctv {
+public class AddCctvDto extends Cctv {
 }

@@ -3,14 +3,17 @@ package com.lion.device.controller.cctv;
 import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.Optional;
+import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.device.entity.cctv.Cctv;
+import com.lion.device.entity.cctv.dto.AddCctvDto;
 import com.lion.device.entity.cctv.dto.UpdateCctvDto;
 import com.lion.device.entity.cctv.vo.CctvVo;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.tag.Tag;
 import com.lion.device.service.cctv.CctvService;
 import com.lion.manage.entity.build.Build;
 import com.lion.manage.entity.build.BuildFloor;
@@ -94,6 +97,15 @@ public class CctvController extends BaseControllerImpl implements BaseController
         return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
     }
 
+    @PostMapping("/add")
+    @ApiOperation(value = "添加设备")
+    public IResultData add(@RequestBody @Validated({Validator.Insert.class}) AddCctvDto addCctvDto){
+        Cctv cctv = new Cctv();
+        BeanUtils.copyProperties(addCctvDto,cctv);
+        this.cctvService.save(cctv);
+        return ResultData.instance();
+    }
+
     @PutMapping("/update")
     @ApiOperation(value = "修改设备")
     public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateCctvDto updateCctvDto){
@@ -128,6 +140,15 @@ public class CctvController extends BaseControllerImpl implements BaseController
             resultData.setData(convertVo(optional.get()));
         }
         return resultData;
+    }
+
+    @ApiOperation(value = "删除标签")
+    @DeleteMapping("/delete")
+    public IResultData delete(@RequestBody List<DeleteDto> deleteDtoList){
+        deleteDtoList.forEach(deleteDto -> {
+            cctvService.deleteById(deleteDto.getId());
+        });
+        return ResultData.instance();
     }
 
     private CctvVo convertVo(Cctv cctv) {
