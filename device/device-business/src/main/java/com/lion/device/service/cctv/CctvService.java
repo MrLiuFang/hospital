@@ -2,7 +2,9 @@ package com.lion.device.service.cctv;
 
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.cctv.Cctv;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -17,4 +19,7 @@ public interface CctvService extends BaseService<Cctv> {
      * @return
      */
     public List<Long> allId();
+
+
+    public void importCctv(StandardMultipartHttpServletRequest multipartHttpServletRequest)throws IOException;
 }

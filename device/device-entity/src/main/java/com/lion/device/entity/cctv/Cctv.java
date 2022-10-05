@@ -37,8 +37,11 @@ public class Cctv extends BaseEntity implements Serializable {
     private static final long serialVersionUID = 9015253379019012364L;
     @Schema(description = "cctv名称")
     @Column(name = "name")
-    @NotBlank(message = "{4000000}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotBlank(message = "{4000000}", groups = {Validator.Insert.class, Validator.Update.class})
     private String name;
+
+//    @NotBlank(message = "{4000000}", groups = {Validator.Insert.class, Validator.Update.class})
+    private String cctvId;
 
     @Schema(description = "cctv型号")
     @Column(name = "model")
@@ -46,7 +49,7 @@ public class Cctv extends BaseEntity implements Serializable {
 
     @Schema(description = "cctv编号")
     @Column(name = "code")
-    @NotNull(message = "{4000001}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotNull(message = "{4000001}", groups = {Validator.Insert.class, Validator.Update.class})
     private String code;
 
     @Schema(description = "图片")
@@ -55,7 +58,7 @@ public class Cctv extends BaseEntity implements Serializable {
 
     @Schema(description = "ip地址")
     @Column(name = "ip")
-    @NotBlank(message = "{4000002}", groups = {Validator.Insert.class, Validator.Update.class})
+//    @NotBlank(message = "{4000002}", groups = {Validator.Insert.class, Validator.Update.class})
     private String ip;
 
     @Schema(description = "端口")

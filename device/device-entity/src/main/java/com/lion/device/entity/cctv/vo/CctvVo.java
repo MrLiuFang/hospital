@@ -34,6 +34,14 @@ public class CctvVo extends Cctv {
 
     private String createUserName;
 
+    private String createUserHeadPortraitUrl;
+
+    private Long createUserHeadPortrait;
+
     private String updateUserName;
+
+    private String updateUserHeadPortraitUrl;
+
+    private Long updateUserHeadPortrait;
 
 }

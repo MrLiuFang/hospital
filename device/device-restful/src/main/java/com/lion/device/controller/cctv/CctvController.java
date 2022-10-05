@@ -1,5 +1,6 @@
 package com.lion.device.controller.cctv;
 
+import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.Optional;
@@ -38,9 +39,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -75,15 +79,24 @@ public class CctvController extends BaseControllerImpl implements BaseController
     @DubboReference
     private UserExposeService userExposeService;
 
+    @DubboReference
+    private FileExposeService fileExposeService;
+
     @GetMapping("/list")
     @ApiOperation(value = "设备列表")
-    public IPageResultData<List<CctvVo>> list(@ApiParam(value = "cctv名称") String name, @ApiParam(value = "cctv编号") String code, @ApiParam(value = "型号")String model, LionPage lionPage){
+    public IPageResultData<List<CctvVo>> list(@ApiParam(value = "所属区域") String regionId, @ApiParam(value = "cctv名称") String name, @ApiParam(value = "cctvId") String cctvId, @ApiParam(value = "状态")Boolean isOnline, LionPage lionPage){
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }
-        if (StringUtils.hasText(code)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_code",code);
+        if (StringUtils.hasText(cctvId)){
+            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_cctvId",cctvId);
+        }
+        if (Objects.nonNull(isOnline)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_isOnline",isOnline);
+        }
+        if (Objects.nonNull(regionId)){
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_regionId",regionId);
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
@@ -181,14 +194,24 @@ public class CctvController extends BaseControllerImpl implements BaseController
         Optional<User> createUserOptional = userExposeService.findById(cctv.getCreateUserId());
         if (createUserOptional.isPresent()) {
             vo.setCreateUserName(createUserOptional.get().getName());
+            vo.setCreateUserHeadPortraitUrl(fileExposeService.getUrl(createUserOptional.get().getHeadPortrait()));
+            vo.setCreateUserHeadPortrait(createUserOptional.get().getHeadPortrait());
         }
         Optional<User> updateUserOptional = userExposeService.findById(cctv.getCreateUserId());
         if (updateUserOptional.isPresent()) {
             vo.setUpdateUserName(updateUserOptional.get().getName());
+            vo.setUpdateUserHeadPortraitUrl(fileExposeService.getUrl(updateUserOptional.get().getHeadPortrait()));
+            vo.setUpdateUserHeadPortrait(updateUserOptional.get().getHeadPortrait());
         }
 
 
         return vo;
+    }
+    @PostMapping("/import")
+    @ApiOperation(value = "导入")
+    public IResultData importCctv(@ApiIgnore StandardMultipartHttpServletRequest multipartHttpServletRequest) throws IOException {
+        this.cctvService.importCctv(multipartHttpServletRequest);
+        return ResultData.instance();
     }
 
 

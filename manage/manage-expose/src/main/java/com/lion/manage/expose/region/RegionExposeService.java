@@ -1,6 +1,7 @@
 package com.lion.manage.expose.region;
 
 import com.lion.core.LionPage;
+import com.lion.core.Optional;
 import com.lion.core.PageResultData;
 import com.lion.core.service.BaseService;
 import com.lion.manage.entity.region.Region;
@@ -58,4 +59,6 @@ public interface RegionExposeService extends BaseService<Region> {
      * @return
      */
     public List<ListRegionVo> find(String keyword, Long departmentId);
+
+    public Optional<Region> find(String name);
 }

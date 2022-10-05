@@ -2,6 +2,7 @@ package com.lion.manage.expose.region.impl;
 
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.Optional;
 import com.lion.core.PageResultData;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.event.entity.vo.DepartmentRegionInfoVo;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Page;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @Author Mr.Liu
@@ -76,5 +78,11 @@ public class RegionExposeServiceImpl extends BaseServiceImpl<Region> implements 
         list.add(departmentId);
         IPageResultData<List<ListRegionVo>>  pageResultData = regionService.list(keyword,keyword,list,null,null,null,null,new LionPage(0,Integer.MAX_VALUE));
         return pageResultData.getData();
+    }
+
+    @Override
+    public Optional<Region> find(String name) {
+        Region region = regionDao.findFirstByName(name);
+        return Objects.nonNull(region)?Optional.of(region):Optional.empty();
     }
 }
