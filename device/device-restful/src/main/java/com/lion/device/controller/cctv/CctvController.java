@@ -28,6 +28,7 @@ import com.lion.manage.expose.region.RegionCctvExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.expose.user.UserExposeService;
+import com.lion.utils.CurrentUserUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -62,52 +63,13 @@ public class CctvController extends BaseControllerImpl implements BaseController
     private CctvService cctvService;
 
     @DubboReference
-    private BuildExposeService buildExposeService;
-
-    @DubboReference
-    private BuildFloorExposeService buildFloorExposeService;
-
-    @DubboReference
-    private RegionExposeService regionExposeService;
-
-    @DubboReference
     private RegionCctvExposeService regionCctvExposeService;
 
-    @DubboReference
-    private DepartmentExposeService departmentExposeService;
-
-    @DubboReference
-    private UserExposeService userExposeService;
-
-    @DubboReference
-    private FileExposeService fileExposeService;
 
     @GetMapping("/list")
     @ApiOperation(value = "设备列表")
     public IPageResultData<List<CctvVo>> list(@ApiParam(value = "所属区域") String regionId, @ApiParam(value = "cctv名称") String name, @ApiParam(value = "cctvId") String cctvId, @ApiParam(value = "状态")Boolean isOnline, LionPage lionPage){
-        JpqlParameter jpqlParameter = new JpqlParameter();
-        if (StringUtils.hasText(name)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
-        }
-        if (StringUtils.hasText(cctvId)){
-            jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_cctvId",cctvId);
-        }
-        if (Objects.nonNull(isOnline)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_isOnline",isOnline);
-        }
-        if (Objects.nonNull(regionId)){
-            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_regionId",regionId);
-        }
-        jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
-        lionPage.setJpqlParameter(jpqlParameter);
-        Map<String, Object> sortParameter = new HashMap();
-        Page<Cctv> page = cctvService.findNavigator(lionPage);
-        List<Cctv> list = page.getContent();
-        List<CctvVo>  returnList= new ArrayList<>();
-        list.forEach(cctv -> {
-            returnList.add(convertVo(cctv));
-        });
-        return new PageResultData<>(returnList,page.getPageable(),page.getTotalElements());
+        return cctvService.list(regionId, name, cctvId, isOnline, lionPage);
     }
 
     @PostMapping("/add")
@@ -150,7 +112,7 @@ public class CctvController extends BaseControllerImpl implements BaseController
         ResultData resultData = ResultData.instance();
         com.lion.core.Optional<Cctv> optional = cctvService.findById(id);
         if (optional.isPresent()) {
-            resultData.setData(convertVo(optional.get()));
+            resultData.setData(cctvService.convertVo(optional.get()));
         }
         return resultData;
     }
@@ -164,54 +126,18 @@ public class CctvController extends BaseControllerImpl implements BaseController
         return ResultData.instance();
     }
 
-    private CctvVo convertVo(Cctv cctv) {
-        if (Objects.isNull(cctv)) {
-            return null;
-        }
-        CctvVo vo = new CctvVo();
-        BeanUtils.copyProperties(cctv,vo);
 
-        com.lion.core.Optional<Build> optionalBuild = buildExposeService.findById(cctv.getBuildId());
-        if (optionalBuild.isPresent()){
-            vo.setBuildName(optionalBuild.get().getName());
-        }
-
-        com.lion.core.Optional<BuildFloor> optionalBuildFloor = buildFloorExposeService.findById(cctv.getBuildFloorId());
-        if (optionalBuildFloor.isPresent()){
-            vo.setBuildFloorName(optionalBuildFloor.get().getName());
-        }
-
-        com.lion.core.Optional<Region> optionalRegion = regionExposeService.findById(cctv.getRegionId());
-        if (optionalRegion.isPresent()){
-            vo.setRegionName(optionalRegion.get().getName());
-        }
-
-        com.lion.core.Optional<Department> optionalDepartment = departmentExposeService.findById(cctv.getDepartmentId());
-        if (optionalDepartment.isPresent()){
-            vo.setDepartmentName(optionalDepartment.get().getName());
-        }
-
-        Optional<User> createUserOptional = userExposeService.findById(cctv.getCreateUserId());
-        if (createUserOptional.isPresent()) {
-            vo.setCreateUserName(createUserOptional.get().getName());
-            vo.setCreateUserHeadPortraitUrl(fileExposeService.getUrl(createUserOptional.get().getHeadPortrait()));
-            vo.setCreateUserHeadPortrait(createUserOptional.get().getHeadPortrait());
-        }
-        Optional<User> updateUserOptional = userExposeService.findById(cctv.getCreateUserId());
-        if (updateUserOptional.isPresent()) {
-            vo.setUpdateUserName(updateUserOptional.get().getName());
-            vo.setUpdateUserHeadPortraitUrl(fileExposeService.getUrl(updateUserOptional.get().getHeadPortrait()));
-            vo.setUpdateUserHeadPortrait(updateUserOptional.get().getHeadPortrait());
-        }
-
-
-        return vo;
-    }
     @PostMapping("/import")
     @ApiOperation(value = "导入")
     public IResultData importCctv(@ApiIgnore StandardMultipartHttpServletRequest multipartHttpServletRequest) throws IOException {
         this.cctvService.importCctv(multipartHttpServletRequest);
         return ResultData.instance();
+    }
+
+    @GetMapping("/export")
+    @ApiOperation(value = "导出")
+    public void export(@ApiParam(value = "所属区域") String regionId, @ApiParam(value = "cctv名称") String name, @ApiParam(value = "cctvId") String cctvId, @ApiParam(value = "状态")Boolean isOnline, LionPage lionPage) throws IOException, IllegalAccessException {
+        cctvService.export(regionId, name, cctvId, isOnline, lionPage);
     }
 
 
