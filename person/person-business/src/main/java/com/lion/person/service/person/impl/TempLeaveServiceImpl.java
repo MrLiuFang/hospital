@@ -114,8 +114,8 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
     }
 
     @Override
-    public IPageResultData<List<ListTempLeaveVo>> list(String tagCode, Long departmentId, Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
-        Page<TempLeave> page = tempLeaveDao.list(tagCode, departmentId, patientId, userId, startDateTime, endDateTime, lionPage);
+    public IPageResultData<List<ListTempLeaveVo>> list(String tagCode, Long departmentId, Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, String ids, LionPage lionPage) {
+        Page<TempLeave> page = tempLeaveDao.list(tagCode, departmentId, patientId, userId, startDateTime, endDateTime, ids, lionPage);
         List<TempLeave> list = page.getContent();
         List<ListTempLeaveVo> returnList = new ArrayList<>();
         list.forEach(tempLeave -> {
@@ -154,8 +154,8 @@ public class TempLeaveServiceImpl extends BaseServiceImpl<TempLeave> implements 
     }
 
     @Override
-    public void export(String tagCode, Long departmentId, Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, IllegalAccessException {
-        IPageResultData<List<ListTempLeaveVo>> pageResultData = list(tagCode,departmentId,patientId,userId,startDateTime,endDateTime,lionPage);
+    public void export(String tagCode, Long departmentId, Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, String ids, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<ListTempLeaveVo>> pageResultData = list(tagCode,departmentId,patientId,userId,startDateTime,endDateTime, ids, lionPage);
         List<ListTempLeaveVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("patient name", "patientName"));

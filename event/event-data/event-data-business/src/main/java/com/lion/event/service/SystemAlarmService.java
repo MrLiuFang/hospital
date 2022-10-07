@@ -94,11 +94,12 @@ public interface SystemAlarmService {
      * @param endDateTime
      * @param tagId
      * @param assetsId
+     * @param ids
      * @param deviceId
      * @param sorts
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds,  LocalDateTime startDateTime,LocalDateTime endDateTime,Long tagId,Long assetsId,Long deviceId,String... sorts);
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds,  LocalDateTime startDateTime,LocalDateTime endDateTime,Long tagId,Long assetsId,String ids,Long deviceId,String... sorts);
     public List<Document> listGroup(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds,List<Long> deviceIds, LocalDateTime startDateTime, LocalDateTime endDateTime);
     /**
      * 查询未处理的告警

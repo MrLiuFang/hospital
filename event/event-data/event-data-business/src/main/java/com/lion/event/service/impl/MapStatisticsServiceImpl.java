@@ -886,7 +886,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, Long tagId,Long assetsId,Long deviceId, String... sorts) {
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage, Long tagId, Long assetsId, String ids, Long deviceId, String... sorts) {
         List<Long> departmentIds = new ArrayList<>();
         Long userId = CurrentUserUtil.getCurrentUserId();
         Role role = roleExposeService.find(userId);
@@ -911,7 +911,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
             startDateTime = endDateTime.minusDays(3);
         }
         List<Long> tagIds = tagExposeService.find(tagType,tagCode);
-        return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType, tagIds, startDateTime, endDateTime, tagId, assetsId ,deviceId , sorts);
+        return systemAlarmService.list(lionPage,departmentIds, isUa,ri, alarmType, tagIds, startDateTime, endDateTime, tagId, assetsId,ids , deviceId, sorts);
     }
 
     @Override
@@ -967,7 +967,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                         vo.setImgUrl(fileExposeService.getUrl(assets.getImg()));
                         vo.setImgId(assets.getImg());
                         vo.setCount(Integer.valueOf(String.valueOf(document.get("count"))));
-                        IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false, null, null, null, null, null, finalStartDateTime, null, new LionPage(0, 1), null,assets.getId(),null ,"dt");
+                        IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false, null, null, null, null, null, finalStartDateTime, null, new LionPage(0, 1), null,assets.getId(), null, null, "dt");
                         List<SystemAlarmVo> list1 = listIPageResultData.getData();
                         if (Objects.nonNull(list1) && list1.size() > 0) {
                             vo.setSystemAlarm(list1.get(0));
@@ -990,7 +990,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                         vo.setImgUrl(fileExposeService.getUrl(device.getImg()));
                         vo.setImgId(device.getImg());
                         vo.setCount(Integer.valueOf(String.valueOf(document.get("count"))));
-                        IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false, null, null, null, null, null, finalStartDateTime, null, new LionPage(0, 1), null,null,device.getId() ,"dt");
+                        IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false, null, null, null, null, null, finalStartDateTime, null, new LionPage(0, 1), null,null,null , device.getId(), "dt");
                         List<SystemAlarmVo> list1 = listIPageResultData.getData();
                         if (Objects.nonNull(list1) && list1.size() > 0) {
                             vo.setSystemAlarm(list1.get(0));
@@ -1026,7 +1026,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                         vo.setTagType(tag.getType());
                         vo.setCount(Integer.valueOf(String.valueOf(document.get("count"))));
                         LionPage lionPage1 = new LionPage(0, 1);
-                        IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false, null, null, null, null, null, finalStartDateTime, null, lionPage1, tag.getId(),null ,null, "dt");
+                        IPageResultData<List<SystemAlarmVo>> listIPageResultData = systemAlarmList(null, false, null, null, null, null, null, finalStartDateTime, null, lionPage1, tag.getId(),null,null , null, "dt");
                         List<SystemAlarmVo> list1 = listIPageResultData.getData();
                         if (Objects.nonNull(list1) && list1.size() > 0) {
                             vo.setSystemAlarm(list1.get(0));
@@ -1059,8 +1059,8 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
     }
 
     @Override
-    public void systemAlarmListExport(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException {
-        IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage, null, null,null, "dt");
+    public void systemAlarmListExport(Boolean isAll, Boolean isUa, List<Long> ri, Long di, Type alarmType, TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime,String ids, LionPage lionPage) throws IOException, DocumentException {
+        IPageResultData<List<SystemAlarmVo>> pageResultData = systemAlarmList(isAll,isUa,ri,di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage, null, null,ids , null, "dt");
         List<SystemAlarmVo> list = pageResultData.getData();
         BaseFont bfChinese = BaseFont.createFont(FONT+",1",BaseFont.IDENTITY_H, BaseFont.NOT_EMBEDDED);
         Font fontChinese = new Font(bfChinese);

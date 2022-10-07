@@ -26,11 +26,11 @@ import java.time.LocalDateTime;
  */
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "t_cctv",indexes = {@Index(columnList = "name"),@Index(columnList = "model")})
+@Table(name = "t_cctv")
 
 @DynamicInsert
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true,value = {"createDateTime","updateDateTime"})
+@JsonIgnoreProperties(ignoreUnknown = true,value = {})
 @Schema(description = "cctv")
 public class Cctv extends BaseEntity implements Serializable {
 

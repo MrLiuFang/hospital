@@ -207,9 +207,15 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
-    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, Boolean isAdmin, List<Long> ids, LionPage lionPage) {
+    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, Boolean isAdmin, String ids, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
-
+        List<Long> __ids = new ArrayList<>();
+        if (StringUtils.hasText(ids)) {
+            String[] str =ids.split(",");
+            for (String id : str) {
+                __ids.add(Long.valueOf(id));
+            }
+        }
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }
@@ -246,11 +252,11 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             _ids = userList;
         }
 
-        if (Objects.nonNull(ids) && ids.size()>0) {
+        if (__ids.size()>0) {
             if (_ids.size()>0) {
-                _ids = (List<Long>) CollectionUtils.intersection(_ids, ids);
+                _ids = (List<Long>) CollectionUtils.intersection(_ids, __ids);
             }else {
-                _ids = ids;
+                _ids = __ids;
             }
         }
         if (Objects.nonNull(departmentId)){
@@ -271,7 +277,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
     }
 
     @Override
-    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, List<Long> ids, LionPage lionPage) throws IOException, IllegalAccessException {
+    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId, String ids, LionPage lionPage) throws IOException, IllegalAccessException {
         IPageResultData<List<ListUserVo>> pageResultData = list(departmentId,userTypeIds,number,name,roleId, null,ids , lionPage);
         List<ListUserVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();

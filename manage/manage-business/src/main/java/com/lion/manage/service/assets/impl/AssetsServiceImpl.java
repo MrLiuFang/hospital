@@ -49,7 +49,6 @@ import com.lion.manage.service.department.DepartmentService;
 import com.lion.manage.service.region.RegionService;
 import com.lion.manage.utils.ExcelColumn;
 import com.lion.manage.utils.ExportExcelUtil;
-import com.lion.utils.CurrentUserUtil;
 import com.lion.utils.MessageI18nUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -294,10 +293,14 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     }
 
     @Override
-    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed, String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, String tagCode, List<Long> ids, LionPage lionPage) {
+    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed, String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, String tagCode, String ids, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
-        if (Objects.isNull(ids)) {
-            ids = new ArrayList<>();
+        List<Long> __ids = new ArrayList<>();
+        if (StringUtils.hasText(ids)) {
+            String[] str =ids.split(",");
+            for (String id : str) {
+                __ids.add(Long.valueOf(id));
+            }
         }
         if (Objects.equals(isBorrowed,true)) {
             List<AssetsBorrow> list = assetsBorrowDao.findFirstByReturnUserIdIsNull();
@@ -306,10 +309,10 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             for (AssetsBorrow assetsBorrow :list) {
                 _ids.add(assetsBorrow.getAssetsId());
             }
-            if (Objects.nonNull(_ids) && _ids.size()>0) {
-                ids =  (List<Long>) CollectionUtils.intersection(ids, _ids);
+            if (__ids.size()>0) {
+                __ids =  (List<Long>) CollectionUtils.intersection(__ids, _ids);
             }else {
-                ids = _ids;
+                __ids = _ids;
             }
 
         }else if (Objects.equals(isBorrowed,false)) {
@@ -320,9 +323,9 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
                 _ids.add(assetsBorrow.getAssetsId());
             }
             if (Objects.nonNull(_ids) && _ids.size()>0) {
-                ids =  (List<Long>) CollectionUtils.intersection(ids, _ids);
+                __ids =  (List<Long>) CollectionUtils.intersection(__ids, _ids);
             }else {
-                ids = _ids;
+                __ids = _ids;
             }
         }
         if (StringUtils.hasText(name)){
@@ -352,23 +355,23 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
                 }
             }
             if (Objects.nonNull(_ids) && _ids.size()>0) {
-                ids =  (List<Long>) CollectionUtils.intersection(ids, _ids);
+                __ids =  (List<Long>) CollectionUtils.intersection(__ids, _ids);
             }else {
-                ids = _ids;
+                __ids = _ids;
             }
         }
         if (Objects.equals(isMyDepartment,true)) {
 //            Department department = departmentUserExposeService.findDepartment(CurrentUserUtil.getCurrentUserId());
             List<Long> departmentIds = departmentExposeService.responsibleDepartment(null);
-            if (Objects.nonNull(departmentIds) && ids.size()>0){
+            if (Objects.nonNull(departmentIds) && departmentIds.size()>0){
                 jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
             }
         }
         if (Objects.nonNull(departmentId)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
         }
-        if (Objects.nonNull(ids) && ids.size()>0) {
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",ids);
+        if (__ids.size()>0) {
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",__ids);
         }
         jpqlParameter.setSortParameter("createDateTime", Sort.Direction.DESC);
         lionPage.setJpqlParameter(jpqlParameter);
@@ -412,7 +415,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     }
 
     @Override
-    public void export(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, List<Long> ids, LionPage lionPage) throws IOException, IllegalAccessException {
+    public void export(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, String ids, LionPage lionPage) throws IOException, IllegalAccessException {
         IPageResultData<List<ListAssetsVo>> pageResultData = list(null, name, code, departmentId, isMyDepartment, assetsTypeId, useState,null, ids, lionPage);
         List<ListAssetsVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();

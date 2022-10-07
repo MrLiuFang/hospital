@@ -45,6 +45,7 @@ import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 
+import javax.print.DocFlavor;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -233,7 +234,7 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
     }
 
     @Override
-    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime, Long tagId, Long assetsId, Long deviceId, String... sorts) {
+    public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime, Long tagId, Long assetsId, String ids, Long deviceId, String... sorts) {
         Query query = new Query();
         Criteria criteria = new Criteria();
         if (Objects.nonNull(departmentIds) && departmentIds.size()>0) {
@@ -261,6 +262,16 @@ public class SystemAlarmDaoImpl implements SystemAlarmDaoEx {
         }
         if (Objects.nonNull(assetsId) ) {
             criteria.and("ai").is(assetsId);
+        }
+        if (StringUtils.hasText(ids)){
+            List<String> _ids = new ArrayList<>();
+            String[] str = ids.split(",");
+            for (String id:str) {
+                _ids.add(id);
+            }
+            if (_ids.size()>0){
+                criteria.and("_id").in(_ids);
+            }
         }
 
         if (Objects.isNull(startDateTime)) {

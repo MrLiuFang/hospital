@@ -145,11 +145,12 @@ public interface MapStatisticsService {
      * @param lionPage
      * @param tagId
      * @param assetsId
+     * @param ids
      * @param deviceId
      * @param sorts
      * @return
      */
-    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di, Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage,Long tagId,Long assetsId,Long deviceId,String... sorts);
+    public IPageResultData<List<SystemAlarmVo>> systemAlarmList(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di, Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage,Long tagId,Long assetsId,String ids,Long deviceId,String... sorts);
 
     public List<SystemAlarmGroupVo> systemAlarmGroupList(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di, Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage,String... sorts);
 
@@ -166,5 +167,5 @@ public interface MapStatisticsService {
      * @param endDateTime
      * @param lionPage
      */
-    public void systemAlarmListExport(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di,  Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) throws IOException, DocumentException;
+    public void systemAlarmListExport(Boolean isAll, Boolean isUa,  List<Long> ri,  Long di,  Type alarmType,  TagType tagType, String tagCode, LocalDateTime startDateTime, LocalDateTime endDateTime, String ids,LionPage lionPage) throws IOException, DocumentException;
 }

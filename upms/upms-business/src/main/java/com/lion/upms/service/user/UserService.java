@@ -55,7 +55,7 @@ public interface UserService extends BaseService<User> {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId,Boolean isAdmin,List<Long> ids, LionPage lionPage);
+    public IPageResultData<List<ListUserVo>> list(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId,Boolean isAdmin,String ids, LionPage lionPage);
 
     /**
      * 导出
@@ -68,7 +68,7 @@ public interface UserService extends BaseService<User> {
      * @param ids
      * @param lionPage
      */
-    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId,List<Long> ids,LionPage lionPage) throws IOException, IllegalAccessException;
+    public void export(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId,String ids,LionPage lionPage) throws IOException, IllegalAccessException;
 
     public void exportPdf(Long departmentId, Long userTypeIds, Integer number, String name, Long roleId,LionPage lionPage) throws IOException, DocumentException;
 

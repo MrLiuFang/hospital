@@ -30,7 +30,7 @@ public interface HumitureRecordService {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime,List<String> ids , LionPage lionPage);
+    public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime,String ids , LionPage lionPage);
 
     /**
      * 温湿标签列表导出
@@ -43,7 +43,7 @@ public interface HumitureRecordService {
      * @param ids
      * @param lionPage
      */
-    public void temperatureHumidityListExport(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime,List<String> ids ,LionPage lionPage) throws IOException, IllegalAccessException;
+    public void temperatureHumidityListExport(Long regionId, Long departmentId, String deviceCode, LocalDateTime startDateTime, LocalDateTime endDateTime,String ids ,LionPage lionPage) throws IOException, IllegalAccessException;
 
     /**
      * 查询最后的记录

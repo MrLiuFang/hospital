@@ -40,10 +40,11 @@ public interface TempLeaveService extends BaseService<TempLeave> {
      * @param userId
      * @param startDateTime
      * @param endDateTime
+     * @param ids
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListTempLeaveVo>> list( String tagCode,  Long departmentId, Long patientId,Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage);
+    public IPageResultData<List<ListTempLeaveVo>> list( String tagCode,  Long departmentId, Long patientId,Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, String ids,LionPage lionPage);
 
     /**
      * 导出
@@ -54,8 +55,9 @@ public interface TempLeaveService extends BaseService<TempLeave> {
      * @param userId
      * @param startDateTime
      * @param endDateTime
+     * @param ids
      * @param lionPage
      * @return
      */
-    public void export( String tagCode,  Long departmentId, Long patientId,Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime,LionPage lionPage) throws IOException, IllegalAccessException;
+    public void export( String tagCode,  Long departmentId, Long patientId,Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime,String ids,LionPage lionPage) throws IOException, IllegalAccessException;
 }

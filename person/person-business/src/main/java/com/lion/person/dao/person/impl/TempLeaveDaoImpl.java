@@ -9,9 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @description:
@@ -25,11 +23,22 @@ public class TempLeaveDaoImpl implements TempLeaveDaoEx {
 
 
     @Override
-    public Page list(String tagCode, Long departmentId, Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, LionPage lionPage) {
+    public Page list(String tagCode, Long departmentId, Long patientId, Long userId, LocalDateTime startDateTime, LocalDateTime endDateTime, String ids, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
         Map<String, Object> searchParameter = new HashMap<String, Object>();
         sb.append("select tl from TempLeave tl join Patient p on tl.patientId = p.id where tl.isClosure=false and tl.endDateTime >= :now ");
         searchParameter.put("now",LocalDateTime.now());
+        if (StringUtils.hasText(ids)) {
+            List<Long> _ids = new ArrayList<>();
+            String[] str= ids.split(",");
+            for (String id : str) {
+                _ids.add(Long.valueOf(id));
+            }
+            if (_ids.size()>0){
+                sb.append(" and p.id in :ids ");
+                searchParameter.put("ids",_ids);
+            }
+        }
         if (StringUtils.hasText(tagCode)) {
             sb.append(" and p.tagCode like :tagCode ");
             searchParameter.put("tagCode",tagCode);

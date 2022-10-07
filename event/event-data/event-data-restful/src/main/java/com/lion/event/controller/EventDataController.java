@@ -601,7 +601,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IPageResultData<List<SystemAlarmVo>> systemAlarmList(@ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,@ApiParam(value = "tag id")Long tagId,
                                                                 LionPage lionPage){
-        return mapStatisticsService.systemAlarmList(false, false, null, null,null , null, null, startDateTime, endDateTime, lionPage, tagId, null,null, "sdt");
+        return mapStatisticsService.systemAlarmList(false, false, null, null,null , null, null, startDateTime, endDateTime, lionPage, tagId, null,null , null, "sdt");
     }
 
     @GetMapping("/alarm/list1")
@@ -609,8 +609,8 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IPageResultData<List<SystemAlarmVo>> systemAlarmList1(@ApiParam("区域id") @RequestParam(value = "ri",required = false) List<Long> ri, @ApiParam("科室id") Long di,@ApiParam("状态false=未处理，true=已处理")Boolean alarmState, @ApiParam("警报来源") Type alarmType,@ApiParam("标签属性") TagType tagType,@ApiParam("标签码") String tagCode,
                                                                 @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                 @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-                                                                LionPage lionPage){
-        return mapStatisticsService.systemAlarmList(true, alarmState, ri, di , alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage,null,null,null,"dt");
+                                                                 String ids,LionPage lionPage){
+        return mapStatisticsService.systemAlarmList(true, alarmState, ri, di , alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage,null,null, ids, null, "dt");
     }
 
     @GetMapping("/alarm/list1/export")
@@ -618,8 +618,8 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public void systemAlarmList1Export(@ApiParam("区域id") @RequestParam(value = "ri",required = false) List<Long> ri, @ApiParam("科室id") Long di, @ApiParam("警报来源") Type alarmType,@ApiParam("标签属性") TagType tagType,@ApiParam("标签码") String tagCode,
                                                                  @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                  @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-                                                                 LionPage lionPage) throws IOException, DocumentException {
-        mapStatisticsService.systemAlarmListExport(true, null, ri, di, alarmType, tagType, tagCode, startDateTime, endDateTime, lionPage);
+                                                                 String ids,LionPage lionPage) throws IOException, DocumentException {
+        mapStatisticsService.systemAlarmListExport(true, null, ri, di, alarmType, tagType, tagCode, startDateTime, endDateTime,ids, lionPage);
     }
 
     @GetMapping("/alarm/details")
@@ -699,7 +699,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IPageResultData<List<ListHumitureRecordVo>> temperatureHumidityList(@ApiParam("区域")Long regionId, @ApiParam("科室")Long departmentId, @ApiParam("设备编码")String deviceCode,
                                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-                                                                               @RequestParam(required = false) List<String> ids,LionPage lionPage){
+                                                                               String ids,LionPage lionPage){
         return humitureRecordService.temperatureHumidityList(regionId, departmentId, deviceCode, startDateTime, endDateTime,ids , lionPage);
     }
 
@@ -708,7 +708,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public void temperatureHumidityListExport(@ApiParam("区域")Long regionId, @ApiParam("科室")Long departmentId, @ApiParam("设备编码")String deviceCode,
                                                                                @ApiParam(value = "开始时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime startDateTime,
                                                                                @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime,
-                                              @RequestParam(required = false) List<String> ids,LionPage lionPage) throws IOException, IllegalAccessException {
+                                              String ids,LionPage lionPage) throws IOException, IllegalAccessException {
         humitureRecordService.temperatureHumidityListExport(regionId, departmentId, deviceCode, startDateTime, endDateTime, ids, lionPage);
     }
 
