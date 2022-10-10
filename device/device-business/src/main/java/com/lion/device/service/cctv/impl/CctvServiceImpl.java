@@ -168,7 +168,9 @@ public class CctvServiceImpl extends BaseServiceImpl<Cctv> implements CctvServic
             String port = ImportExcelUtil.getCellValue(row.getCell(4)).toString();
             port = port.substring(0,port.indexOf("."));
             String account = ImportExcelUtil.getCellValue(row.getCell(5)).toString();
+            account = account.substring(0,port.indexOf("."));
             String password = ImportExcelUtil.getCellValue(row.getCell(6)).toString();
+            password = password.substring(0,port.indexOf("."));
             Cctv cctv = new Cctv();
             cctv.setName(name);
             cctv.setCctvId(cctvId);

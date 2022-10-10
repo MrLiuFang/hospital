@@ -150,8 +150,8 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
 
     @Override
     @Transactional
-    public void relationRegion(Long regionId, List<Long> ids) {
-        if (Objects.isNull(ids) ){
+    public void relationRegion(Long regionId, Long buildId, Long buildFloorId, List<Long> ids) {
+        if (Objects.isNull(ids) || ids.size()==0){
             ids = new ArrayList<>();
             ids.add(Long.MAX_VALUE);
         }
@@ -175,12 +175,7 @@ public class DeviceExposeServiceImpl extends BaseServiceImpl<Device> implements 
             }
         });
         deviceDao.updateRegionIdIsNull(regionId);
-        Optional<Region> optional = regionExposeService.findById(regionId);
-        if (optional.isPresent()){
-            Region region = optional.get();
-            deviceDao.updateRegion(regionId,region.getBuildId() ,region.getBuildFloorId(), new_ids);
-        }
-
+        deviceDao.updateRegion(regionId,buildId ,buildFloorId, new_ids);
         redisTemplate.delete(RedisConstants.REGION+regionId);
     }
 

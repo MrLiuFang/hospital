@@ -172,7 +172,8 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
             }
 
         });
-        return new PageResultData<List<ListTagRuleUserVo>>(returnList,page.getPageable(),page.getTotalElements());
+        PageResultData  pageResultData = new PageResultData<List<ListTagRuleUserVo>>(returnList,page.getPageable(),page.getTotalElements());
+        return pageResultData;
     }
 
     @Override

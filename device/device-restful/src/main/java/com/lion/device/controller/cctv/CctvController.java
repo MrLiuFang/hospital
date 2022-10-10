@@ -65,6 +65,8 @@ public class CctvController extends BaseControllerImpl implements BaseController
     @DubboReference
     private RegionCctvExposeService regionCctvExposeService;
 
+    @DubboReference
+    private RegionExposeService regionExposeService;
 
     @GetMapping("/list")
     @ApiOperation(value = "设备列表")
@@ -77,6 +79,14 @@ public class CctvController extends BaseControllerImpl implements BaseController
     public IResultData add(@RequestBody @Validated({Validator.Insert.class}) AddCctvDto addCctvDto){
         Cctv cctv = new Cctv();
         BeanUtils.copyProperties(addCctvDto,cctv);
+        Optional<Region> regionOptional = regionExposeService.findById(addCctvDto.getRegionId());
+        if (regionOptional.isPresent()) {
+            Region region = regionOptional.get();
+            cctv.setBuildId(region.getBuildId());
+            cctv.setBuildFloorId(region.getBuildFloorId());
+            cctv.setRegionId(region.getId());
+            cctv.setDepartmentId(region.getDepartmentId());
+        }
         this.cctvService.save(cctv);
         return ResultData.instance();
     }
@@ -86,6 +96,14 @@ public class CctvController extends BaseControllerImpl implements BaseController
     public IResultData update(@RequestBody @Validated({Validator.Update.class}) UpdateCctvDto updateCctvDto){
         Cctv cctv = new Cctv();
         BeanUtils.copyProperties(updateCctvDto,cctv);
+        Optional<Region> regionOptional = regionExposeService.findById(updateCctvDto.getRegionId());
+        if (regionOptional.isPresent()) {
+            Region region = regionOptional.get();
+            cctv.setBuildId(region.getBuildId());
+            cctv.setBuildFloorId(region.getBuildFloorId());
+            cctv.setRegionId(region.getId());
+            cctv.setDepartmentId(region.getDepartmentId());
+        }
         this.cctvService.update(cctv);
         return ResultData.instance();
     }
@@ -97,9 +115,9 @@ public class CctvController extends BaseControllerImpl implements BaseController
         String[] id = ids.split(",");
         if (Objects.nonNull(id) && id.length > 0) {
             for (int i = 0; i < id.length; i++) {
-                RegionCctv regionCctv = regionCctvExposeService.find(Long.valueOf(id[i]));
-                if (Objects.nonNull(regionCctv)) {
-                    returnList.add(regionCctv.getCctvId());
+                Optional<Cctv> cctvOptional = cctvService.findById(id[i]);
+                if (cctvOptional.isPresent()) {
+                    returnList.add(cctvOptional.get().getId());
                 }
             }
         }

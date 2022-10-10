@@ -28,21 +28,21 @@ public interface CctvExposeService extends BaseService<Cctv> {
 
     /**
      * 关联cctv所在的位置
-     * @param oldCctvIds 用于清除已经关联位置(清空buildId,buildFloorId,regionId)
-     * @param newCctvIds
+     *
+     * @param cctvIds
      * @param buildId
      * @param buildFloorId
      * @param regionId
      * @param departmentId
      */
-    public void relationPosition(List<Long> oldCctvIds,List<Long> newCctvIds,Long buildId,Long buildFloorId,Long regionId,Long departmentId);
+    public void relationPosition(List<Long> cctvIds,Long buildId,Long buildFloorId,Long regionId,Long departmentId);
 
     /**
      * 根据科室统计cctv数量
      * @param departmentId
      * @return
      */
-    public Integer count(Long DepartmentId);
+    public Integer count(Long departmentId);
 
     public List<Cctv> findRegionId(Long regionId);
 

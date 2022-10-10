@@ -2,7 +2,9 @@ package com.lion.device.dao.cctv;
 
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.cctv.Cctv;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -40,5 +42,10 @@ public interface CctvDao extends BaseDao<Cctv> {
     public List<Cctv> findByRegionId(Long regionId);
 
     public List<Cctv> findByDepartmentId(Long departmentId);
+
+    @Modifying
+    @Transactional
+    @Query("update Cctv  set regionId = null , buildId = null , buildFloorId = null , departmentId = null where regionId = :regionId")
+    public int updateRegionIsNull(Long regionId);
 
 }

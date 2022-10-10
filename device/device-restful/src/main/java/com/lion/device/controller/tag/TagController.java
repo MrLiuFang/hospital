@@ -192,7 +192,8 @@ public class TagController extends BaseControllerImpl implements BaseController 
     @GetMapping("/rule/user/list")
     @ApiOperation(value = "标签规则用户列表")
     public IPageResultData<List<ListTagRuleUserVo>> ruleUserList(@NotNull(message = "{4000034}") @ApiParam(value = "标签规则id") Long tagRuleId, LionPage lionPage){
-        return tagRuleUserService.list(tagRuleId, lionPage);
+        IPageResultData pageResultData = tagRuleUserService.list(tagRuleId, lionPage);
+        return pageResultData;
     }
 
     @GetMapping("/rule/log/list")

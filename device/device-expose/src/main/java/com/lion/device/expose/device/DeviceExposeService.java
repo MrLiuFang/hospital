@@ -105,10 +105,13 @@ public interface DeviceExposeService extends BaseService<Device> {
 
     /**
      * 关联区域
+     *
      * @param regionId
+     * @param buildId
+     * @param buildFloorId
      * @param ids
      */
-    public void relationRegion(Long regionId,List<Long> ids);
+    public void relationRegion(Long regionId,Long buildId,Long buildFloorId,List<Long> ids);
 
     /**
      * 根据大类统计数量

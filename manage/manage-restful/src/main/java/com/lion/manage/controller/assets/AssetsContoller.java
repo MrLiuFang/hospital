@@ -114,14 +114,14 @@ public class AssetsContoller extends BaseControllerImpl implements BaseControlle
     @GetMapping("/list")
     @ApiOperation(value = "资产列表")
     public IPageResultData<List<ListAssetsVo>> list(@ApiParam(value = "是否借用")Boolean isBorrowed,@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code,@ApiParam(value = "科室id")Long departmentId,Boolean isMyDepartment,
-                                                  @ApiParam(value = "资产分类") Long assetsTypeId, @ApiParam(value = "使用状态") AssetsUseState useState, @ApiParam(value = "tagCode") String tagCode,String ids, LionPage lionPage){
+                                                  @ApiParam(value = "资产分类") Long assetsTypeId, @ApiParam(value = "使用状态") String useState, @ApiParam(value = "tagCode") String tagCode,String ids, LionPage lionPage){
         return assetsService.list(isBorrowed, name, code, departmentId, isMyDepartment, assetsTypeId, useState,tagCode,ids , lionPage);
     }
 
     @GetMapping("/export")
     @ApiOperation(value = "导出")
     public void export(@ApiParam(value = "资产名称") String name, @ApiParam(value = "资产编号") String code,@ApiParam(value = "科室id")Long departmentId,Boolean isMyDepartment,
-                       @ApiParam(value = "资产分类") Long assetsTypeId, @ApiParam(value = "使用状态") AssetsUseState useState,String ids, LionPage lionPage) throws IOException, IllegalAccessException {
+                       @ApiParam(value = "资产分类") Long assetsTypeId, @ApiParam(value = "使用状态") String useState,String ids, LionPage lionPage) throws IOException, IllegalAccessException {
 
         assetsService.export(name, code, departmentId, isMyDepartment, assetsTypeId, useState, ids, lionPage);
     }

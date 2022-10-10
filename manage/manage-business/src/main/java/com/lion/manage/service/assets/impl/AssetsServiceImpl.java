@@ -293,7 +293,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     }
 
     @Override
-    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed, String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, String tagCode, String ids, LionPage lionPage) {
+    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed, String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, String useState, String tagCode, String ids, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         List<Long> __ids = new ArrayList<>();
         if (StringUtils.hasText(ids)) {
@@ -337,13 +337,10 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
         if (Objects.nonNull(assetsTypeId)) {
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_assetsTypeId",assetsTypeId);
         }
-        if (Objects.nonNull(useState)) {
-            if (Objects.equals(useState,AssetsUseState.USEING)) {
-                jpqlParameter.setSearchParameter(SearchConstant.EQUAL + "_deviceState", State.USED);
-            }else if (Objects.equals(useState,AssetsUseState.NOT_USED)) {
-                jpqlParameter.setSearchParameter(SearchConstant.EQUAL + "_deviceState", State.NOT_USED);
-            }
-
+        if (Objects.equals(useState,"USED")) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL + "_deviceState", State.USED);
+        }else if (Objects.equals(useState,"NOT_USED")) {
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL + "_deviceState", State.NOT_USED);
         }
         if (StringUtils.hasText(tagCode)) {
             List<TagAssets> tagAssetsList =  tagAssetsExposeService.findByTagCode(tagCode);
@@ -415,7 +412,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
     }
 
     @Override
-    public void export(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, AssetsUseState useState, String ids, LionPage lionPage) throws IOException, IllegalAccessException {
+    public void export(String name, String code, Long departmentId, Boolean isMyDepartment, Long assetsTypeId, String useState, String ids, LionPage lionPage) throws IOException, IllegalAccessException {
         IPageResultData<List<ListAssetsVo>> pageResultData = list(null, name, code, departmentId, isMyDepartment, assetsTypeId, useState,null, ids, lionPage);
         List<ListAssetsVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();

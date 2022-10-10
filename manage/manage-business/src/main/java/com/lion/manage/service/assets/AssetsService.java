@@ -9,7 +9,6 @@ import com.lion.manage.entity.assets.dto.AddAssetsDto;
 import com.lion.manage.entity.assets.dto.UpdateAssetsDto;
 import com.lion.manage.entity.assets.vo.DetailsAssetsVo;
 import com.lion.manage.entity.assets.vo.ListAssetsVo;
-import com.lion.manage.entity.enums.AssetsUseState;
 
 import java.io.IOException;
 import java.util.List;
@@ -89,7 +88,7 @@ public interface AssetsService extends BaseService<Assets> {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed,String name, String code, Long departmentId, Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState, String tagCode,String ids,LionPage lionPage);
+    public IPageResultData<List<ListAssetsVo>> list(Boolean isBorrowed,String name, String code, Long departmentId, Boolean isMyDepartment,Long assetsTypeId, String useState, String tagCode,String ids,LionPage lionPage);
 
     /**
      * 导出
@@ -105,5 +104,5 @@ public interface AssetsService extends BaseService<Assets> {
      * @throws IOException
      * @throws IllegalAccessException
      */
-    public void export(String name,  String code,Long departmentId,Boolean isMyDepartment,Long assetsTypeId, AssetsUseState useState,String ids,LionPage lionPage) throws IOException, IllegalAccessException;
+    public void export(String name,  String code,Long departmentId,Boolean isMyDepartment,Long assetsTypeId, String useState,String ids,LionPage lionPage) throws IOException, IllegalAccessException;
 }

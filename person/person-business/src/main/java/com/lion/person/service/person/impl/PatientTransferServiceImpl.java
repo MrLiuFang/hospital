@@ -116,21 +116,20 @@ public class PatientTransferServiceImpl extends BaseServiceImpl<PatientTransfer>
         if (!(Objects.equals(receivePatientDto.getState(),TransferState.FINISH) || Objects.equals(receivePatientDto.getState(),TransferState.CANCEL))) {
             BusinessException.throwException(MessageI18nUtil.getMessage("1000046"));
         }
-
-        PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientId(receivePatientDto.getPatientId());
-        Optional<Patient> optional = patientService.findById(receivePatientDto.getPatientId());
-        if (optional.isPresent()){
-            Patient patient = optional.get();
-            patient.setTagCode(receivePatientDto.getTagCode());
-            patient.setSickbedId(receivePatientDto.getSickbedId());
-            if (Objects.nonNull(patientTransfer)){
-                patient.setDepartmentId(patientTransfer.getNewDepartmentId());
-            }
-            if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH) ){
-                tagPatientExposeService.binding(receivePatientDto.getPatientId(),receivePatientDto.getTagCode(),patientTransfer.getNewDepartmentId());
+        if (Objects.equals(receivePatientDto.getState(),TransferState.FINISH) ) {
+            PatientTransfer patientTransfer = patientTransferDao.findFirstByPatientId(receivePatientDto.getPatientId());
+            Optional<Patient> optional = patientService.findById(receivePatientDto.getPatientId());
+            if (optional.isPresent()) {
+                Patient patient = optional.get();
+                patient.setTagCode(receivePatientDto.getTagCode());
+                patient.setSickbedId(receivePatientDto.getSickbedId());
+                if (Objects.nonNull(patientTransfer)) {
+                    patient.setDepartmentId(patientTransfer.getNewDepartmentId());
+                }
+                tagPatientExposeService.binding(receivePatientDto.getPatientId(), receivePatientDto.getTagCode(), patientTransfer.getNewDepartmentId());
                 patient.setDepartmentId(patientTransfer.getNewDepartmentId());
                 patientService.setOtherInfo(patient);
-                patientService.sickbedIsCanUse(patient.getSickbedId(),receivePatientDto.getPatientId());
+                patientService.sickbedIsCanUse(patient.getSickbedId(), receivePatientDto.getPatientId());
                 patientService.update(patient);
             }
         }
