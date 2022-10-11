@@ -6,6 +6,7 @@ import com.lion.core.service.BaseService;
 import com.lion.device.entity.tag.TagRuleUser;
 import com.lion.device.entity.tag.vo.ListTagRuleUserVo;
 import com.lion.upms.entity.user.User;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -31,7 +32,7 @@ public interface TagRuleUserService extends BaseService<TagRuleUser> {
      * @param lionPage
      * @return
      */
-    public IPageResultData<List<ListTagRuleUserVo>> list(Long tagRuleId, LionPage lionPage);
+    public Page list(Long tagRuleId, LionPage lionPage);
 
     /**
      * 查询可关联的用户

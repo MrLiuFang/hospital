@@ -252,12 +252,10 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             _ids = userList;
         }
 
-        if (__ids.size()>0) {
-            if (_ids.size()>0) {
-                _ids = (List<Long>) CollectionUtils.intersection(_ids, __ids);
-            }else {
-                _ids = __ids;
-            }
+        if (_ids.size()>0 && __ids.size()>0) {
+            _ids = (List<Long>) CollectionUtils.intersection(_ids, __ids);
+        }else {
+            _ids = __ids;
         }
         if (Objects.nonNull(departmentId)){
             List<Long> userList = departmentUserExposeService.findAllUser(departmentId);

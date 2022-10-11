@@ -140,7 +140,7 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
     }
 
     @Override
-    public IPageResultData<List<ListTagRuleUserVo>> list(Long tagRuleId, LionPage lionPage) {
+    public Page list(Long tagRuleId, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.nonNull(tagRuleId)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_tagRuleId",tagRuleId);
@@ -155,7 +155,6 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
             com.lion.core.Optional<User> optional = userExposeService.findById(tagRuleUser.getUserId());
             if (optional.isPresent()){
                 User user = optional.get();
-                returnList.add(vo);
                 vo.setName(user.getName());
                 vo.setId(user.getId());
                 vo.setHeadPortrait(user.getHeadPortrait());
@@ -169,10 +168,11 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                 if (Objects.nonNull(department)) {
                     vo.setDepartmentName(department.getName());
                 }
+                returnList.add(vo);
             }
 
         });
-        PageResultData  pageResultData = new PageResultData<List<ListTagRuleUserVo>>(returnList,page.getPageable(),page.getTotalElements());
+        PageResultData  pageResultData = new PageResultData(returnList,page.getPageable(),page.getTotalElements());
         return pageResultData;
     }
 

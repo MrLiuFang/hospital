@@ -322,7 +322,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             for (AssetsBorrow assetsBorrow :list) {
                 _ids.add(assetsBorrow.getAssetsId());
             }
-            if (Objects.nonNull(_ids) && _ids.size()>0) {
+            if (Objects.nonNull(_ids) && _ids.size()>0 && __ids.size() >0) {
                 __ids =  (List<Long>) CollectionUtils.intersection(__ids, _ids);
             }else {
                 __ids = _ids;
@@ -351,7 +351,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
                     _ids.add(tagAssets.getAssetsId());
                 }
             }
-            if (Objects.nonNull(_ids) && _ids.size()>0) {
+            if (Objects.nonNull(_ids) && _ids.size()>0 && __ids.size() >0) {
                 __ids =  (List<Long>) CollectionUtils.intersection(__ids, _ids);
             }else {
                 __ids = _ids;
