@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
+
 /**
  * @author Mr.Liu
  * @Description:
@@ -17,5 +19,6 @@ import lombok.Data;
 public class AddAssetsDto extends Assets {
 
     @Schema(description = "标签编码")
+    @NotBlank(message = "标签编码不能为空")
     private String tagCode;
 }

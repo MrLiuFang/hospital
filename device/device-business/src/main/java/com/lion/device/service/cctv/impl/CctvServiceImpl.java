@@ -121,6 +121,9 @@ public class CctvServiceImpl extends BaseServiceImpl<Cctv> implements CctvServic
         }
         if (Objects.nonNull(isOnline)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_isOnline",isOnline);
+            if (Objects.equals(isOnline,false)) {
+                jpqlParameter.setSearchParameter(SearchConstant.EQUAL + "_isEnable", true);
+            }
         }
         if (Objects.nonNull(regionId)){
             jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_regionId",regionId);

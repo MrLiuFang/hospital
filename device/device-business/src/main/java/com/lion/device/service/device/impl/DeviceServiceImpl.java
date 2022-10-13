@@ -154,7 +154,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
             if (optional.isPresent() ) {
                 Device device = optional.get();
                 del(d.getId());
-                deviceGroupDeviceService.deleteByDeviceId(d.getId());
+//                deviceGroupDeviceService.deleteByDeviceId(d.getId());
                 redisTemplate.delete(RedisConstants.DEVICE+device.getId());
                 redisTemplate.delete(RedisConstants.DEVICE_CODE+device.getCode());
                 redisTemplate.delete(RedisConstants.DEVICE_REGION+device.getId());
@@ -319,6 +319,32 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     @Override
     public Integer countOnLine() {
         return deviceDao.countByDeviceStateAndIsOnline(State.USED, true);
+    }
+
+    @Override
+    public void replace(Long oldId, Long newId) {
+        Device oldDevice = findById(oldId).get();
+        Device newDevice = findById(newId).get();
+        if (Objects.isNull(newDevice.getCode())){
+            BusinessException.throwException("替换的设备是临时设备");
+        }
+        if (Objects.nonNull(newDevice.getRegionId())) {
+            BusinessException.throwException("替换的设备已经绑定区域");
+        }
+        newDevice.setRegionId(oldDevice.getRegionId());
+        newDevice.setDeviceState(State.USED);
+        update(newDevice);
+
+        redisTemplate.delete(RedisConstants.DEVICE+oldDevice.getId());
+        redisTemplate.delete(RedisConstants.DEVICE_CODE+oldDevice.getCode());
+        redisTemplate.delete(RedisConstants.DEVICE_REGION+oldDevice.getId());
+        currentPositionExposeService.delete(null,oldDevice.getId(),null);
+        Device newDevice1 = new Device();
+        newDevice1.setDeviceState(State.NOT_USED);
+        newDevice1.setCode(oldDevice.getCode());
+        newDevice1.setDeviceType(oldDevice.getDeviceType());
+        newDevice1.setDeviceClassify(oldDevice.getDeviceClassify());
+        save(newDevice1);
     }
 
     private DeviceStatisticsVo.DeviceStatisticsData count(DeviceClassify classify){

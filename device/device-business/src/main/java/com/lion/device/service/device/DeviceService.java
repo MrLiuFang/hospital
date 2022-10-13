@@ -65,4 +65,6 @@ public interface DeviceService extends BaseService<Device> {
     public Integer countOffLine();
 
     public Integer countOnLine();
+
+    void replace(Long oldId,Long newId);
 }

@@ -233,4 +233,11 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
         return (IPageResultData<List<Device>>) deviceService.deviceState(lionPage);
     }
 
+    @PutMapping("/replace")
+    @ApiOperation(value = "替换设备")
+    public IResultData replace(@ApiParam(value = "被替换的设备id")Long oldId,@ApiParam(value = "替换的设备ID")Long newId){
+        deviceService.replace(oldId, newId);
+        return ResultData.instance();
+    }
+
 }
