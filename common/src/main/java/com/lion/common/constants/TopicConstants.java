@@ -60,6 +60,9 @@ public class TopicConstants {
      */
     public static final String SYSTEM_ALARM_CONSUMER_GROUP = "system_alarm_consumer_group";
 
+    public static final  String SAVE_CCTV_CONSUMER_GROUP = "save_cctv_consumer_group";
+
+    public static final  String SAVE_CCTV_DELAY_CONSUMER_GROUP = "save_cctv_delay_consumer_group";
     /**
      * 系统内警告处理
      */
@@ -176,6 +179,13 @@ public class TopicConstants {
      * 更新洗手时长
      */
     public static final String UPDATE_WASH_TIME = "update_wash_time";
+
+    /**
+     * 保存cctv
+     */
+    public static final String SAVE_CCTV = "save_cctv";
+
+    public static final String SAVE_CCTV_DELAY = "save_cctv_delay";
 
     /**
      * 更新洗手时长

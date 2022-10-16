@@ -187,4 +187,5 @@ public interface WashEventService {
      * @return
      */
     long count(LocalDateTime startDateTime, LocalDateTime endDateTime);
+
 }

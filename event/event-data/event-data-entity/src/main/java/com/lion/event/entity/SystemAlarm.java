@@ -104,6 +104,9 @@ public class SystemAlarm implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime udt;
 
+    @Schema(description = "cctvUrl-可能多个逗号隔开")
+    private String cctvUrl;
+
     public void setUa(SystemAlarmState state) {
         this.ua = state.getKey();
     }

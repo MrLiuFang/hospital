@@ -27,7 +27,7 @@ public interface CctvService extends BaseService<Cctv> {
 
     public void importCctv(StandardMultipartHttpServletRequest multipartHttpServletRequest)throws IOException;
 
-    public void export( String regionId,  String name, String cctvId, Boolean isOnline, LionPage lionPage) throws IOException, IllegalAccessException;
+    public void export( String regionId,  String name, String cctvId, Boolean isOnline, String ids, LionPage lionPage) throws IOException, IllegalAccessException;
 
-    public IPageResultData<List<CctvVo>> list(String regionId,  String name,  String cctvId, Boolean isOnline, LionPage lionPage);
+    public IPageResultData<List<CctvVo>> list(String regionId,  String name,  String cctvId, Boolean isOnline,String ids,  LionPage lionPage);
 }

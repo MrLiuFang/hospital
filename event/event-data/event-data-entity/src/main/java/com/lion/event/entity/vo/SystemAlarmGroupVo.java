@@ -79,4 +79,5 @@ public class SystemAlarmGroupVo {
     @Schema(description = "是否资产……")
     private Boolean isAssets;
 
+
 }

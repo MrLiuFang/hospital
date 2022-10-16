@@ -11,6 +11,7 @@ import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.cctv.CctvDao;
 import com.lion.device.dao.device.DeviceDao;
 import com.lion.device.dao.tag.TagDao;
+import com.lion.device.entity.device.dto.ReplaceDeviceDto;
 import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
@@ -322,9 +323,9 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     }
 
     @Override
-    public void replace(Long oldId, Long newId) {
-        Device oldDevice = findById(oldId).get();
-        Device newDevice = findById(newId).get();
+    public void replace(ReplaceDeviceDto replaceDeviceDto) {
+        Device oldDevice = findById(replaceDeviceDto.getOldId()).get();
+        Device newDevice = findById(replaceDeviceDto.getNewId()).get();
         if (Objects.isNull(newDevice.getCode())){
             BusinessException.throwException("替换的设备是临时设备");
         }
@@ -333,8 +334,12 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         }
         newDevice.setRegionId(oldDevice.getRegionId());
         newDevice.setDeviceState(State.USED);
+        newDevice.setCode(replaceDeviceDto.getCode());
+        newDevice.setName(replaceDeviceDto.getName());
+        newDevice.setImg(replaceDeviceDto.getImg());
         update(newDevice);
 
+        delete(oldDevice);
         redisTemplate.delete(RedisConstants.DEVICE+oldDevice.getId());
         redisTemplate.delete(RedisConstants.DEVICE_CODE+oldDevice.getCode());
         redisTemplate.delete(RedisConstants.DEVICE_REGION+oldDevice.getId());

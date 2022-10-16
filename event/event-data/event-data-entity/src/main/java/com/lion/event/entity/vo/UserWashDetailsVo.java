@@ -1,6 +1,8 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.upms.entity.user.User;
 import com.lion.upms.entity.user.UserType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -50,6 +52,15 @@ public class UserWashDetailsVo extends User {
 
         @Schema(description = "洗手时长(秒)")
         private Integer time;
+
+        @Schema(description = "设备分类")
+        private DeviceClassify deviceClassify;
+
+        @Schema(description = "设备分类")
+        private DeviceType deviceType;
+
+        @Schema(description = "cctv-可能多个逗号隔开")
+        private String cctvUrl;
 
         @Schema(description = "时间")
         @JsonFormat(

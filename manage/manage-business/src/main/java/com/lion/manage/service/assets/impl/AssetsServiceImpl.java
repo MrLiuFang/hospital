@@ -316,17 +316,7 @@ public class AssetsServiceImpl extends BaseServiceImpl<Assets> implements Assets
             }
 
         }else if (Objects.equals(isBorrowed,false)) {
-            List<AssetsBorrow> list = assetsBorrowDao.findFirstByReturnUserIdIsNull();
-            List<Long> _ids = new ArrayList<>();
-            _ids.add(Long.MAX_VALUE);
-            for (AssetsBorrow assetsBorrow :list) {
-                _ids.add(assetsBorrow.getAssetsId());
-            }
-            if (Objects.nonNull(_ids) && _ids.size()>0 && __ids.size() >0) {
-                __ids =  (List<Long>) CollectionUtils.intersection(__ids, _ids);
-            }else {
-                __ids = _ids;
-            }
+            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_deviceState",State.NOT_USED);
         }
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);

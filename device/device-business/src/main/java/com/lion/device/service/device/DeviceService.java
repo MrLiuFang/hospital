@@ -5,6 +5,7 @@ import com.lion.core.LionPage;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.service.BaseService;
 import com.lion.device.entity.device.Device;
+import com.lion.device.entity.device.dto.ReplaceDeviceDto;
 import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceMonitorVo;
@@ -66,5 +67,5 @@ public interface DeviceService extends BaseService<Device> {
 
     public Integer countOnLine();
 
-    void replace(Long oldId,Long newId);
+    void replace(ReplaceDeviceDto replaceDeviceDto);
 }

@@ -225,6 +225,7 @@ public class SystemAlarmConsumer implements RocketMQListener<MessageExt> {
             }else if (Objects.equals(updateStateDto.getType(),Type.HUMIDITY) || Objects.equals(updateStateDto.getType(),Type.TEMPERATURE)) {
                 updateStateDto.setId(newSystemAlarm.getTi());
             }
+            rocketMQTemplate.syncSend(TopicConstants.SAVE_CCTV_DELAY, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(newSystemAlarm)).build());
             rocketMQTemplate.syncSend(TopicConstants.UPDATE_STATE, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(updateStateDto)).build());
 //                }
 

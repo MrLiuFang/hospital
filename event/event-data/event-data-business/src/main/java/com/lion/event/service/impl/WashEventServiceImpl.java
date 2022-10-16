@@ -15,8 +15,10 @@ import com.lion.common.utils.RedisUtil;
 import com.lion.constant.SearchConstant;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
+import com.lion.core.Optional;
 import com.lion.core.PageResultData;
 import com.lion.core.persistence.JpqlParameter;
+import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.device.Device;
 import com.lion.device.expose.cctv.CctvExposeService;
 import com.lion.device.expose.device.DeviceExposeService;
@@ -56,13 +58,19 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.data.support.PageableExecutionUtils;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URLEncoder;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -137,6 +145,9 @@ public class WashEventServiceImpl implements WashEventService {
 
     @Autowired
     private RedisUtil redisUtil;
+
+    @Autowired
+    private RestTemplate restTemplate;
 
     private final String FONT = "simsun.ttc";
 
@@ -217,6 +228,12 @@ public class WashEventServiceImpl implements WashEventService {
             userWashEvent.setRegionName(event.getRn());
             userWashEvent.setIsConformance(!event.getIa());
             userWashEvent.setTime(event.getT());
+            Optional<Device> optional = deviceExposeService.findById(event.getDvi());
+            optional.ifPresent((device)->{
+                userWashEvent.setDeviceType(device.getDeviceType());
+                userWashEvent.setDeviceClassify(device.getDeviceClassify());
+            });
+            userWashEvent.setCctvUrl(event.getCctvUrl());
             pageList.add(userWashEvent);
         });
         vo.setUserWashEvent(pageList);
@@ -519,6 +536,7 @@ public class WashEventServiceImpl implements WashEventService {
                 vo.setTime(washEvent.getT());
                 vo.setUseDateTime(washEvent.getDdt());
                 vo.setDateTime(washEvent.getAdt());
+                vo.setCctvUrl(washEvent.getCctvUrl());
                 com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
                 if (optionalDevice.isPresent()) {
                     vo.setDeviceName(optionalDevice.get().getName());
@@ -615,6 +633,7 @@ public class WashEventServiceImpl implements WashEventService {
             vo.setDepartmentName(washEvent.getDn());
             vo.setIa(washEvent.getIa());
             vo.setTime(washEvent.getT());
+            vo.setCctvUrl(washEvent.getCctvUrl());
             vo.setUseDateTime(washEvent.getDdt());
             vo.setDateTime(washEvent.getAdt());
             com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());

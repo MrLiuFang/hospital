@@ -62,4 +62,6 @@ public class UserLastWashDto implements Serializable {
      * 是否更新洗手时间
      */
     private Boolean isUpdateWashTime = false;
+
+    private Boolean isSaveCctv = false;
 }

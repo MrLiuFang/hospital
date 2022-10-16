@@ -1,43 +1,25 @@
 package com.lion.device.controller.cctv;
 
-import com.lion.common.expose.file.FileExposeService;
-import com.lion.constant.SearchConstant;
 import com.lion.core.*;
 import com.lion.core.Optional;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
-import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
 import com.lion.device.entity.cctv.Cctv;
 import com.lion.device.entity.cctv.dto.AddCctvDto;
 import com.lion.device.entity.cctv.dto.UpdateCctvDto;
 import com.lion.device.entity.cctv.vo.CctvVo;
-import com.lion.device.entity.device.Device;
-import com.lion.device.entity.tag.Tag;
 import com.lion.device.service.cctv.CctvService;
-import com.lion.manage.entity.build.Build;
-import com.lion.manage.entity.build.BuildFloor;
-import com.lion.manage.entity.department.Department;
 import com.lion.manage.entity.region.Region;
-import com.lion.manage.entity.region.RegionCctv;
-import com.lion.manage.expose.build.BuildExposeService;
-import com.lion.manage.expose.build.BuildFloorExposeService;
-import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.RegionCctvExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
-import com.lion.upms.entity.user.User;
-import com.lion.upms.expose.user.UserExposeService;
-import com.lion.utils.CurrentUserUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest;
@@ -71,7 +53,7 @@ public class CctvController extends BaseControllerImpl implements BaseController
     @GetMapping("/list")
     @ApiOperation(value = "设备列表")
     public IPageResultData<List<CctvVo>> list(@ApiParam(value = "所属区域") String regionId, @ApiParam(value = "cctv名称") String name, @ApiParam(value = "cctvId") String cctvId, @ApiParam(value = "状态")Boolean isOnline, LionPage lionPage){
-        return cctvService.list(regionId, name, cctvId, isOnline, lionPage);
+        return cctvService.list(regionId, name, cctvId, isOnline,null , lionPage);
     }
 
     @PostMapping("/add")
@@ -154,8 +136,8 @@ public class CctvController extends BaseControllerImpl implements BaseController
 
     @GetMapping("/export")
     @ApiOperation(value = "导出")
-    public void export(@ApiParam(value = "所属区域") String regionId, @ApiParam(value = "cctv名称") String name, @ApiParam(value = "cctvId") String cctvId, @ApiParam(value = "状态")Boolean isOnline, LionPage lionPage) throws IOException, IllegalAccessException {
-        cctvService.export(regionId, name, cctvId, isOnline, lionPage);
+    public void export(@ApiParam(value = "所属区域") String regionId, @ApiParam(value = "cctv名称") String name, @ApiParam(value = "cctvId") String cctvId, @ApiParam(value = "状态")Boolean isOnline, String ids, LionPage lionPage) throws IOException, IllegalAccessException {
+        cctvService.export(regionId, name, cctvId, isOnline, ids, lionPage);
     }
 
 

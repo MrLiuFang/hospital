@@ -83,4 +83,7 @@ public class WashRecordDto implements Serializable {
     @Schema(description = "系统接收到的时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime sdt;
+
+    @Schema(description = "cctvUrl-多个用逗号隔开")
+    private String cctvUrl;
 }

@@ -14,23 +14,16 @@ import com.lion.core.persistence.Validator;
 import com.lion.device.entity.device.Device;
 //import com.lion.device.entity.device.DeviceGroupDevice;
 import com.lion.device.entity.device.DeviceGroupDevice;
-import com.lion.device.entity.device.dto.AddDeviceDto;
-import com.lion.device.entity.device.dto.AddDeviceGroupDto;
-import com.lion.device.entity.device.dto.UpdateDeviceDto;
-import com.lion.device.entity.device.dto.UpdateDeviceGroupDto;
+import com.lion.device.entity.device.dto.*;
 import com.lion.device.entity.device.vo.DetailsDeviceGroupVo;
 import com.lion.device.entity.device.vo.DetailsDeviceVo;
 import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceGroupVo;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
-import com.lion.device.entity.enums.State;
 import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.service.device.DeviceGroupService;
 import com.lion.device.service.device.DeviceService;
-import com.lion.manage.entity.build.Build;
-import com.lion.manage.entity.build.BuildFloor;
-import com.lion.manage.entity.region.RegionWarningBell;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import io.swagger.annotations.Api;
@@ -48,7 +41,6 @@ import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import com.lion.core.Optional;
 
 /**
  * @author Mr.Liu
@@ -235,8 +227,8 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @PutMapping("/replace")
     @ApiOperation(value = "替换设备")
-    public IResultData replace(@ApiParam(value = "被替换的设备id")Long oldId,@ApiParam(value = "替换的设备ID")Long newId){
-        deviceService.replace(oldId, newId);
+    public IResultData replace(@RequestBody ReplaceDeviceDto replaceDeviceDto){
+        deviceService.replace(replaceDeviceDto);
         return ResultData.instance();
     }
 

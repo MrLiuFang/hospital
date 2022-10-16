@@ -149,6 +149,10 @@ public class DeviceDataConsumer implements RocketMQListener<MessageExt> {
                         if (Objects.equals(userLastWashDto.getIsUpdateWashTime(),false)) {
 //                            rocketMQTemplate.syncSend(TopicConstants.UPDATE_WASH_TIME, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(userLastWashDto)).build());
                         }
+                        if (Objects.equals(userLastWashDto.getIsSaveCctv(),false)) {
+                            rocketMQTemplate.syncSend(TopicConstants.SAVE_CCTV, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(userLastWashDto)).build());
+                        }
+                        userLastWashDto.setIsSaveCctv(true);
                         userLastWashDto.setIsUpdateWashTime(true);
                         redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+user.getId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
                     }

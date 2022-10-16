@@ -25,7 +25,6 @@ import com.lion.manage.expose.department.DepartmentExposeService;
 import com.lion.manage.expose.region.RegionCctvExposeService;
 import com.lion.manage.expose.region.RegionExposeService;
 import com.lion.upms.entity.user.User;
-import com.lion.upms.entity.user.vo.ListUserVo;
 import com.lion.upms.expose.user.UserExposeService;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.poi.ss.usermodel.Row;
@@ -96,8 +95,8 @@ public class CctvServiceImpl extends BaseServiceImpl<Cctv> implements CctvServic
     }
 
     @Override
-    public void export(String regionId, String name, String cctvId, Boolean isOnline, LionPage lionPage) throws IOException, IllegalAccessException {
-        IPageResultData<List<CctvVo>> pageResultData = list(regionId,name,cctvId,isOnline,lionPage);
+    public void export(String regionId, String name, String cctvId, Boolean isOnline, String ids, LionPage lionPage) throws IOException, IllegalAccessException {
+        IPageResultData<List<CctvVo>> pageResultData = list(regionId,name,cctvId,isOnline, ids, lionPage);
         List<CctvVo> list = pageResultData.getData();
         List<ExcelColumn> excelColumn = new ArrayList<ExcelColumn>();
         excelColumn.add(ExcelColumn.build("名稱", "name"));
@@ -111,10 +110,13 @@ public class CctvServiceImpl extends BaseServiceImpl<Cctv> implements CctvServic
     }
 
     @Override
-    public IPageResultData<List<CctvVo>> list(String regionId, String name, String cctvId, Boolean isOnline, LionPage lionPage) {
+    public IPageResultData<List<CctvVo>> list(String regionId, String name, String cctvId, Boolean isOnline, String ids, LionPage lionPage) {
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
+        }
+        if (StringUtils.hasText(ids)){
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",List.of(ids.split(",")));
         }
         if (StringUtils.hasText(cctvId)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_cctvId",cctvId);
@@ -165,7 +167,9 @@ public class CctvServiceImpl extends BaseServiceImpl<Cctv> implements CctvServic
             User user = new User();
             Row row = sheet.getRow(i);
             String name = ImportExcelUtil.getCellValue(row.getCell(0)).toString();
+            name = name.substring(0,name.indexOf("."));
             String cctvId = ImportExcelUtil.getCellValue(row.getCell(1)).toString();
+            cctvId = cctvId.substring(0,cctvId.indexOf("."));
             String regionName = ImportExcelUtil.getCellValue(row.getCell(2)).toString();
             String ip = ImportExcelUtil.getCellValue(row.getCell(3)).toString();
             String port = ImportExcelUtil.getCellValue(row.getCell(4)).toString();
