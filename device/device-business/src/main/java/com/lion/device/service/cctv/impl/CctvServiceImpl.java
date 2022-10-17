@@ -116,7 +116,12 @@ public class CctvServiceImpl extends BaseServiceImpl<Cctv> implements CctvServic
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name",name);
         }
         if (StringUtils.hasText(ids)){
-            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",List.of(ids.split(",")));
+            List<Long> _ids = new ArrayList<>();
+            String[] str = ids.split(",");
+            for (String id : str){
+                _ids.add(Long.valueOf(id));
+            }
+            jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",_ids);
         }
         if (StringUtils.hasText(cctvId)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_cctvId",cctvId);
