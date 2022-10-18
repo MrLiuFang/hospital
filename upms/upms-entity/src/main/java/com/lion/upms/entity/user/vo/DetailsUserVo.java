@@ -48,6 +48,9 @@ public class DetailsUserVo extends User {
     @Schema(description = "警告编码")
     private String alarmType;
 
+    @Schema(description = "cctv-可能多个逗号隔开")
+    private String cctv;
+
     @Schema(description = "警告时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime alarmDataTime;

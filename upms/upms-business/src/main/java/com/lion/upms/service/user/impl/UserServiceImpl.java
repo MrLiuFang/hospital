@@ -492,6 +492,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             SystemAlarmType systemAlarmType = SystemAlarmType.instance(systemAlarm.getSat());
             detailsUserVo.setAlarm(systemAlarmType.getDesc());
             detailsUserVo.setAlarmType(systemAlarmExposeService.getSystemAlarmTypeCode(systemAlarm.getSat()));
+            detailsUserVo.setCctv(systemAlarm.getCctvUrl());
             detailsUserVo.setAlarmDataTime(systemAlarm.getDt());
             detailsUserVo.setAlarmId(systemAlarm.get_id());
         }

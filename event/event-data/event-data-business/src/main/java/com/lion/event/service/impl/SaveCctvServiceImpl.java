@@ -27,8 +27,11 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
 
+import java.io.File;
+import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -107,15 +110,19 @@ public class SaveCctvServiceImpl implements SaveCctvService {
                 //定义请求头的接收类型
                 RequestCallback requestCallback = request -> request.getHeaders()
                         .setAccept(Arrays.asList(MediaType.APPLICATION_OCTET_STREAM, MediaType.ALL));
-                String savePath = cctvPath + "/" + date + "/" + uuid + ".mp4";
+                File file =new File(cctvPath + date);
+                if (!file.exists()){
+                    file.mkdirs();
+                }
+                String savePath = cctvPath + date + "/" + uuid + ".mp4";
                 restTemplate.execute(url, HttpMethod.GET, requestCallback, clientHttpResponse -> {
-                    Files.copy(clientHttpResponse.getBody(), Paths.get(savePath));
+                    Files.copy(clientHttpResponse.getBody(), Paths.get(savePath), StandardCopyOption.REPLACE_EXISTING);
                     return null;
                 });
                 if (StringUtils.hasText(cctvUrl)) {
-                    cctvUrl = cctvUrl + "," + savePath;
+                    cctvUrl = cctvUrl + ",/cctv/"+ date + "/" + uuid + ".mp4";
                 } else {
-                    cctvUrl = savePath;
+                    cctvUrl = "/cctv/"+date + "/" + uuid + ".mp4";
                 }
             }
             return cctvUrl;

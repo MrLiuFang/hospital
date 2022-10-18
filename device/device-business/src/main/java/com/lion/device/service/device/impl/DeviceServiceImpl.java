@@ -324,8 +324,16 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
 
     @Override
     public void replace(ReplaceDeviceDto replaceDeviceDto) {
-        Device oldDevice = findById(replaceDeviceDto.getOldId()).get();
-        Device newDevice = findById(replaceDeviceDto.getNewId()).get();
+        Optional<Device> deviceOptionalOld = findById(replaceDeviceDto.getOldId());
+        if (deviceOptionalOld.isEmpty()) {
+            BusinessException.throwException("被替换的设备无效");
+        }
+        Device oldDevice = deviceOptionalOld.get();
+        Optional<Device> deviceOptionalNew = findById(replaceDeviceDto.getNewId());
+        if (deviceOptionalNew.isEmpty()) {
+            BusinessException.throwException("替换的设备无效");
+        }
+        Device newDevice = deviceOptionalNew.get();
         if (Objects.isNull(newDevice.getCode())){
             BusinessException.throwException("替换的设备是临时设备");
         }
