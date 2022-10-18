@@ -181,14 +181,16 @@ public class UserWashServiceImpl implements UserWashService {
             UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+user.getId());
             if (Objects.isNull(userLastWashDto)) {
                 userLastWashDto = new UserLastWashDto();
-            }else {
-                UserLastWashDto previous = new UserLastWashDto();
-                BeanUtils.copyProperties(userLastWashDto,previous);
-                previous.setPrevious(null);
-                userLastWashDto.setPrevious(previous);
             }
+//            else {
+//                UserLastWashDto previous = new UserLastWashDto();
+//                BeanUtils.copyProperties(userLastWashDto,previous);
+//                previous.setPrevious(null);
+//                userLastWashDto.setPrevious(previous);
+//            }
             userLastWashDto.setUserId(user.getId());
             userLastWashDto.setIsUpdateWashTime(false);
+            userLastWashDto.setIsSaveCctv(false);
             userLastWashDto.setUuid(userCurrentRegionDto.getUuid());
             userLastWashDto.setMonitorId(Objects.isNull(monitor)?null:monitor.getId());
             userLastWashDto.setStarId(Objects.isNull(star)?null:star.getId());
