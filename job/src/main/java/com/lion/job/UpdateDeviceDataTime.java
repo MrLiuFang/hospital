@@ -158,7 +158,7 @@ public class UpdateDeviceDataTime {
                 if (Objects.nonNull(cctv.getIp()) && Objects.nonNull(cctv.getPort())) {
                     Socket socket = new Socket();
                     try {
-                        socket.connect(new InetSocketAddress(cctv.getIp(), cctv.getPort()), 10); // 建立连接
+                        socket.connect(new InetSocketAddress(cctv.getIp(), cctv.getPort()), 10000); // 建立连接
                         if (socket.isConnected()){
                             cctv.setIsOnline(true);
                         }else {

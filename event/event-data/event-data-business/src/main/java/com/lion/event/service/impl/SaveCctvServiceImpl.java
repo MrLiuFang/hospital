@@ -2,6 +2,8 @@ package com.lion.event.service.impl;
 
 import cn.hutool.core.date.DatePattern;
 import cn.hutool.core.date.LocalDateTimeUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lion.common.dto.UserLastWashDto;
 import com.lion.common.utils.RedisUtil;
 import com.lion.core.Optional;
@@ -30,15 +32,11 @@ import org.springframework.web.client.RequestCallback;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 public class SaveCctvServiceImpl implements SaveCctvService {
@@ -64,8 +62,11 @@ public class SaveCctvServiceImpl implements SaveCctvService {
     @Autowired
     private RedisUtil redisUtil;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     @Override
-    public void saveCctv(UserLastWashDto userLastWashDto) {
+    public void saveCctv(UserLastWashDto userLastWashDto) throws JsonProcessingException {
         if (Objects.nonNull(userLastWashDto) && Objects.nonNull(userLastWashDto.getDateTime()) && Objects.nonNull(userLastWashDto.getUserId()) ) {
             Device device = redisUtil.getDevice(userLastWashDto.getMonitorId());
             if (Objects.isNull(device)) {
@@ -94,7 +95,7 @@ public class SaveCctvServiceImpl implements SaveCctvService {
     }
 
     @Override
-    public void saveCctv(SystemAlarm systemAlarm) {
+    public void saveCctv(SystemAlarm systemAlarm) throws JsonProcessingException {
         Optional<Region> optionalRegion = regionExposeService.findById(systemAlarm.getRi());
         if (optionalRegion.isPresent()) {
             String cctvUrl = saveCctv(cctvExposeService.findRegionId(optionalRegion.get().getId()),systemAlarm.getDt().minusSeconds(10),systemAlarm.getDt().plusSeconds(10));
@@ -108,11 +109,11 @@ public class SaveCctvServiceImpl implements SaveCctvService {
         }
     }
 
-    private String saveCctv(List<Cctv> cctvList,LocalDateTime startDateTime,LocalDateTime endDateTime) {
+    private String saveCctv(List<Cctv> cctvList,LocalDateTime startDateTime,LocalDateTime endDateTime) throws JsonProcessingException {
         LocalDateTime localDateTime = LocalDateTime.now();
         String date = LocalDateTimeUtil.format(localDateTime, DatePattern.PURE_DATE_PATTERN);
+        List<CctvUrlVo> list = new ArrayList<>();
         if (cctvList.size()>0) {
-            String cctvUrl = "";
             for (Cctv cctv : cctvList) {
                 String uuid = UUID.randomUUID().toString();
                 String url = cctvHost + "/call/?type=Playback&cameraID=" + cctv.getCctvId() + "&startTime=" +startDateTime+ "&endTime=" + endDateTime + "&nvrIp=" + cctv.getIp() + "&nvrPort=" + cctv.getPort();
@@ -128,14 +129,15 @@ public class SaveCctvServiceImpl implements SaveCctvService {
                     Files.copy(clientHttpResponse.getBody(), Paths.get(savePath), StandardCopyOption.REPLACE_EXISTING);
                     return null;
                 });
-                if (StringUtils.hasText(cctvUrl)) {
-                    cctvUrl = cctvUrl + ",/cctv/"+ date + "/" + uuid + ".mp4";
-                } else {
-                    cctvUrl = "/cctv/"+date + "/" + uuid + ".mp4";
-                }
+                CctvUrlVo cctvUrlVo = new CctvUrlVo();
+                cctvUrlVo.setCctvName(cctv.getName());
+                cctvUrlVo.setCctvUrl("/cctv/public/lion/"+date + "/" + uuid + ".mp4");
+                list.add(cctvUrlVo);
+
             }
-            return cctvUrl;
+            return objectMapper.writeValueAsString(list);
         }
         return "";
     }
 }
+
