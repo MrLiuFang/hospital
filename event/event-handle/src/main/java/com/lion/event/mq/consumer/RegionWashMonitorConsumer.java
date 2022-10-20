@@ -115,7 +115,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                                 Duration duration = Duration.between(userLastWashDto.getDateTime(),LocalDateTime.now());
                                 if (duration.getSeconds() <= washTemplateItemVo.getNoCheckTime() * 60 ) {
                                     if((userLastWashDto.getDateTime().isBefore(userCurrentRegionDto.getFirstEntryTime().plusSeconds(washTemplateItemVo.getAfterTime())) && userLastWashDto.getDateTime().isAfter(userCurrentRegionDto.getFirstEntryTime()))){
-                                        recordWashEvent(washEventDto);
+                                        recordWashEvent(userLastWashDto, washEventDto);
                                     }
                                     return;
                                 }
@@ -145,7 +145,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
                             washEventDto.setDvc(device.getCode());
                             washEventDto.setDvn(device.getName());
                         }
-                        recordWashEvent(washEventDto);
+                        recordWashEvent(userLastWashDto, washEventDto);
 //                        List<Wash> washList = redisUtil.getWash(regionWashMonitorDelayDto.getRegionId());
 //                        UserLastWashDto userLastWashDto = (UserLastWashDto) redisTemplate.opsForValue().get(RedisConstants.USER_LAST_WASH+regionWashMonitorDelayDto.getUserId());
 //                        for (Wash wash :washList){
@@ -223,7 +223,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
 //        if (Objects.nonNull(wt)) {
 //            washEventDto.setWt(wt);
 //        }
-        recordWashEvent(washEventDto);
+        recordWashEvent(userLastWashDto, washEventDto);
         sendAlarmToTag(userCurrentRegionDto.getUserId(),wash,userCurrentRegionDto.getUuid(),systemAlarmType, userCurrentRegionDto,tagId );
 
         if (Objects.equals(wash.getIsAlarm(),true)) {
@@ -264,9 +264,15 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
     /**
      * 记录洗手事件
      */
-    private void recordWashEvent(WashEventDto washEventDto){
+    private void recordWashEvent(UserLastWashDto userLastWashDto, WashEventDto washEventDto){
         try {
             rocketMQTemplate.syncSend(TopicConstants.WASH_EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washEventDto)).build());
+
+            if (Objects.equals(userLastWashDto.getIsSaveCctv(),false)) {
+                rocketMQTemplate.syncSend(TopicConstants.SAVE_CCTV, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(userLastWashDto)).build(),10000,5);
+            }
+            userLastWashDto.setIsSaveCctv(true);
+            redisTemplate.opsForValue().set(RedisConstants.USER_LAST_WASH+userLastWashDto.getUserId(),userLastWashDto, RedisConstants.EXPIRE_TIME, TimeUnit.DAYS);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }
