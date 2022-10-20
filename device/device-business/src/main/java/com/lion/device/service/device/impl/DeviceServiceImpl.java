@@ -345,8 +345,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         newDevice.setCode(replaceDeviceDto.getCode());
         newDevice.setName(replaceDeviceDto.getName());
         newDevice.setImg(replaceDeviceDto.getImg());
-        update(newDevice);
-
+        super.update(newDevice);
         delete(oldDevice);
         redisTemplate.delete(RedisConstants.DEVICE+oldDevice.getId());
         redisTemplate.delete(RedisConstants.DEVICE_CODE+oldDevice.getCode());
