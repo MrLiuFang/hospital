@@ -59,6 +59,9 @@ public class UserWashDetailsVo extends User {
         @Schema(description = "设备分类")
         private DeviceType deviceType;
 
+        @Schema(description = "洗手事件")
+        private String eventId;
+
         @Schema(description = "cctv-可能多个逗号隔开")
         private String cctvUrl;
 

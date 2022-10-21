@@ -20,10 +20,7 @@ import com.lion.event.entity.CurrentPosition;
 import com.lion.event.entity.DeviceData;
 import com.lion.event.entity.Position;
 import com.lion.event.entity.WashRecord;
-import com.lion.event.entity.dto.AlarmReportDto;
-import com.lion.event.entity.dto.EventRecordAddDto;
-import com.lion.event.entity.dto.OldAlarmToNewAlarm;
-import com.lion.event.entity.dto.UnalarmDto;
+import com.lion.event.entity.dto.*;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.*;
 import com.lion.manage.entity.department.Department;
@@ -793,4 +790,13 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
                                       @ApiParam(value = "结束时间(yyyy-MM-dd HH:mm:ss)") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime endDateTime) {
         return ResultData.instance().setData(washEventService.count(startDateTime,endDateTime));
     }
+
+    @PutMapping ("/update/event")
+    @ApiOperation(value = "设置洗手事件是否合规")
+    public IResultData updateWashEventState(@RequestBody UpdateWashEventStateVo updateWashEventStateVo) {
+        washEventService.updateWashEventState(updateWashEventStateVo);
+        return ResultData.instance();
+    }
+
+
 }

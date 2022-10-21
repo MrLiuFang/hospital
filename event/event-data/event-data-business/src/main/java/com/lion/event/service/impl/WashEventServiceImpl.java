@@ -26,6 +26,7 @@ import com.lion.device.expose.device.DeviceGroupDeviceExposeService;
 import com.lion.device.expose.tag.TagExposeService;
 import com.lion.event.dao.WashEventDao;
 import com.lion.event.entity.WashEvent;
+import com.lion.event.entity.dto.UpdateWashEventStateVo;
 import com.lion.event.entity.vo.*;
 import com.lion.event.service.WashEventService;
 import com.lion.manage.entity.department.Department;
@@ -233,6 +234,7 @@ public class WashEventServiceImpl implements WashEventService {
                 userWashEvent.setDeviceType(device.getDeviceType());
                 userWashEvent.setDeviceClassify(device.getDeviceClassify());
             });
+            userWashEvent.setEventId(event.get_id());
             userWashEvent.setCctvUrl(event.getCctvUrl());
             pageList.add(userWashEvent);
         });
@@ -536,6 +538,7 @@ public class WashEventServiceImpl implements WashEventService {
                 vo.setTime(washEvent.getT());
                 vo.setUseDateTime(washEvent.getDdt());
                 vo.setDateTime(washEvent.getAdt());
+                vo.setEventId(washEvent.get_id());
                 vo.setCctvUrl(washEvent.getCctvUrl());
                 com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
                 if (optionalDevice.isPresent()) {
@@ -634,6 +637,7 @@ public class WashEventServiceImpl implements WashEventService {
             vo.setIa(washEvent.getIa());
             vo.setTime(washEvent.getT());
             vo.setCctvUrl(washEvent.getCctvUrl());
+            vo.setEventId(washEvent.get_id());
             vo.setUseDateTime(washEvent.getDdt());
             vo.setDateTime(washEvent.getAdt());
             com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
@@ -857,6 +861,18 @@ public class WashEventServiceImpl implements WashEventService {
         }
         query.addCriteria(criteria);
         return mongoTemplate.count(query,WashEvent.class);
+    }
+
+    @Override
+    public void updateWashEventState(UpdateWashEventStateVo updateWashEventStateVo) {
+        Query queryUpdate = new Query();
+        queryUpdate.addCriteria(Criteria.where("_id").is(updateWashEventStateVo.getEventId()));
+        Update update = new Update();
+        if (Objects.nonNull(updateWashEventStateVo.getState())) {
+            update.set("at", updateWashEventStateVo.getState());
+        }
+        update.set("ia", updateWashEventStateVo.getIsAlarm());
+        mongoTemplate.updateFirst(queryUpdate, update, "wash_event");
     }
 
     private ListUserWashMonitorVo init(LocalDateTime startDateTime, LocalDateTime endDateTime,Long userId,Document document){

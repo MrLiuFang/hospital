@@ -131,6 +131,7 @@ public class SaveCctvServiceImpl implements SaveCctvService {
                 });
                 CctvUrlVo cctvUrlVo = new CctvUrlVo();
                 cctvUrlVo.setCctvName(cctv.getName());
+                cctvUrlVo.setCctvId(cctv.getCctvId());
                 cctvUrlVo.setCctvUrl("/cctv/public/lion/"+date + "/" + uuid + ".mp4");
                 list.add(cctvUrlVo);
 

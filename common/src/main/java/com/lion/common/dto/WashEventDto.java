@@ -25,7 +25,7 @@ public class WashEventDto extends WashRecordDto implements Serializable {
     @Schema(description = "洗手事件类型 (com.lion.common.enums.WashEventType)")
     private Integer wet;
 
-    @Schema(description = "是否触发警告(合规/不合规)")
+    @Schema(description = "是否触发警告(false=合规/true=不合规)")
     private Boolean ia = false;
 
     @Schema(description = "触发警告原因(com.lion.manage.entity.enums.SystemAlarmType)")

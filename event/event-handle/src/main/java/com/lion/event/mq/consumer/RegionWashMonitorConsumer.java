@@ -268,7 +268,7 @@ public class RegionWashMonitorConsumer implements RocketMQListener<MessageExt> {
         try {
             rocketMQTemplate.syncSend(TopicConstants.WASH_EVENT, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(washEventDto)).build());
 
-            if (Objects.equals(userLastWashDto.getIsSaveCctv(),false)) {
+            if (Objects.equals(userLastWashDto.getIsSaveCctv(),false) && !Objects.equals(washEventDto.getAt(),SystemAlarmType.ZZDQYWJXXSCZ)) {
                 rocketMQTemplate.syncSend(TopicConstants.SAVE_CCTV, MessageBuilder.withPayload(jacksonObjectMapper.writeValueAsString(userLastWashDto)).build(),10000,5);
             }
             userLastWashDto.setIsSaveCctv(true);

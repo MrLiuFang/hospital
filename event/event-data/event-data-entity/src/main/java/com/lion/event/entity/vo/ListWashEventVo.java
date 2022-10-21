@@ -54,6 +54,9 @@ public class ListWashEventVo {
     @Schema(description = "洗手时长")
     private Integer time;
 
+    @Schema(description = "洗手事件")
+    private String eventId;
+
     @Schema(description = "cctv-可能多个逗号隔开")
     private String cctvUrl;
 }

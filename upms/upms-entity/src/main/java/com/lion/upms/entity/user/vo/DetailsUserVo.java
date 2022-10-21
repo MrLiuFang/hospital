@@ -49,7 +49,7 @@ public class DetailsUserVo extends User {
     private String alarmType;
 
     @Schema(description = "cctv-可能多个逗号隔开")
-    private String cctv;
+    private String cctvUrl;
 
     @Schema(description = "警告时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

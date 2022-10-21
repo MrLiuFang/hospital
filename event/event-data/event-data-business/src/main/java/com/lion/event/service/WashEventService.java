@@ -6,7 +6,9 @@ import com.lion.common.enums.WashEventType;
 import com.lion.core.IPageResultData;
 import com.lion.core.LionPage;
 import com.lion.event.entity.WashEvent;
+import com.lion.event.entity.dto.UpdateWashEventStateVo;
 import com.lion.event.entity.vo.*;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -187,5 +189,7 @@ public interface WashEventService {
      * @return
      */
     long count(LocalDateTime startDateTime, LocalDateTime endDateTime);
+
+    void updateWashEventState( UpdateWashEventStateVo updateWashEventStateVo);
 
 }
