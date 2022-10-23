@@ -227,6 +227,7 @@ public class WashEventServiceImpl implements WashEventService {
             userWashEvent.setDateTime(event.getDdt());
             userWashEvent.setDeviceName(event.getDvn());
             userWashEvent.setRegionName(event.getRn());
+            userWashEvent.setRegionId(event.getRi());
             userWashEvent.setIsConformance(!event.getIa());
             userWashEvent.setTime(event.getT());
             Optional<Device> optional = deviceExposeService.findById(event.getDvi());

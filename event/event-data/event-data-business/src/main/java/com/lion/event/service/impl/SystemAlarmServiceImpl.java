@@ -218,7 +218,7 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
 
     @Override
     public IPageResultData<List<SystemAlarmVo>> list(LionPage lionPage, List<Long> departmentIds, Boolean ua, List<Long> ri, Type alarmType, List<Long> tagIds, LocalDateTime startDateTime, LocalDateTime endDateTime, Long tagId, Long assetsId, String ids, Long deviceId, String... sorts) {
-        return alarmDao.list(lionPage,departmentIds,ua,ri, alarmType, tagIds, startDateTime, endDateTime,tagId, null,ids , null, sorts);
+        return alarmDao.list(lionPage,departmentIds,ua,ri, alarmType, tagIds, startDateTime, endDateTime,tagId, assetsId,ids , deviceId, sorts);
     }
 
     @Override
@@ -374,6 +374,8 @@ public class SystemAlarmServiceImpl implements SystemAlarmService {
                     Device device = optionalDevice.get();
                     vo.setBattery(device.getBattery());
                     vo.setDeviceName(device.getName());
+                    vo.setDeviceClassify(device.getDeviceClassify());
+                    vo.setDeviceType(device.getDeviceType());
                     vo.setDeviceCode(device.getCode());
                     vo.setImg(device.getImg());
                     vo.setImgUrl(fileExposeService.getUrl(device.getImg()));

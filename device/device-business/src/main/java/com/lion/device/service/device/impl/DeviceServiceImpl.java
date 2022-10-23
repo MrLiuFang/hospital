@@ -323,6 +323,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     }
 
     @Override
+    @Transactional
     public void replace(ReplaceDeviceDto replaceDeviceDto) {
         Optional<Device> deviceOptionalOld = findById(replaceDeviceDto.getOldId());
         if (deviceOptionalOld.isEmpty()) {
@@ -356,7 +357,7 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         newDevice1.setCode(oldDevice.getCode());
         newDevice1.setDeviceType(oldDevice.getDeviceType());
         newDevice1.setDeviceClassify(oldDevice.getDeviceClassify());
-        save(newDevice1);
+        super.save(newDevice1);
     }
 
     private DeviceStatisticsVo.DeviceStatisticsData count(DeviceClassify classify){

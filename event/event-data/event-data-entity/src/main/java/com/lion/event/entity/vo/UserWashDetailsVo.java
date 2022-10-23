@@ -47,6 +47,9 @@ public class UserWashDetailsVo extends User {
         @Schema(description = "所属区域")
         private String regionName;
 
+        @Schema(description = "所属区域ID")
+        private Long regionId;
+
         @Schema(description = "是否合规")
         private Boolean isConformance;
 

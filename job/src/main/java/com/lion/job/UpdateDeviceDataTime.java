@@ -118,6 +118,10 @@ public class UpdateDeviceDataTime {
                                 SystemAlarmDto systemAlarmDto = new SystemAlarmDto();
                                 systemAlarmDto.setDateTime(LocalDateTime.now());
                                 systemAlarmDto.setType(Type.DEVICE);
+                                Optional<Device> deviceOptional = deviceExposeService.findById(id);
+                                if (deviceOptional.isPresent()) {
+                                    systemAlarmDto.setRegionId(deviceOptional.get().getRegionId());
+                                }
                                 systemAlarmDto.setDeviceId(id);
                                 systemAlarmDto.setSystemAlarmType(SystemAlarmType.LS);
                                 try {

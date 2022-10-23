@@ -2,6 +2,8 @@ package com.lion.event.entity.vo;
 
 import com.lion.common.enums.Type;
 import com.lion.core.persistence.Validator;
+import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.device.entity.enums.TagPurpose;
 import com.lion.device.entity.enums.TagType;
 import com.lion.event.entity.SystemAlarm;
@@ -70,6 +72,12 @@ public class SystemAlarmDetailsVo extends SystemAlarm {
 
     @Schema(description = "设备编号")
     private String deviceCode;
+
+    @Schema(description = "设备大类")
+    private DeviceClassify deviceClassify;
+
+    @Schema(description = "设备分类")
+    private DeviceType deviceType;
 
     @Schema(description = "资产名称")
     private String assetsName;

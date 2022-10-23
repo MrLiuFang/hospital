@@ -235,7 +235,7 @@ public class CctvServiceImpl extends BaseServiceImpl<Cctv> implements CctvServic
             vo.setCreateUserHeadPortraitUrl(fileExposeService.getUrl(createUserOptional.get().getHeadPortrait()));
             vo.setCreateUserHeadPortrait(createUserOptional.get().getHeadPortrait());
         }
-        com.lion.core.Optional<User> updateUserOptional = userExposeService.findById(cctv.getCreateUserId());
+        com.lion.core.Optional<User> updateUserOptional = userExposeService.findById(cctv.getUpdateUserId());
         if (updateUserOptional.isPresent()) {
             vo.setUpdateUserName(updateUserOptional.get().getName());
             vo.setUpdateUserHeadPortraitUrl(fileExposeService.getUrl(updateUserOptional.get().getHeadPortrait()));
