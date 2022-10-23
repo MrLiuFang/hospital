@@ -172,17 +172,27 @@ public class CctvServiceImpl extends BaseServiceImpl<Cctv> implements CctvServic
             User user = new User();
             Row row = sheet.getRow(i);
             String name = ImportExcelUtil.getCellValue(row.getCell(0)).toString();
-            name = name.substring(0,name.indexOf("."));
+            if (name.indexOf(".")>-1) {
+                name = name.substring(0, name.indexOf("."));
+            }
             String cctvId = ImportExcelUtil.getCellValue(row.getCell(1)).toString();
-            cctvId = cctvId.substring(0,cctvId.indexOf("."));
+            if (cctvId.indexOf(".")>-1) {
+                cctvId = cctvId.substring(0, cctvId.indexOf("."));
+            }
             String regionName = ImportExcelUtil.getCellValue(row.getCell(2)).toString();
             String ip = ImportExcelUtil.getCellValue(row.getCell(3)).toString();
             String port = ImportExcelUtil.getCellValue(row.getCell(4)).toString();
-            port = port.substring(0,port.indexOf("."));
+            if (port.indexOf(".")>-1) {
+                port = port.substring(0, port.indexOf("."));
+            }
             String account = ImportExcelUtil.getCellValue(row.getCell(5)).toString();
-            account = account.substring(0,account.indexOf("."));
+            if (account.indexOf(".")>-1) {
+                account = account.substring(0, account.indexOf("."));
+            }
             String password = ImportExcelUtil.getCellValue(row.getCell(6)).toString();
-            password = password.substring(0,password.indexOf("."));
+            if (password.indexOf(".")>-1) {
+                password = password.substring(0, password.indexOf("."));
+            }
             Cctv cctv = new Cctv();
             cctv.setName(name);
             cctv.setCctvId(cctvId);

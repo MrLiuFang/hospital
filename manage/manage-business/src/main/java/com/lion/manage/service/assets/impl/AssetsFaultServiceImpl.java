@@ -152,12 +152,17 @@ public class AssetsFaultServiceImpl extends BaseServiceImpl<AssetsFault> impleme
         if (StringUtils.hasText(keyword)) {
             List<AssetsFault> assetsFaults = assetsFaultDao.findByCodeLikeOrDescribeLike("%"+keyword+"%","%"+keyword+"%");
             List<Long> _ids = new ArrayList<>();
+            List<Long> __ids = new ArrayList<>();
             assetsFaults.forEach(assetsFault -> {
                 _ids.add(assetsFault.getAssetsId());
+                __ids.add(assetsFault.getId());
             });
             ids = ids.stream().filter(item -> _ids.contains(item)).collect(toList());
             if (ids.size()<=0){
                 ids.add(Long.MAX_VALUE);
+            }
+            if (__ids.size()>0) {
+                jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",__ids);
             }
         }
         if (Objects.nonNull(assetsId)) {
