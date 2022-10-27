@@ -160,6 +160,7 @@ public class TagRuleUserServiceImpl extends BaseServiceImpl<TagRuleUser> impleme
                 vo.setHeadPortrait(user.getHeadPortrait());
                 vo.setHeadPortraitUrl(fileExposeService.getUrl(user.getHeadPortrait()));
                 vo.setNumber(user.getNumber());
+                vo.setTagCode(user.getTagCode());
                 com.lion.core.Optional<UserType> optionalUserType = userTypeExposeService.findById(user.getUserTypeId());
                 if (optionalUserType.isPresent()) {
                     vo.setPosition(optionalUserType.get().getUserTypeName());

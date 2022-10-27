@@ -29,6 +29,9 @@ public class ListTagRuleUserVo {
     @Schema(description = "员工编号")
     private Integer number;
 
+    @Schema(description = "标签编码")
+    private String tagCode;
+
     @Schema(description = "头像（文件id）")
     private Long headPortrait;
 
