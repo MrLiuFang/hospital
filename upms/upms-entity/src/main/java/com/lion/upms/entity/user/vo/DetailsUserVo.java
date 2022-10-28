@@ -61,6 +61,12 @@ public class DetailsUserVo extends User {
     @Schema(description = "用户类型")
     private UserType userType;
 
+    @Schema(description = "区域ID")
+    private Long regionId;
+
+    @Schema(description = "区域name")
+    private String regionName;
+
     public Boolean getIsCreateAccount() {
         return (StringUtils.hasText(this.getUsername()) && StringUtils.hasText(this.getPassword()));
     }

@@ -495,6 +495,8 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             detailsUserVo.setCctvUrl(systemAlarm.getCctvUrl());
             detailsUserVo.setAlarmDataTime(systemAlarm.getDt());
             detailsUserVo.setAlarmId(systemAlarm.get_id());
+            detailsUserVo.setRegionId(systemAlarm.getRi());
+            detailsUserVo.setRegionName(systemAlarm.getRn());
         }
         com.lion.core.Optional<UserType> optionalUserType = userTypeService.findById(user.getUserTypeId());
         detailsUserVo.setUserType(optionalUserType.isPresent()?optionalUserType.get():null);

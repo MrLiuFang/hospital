@@ -116,6 +116,7 @@ public class SaveCctvServiceImpl implements SaveCctvService {
         if (cctvList.size()>0) {
             for (Cctv cctv : cctvList) {
                 String uuid = UUID.randomUUID().toString();
+//                http://182.93.12.34:55756/call/?type=Playback&cameraID=12165_5106ed04-c3d8-42cd-ac31-b23cdaf8489e&startTime=2022-10-09%2009:31:05&endTime=2022-10-09%2009:31:14&nvrIp=192.168.68.235&nvrPort=55756
                 String url = cctvHost + "/call/?type=Playback&cameraID=" + cctv.getCctvId() + "&startTime=" +startDateTime+ "&endTime=" + endDateTime + "&nvrIp=" + cctv.getIp() + "&nvrPort=" + cctv.getPort();
                 //定义请求头的接收类型
                 RequestCallback requestCallback = request -> request.getHeaders()

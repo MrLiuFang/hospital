@@ -544,6 +544,8 @@ public class WashEventServiceImpl implements WashEventService {
                 com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
                 if (optionalDevice.isPresent()) {
                     vo.setDeviceName(optionalDevice.get().getName());
+                    vo.setDeviceType(optionalDevice.get().getDeviceType());
+                    vo.setDeviceClassify(optionalDevice.get().getDeviceClassify());
                 }
                 returnList.add(vo);
             }
@@ -644,6 +646,8 @@ public class WashEventServiceImpl implements WashEventService {
             com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
             if (optionalDevice.isPresent()){
                 vo.setDeviceName(optionalDevice.get().getName());
+                vo.setDeviceClassify(optionalDevice.get().getDeviceClassify());
+                vo.setDeviceType(optionalDevice.get().getDeviceType());
             }
             returnList.add(vo);
         });

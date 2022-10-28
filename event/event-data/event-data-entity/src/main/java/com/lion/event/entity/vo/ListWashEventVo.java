@@ -1,6 +1,8 @@
 package com.lion.event.entity.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.lion.device.entity.enums.DeviceClassify;
+import com.lion.device.entity.enums.DeviceType;
 import com.lion.upms.entity.enums.Gender;
 import com.lion.upms.entity.user.UserType;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -39,6 +41,12 @@ public class ListWashEventVo {
 
     @Schema(description = "使用设备")
     private String deviceName;
+
+    @Schema(description = "设备分类")
+    private DeviceClassify deviceClassify;
+
+    @Schema(description = "设备分类")
+    private DeviceType deviceType;
 
     @Schema(description = "使用时间")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
