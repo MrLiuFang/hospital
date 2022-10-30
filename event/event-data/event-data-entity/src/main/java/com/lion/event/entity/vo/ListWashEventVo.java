@@ -67,4 +67,10 @@ public class ListWashEventVo {
 
     @Schema(description = "cctv-可能多个逗号隔开")
     private String cctvUrl;
+
+    @Schema(description = "区域ID")
+    private Long regionId;
+
+    @Schema(description = "区域名称")
+    private String regionName;
 }

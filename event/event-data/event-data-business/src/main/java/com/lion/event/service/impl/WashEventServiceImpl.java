@@ -541,6 +541,8 @@ public class WashEventServiceImpl implements WashEventService {
                 vo.setDateTime(washEvent.getAdt());
                 vo.setEventId(washEvent.get_id());
                 vo.setCctvUrl(washEvent.getCctvUrl());
+                vo.setRegionId(washEvent.getRi());
+                vo.setRegionName(washEvent.getRn());
                 com.lion.core.Optional<Device> optionalDevice = deviceExposeService.findById(washEvent.getDvi());
                 if (optionalDevice.isPresent()) {
                     vo.setDeviceName(optionalDevice.get().getName());
@@ -640,6 +642,8 @@ public class WashEventServiceImpl implements WashEventService {
             vo.setIa(washEvent.getIa());
             vo.setTime(washEvent.getT());
             vo.setCctvUrl(washEvent.getCctvUrl());
+            vo.setRegionId(washEvent.getRi());
+            vo.setRegionName(washEvent.getRn());
             vo.setEventId(washEvent.get_id());
             vo.setUseDateTime(washEvent.getDdt());
             vo.setDateTime(washEvent.getAdt());
