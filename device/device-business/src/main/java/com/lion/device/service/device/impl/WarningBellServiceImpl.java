@@ -96,10 +96,10 @@ public class WarningBellServiceImpl extends BaseServiceImpl<WarningBell> impleme
             jpqlParameter.setSearchParameter(SearchConstant.LIKE + "_name", name);
         }
         if (Objects.equals(isBindRegion,false)) {
-            List<Long> ids = new ArrayList<>();
-            ids.add(Long.MAX_VALUE);
-            ids.addAll(regionWarningBellExposeService.findAllBindId());
-            jpqlParameter.setSearchParameter(SearchConstant.NOT_IN + "_id", ids);
+//            List<Long> ids = new ArrayList<>();
+//            ids.add(Long.MAX_VALUE);
+//            ids.addAll(regionWarningBellExposeService.findAllBindId());
+            jpqlParameter.setSearchParameter(SearchConstant.IS_NULL + "_regionId", null);
         }
         LionPage.setJpqlParameter(jpqlParameter);
         Page<WarningBell> page = this.findNavigator(LionPage);

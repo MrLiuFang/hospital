@@ -15,7 +15,5 @@ public interface WarningBellExposeService extends BaseService<WarningBell> {
     public void updateRegion(List<Long>  ids,Long regionId);
 
     public List<WarningBell> find(Long regionId);
-
-
 }
 
