@@ -231,7 +231,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
             list.forEach(roleUser -> {
                 userList.add(roleUser.getUserId());
             });
-            if (userList.size()<=0){
+            if (userList.size()==0){
                 userList.add(Long.MAX_VALUE);
             }
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",userList);
@@ -246,7 +246,7 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
                     userList.add(roleUser.getUserId());
                 });
             });
-            if (userList.size()<=0){
+            if (userList.size()==0){
                 userList.add(Long.MAX_VALUE);
             }
             _ids = userList;
@@ -259,10 +259,14 @@ public class UserServiceImpl extends BaseServiceImpl<User> implements UserServic
         }
         if (Objects.nonNull(departmentId)){
             List<Long> userList = departmentUserExposeService.findAllUser(departmentId);
-            if (Objects.nonNull(userList) && userList.size()<=0){
+            if (Objects.nonNull(userList) && userList.size()==0){
                 userList.add(Long.MAX_VALUE);
             }
-            _ids = (List<Long>) CollectionUtils.intersection(_ids, userList);
+            if (_ids.size()==0){
+                _ids = userList;
+            }else {
+                _ids = (List<Long>) CollectionUtils.intersection(_ids, userList);
+            }
         }
         if (Objects.nonNull(_ids) && _ids.size()>0){
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_id",_ids);
