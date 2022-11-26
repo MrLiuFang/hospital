@@ -195,11 +195,11 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
         list.add(count(DeviceClassify.RECYCLING_BOX));
         list.add(count(DeviceClassify.STAR_AP));
         list.add(count(DeviceClassify.VIRTUAL_WALL));
-        DeviceStatisticsVo.DeviceStatisticsData dataCctv = new DeviceStatisticsVo.DeviceStatisticsData();
-        dataCctv.setName("cctv");
-        dataCctv.setCode("CCTV");
-        dataCctv.setCount(cctvDao.count());
-        list.add(dataCctv);
+//        DeviceStatisticsVo.DeviceStatisticsData dataCctv = new DeviceStatisticsVo.DeviceStatisticsData();
+//        dataCctv.setName("cctv");
+//        dataCctv.setCode("CCTV");
+//        dataCctv.setCount(cctvDao.count());
+//        list.add(dataCctv);
 //        DeviceStatisticsVo.DeviceStatisticsData dataTag = new DeviceStatisticsVo.DeviceStatisticsData();
 //        dataTag.setName("tag");
 //        dataTag.setName("TAG");
@@ -325,39 +325,18 @@ public class DeviceServiceImpl extends BaseServiceImpl<Device> implements Device
     @Override
     @Transactional
     public void replace(ReplaceDeviceDto replaceDeviceDto) {
-        Optional<Device> deviceOptionalOld = findById(replaceDeviceDto.getOldId());
-        if (deviceOptionalOld.isEmpty()) {
-            BusinessException.throwException("被替换的设备无效");
-        }
-        Device oldDevice = deviceOptionalOld.get();
-        Optional<Device> deviceOptionalNew = findById(replaceDeviceDto.getNewId());
-        if (deviceOptionalNew.isEmpty()) {
-            BusinessException.throwException("替换的设备无效");
-        }
-        Device newDevice = deviceOptionalNew.get();
-        if (Objects.isNull(newDevice.getCode())){
-            BusinessException.throwException("替换的设备是临时设备");
-        }
-        if (Objects.nonNull(newDevice.getRegionId())) {
-            BusinessException.throwException("替换的设备已经绑定区域");
-        }
-        newDevice.setRegionId(oldDevice.getRegionId());
-        newDevice.setDeviceState(State.USED);
-        newDevice.setCode(replaceDeviceDto.getCode());
-        newDevice.setName(replaceDeviceDto.getName());
-        newDevice.setImg(replaceDeviceDto.getImg());
-        super.update(newDevice);
-        delete(oldDevice);
-        redisTemplate.delete(RedisConstants.DEVICE+oldDevice.getId());
-        redisTemplate.delete(RedisConstants.DEVICE_CODE+oldDevice.getCode());
-        redisTemplate.delete(RedisConstants.DEVICE_REGION+oldDevice.getId());
-        currentPositionExposeService.delete(null,oldDevice.getId(),null);
-        Device newDevice1 = new Device();
-        newDevice1.setDeviceState(State.NOT_USED);
-        newDevice1.setCode(oldDevice.getCode());
-        newDevice1.setDeviceType(oldDevice.getDeviceType());
-        newDevice1.setDeviceClassify(oldDevice.getDeviceClassify());
-        super.save(newDevice1);
+
+    }
+
+    @Override
+    public Device save1(Device entity) {
+        return super.save(entity);
+    }
+
+    @Override
+    @Transactional(propagation=Propagation.REQUIRES_NEW )
+    public void  delete(Device device) {
+        super.delete(device);
     }
 
     private DeviceStatisticsVo.DeviceStatisticsData count(DeviceClassify classify){

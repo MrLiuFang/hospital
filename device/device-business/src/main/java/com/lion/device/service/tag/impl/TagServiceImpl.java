@@ -11,16 +11,15 @@ import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.service.impl.BaseServiceImpl;
 import com.lion.device.dao.tag.*;
-import com.lion.device.entity.enums.State;
-import com.lion.device.entity.enums.TagPurpose;
-import com.lion.device.entity.enums.TagType;
-import com.lion.device.entity.enums.TagUseState;
+import com.lion.device.entity.device.vo.DeviceStatisticsVo;
+import com.lion.device.entity.enums.*;
 import com.lion.device.entity.tag.*;
 import com.lion.device.entity.tag.dto.AddTagDto;
 import com.lion.device.entity.tag.dto.UpdateTagDto;
 import com.lion.device.entity.tag.vo.DetailsTagVo;
 import com.lion.device.entity.tag.vo.ListTagVo;
 import com.lion.device.entity.tag.vo.PurposeStatisticsVo;
+import com.lion.device.entity.tag.vo.TagStatisticsVo;
 import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.device.expose.tag.TagPatientExposeService;
 import com.lion.device.expose.tag.TagPostdocsExposeService;
@@ -241,7 +240,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
         if (Objects.nonNull(isTmp) && Objects.equals("true",isTmp.toLowerCase())){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_departmentId",null);
             jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_purpose",null);
-        }else if (Objects.isNull (isTmp) ||(Objects.nonNull(isTmp) && Objects.equals("false",isTmp.toLowerCase()))){
+        }else if ((Objects.nonNull(isTmp) && Objects.equals("false",isTmp.toLowerCase()))){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_departmentId",null);
             jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_purpose",null);
         }
@@ -253,7 +252,7 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
 //        if (Objects.nonNull(departmentId)){
 //            jpqlParameter.setSearchParameter(SearchConstant.EQUAL+"_departmentId",departmentId);
 //        }
-        if ((!(Objects.nonNull(isTmp) && Objects.equals("true",isTmp.toLowerCase())) || Objects.isNull(isTmp) ) && departmentIds.size()>0  ) {
+        if ( (Objects.nonNull(isTmp) && !Objects.equals("null",isTmp.toLowerCase())) && (!(Objects.nonNull(isTmp) && Objects.equals("true",isTmp.toLowerCase())) || Objects.isNull(isTmp) ) && departmentIds.size()>0  ) {
             jpqlParameter.setSearchParameter(SearchConstant.IN+"_departmentId",departmentIds);
         }
         if (Objects.nonNull(type)){
@@ -507,6 +506,29 @@ public class TagServiceImpl extends BaseServiceImpl<Tag> implements TagService {
             list.add(vo);
         }
         return list;
+    }
+
+    @Override
+    public TagStatisticsVo statistics() {
+        TagStatisticsVo ov = new TagStatisticsVo();
+        List<TagStatisticsVo.TagStatisticsData> list = new ArrayList<>();
+        list.add(count(TagType.BABY));
+        list.add(count(TagType.BUTTON));
+        list.add(count(TagType.ORDINARY));
+        list.add(count(TagType.DISPOSABLE));
+        list.add(count(TagType.STAFF));
+        list.add(count(TagType.PREVENT_FALLING));
+        list.add(count(TagType.TEMPERATURE_HUMIDITY));
+        ov.setList(list);
+        return ov;
+    }
+
+    private TagStatisticsVo.TagStatisticsData count(TagType tagType) {
+        TagStatisticsVo.TagStatisticsData tagStatisticsData = new TagStatisticsVo.TagStatisticsData();
+        tagStatisticsData.setCount(tagDao.countByType(tagType));
+        tagStatisticsData.setCode(tagType.getName());
+        tagStatisticsData.setName(tagType.getDesc());
+        return tagStatisticsData;
     }
 
     private void assertDeviceCodeExist(String deviceCode, Long id) {

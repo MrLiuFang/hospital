@@ -1,11 +1,9 @@
 package com.lion.device.controller.device;
 
+import com.lion.common.constants.RedisConstants;
 import com.lion.common.expose.file.FileExposeService;
 import com.lion.constant.SearchConstant;
-import com.lion.core.IPageResultData;
-import com.lion.core.IResultData;
-import com.lion.core.LionPage;
-import com.lion.core.ResultData;
+import com.lion.core.*;
 import com.lion.core.common.dto.DeleteDto;
 import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
@@ -21,9 +19,12 @@ import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.device.vo.ListDeviceGroupVo;
 import com.lion.device.entity.enums.DeviceClassify;
 import com.lion.device.entity.enums.DeviceType;
+import com.lion.device.entity.enums.State;
 import com.lion.device.service.device.DeviceGroupDeviceService;
 import com.lion.device.service.device.DeviceGroupService;
 import com.lion.device.service.device.DeviceService;
+import com.lion.event.expose.service.CurrentPositionExposeService;
+import com.lion.exception.BusinessException;
 import com.lion.manage.expose.build.BuildExposeService;
 import com.lion.manage.expose.build.BuildFloorExposeService;
 import io.swagger.annotations.Api;
@@ -33,6 +34,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -70,6 +72,12 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
 
     @DubboReference
     private FileExposeService fileExposeService;
+
+    @DubboReference
+    private CurrentPositionExposeService currentPositionExposeService;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
 
     @PostMapping("/add")
     @ApiOperation(value = "新增设备")
@@ -115,7 +123,7 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (Objects.nonNull(isTmp) && Objects.equals("true",isTmp.toLowerCase())){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NULL+"_name",null);
-        }else if(Objects.isNull (isTmp) ||(Objects.nonNull(isTmp) && Objects.equals("false",isTmp.toLowerCase()))){
+        }else if((Objects.nonNull(isTmp) && Objects.equals("false",isTmp.toLowerCase()))){
             jpqlParameter.setSearchParameter(SearchConstant.IS_NOT_NULL+"_name",null);
         }
         if (StringUtils.hasText(name)){
@@ -228,7 +236,40 @@ public class DeviceController extends BaseControllerImpl implements BaseControll
     @PutMapping("/replace")
     @ApiOperation(value = "替换设备")
     public IResultData replace(@RequestBody ReplaceDeviceDto replaceDeviceDto){
-        deviceService.replace(replaceDeviceDto);
+//        deviceService.replace(replaceDeviceDto);
+        Optional<Device> deviceOptionalOld = deviceService.findById(replaceDeviceDto.getOldId());
+        if (deviceOptionalOld.isEmpty()) {
+            BusinessException.throwException("被替换的设备无效");
+        }
+        Device oldDevice = deviceOptionalOld.get();
+        Optional<Device> deviceOptionalNew = deviceService.findById(replaceDeviceDto.getNewId());
+        if (deviceOptionalNew.isEmpty()) {
+            BusinessException.throwException("替换的设备无效");
+        }
+        Device newDevice = deviceOptionalNew.get();
+        if (Objects.isNull(newDevice.getCode())){
+            BusinessException.throwException("替换的设备是临时设备");
+        }
+        if (Objects.nonNull(newDevice.getRegionId())) {
+            BusinessException.throwException("替换的设备已经绑定区域");
+        }
+        newDevice.setRegionId(oldDevice.getRegionId());
+        newDevice.setDeviceState(State.USED);
+//        newDevice.setCode(replaceDeviceDto.getCode());
+//        newDevice.setName(replaceDeviceDto.getName());
+//        newDevice.setImg(replaceDeviceDto.getImg());
+        deviceService.delete(oldDevice);
+        deviceService.update(newDevice);
+        redisTemplate.delete(RedisConstants.DEVICE+oldDevice.getId());
+        redisTemplate.delete(RedisConstants.DEVICE_CODE+oldDevice.getCode());
+        redisTemplate.delete(RedisConstants.DEVICE_REGION+oldDevice.getId());
+        currentPositionExposeService.delete(null,oldDevice.getId(),null);
+        Device newDevice1 = new Device();
+        newDevice1.setDeviceState(State.NOT_USED);
+        newDevice1.setCode(oldDevice.getCode());
+        newDevice1.setDeviceType(oldDevice.getDeviceType());
+        newDevice1.setDeviceClassify(oldDevice.getDeviceClassify());
+        deviceService.save1(newDevice1);
         return ResultData.instance();
     }
 

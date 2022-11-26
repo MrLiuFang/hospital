@@ -9,4 +9,8 @@ public interface SaveCctvService {
     void saveCctv(UserLastWashDto userLastWashDto) throws JsonProcessingException;
 
     void saveCctv(SystemAlarm systemAlarm) throws JsonProcessingException;
+
+    String saveWashEventCctv(String id) throws JsonProcessingException;
+
+    String saveAlarmCctv(String id) throws JsonProcessingException;
 }

@@ -68,4 +68,7 @@ public interface DeviceService extends BaseService<Device> {
     public Integer countOnLine();
 
     void replace(ReplaceDeviceDto replaceDeviceDto);
+
+
+    Device save1(Device entity);
 }

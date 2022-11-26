@@ -161,4 +161,6 @@ public interface TagDao extends BaseDao<Tag> ,TagDaoEx {
     public int countByPurposeAndDepartmentIdIn(TagPurpose purpose,List<Long> departmentIds);
 
     public long countByDeviceState(State state);
+
+    public long countByType(TagType tagType);
 }

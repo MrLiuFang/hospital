@@ -32,6 +32,7 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.ui.context.ThemeSource;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -103,6 +104,8 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     @DubboReference
     private DepartmentExposeService departmentExposeService;
 
+    @Autowired
+    private SaveCctvService saveCctvService;
 
     @GetMapping("/user/current/region")
     @ApiOperation(value = "员工当前位置")
@@ -796,6 +799,18 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
     public IResultData updateWashEventState(@RequestBody UpdateWashEventStateVo updateWashEventStateVo) {
         washEventService.updateWashEventState(updateWashEventStateVo);
         return ResultData.instance();
+    }
+
+    @GetMapping ("/getWashEventCctv")
+    @ApiOperation(value = "获取洗手时间cctv")
+    public IResultData saveWashEventCctv(@ApiParam(value = "洗手事件id") String id) throws JsonProcessingException {
+        return ResultData.instance().setData(saveCctvService.saveWashEventCctv(id));
+    }
+
+    @GetMapping ("/getAlarmCctv")
+    @ApiOperation(value = "获取洗手时间cctv")
+    public IResultData saveAlarmCctv(@ApiParam(value = "告警id") String id) throws JsonProcessingException {
+        return ResultData.instance().setData(saveCctvService.saveAlarmCctv(id));
     }
 
 

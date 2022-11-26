@@ -10,6 +10,7 @@ import com.lion.core.controller.BaseController;
 import com.lion.core.controller.impl.BaseControllerImpl;
 import com.lion.core.persistence.JpqlParameter;
 import com.lion.core.persistence.Validator;
+import com.lion.device.entity.device.vo.DeviceStatisticsVo;
 import com.lion.device.entity.enums.*;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.entity.tag.TagRule;
@@ -200,6 +201,14 @@ public class TagController extends BaseControllerImpl implements BaseController 
     @ApiOperation(value = "标签规则日志列表")
     public IPageResultData<List<ListTagRuleLogVo>> ruleLogList(@ApiParam(value = "标签规则id") Long tagRuleId,@ApiParam(value = "开始时间")LocalDateTime startDateTime,@ApiParam(value = "结束时间") LocalDateTime endDateTime, @ApiParam(value = "结束时间") TagRuleLogType actionType, LionPage lionPage){
         return tagRuleLogService.list(tagRuleId, startDateTime, endDateTime, actionType, lionPage);
+    }
+
+    @GetMapping("/x")
+    @ApiOperation(value = "tag设备统计")
+    public IResultData<TagStatisticsVo> deviceStatistics(){
+        ResultData resultData = ResultData.instance();
+        resultData.setData(tagService.statistics());
+        return resultData;
     }
 
 }

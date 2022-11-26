@@ -94,6 +94,8 @@ public class SaveCctvServiceImpl implements SaveCctvService {
         }
     }
 
+
+
     @Override
     public void saveCctv(SystemAlarm systemAlarm) throws JsonProcessingException {
         Optional<Region> optionalRegion = regionExposeService.findById(systemAlarm.getRi());
@@ -107,6 +109,56 @@ public class SaveCctvServiceImpl implements SaveCctvService {
                 mongoTemplate.updateFirst(queryUpdate, update, "system_alarm");
             }
         }
+    }
+
+    @Override
+    public String saveWashEventCctv(String id) throws JsonProcessingException {
+        Document match = new Document();
+        match.put("_id",id);
+        Query query = new BasicQuery(match);
+        WashEvent washEvent = mongoTemplate.findOne(query, WashEvent.class);
+        if (Objects.isNull(washEvent)) {
+            return "";
+        }
+        Optional<Region> optionalRegion = regionExposeService.findById(washEvent.getRi());
+        if (optionalRegion.isPresent()) {
+            String cctvUrl = saveCctv(cctvExposeService.findRegionId(optionalRegion.get().getId()),washEvent.getSdt(),washEvent.getSdt().plusSeconds(Objects.isNull(washEvent.getT())?50:washEvent.getT()));
+            if (StringUtils.hasText(cctvUrl)) {
+                if (Objects.nonNull(washEvent)) {
+                    Query queryUpdate = new Query();
+                    queryUpdate.addCriteria(Criteria.where("_id").is(washEvent.get_id()));
+                    Update update = new Update();
+                    update.set("cctvUrl", cctvUrl);
+                    mongoTemplate.updateFirst(queryUpdate, update, "wash_event");
+                }
+            }
+            return cctvUrl;
+        }
+        return "";
+    }
+
+    @Override
+    public String saveAlarmCctv(String id) throws JsonProcessingException {
+        Document match = new Document();
+        match.put("_id",id);
+        Query query = new BasicQuery(match);
+        SystemAlarm systemAlarm = mongoTemplate.findOne(query, SystemAlarm.class);
+        if (Objects.isNull(systemAlarm)) {
+            return "";
+        }
+        Optional<Region> optionalRegion = regionExposeService.findById(systemAlarm.getRi());
+        if (optionalRegion.isPresent()) {
+            String cctvUrl = saveCctv(cctvExposeService.findRegionId(optionalRegion.get().getId()),systemAlarm.getDt().minusSeconds(10),systemAlarm.getDt().plusSeconds(10));
+            if (StringUtils.hasText(cctvUrl)) {
+                Query queryUpdate = new Query();
+                queryUpdate.addCriteria(Criteria.where("_id").is(systemAlarm.get_id()));
+                Update update = new Update();
+                update.set("cctvUrl", cctvUrl);
+                mongoTemplate.updateFirst(queryUpdate, update, "system_alarm");
+                return cctvUrl;
+            }
+        }
+        return "";
     }
 
     private String saveCctv(List<Cctv> cctvList,LocalDateTime startDateTime,LocalDateTime endDateTime) throws JsonProcessingException {

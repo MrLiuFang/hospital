@@ -13,6 +13,7 @@ import com.lion.device.entity.tag.dto.UpdateTagDto;
 import com.lion.device.entity.tag.vo.DetailsTagVo;
 import com.lion.device.entity.tag.vo.ListTagVo;
 import com.lion.device.entity.tag.vo.PurposeStatisticsVo;
+import com.lion.device.entity.tag.vo.TagStatisticsVo;
 
 import java.util.List;
 
@@ -79,4 +80,6 @@ public interface TagService extends BaseService<Tag> {
      * @return
      */
     public List<PurposeStatisticsVo> purposeStatistics();
+
+    public TagStatisticsVo statistics();
 }
