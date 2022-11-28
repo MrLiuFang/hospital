@@ -203,7 +203,7 @@ public class TagController extends BaseControllerImpl implements BaseController 
         return tagRuleLogService.list(tagRuleId, startDateTime, endDateTime, actionType, lionPage);
     }
 
-    @GetMapping("/x")
+    @GetMapping("/statistics")
     @ApiOperation(value = "tag设备统计")
     public IResultData<TagStatisticsVo> deviceStatistics(){
         ResultData resultData = ResultData.instance();
