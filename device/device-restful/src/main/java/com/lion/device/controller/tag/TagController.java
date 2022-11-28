@@ -73,7 +73,7 @@ public class TagController extends BaseControllerImpl implements BaseController 
 
     @GetMapping("/list")
     @ApiOperation(value = "标签列表")
-    public IPageResultData<List<ListTagVo>> list(@ApiParam(value = "是否负责的科室")Boolean isResponsibleDepartment,@ApiParam(value = "是否所有")Boolean isAll,  @ApiParam(value = "是否临时-导入")String isTmp,@ApiParam(value = "部门")Long departmentId,@ApiParam(value = "使用状态")String useState,@ApiParam(value = "状态")State state,@ApiParam(value = "电量(0=正常,1=少於90 天,2=少於30天)")Integer battery, @ApiParam(value = "标签编码") String tagCode, @ApiParam(value = "标签分类") TagType type, @ApiParam(value = "用途") TagPurpose purpose, LionPage lionPage){
+    public IPageResultData<List<ListTagVo>> list(@ApiParam(value = "是否负责的科室")Boolean isResponsibleDepartment,@ApiParam(value = "是否所有")Boolean isAll,  @ApiParam(value = "是否临时-导入") @RequestParam(defaultValue = "false",required = false) String isTmp,@ApiParam(value = "部门")Long departmentId,@ApiParam(value = "使用状态")String useState,@ApiParam(value = "状态")State state,@ApiParam(value = "电量(0=正常,1=少於90 天,2=少於30天)")Integer battery, @ApiParam(value = "标签编码") String tagCode, @ApiParam(value = "标签分类") TagType type, @ApiParam(value = "用途") TagPurpose purpose, LionPage lionPage){
         return tagService.list(isResponsibleDepartment,isAll , isTmp, departmentId, useState, state, battery, tagCode, type, purpose, lionPage);
     }
 
