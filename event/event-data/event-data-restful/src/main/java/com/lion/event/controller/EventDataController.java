@@ -803,14 +803,32 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
 
     @GetMapping ("/getWashEventCctv")
     @ApiOperation(value = "获取洗手时间cctv")
-    public IResultData saveWashEventCctv(@ApiParam(value = "洗手事件id") String id) throws JsonProcessingException {
-        return ResultData.instance().setData(saveCctvService.saveWashEventCctv(id));
+    public IResultData saveWashEventCctv(@ApiParam(value = "洗手事件id") String id) {
+        ResultData resultData = ResultData.instance();
+        String str = null;
+        try {
+            str = saveCctvService.saveWashEventCctv(id);
+        } catch (JsonProcessingException e) {
+            resultData.setStatus(-200);
+            resultData.setMessage("无法获取CCTV");
+            return resultData;
+        }
+        return ResultData.instance().setData(str);
     }
 
     @GetMapping ("/getAlarmCctv")
     @ApiOperation(value = "获取洗手时间cctv")
-    public IResultData saveAlarmCctv(@ApiParam(value = "告警id") String id) throws JsonProcessingException {
-        return ResultData.instance().setData(saveCctvService.saveAlarmCctv(id));
+    public IResultData saveAlarmCctv(@ApiParam(value = "告警id") String id) {
+        ResultData resultData = ResultData.instance();
+        String str = null;
+        try {
+            str = saveCctvService.saveAlarmCctv(id);
+        } catch (JsonProcessingException e) {
+            resultData.setStatus(-200);
+            resultData.setMessage("无法获取CCTV");
+            return resultData;
+        }
+        return ResultData.instance().setData(str);
     }
 
 
