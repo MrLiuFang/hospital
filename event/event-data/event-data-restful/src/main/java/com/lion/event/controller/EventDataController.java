@@ -808,7 +808,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         String str = null;
         try {
             str = saveCctvService.saveWashEventCctv(id);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             resultData.setStatus(-200);
             resultData.setMessage("无法获取CCTV");
             return resultData;
@@ -823,7 +823,7 @@ public class EventDataController extends BaseControllerImpl implements BaseContr
         String str = null;
         try {
             str = saveCctvService.saveAlarmCctv(id);
-        } catch (JsonProcessingException e) {
+        } catch (Exception e) {
             resultData.setStatus(-200);
             resultData.setMessage("无法获取CCTV");
             return resultData;
