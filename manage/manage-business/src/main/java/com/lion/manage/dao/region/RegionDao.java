@@ -14,7 +14,7 @@ import java.util.List;
  * @Description:
  * @date 2021/4/1上午10:56
  */
-public interface RegionDao extends BaseDao<Region> {
+public interface RegionDao extends BaseDao<Region> ,RegionDaoEx {
 
     /**
      * 根据建筑删除区域

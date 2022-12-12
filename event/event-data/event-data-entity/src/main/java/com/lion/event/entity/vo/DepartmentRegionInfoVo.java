@@ -1,5 +1,6 @@
 package com.lion.event.entity.vo;
 
+import com.lion.manage.entity.region.Region;
 import com.lion.manage.entity.region.vo.ListRegionVo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

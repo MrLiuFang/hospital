@@ -46,5 +46,5 @@ public interface CctvExposeService extends BaseService<Cctv> {
 
     public List<Cctv> findRegionId(Long regionId);
 
-    public List<Cctv> findDepartmentId(Long departmentId);
+    public List<Cctv> findDepartmentId(Long departmentId,String keyword);
 }

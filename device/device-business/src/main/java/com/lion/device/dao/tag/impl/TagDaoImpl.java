@@ -36,7 +36,7 @@ public class TagDaoImpl implements TagDaoEx {
             searchParameter.put("ids",listIds);
         }
         if (StringUtils.hasText(keyWord)) {
-            sb.append(" and  ( t.tagCode like :tagCode or  )  ");
+            sb.append(" and  ( t.tagCode like :tagCode  )  ");
             searchParameter.put("tagCode","%" +keyWord +"%");
         }
         return (List<Tag>) baseDao.findAll(sb.toString(),searchParameter);

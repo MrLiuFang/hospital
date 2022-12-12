@@ -571,6 +571,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                         patientExposeService.updateState(patient.getId(),State.NORMAL.getKey());
                         vo.setDeviceState(State.NORMAL);
                     }
+                    vo.setGender(patient.getGender());
 //                    vo.setPatientState(patient.getPatientState());
                     vo.setTagCode(patient.getTagCode());
                     vo.setHeadPortrait(patient.getHeadPortrait());
@@ -656,7 +657,7 @@ public class MapStatisticsServiceImpl implements MapStatisticsService {
                 detailsDeviceVos.add(detailsDeviceVo);
             });
             deviceDetailsVo.setDetailsDeviceVos(detailsDeviceVos);
-            deviceDetailsVo.setCctvs(cctvExposeService.findDepartmentId(departmentId));
+            deviceDetailsVo.setCctvs(cctvExposeService.findDepartmentId(departmentId,keyword ));
             departmentDeviceDetailsVos.add(deviceDetailsVo);
 
 //            List<Region> regionList = regionExposeService.findByDepartmentId(id);

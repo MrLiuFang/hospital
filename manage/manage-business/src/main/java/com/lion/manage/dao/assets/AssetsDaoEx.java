@@ -1,6 +1,7 @@
 package com.lion.manage.dao.assets;
 
 import com.lion.core.LionPage;
+import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.State;
 import org.springframework.data.domain.Page;
 
@@ -24,4 +25,6 @@ public interface AssetsDaoEx {
      * @return
      */
     public Integer count(Long departmentId, State deviceState, List<Long> assetsIds);
+
+    public List<Assets> findByDepartmentId(Long departmentId, String name, String code, List<Long> ids) ;
 }

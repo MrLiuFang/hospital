@@ -53,7 +53,6 @@ public interface RegionExposeService extends BaseService<Region> {
     public PageResultData<List<Region>> find(LionPage lionPage);
 
     /**
-     *
      * @param keyword
      * @param departmentId
      * @return

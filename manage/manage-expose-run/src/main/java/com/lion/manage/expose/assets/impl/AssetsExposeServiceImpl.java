@@ -76,24 +76,26 @@ public class AssetsExposeServiceImpl extends BaseServiceImpl<Assets> implements 
 
     @Override
     public List<Assets> findByDepartmentId(Long departmentId, String name, String code, List<Long> ids) {
-        List<TagAssets> tagAssets = tagAssetsExposeService.findByTagCode(code);
-        List<Long> ids1 = new ArrayList<>();
-        ids1.add(Long.MAX_VALUE);
-        if (Objects.nonNull(tagAssets) && tagAssets.size()>0) {
-            for (TagAssets tagAssets1 : tagAssets) {
-                ids1.add(tagAssets1.getAssetsId());
-            }
-        }
-        if (StringUtils.hasText(name) && StringUtils.hasText(code) && (Objects.isNull(ids) || ids.size()<=0)) {
-            return assetsDao.findByDepartmentIdOrNameLikeOrCodeLike(departmentId, "%"+name+"%", "%"+code+"%");
-        }else if (StringUtils.hasText(name) && StringUtils.hasText(code) && (Objects.nonNull(ids) && ids.size()>0)) {
-            return assetsDao.findByDepartmentIdOrNameLikeOrCodeLikeAndIdIn(departmentId, "%"+name+"%", "%"+code+"%",ids1,ids );
-        }else if (!StringUtils.hasText(name) && !StringUtils.hasText(code) && (Objects.nonNull(ids) && ids.size()>0)) {
-            return assetsDao.findByDepartmentIdAndIdIn(departmentId, ids);
-        }else if (!StringUtils.hasText(name) && !StringUtils.hasText(code) && (Objects.isNull(ids) || ids.size()<=0)) {
-            return assetsDao.findByDepartmentId(departmentId);
-        }
-        return assetsDao.findByDepartmentId(departmentId);
+//        List<TagAssets> tagAssets = tagAssetsExposeService.findByTagCode(code);
+//        List<Long> ids1 = new ArrayList<>();
+//        ids1.add(Long.MAX_VALUE);
+//        if (Objects.nonNull(tagAssets) && tagAssets.size()>0) {
+//            for (TagAssets tagAssets1 : tagAssets) {
+//                ids1.add(tagAssets1.getAssetsId());
+//            }
+//        }
+//        if (StringUtils.hasText(name) && StringUtils.hasText(code) && (Objects.isNull(ids) || ids.size()<=0)) {
+//            return assetsDao.findByDepartmentIdOrNameLikeOrCodeLike(departmentId, "%"+name+"%", "%"+code+"%");
+//        }else if (StringUtils.hasText(name) && StringUtils.hasText(code) && (Objects.nonNull(ids) && ids.size()>0)) {
+//            return assetsDao.findByDepartmentIdOrNameLikeOrCodeLikeAndIdIn(departmentId, "%"+name+"%", "%"+code+"%",ids1,ids );
+//        }else if (!StringUtils.hasText(name) && !StringUtils.hasText(code) && (Objects.nonNull(ids) && ids.size()>0)) {
+//            return assetsDao.findByDepartmentIdAndIdIn(departmentId, ids);
+//        }else if (!StringUtils.hasText(name) && !StringUtils.hasText(code) && (Objects.isNull(ids) || ids.size()==0)) {
+//            return assetsDao.findByDepartmentId(departmentId);
+//        }
+//        return assetsDao.findByDepartmentId(departmentId);
+
+        return assetsDao.findByDepartmentId(departmentId, name, code, ids);
     }
 
     @Override

@@ -13,7 +13,7 @@ import java.util.List;
  * @Description:
  * @date 2021/4/1上午10:24
  */
-public interface CctvDao extends BaseDao<Cctv> {
+public interface CctvDao extends BaseDao<Cctv> ,CctvDaoEx {
 
     /**
      * 根据id数组查询

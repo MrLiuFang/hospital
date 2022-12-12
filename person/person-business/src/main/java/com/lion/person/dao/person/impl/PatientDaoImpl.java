@@ -4,8 +4,11 @@ import com.lion.core.LionPage;
 import com.lion.core.persistence.curd.BaseDao;
 import com.lion.device.entity.tag.Tag;
 import com.lion.device.expose.tag.TagExposeService;
+import com.lion.manage.entity.ward.WardRoomSickbed;
+import com.lion.manage.expose.ward.WardRoomSickbedExposeService;
 import com.lion.person.dao.person.PatientDaoEx;
 import com.lion.person.entity.person.Patient;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
@@ -19,6 +22,10 @@ public class PatientDaoImpl implements PatientDaoEx {
 
     @Resource
     private TagExposeService tagExposeService;
+
+    @DubboReference
+    private WardRoomSickbedExposeService wardRoomSickbedExposeService;
+
 
     public Page<Map<String, Object>> listMerge(Integer type, String name, String cardNumber, String tagCode, String medicalRecordNo, String sort, List<Long> departmentIds, LionPage lionPage) {
         StringBuilder sb = new StringBuilder();
@@ -105,11 +112,13 @@ public class PatientDaoImpl implements PatientDaoEx {
             searchParameter.put("emergencyContact", "%" + name + "%");
             searchParameter.put("address", "%" + name + "%");
             searchParameter.put("tagCode", "%" + name + "%");
-            List<Tag> tags = tagExposeService.findByTagCode(name);
+            searchParameter.put("tagCode", "%" + name + "%");
+            searchParameter.put("tagCode", "%" + name + "%");
+            List<WardRoomSickbed> list = wardRoomSickbedExposeService.find(name);
             List<Long> sickbedIds = new ArrayList<>();
             sickbedIds.add(Long.MAX_VALUE);
-            tags.forEach(tag -> {
-                sickbedIds.add(tag.getId());
+            list.forEach(wardRoomSickbed -> {
+                sickbedIds.add(wardRoomSickbed.getId());
             });
             searchParameter.put("sickbedIds", sickbedIds);
         }

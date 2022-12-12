@@ -287,7 +287,6 @@ public class RegionServiceImpl extends BaseServiceImpl<Region> implements Region
 
     @Override
     public IPageResultData<List<ListRegionVo>> list(String name, String code, List<Long> departmentIds, Long washTemplateId, Long regionTypeId, Long buildId, Long buildFloorId, LionPage lionPage) {
-        ResultData resultData = ResultData.instance();
         JpqlParameter jpqlParameter = new JpqlParameter();
         if (StringUtils.hasText(name)){
             jpqlParameter.setSearchParameter(SearchConstant.LIKE+"_name","%"+name+"%");

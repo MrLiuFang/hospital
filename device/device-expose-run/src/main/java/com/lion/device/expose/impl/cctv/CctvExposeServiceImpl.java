@@ -63,7 +63,7 @@ public class CctvExposeServiceImpl extends BaseServiceImpl<Cctv> implements Cctv
     }
 
     @Override
-    public List<Cctv> findDepartmentId(Long departmentId) {
-        return cctvDao.findByDepartmentId(departmentId);
+    public List<Cctv> findDepartmentId(Long departmentId, String keyword) {
+        return cctvDao.find(departmentId,keyword,keyword,keyword,keyword);
     }
 }

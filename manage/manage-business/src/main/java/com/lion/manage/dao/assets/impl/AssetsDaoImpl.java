@@ -3,19 +3,20 @@ package com.lion.manage.dao.assets.impl;
 import com.alibaba.druid.sql.visitor.functions.If;
 import com.lion.core.LionPage;
 import com.lion.core.persistence.curd.BaseDao;
+import com.lion.device.entity.tag.TagAssets;
+import com.lion.device.expose.tag.TagAssetsExposeService;
 import com.lion.manage.dao.assets.AssetsDaoEx;
 import com.lion.manage.entity.assets.Assets;
 import com.lion.manage.entity.enums.State;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.dubbo.config.annotation.DubboReference;
 import org.checkerframework.checker.i18nformatter.qual.I18nFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @description:
@@ -26,6 +27,9 @@ public class AssetsDaoImpl implements AssetsDaoEx {
 
     @Autowired
     private BaseDao<Assets> baseDao;
+
+    @DubboReference
+    private TagAssetsExposeService tagAssetsExposeService;
 
 
     @Override
@@ -93,5 +97,39 @@ public class AssetsDaoImpl implements AssetsDaoEx {
             return Integer.valueOf(String.valueOf(list.get(0)));
         }
         return 0;
+    }
+
+    @Override
+    public List<Assets> findByDepartmentId(Long departmentId, String name, String code, List<Long> ids) {
+        List<TagAssets> tagAssets = tagAssetsExposeService.findByTagCode(code);
+        List<Long> ids1 = new ArrayList<>();
+        if (Objects.nonNull(tagAssets) && tagAssets.size()>0) {
+            for (TagAssets tagAssets1 : tagAssets) {
+                ids1.add(tagAssets1.getAssetsId());
+            }
+            ids1.add(Long.MAX_VALUE);
+        }
+//        List<Long> _ids = new ArrayList<>();
+//        if (ids1.size()>0) {
+//            _ids = (List<Long>) CollectionUtils.intersection(ids1, ids);
+//        }else {
+//            _ids = ids;
+//        }
+        StringBuilder sb = new StringBuilder();
+        Map<String, Object> searchParameter = new HashMap<String, Object>();
+        sb.append(" select a from Assets a where ( a.name like :name or a.code like :code or a.id in :ids1 ) ");
+        searchParameter.put("ids1",ids1);
+        searchParameter.put("name","%"+name+"%");
+        searchParameter.put("code","%"+code+"%");
+        if (Objects.nonNull(departmentId)){
+            sb.append(" and a.departmentId = :departmentId ");
+            searchParameter.put("departmentId",departmentId);
+        }
+        if (Objects.nonNull(ids) && ids.size()>0){
+            sb.append(" and a.id in :ids ");
+            searchParameter.put("ids",ids);
+        }
+        List<Assets> list = (List<Assets>) baseDao.findAll(sb.toString(),searchParameter);
+        return list;
     }
 }
